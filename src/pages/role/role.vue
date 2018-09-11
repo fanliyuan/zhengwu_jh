@@ -10,7 +10,6 @@
     <ContentTitle :options="title"></ContentTitle>
     <div class="main-content cl">
       <FilterForm :options="filterData"></FilterForm>
-      <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
@@ -21,7 +20,6 @@
 <script type="text/ecmascript-6">
   import ContentTitle from '../../components/contentTitle/contentTitle.vue'
   import FilterForm from '../../components/filterForm/filterForm.vue'
-  import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
   import Data from '../../config/role/role'
@@ -31,7 +29,6 @@
     components: {
       ContentTitle,
       FilterForm,
-      opreationWidgets,
       Pager,
       ModalConTent
     },
@@ -98,7 +95,8 @@
         }
         let ID = {
           userId: id,
-          roleIds: roleName
+          roleName: roleName,
+          roleIds: roleId
         };
         vm.$Loading.start();
         for (let obj in vm.modalData.formObj) {

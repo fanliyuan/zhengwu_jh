@@ -39,10 +39,12 @@ class assignRoleOptions {
         width: 900,
         formObj:{
           userId: '',
+          roleName: '',
           roleIds: ''
         },
         oldFormObj:{
           userId: '',
+          roleName: '',
           roleIds: ''
         },
         idObj: 'roleIds',
@@ -55,7 +57,7 @@ class assignRoleOptions {
             disabled: false,
             show: true,
             word: 'text',
-            prop: 'roleIds',
+            prop: 'roleName',
             name: '',
             options: vm.roleList
           }
@@ -220,12 +222,6 @@ class assignRoleOptions {
         ]
       },
       opreationData: [
-        {
-          name: '添加',
-          icon: 'md-add',
-          color: 'primary',
-          type: 'add'
-        }
       ]
     }
   }

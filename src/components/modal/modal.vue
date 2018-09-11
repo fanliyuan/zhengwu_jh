@@ -143,7 +143,7 @@
       },
       changeRadio (value) {
         let vm = this;
-        let roleList = vm.$props.widgets[0].options;
+        let roleList = vm.$props.widgets.widgets[0].options;
         for (let i = 0, len = roleList.length; i < len; i++) {
           if (roleList[i].key === value) {
             vm.formValidate[vm.$props.widgets.idObj] = roleList[i].value;
