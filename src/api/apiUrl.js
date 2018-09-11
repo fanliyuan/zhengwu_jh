@@ -16,6 +16,7 @@ export default {
   newsAdd: { url: '/xaobNewsReleaseTest/add', method: 'post' },
   //机构用户管理
   userList: { url: '/mgr/userList', method: 'get' }, //用户列表
+  userAdd: { url: '/mgr/add1', method: 'post'},
   roleList: { url: '/role/roleList', method: 'get' }, //角色列表
   roleUpdate: { url: '/mgr/setRole', method: 'post' }, //设置用户角色
   newsUpdate: { url: '/xaobNewsReleaseTest/update', method: 'post' },

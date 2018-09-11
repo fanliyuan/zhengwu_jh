@@ -47,32 +47,16 @@
       //初始化表格
       initTable: function () {
         let vm = this;
-       // vm.initData = {pageNum:1,pageSize:5};
-        vm.roleList.push(
-          {
-            value: "节点管理员",
-            key: "节点管理员",
-          },{
-            value: "节点安全员",
-            key: "节点安全员",
-          },{
-            value: "节点审计员",
-            key: "节点审计员",
-          },{
-            value: "节点操作员",
-            key: "节点操作员",
-          });
-        vm.statusList.push(
-          {
-            value: "2",
-            key: "启用",
-          },{
-            value: "1",
-            key: "停用",
-          })
+        vm.api[vm.apis.roleListApi]().then((data) => {
+          for (let i = 0; i < data.datas.length; i++) {
+            vm.roleList.push({value:data.datas[i].id,key:data.datas[i].name});
+          }
+        }).catch((error) => {
+
+        })
+
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          console.log(data);
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;

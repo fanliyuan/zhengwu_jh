@@ -20,12 +20,14 @@ class userManagerOptions {
 
   setData () {
     let vm = this.setVm();
+    vm.roleList = [{value:'',key:'全部'}];
     vm.statusList = [];
-    vm.roleList = [];
     return {
       title: '用户管理',
       apis: {
         listApi: 'userManagerList',
+        addApi: 'userAdd',
+        roleListApi:'roleList',
         editApi: 'assignRoleUpdate'
       },
       modalOpreation: false,
@@ -35,60 +37,88 @@ class userManagerOptions {
         apiUrl: '',
         width: 900,
         formObj:{
-          role: ''
+          id: '',
+          role:'',
+          user: '',
+          salt: '',
+          birthday: '',
+          sex: '',
+          eamil: '',
+          deptid: '',
+          createtime: '',
+          version: '',
+          avatar: ''
         },
         oldFormObj:{
-          role: ''
+          id: '',
+          user: '',
+          salt: '',
+          birthday: '',
+          sex: '',
+          eamil: '',
+          deptid: '',
+          createtime: '',
+          version: '',
+          avatar: ''
         },
-        idObj: 'xaobBannerId',
-        ueObj: 'xaobBannerContent',
+        idObj: 'id',
         ruleObj: {
-          xaobBannerTitle: [
+          account: [
             {
               required: true,
-              message: '标题不能为空',
+              message: '用户名不能为空',
               trigger: 'blur'
             },
             {
-              max: 100,
-              message: '标题长度不能大于100个字符'
+              max: 50,
+              message: '用户名长度不能大于50个字符'
             }
           ],
-          xaobBannerImg: [
+          password: [
             {
               required: true,
-              message: '图片不能为空',
+              message: '密码不能为空',
               trigger: 'blur'
-            }
+            },
           ],
-          xaobBannerBlueImg: [
+          name: [
             {
               required: true,
-              message: '图片不能为空',
+              message: '姓名不能为空',
               trigger: 'blur'
-            }
+            },
           ],
-          xaobBannerUrl: [
+          phone: [
             {
-              type: 'url',
-              message: '请输入正确的url格式（http://...）'
-            }
-          ]
+              required: true,
+              message: '手机号不能为空',
+              trigger: 'blur'
+            },
+          ],
+          role: [
+            {
+              required: false,
+              message: '角色不能为空',
+              trigger: 'blur'
+            },
+          ],
         },
         widgets: [
           {
             type: 'input',
             disabled: false,
+            show:true,
             word: 'text',
-            prop: 'xaobBannerTitle',
+            prop: 'account',
             name: '用户名',
             placeholder: '请输入用户名'
           },
           {
             type: 'input',
             disabled: false,
+            show:true,
             word: 'password',
-            prop: 'xaobBannerUrl',
+            prop: 'password',
             name: '密码',
             placeholder: '请输入密码'
           },
@@ -96,13 +126,15 @@ class userManagerOptions {
             type: 'input',
             disabled: false,
             word: 'text',
-            prop: 'xaobBannerUrl',
+            show:true,
+            prop: 'name',
             name: '姓名',
             placeholder: '请输入姓名'
           },
           {
             type: 'input',
             disabled: false,
+            show:true,
             word: 'text',
             prop: 'phone',
             name: '手机号',
@@ -110,12 +142,23 @@ class userManagerOptions {
           },{
             type: 'select',
             disabled: true,
-            prop: 'status',
+            show:true,
+            prop: 'roleid',
             name: '角色',
             placeholder: '请选择',
             options: []
+          },
+          {
+            type: 'switch',
+            disabled: false,
+            show: true,
+            prop: 'status',
+            name: '状态',
+            openName: '启用',
+            closeName: '停用',
+            openVal: '1',
+            closeVal: '2'
           }
-
         ],
         titles: {
           addTitle: {
@@ -129,8 +172,14 @@ class userManagerOptions {
         }
       },
       initData: {
+        name: '',
+        phone: '',
+        role: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
         pageNum:1,
-        pageSize:5
+        pageSize:10
       },
       tableData: {
         loading: true,
@@ -248,15 +297,18 @@ class userManagerOptions {
       },
       filterData: {
         filiterObj: {
-          title: '',
-          roleid: '',
-          status: ''
+          name: '',
+          phone: '',
+          role: '',
+          status: '',
+          beginTime: '',
+          endTime: ''
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'title',
+            prop: 'name',
             name: '用户名',
             placeholder: '用户名/姓名'
           },
@@ -270,7 +322,7 @@ class userManagerOptions {
           {
             type: 'select',
             disabled: false,
-            prop: 'roleid',
+            prop: 'role',
             name: '用户角色',
             placeholder: '请选择用户角色',
             options: vm.roleList
