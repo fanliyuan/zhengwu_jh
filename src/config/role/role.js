@@ -27,7 +27,8 @@ class assignRoleOptions {
       title: '分配角色',
       apis: {
         listApi: 'userList',
-        editApi: 'roleUpdate'
+        editApi: 'roleUpdate',
+        listRoleApi: 'roleList'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -152,10 +153,14 @@ class assignRoleOptions {
         }
       },
       initData: {
-        title: '',
-        order: 'desc',
-        offset: 0,
-        limit: 10
+        name: '',
+        phone: '',
+        role: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
+        pageNum: 0,
+        pageSize: 10
       },
       tableData: {
         loading: true,
@@ -254,26 +259,31 @@ class assignRoleOptions {
       },
       filterData: {
         filiterObj: {
-          title: ''
+          name: '',
+          phone: '',
+          role: '',
+          status: '',
+          beginTime: '',
+          endTime: ''
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'title',
+            prop: 'name',
             name: '姓名',
             placeholder: '请输入用户名/姓名'
           },
           {
             type: 'input',
             word: 'text',
-            prop: 'title',
+            prop: 'phone',
             name: '电话',
             placeholder: '请输入电话号码'
           },
           {
             type: 'select',
-            prop: 'roleid',
+            prop: 'role',
             disabled: false,
             name: '角色',
             placeholder: '请选择角色',

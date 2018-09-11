@@ -6,20 +6,25 @@
 * 描述 ：公共弹窗组件
 */
 <template>
-  <Modal :width="widgets.width" v-model="status" :title="title" :mask-closable="false" :loading="loading">
+  <Modal :width="widgets.width" v-model="status" :title="title" :closable="false" :mask-closable="false" :loading="loading" @on-ok="ok('formValidate')" @on-cancel="cancel('formValidate')">
     <Form class="formValidate" ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="120" :show-message="showError">
-      <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in formWidgets">
-        <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'input'">
+      <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in formWidgets" v-show="item.show">
+        <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
         </Input>
-        <Input class="formValidate-widget" @on-change="oneOfFormValidate" @on-blur="oneOfFormValidate" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'inputValidateOther'">
+        <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" number v-if="item.type === 'input' && item.isNum === true">
+        </Input>
+        <Input class="formValidate-widget" size="large" :rows="item.rows" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'textarea'">
+        </Input>
+        <Input class="formValidate-widget" @on-change="oneOfFormValidate" @on-blur="oneOfFormValidate" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'inputValidateOther'">
         </Input>
         <InputNumber style="width:300px" size="large" v-model="formValidate[item.prop]" :max="item.max" :min="item.min" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'inputNumber'"></InputNumber>
-        <Select @on-open-change="oneOfFormValidate" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select'" style="width:300px">
+        <Select @on-open-change="oneOfFormValidate" @on-change="changeOption" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select'" style="width:300px">
           <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
         </Select>
         <Select @on-open-change="oneOfFormValidate" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'selectValidateOther'" style="width:300px">
           <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
         </Select>
+        <Cascader :data="item.options" :placeholder="item.placeholder" v-model="formValidate[item.prop]" @on-change="changeCascader" v-if="item.type === 'selectCascader'"></Cascader>
         <i-switch size="large" v-model="formValidate[item.prop]" :true-value="item.openVal" :false-value="item.closeVal" :disabled="item.disabled" v-if="item.type === 'switch'">
           <span slot="open">{{item.openName}}</span>
           <span slot="close">{{item.closeName}}</span>
@@ -34,9 +39,13 @@
         <UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>
       </FormItem>
     </Form>
-    <div slot="footer">
+    <Alert show-icon v-if="widgets.tips && widgets.tips.length > 0">
+      <p :key="indexTip" v-for="(tip, indexTip) in widgets.tips">
+        {{tip}}
+      </p>
+    </Alert>
+    <div slot="footer" v-if="!showOkBtn">
       <Button type="error" size="large" icon="reply" @click="cancel('formValidate')">取消</Button>
-      <Button type="primary" size="large" icon="checkmark" @click="ok('formValidate')" v-if="showOkBtn">确定</Button>
     </div>
   </Modal>
 </template>
@@ -75,6 +84,10 @@
         set: function () {
           let vm = this;
           return vm.options;
+        },
+        widgets () {
+          let vm = this;
+          return vm.$props.widgets;
         }
       }
     },
@@ -95,6 +108,9 @@
           vm.ueName = newValue.ueObj;
           if (newValue.oneOfFormArr) {
             vm.oneOfFormArr = newValue.oneOfFormArr;
+          }
+          if (newValue.hideToken) {
+            vm.hideToken = newValue.hideToken;
           }
         },
         deep: true
@@ -122,37 +138,72 @@
           }
         }
       },
+      changeOption (value) {
+        let vm = this;
+        if (vm.hideToken) {
+          let options = vm.$props.widgets.widgets[3].options;
+          let tokenSelect = vm.$props.widgets.widgets[4];
+          let tokenShow = '';
+          for (let i = 0, len = options.length; i < len; i++) {
+            if (value === options[i].value) {
+              tokenShow = options[i].tokenStatus;
+              switch (tokenShow) {
+                case 0:
+                  tokenSelect.show = false;
+                  break;
+                case 1:
+                  tokenSelect.show = true;
+                  break;
+              }
+            }
+          }
+        }
+      },
+      changeCascader (value, selectedData) {
+        let vm = this;
+        if (vm.formValidate.buildings) {
+          vm.formValidate.buildingId = selectedData[0].value;
+          vm.formValidate.buildingName = selectedData[0].label;
+          vm.formValidate.floorId = selectedData[1].value;
+          vm.formValidate.floorName = selectedData[1].label;
+        }
+      },
       validateForm (name) {
         let vm = this;
         vm.$refs[name].validate((valid) => {
           if (valid) {
-            vm.$Message.success('验证通过');
+            vm.$Message.success('验证通过, 提交中！');
+            if (vm.formValidate.targetPersons) {
+              delete vm.formValidate.targetPersons;
+            }
+            if (vm.formValidate.buildings) {
+              delete vm.formValidate.buildings;
+            }
             vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
-              vm.loading = false;
-              vm.$emit('modalStatus', false);
               vm.$parent.initTable();
-              vm.$refs.formValidate.resetFields();
-              vm.deepCopy(vm.oldFormValidate, vm.formValidate);
-              for (let i in vm.uploadNames) {
-                if (i) {
-                  vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
-                }
+            vm.$emit('modalStatus', false);
+            vm.$refs.formValidate.resetFields();
+            vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+            for (let i in vm.uploadNames) {
+              if (i) {
+                vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
               }
-              vm.$nextTick(() => {
-                vm.loading = true;
-              });
-              vm.$Loading.finish();
-            }).catch((error) => {
+            }
+          }).catch((error) => {
               vm.$Loading.error();
-            });
-          } else {
-            vm.$Message.error('验证失败');
             vm.loading = false;
             vm.$nextTick(() => {
               vm.loading = true;
-            });
-          }
-        });
+          });
+          });
+          } else {
+            vm.$Message.error('验证失败');
+        vm.loading = false;
+        vm.$nextTick(() => {
+          vm.loading = true;
+      });
+      }
+      });
       },
       ok (name) {
         let vm = this;
@@ -168,8 +219,8 @@
         }
         vm.$nextTick(() => {
           vm.$refs.formValidate.resetFields();
-          vm.deepCopy(vm.oldFormValidate, vm.formValidate);
-        });
+        vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+      });
         for (let i in vm.uploadNames) {
           if (i) {
             vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
@@ -199,19 +250,19 @@
       handleProgress () {
         let vm = this;
         vm.$Spin.show({
-          render: (h) => {
-            return h('div', [
-              h('Icon', {
-                'class': 'demo-spin-icon-load',
-                props: {
-                  type: 'load-c',
-                  size: 18
+                  render: (h) => {
+                  return h('div', [
+                    h('Icon', {
+                      'class': 'demo-spin-icon-load',
+                      props: {
+                        type: 'load-c',
+                        size: 18
+                      }
+                    }),
+                    h('div', '上传中...')
+                  ])
                 }
-              }),
-              h('div', '上传中...')
-            ])
-          }
-        });
+      });
       },
       handleFormatError (file) {
         let vm = this;
@@ -252,8 +303,8 @@
     height: 100px;
     margin-top: 10px;
     overflow: hidden;
-    img{
-      width: 100%;
-    }
+  img{
+    width: 100%;
+  }
   }
 </style>
