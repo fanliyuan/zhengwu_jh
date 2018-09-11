@@ -17,11 +17,17 @@ class assignRoleOptions {
 
   setData () {
     let vm = this.setVm();
+    vm.filterRoleList = [
+      {
+        value: '',
+        key: '全部'
+      }
+    ];
     return {
       title: '分配角色',
       apis: {
         listApi: 'userList',
-        editApi: 'assignRoleUpdate'
+        editApi: 'roleUpdate'
       },
       modalOpreation: false,
       modalWidgets: {},
