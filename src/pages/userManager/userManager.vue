@@ -47,7 +47,7 @@
       //初始化表格
       initTable: function () {
         let vm = this;
-        vm.initData = {pageNum:1,pageSize:5};
+       // vm.initData = {pageNum:1,pageSize:5};
         vm.roleList.push(
           {
             value: "节点管理员",
