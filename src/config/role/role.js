@@ -45,7 +45,7 @@ class assignRoleOptions {
           userId: '',
           roleIds: ''
         },
-        idObj: 'id',
+        idObj: 'roleIds',
         ruleObj: {
 
         },

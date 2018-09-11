@@ -18,7 +18,7 @@ export default {
   userList: { url: '/mgr/userList', method: 'get' }, //用户列表
   userAdd: { url: '/mgr/add1', method: 'post'},
   roleList: { url: '/role/roleList', method: 'get' }, //角色列表
-  roleUpdate: { url: '/mgr/setRole', method: 'post' }, //设置用户角色
+  roleUpdate: { url: '/mgr/setRole1', method: 'post' }, //设置用户角色
   newsUpdate: { url: '/xaobNewsReleaseTest/update', method: 'post' },
   newsDelete: { url: '/xaobNewsReleaseTest/delete', method: 'post' },
   newsRelease: { url: '/xaobNewsReleaseTest/sortByIds', method: 'post'},
