@@ -99,7 +99,7 @@
 
 <style lang="less">
   #login {
-    background: url("/static/images/login_bg.jpg");
+    background: url("./img/login_bg.jpg");
     height: 100%;
     background-size: cover;
     .login-form{
