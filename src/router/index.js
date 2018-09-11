@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/pages/login/login.vue'
 import AssignRole from './role/role'
+import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
 import Banner from './banner/banner'
 import ParkPerception from './parkPerception/parkPerception'
@@ -25,6 +26,7 @@ export default new Router({
       children:[
         ...NodeOverview,
         ...AssignRole,
+        ...UserManager,
         ...Banner,
         ...ParkPerception,
         ...Feedback,

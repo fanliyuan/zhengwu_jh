@@ -48,7 +48,9 @@ const sendApiInstance = (method, url, params, config = {}) => {
   let instance = createApiInstance(config)
 
   instance.interceptors.response.use(response => {
-      let {code, msg, data} = response.data
+      let code = response.data.code;
+      let msg = response.data.message;
+      let data = response.data.result;
       if (err_check(code, msg, data)) {
         return Promise.resolve(data)
       } else {

@@ -6,6 +6,8 @@
  * 描述 ：api请求地址
  */
 export default {
+  //登录
+  login: { url: '/login1', method: 'post' },
   //雄安资讯
   newsList: { url: '/xaobNewsReleaseTest/list', method: 'get' },
   newsDetail: { url: '/xaobNewsReleaseTest/detail', method: 'get' },
