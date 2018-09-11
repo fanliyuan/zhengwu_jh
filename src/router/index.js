@@ -5,8 +5,6 @@ import AssignRole from './role/role'
 import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
 import Banner from './banner/banner'
-import ParkPerception from './parkPerception/parkPerception'
-import Feedback from './feedback/feedback'
 import CreateModel from './createModel/createModel'
 
 Vue.use(Router)
@@ -28,8 +26,6 @@ export default new Router({
         ...AssignRole,
         ...UserManager,
         ...Banner,
-        ...ParkPerception,
-        ...Feedback,
         ...CreateModel
       ]
     }
