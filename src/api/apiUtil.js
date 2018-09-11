@@ -8,6 +8,7 @@
 import axios from 'axios'
 import { Notice } from 'iview';
 
+const root = process.env.API_HOST;
 const generateApiMap = (map) => {
   let facade = {}
   _.forEach(map, function (value, key) {
@@ -28,7 +29,7 @@ const toMethod = (options) => {
 const createApiInstance = (config = {}) => {
   const _config = {
     withCredentials: true, // 跨域
-    baseURL: '/api'
+    baseURL: root
   }
   config = _.merge(_config, config)
   return axios.create(config)

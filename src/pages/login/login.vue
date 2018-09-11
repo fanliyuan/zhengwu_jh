@@ -82,12 +82,13 @@
         let vm = this;
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('校验中!');
             vm.api.login(vm.formLogin).then((res) => {
+              if (!res) {
+                this.$Message.error('账号或密码错误!');
+              } else {
                 this.$router.push({'path': '/nodeOverview'});
-
+              }
             });
-          //  this.$router.push({'path': '/nodeOverview'});
           } else {
             this.$Message.error('请填写完整的登录信息!');
           }
