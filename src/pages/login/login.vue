@@ -84,9 +84,8 @@
           if (valid) {
             this.$Message.success('校验中!');
             vm.api.login(vm.formLogin).then((res) => {
-              if (res.code === '0') {
                 this.$router.push({'path': '/nodeOverview'});
-              }
+
             });
           //  this.$router.push({'path': '/nodeOverview'});
           } else {
