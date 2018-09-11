@@ -25,7 +25,7 @@ class userManagerOptions {
     return {
       title: '用户管理',
       apis: {
-        listApi: 'assignRoleList',
+        listApi: 'userManagerList',
         editApi: 'assignRoleUpdate'
       },
       modalOpreation: false,
@@ -161,14 +161,9 @@ class userManagerOptions {
         tableList: [],
         columns: [
           {
-            type: 'index',
-            width: 60,
-            align: 'center'
-          },
-          {
-            title: '标题',
-            key: 'title',
-            render: (h, params) => {
+            title: '用户名',
+            key: 'account',
+          /*  render: (h, params) => {
               return h('div', [
                 h('span', {
                   style: {
@@ -183,15 +178,31 @@ class userManagerOptions {
                   }
                 }, params.row.title)
               ])
-            }
+            }*/
           },
           {
-            title: '创建时间',
-            key: 'createTime'
+            title: '姓名',
+            key: 'name',
           },
           {
-            title: '发布人',
-            key: 'createName'
+            title: '电话',
+            key: 'phone',
+          },
+          {
+            title: '所属机构',
+            key: 'deptName',
+          },
+          {
+            title: '角色',
+            key: 'roleName',
+          },
+          {
+            title: '建立时间',
+            key: 'createtime',
+          },
+          {
+            title: '状态',
+            key: 'statusName',
           },
           {
             title: '操作',
@@ -203,7 +214,9 @@ class userManagerOptions {
                   type: 'primary'
                 },
                 style: {
-                  marginRight: '5px'
+                  marginRight: '5px',
+                  color:'#3fa9ff',
+                  cursor:'pointer'
                 },
                 on: {
                   click: () => {
@@ -216,7 +229,9 @@ class userManagerOptions {
                   type: 'success'
                 },
                 style: {
-                  marginRight: '5px'
+                  marginRight: '5px',
+                  color:'#3fa9ff',
+                  cursor:'pointer'
                 },
                 on: {
                   click: () => {
@@ -227,6 +242,10 @@ class userManagerOptions {
               let del = {
                 props: {
                   type: 'error'
+                },
+                style: {
+                  color:'#3fa9ff',
+                  cursor:'pointer'
                 },
                 on: {
                   click: () => {
@@ -240,9 +259,9 @@ class userManagerOptions {
                   }
                 }
               };
-              children.push(h('Button', edit, '修改'));
-              children.push(h('Button', view, '查看'));
-              children.push(h('Button', del, '删除'));
+              children.push(h('span', edit, '启用'));
+              children.push(h('span', view, '修改'));
+              children.push(h('span', del, '删除'));
               return h('div', children);
             }
           }
@@ -275,7 +294,6 @@ class userManagerOptions {
           {
             type: 'select',
             disabled: false,
-            show: true,
             prop: 'roleid',
             name: '用户角色',
             placeholder: '请选择用户角色',
@@ -284,7 +302,6 @@ class userManagerOptions {
           {
             type: 'select',
             disabled: false,
-            show: true,
             prop: 'status',
             name: '状态',
             placeholder: '请选择状态',
@@ -302,6 +319,14 @@ class userManagerOptions {
                 key:'冻结'
               }
             ]
+          },
+          {
+            type: 'dateRange',
+            word: 'daterange',
+            prop: 'timeRange',
+            disabled: false,
+            name: '时间段',
+            placeholder: '请选择时间段'
           },
         ]
       },

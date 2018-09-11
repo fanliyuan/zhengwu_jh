@@ -22,10 +22,12 @@ export default {
     margin: 0 20px 20px 20px;
     th{
       font-size: 16px;
+      text-align: center;
     }
     td{
       font-size: 14px;
       padding: 5px 0;
+      text-align: center;
     }
   }
   .tablePager{

@@ -9,6 +9,12 @@ export default {
   //登录
   login: { url: '/login1', method: 'post' },
   //机构用户管理
+  userManagerList: {url: '/mgr/userList', method: 'get'},
+  //雄安资讯
+  newsList: { url: '/xaobNewsReleaseTest/list', method: 'get' },
+  newsDetail: { url: '/xaobNewsReleaseTest/detail', method: 'get' },
+  newsAdd: { url: '/xaobNewsReleaseTest/add', method: 'post' },
+  //机构用户管理
   userList: { url: '/mgr/userList', method: 'get' }, //用户列表
   roleList: { url: '/role/roleList', method: 'get' }, //角色列表
   roleUpdate: { url: '/mgr/setRole', method: 'post' }, //设置用户角色

@@ -12,7 +12,7 @@
       <FilterForm :options="filterData"></FilterForm>
 
       <opreationWidgets :options="opreationData"></opreationWidgets>
-      <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
+      <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
     </div>
@@ -47,6 +47,7 @@
       //初始化表格
       initTable: function () {
         let vm = this;
+        vm.initData = {pageNum:1,pageSize:5};
         vm.roleList.push(
           {
             value: "节点管理员",
@@ -71,8 +72,9 @@
           })
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.records;
-          vm.pageData.total = data.total;
+          console.log(data);
+          vm.tableData.tableList = data.datas;
+          vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
         }).catch((error) => {
 
@@ -155,5 +157,4 @@
 </script>
 
 <style lang="less" scoped>
-
 </style>
