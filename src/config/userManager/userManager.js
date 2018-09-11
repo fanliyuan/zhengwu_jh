@@ -81,69 +81,47 @@ class userManagerOptions {
             disabled: false,
             word: 'text',
             prop: 'xaobBannerTitle',
-            name: '标题',
-            placeholder: '请输入banner标题'
+            name: '用户名',
+            placeholder: '请输入用户名'
           },
           {
-            type: 'upload',
+            type: 'input',
             disabled: false,
-            word: 'text',
-            prop: 'xaobBannerImg',
-            name: '图片(红色皮肤)',
-            placeholder: '上传红色皮肤图片',
-            placeholderA: '删除红色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerBlueImg',
-            name: '图片(蓝色皮肤)',
-            placeholder: '上传蓝色皮肤图片',
-            placeholderA: '删除蓝色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
+            word: 'password',
+            prop: 'xaobBannerUrl',
+            name: '密码',
+            placeholder: '请输入密码'
           },
           {
             type: 'input',
             disabled: false,
             word: 'text',
             prop: 'xaobBannerUrl',
-            name: '链接',
-            placeholder: '请输入banner链接'
+            name: '姓名',
+            placeholder: '请输入姓名'
           },
           {
-            type: 'ueditor',
+            type: 'input',
             disabled: false,
-            word: 'textarea',
-            prop: 'xaobBannerContent',
-            name: '内容',
-            placeholder: ''
+            word: 'text',
+            prop: 'phone',
+            name: '手机号',
+            placeholder: '请输入手机号'
+          },{
+            type: 'select',
+            disabled: true,
+            prop: 'status',
+            name: '角色',
+            placeholder: '请选择',
+            options: []
           }
+
         ],
         titles: {
+          addTitle: {
+            name: '新增用户',
+            showOkBtn: true
+          },
           editTitle: {
             name: '用户管理',
             showOkBtn: true
@@ -151,10 +129,8 @@ class userManagerOptions {
         }
       },
       initData: {
-        title: '',
-        order: 'desc',
-        offset: 0,
-        limit: 10
+        pageNum:1,
+        pageSize:5
       },
       tableData: {
         loading: true,
@@ -332,7 +308,7 @@ class userManagerOptions {
       },
       opreationData: [
         {
-          name: '添加',
+          name: '新建',
           icon: 'plus-round',
           color: 'primary',
           type: 'add'
