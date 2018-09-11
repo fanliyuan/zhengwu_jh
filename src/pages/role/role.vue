@@ -132,9 +132,7 @@
       getRoleList: function () {
         let vm = this;
         let params = {};
-        console.log()
         vm.api[vm.apis.listRoleApi](params).then((data) => {
-          console.log(data)
           for (let i = 0, len = data.datas.length; i < len; i++) {
             vm.roleList.push({
               value: data.datas[i].id,

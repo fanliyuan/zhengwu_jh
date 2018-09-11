@@ -23,6 +23,7 @@ class assignRoleOptions {
         key: '全部'
       }
     ];
+    vm.roleList = [];
     return {
       title: '分配角色',
       apis: {
@@ -166,38 +167,53 @@ class assignRoleOptions {
         loading: true,
         tableList: [],
         columns: [
+          //{
+          //  title: '标题',
+          //  key: 'title',
+          //  render: (h, params) => {
+          //    return h('div', [
+          //      h('span', {
+          //        style: {
+          //          display: 'inline-block',
+          //          width: '100%',
+          //          overflow: 'hidden',
+          //          textOverflow: 'ellipsis',
+          //          whiteSpace: 'nowrap'
+          //        },
+          //        domProps: {
+          //          title: params.row.title
+          //        }
+          //      }, params.row.title)
+          //    ])
+          //  }
+          //},
           {
-            type: 'index',
-            width: 60,
-            align: 'center'
+            title: '用户名',
+            key: 'account'
           },
           {
-            title: '标题',
-            key: 'title',
-            render: (h, params) => {
-              return h('div', [
-                h('span', {
-                  style: {
-                    display: 'inline-block',
-                    width: '100%',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  },
-                  domProps: {
-                    title: params.row.title
-                  }
-                }, params.row.title)
-              ])
-            }
+            title: '姓名',
+            key: 'name'
           },
           {
-            title: '创建时间',
-            key: 'createTime'
+            title: '电话',
+            key: 'phone'
           },
           {
-            title: '发布人',
-            key: 'createName'
+            title: '所属机构',
+            key: 'deptName'
+          },
+          {
+            title: '角色',
+            key: 'roleName'
+          },
+          {
+            title: '建立时间',
+            key: 'createtime'
+          },
+          {
+            title: '状态',
+            key: 'statusName'
           },
           {
             title: '操作',
@@ -217,38 +233,7 @@ class assignRoleOptions {
                   }
                 }
               };
-              let view = {
-                props: {
-                  type: 'success'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    vm.view(params.row.id);
-                  }
-                }
-              };
-              let del = {
-                props: {
-                  type: 'error'
-                },
-                on: {
-                  click: () => {
-                    vm.$Modal.confirm({
-                      title: '信息',
-                      content: '是否删除选择的信息？',
-                      onOk: function () {
-                        vm.deleteItem(params.row.id);
-                      }
-                    });
-                  }
-                }
-              };
-              children.push(h('Button', edit, '修改'));
-              children.push(h('Button', view, '查看'));
-              children.push(h('Button', del, '删除'));
+              children.push(h('Button', edit, '分配角色'));
               return h('div', children);
             }
           }
@@ -289,6 +274,35 @@ class assignRoleOptions {
             placeholder: '请选择角色',
             options: vm.filterRoleList
           },
+          {
+            type: 'select',
+            prop: 'status',
+            disabled: false,
+            name: '状态',
+            placeholder: '请选择状态',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: 1,
+                key: '启用'
+              },
+              {
+                value: 2,
+                key: '冻结'
+              }
+            ]
+          },
+          {
+            type: 'dateRange',
+            word: 'daterange',
+            prop: 'timeRange',
+            disabled: false,
+            name: '时间段',
+            placeholder: '请选择时间段'
+          }
         ]
       },
       opreationData: [
