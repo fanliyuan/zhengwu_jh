@@ -11,15 +11,19 @@
       <Input class="formItem-widget" size="large" :type="item.word" v-model="formInline[item.prop]" @keyup.native.13="handleSubmit('formInline')" :placeholder="item.placeholder" v-if="item.type === 'input'">
       <span class="formItem-name" slot="prepend">{{item.name}}</span>
       </Input>
+      <Select class="formItem-widget" size="large" v-model="formInline[item.prop]" :placeholder="item.placeholder" v-if="item.type === 'select'" :disabled="item.disabled" style="width: 200px">
+        <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
+      </Select>
+      <Cascader size="large" :data="item.options" :placeholder="item.placeholder" v-model="formInline[item.prop]" @on-change="changeCascader" v-if="item.type === 'selectCascader'"></Cascader>
+      <DatePicker @on-change="nowDateRange" :editable="false" :type="item.word" placement="bottom-start" :placeholder="item.placeholder" style="width: 200px" v-if="item.type === 'dateRange'"></DatePicker>
     </FormItem>
     <FormItem class="formInline-item">
-      <Button type="primary" size="large" icon="md-search" @click="handleSubmit('formInline')">搜索</Button>
+      <Button type="primary" size="large" icon="search" @click="handleSubmit('formInline')">搜索</Button>
     </FormItem>
   </Form>
 </template>
 
 <script>
-// eslint-disable-next-line indent
   export default{
     name: 'ConFilter',
     props: ['options'],
@@ -29,12 +33,31 @@
       }
     },
     methods: {
-      handleSubmit(name) {
+      handleSubmit (name) {
         let vm = this;
         for (var obj in vm[name]) {
-          vm.$parent.initData[obj] = vm[name][obj];
+          if (obj !== 'temporaryBuildings') {
+            vm.$parent.initData[obj] = vm[name][obj];
+          }
         }
         vm.$parent.initTable();
+      },
+      nowDateRange (value) {
+        let vm = this;
+        vm.formInline.beginTime = value[0];
+        vm.formInline.endTime = value[1];
+      },
+      changeCascader (value, selectedData) {
+        let vm = this;
+        if (vm.formInline.temporaryBuildings) {
+          if (value.length < 2) {
+            vm.formInline.buildingName = '';
+            vm.formInline.floorName = '';
+          }else {
+            vm.formInline.buildingName = selectedData[0].label;
+            vm.formInline.floorName = selectedData[1].label;
+          }
+        }
       }
     }
   }
@@ -44,8 +67,8 @@
   .formInline{
     margin: 15px 0;
     padding: 0 20px;
-    .formInline-item{
-      margin-bottom: 10px;
-    }
+  .formInline-item{
+    margin-bottom: 10px;
+  }
   }
 </style>

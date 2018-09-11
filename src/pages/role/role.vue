@@ -41,6 +41,7 @@
     },
     created: function () {
       this.initTable();
+      this.getRoleList();
     },
     methods:{
       //初始化表格
@@ -48,8 +49,8 @@
         let vm = this;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.records;
-          vm.pageData.total = data.total;
+          vm.tableData.tableList = data.datas;
+          vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
         }).catch((error) => {
 
@@ -126,6 +127,27 @@
       changeModal (status) {
         let vm = this;
         vm.modalOpreation = status;
+      },
+      //查询用户角色列表
+      getRoleList: function () {
+        let vm = this;
+        let params = {};
+        console.log()
+        vm.api[vm.apis.listRoleApi](params).then((data) => {
+          console.log(data)
+          for (let i = 0, len = data.datas.length; i < len; i++) {
+            vm.roleList.push({
+              value: data.datas[i].id,
+              key: data.datas[i].name
+            });
+            vm.filterRoleList.push({
+              value: data.datas[i].id,
+              key: data.datas[i].name
+            })
+          }
+        }).catch((error) => {
+
+        })
       }
     }
   }
