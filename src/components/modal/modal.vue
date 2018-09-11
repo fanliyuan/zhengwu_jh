@@ -37,6 +37,9 @@
           <img :src="formValidate[item.prop]">
         </div>
         <UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>
+        <RadioGroup v-model="formValidate[item.prop]" v-if="item.type === 'radioGroup'">
+          <Radio :label="option.key" :key="option.value" v-for="option in item.options"></Radio>
+        </RadioGroup>
       </FormItem>
     </Form>
     <Alert show-icon v-if="widgets.tips && widgets.tips.length > 0">

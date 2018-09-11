@@ -38,112 +38,25 @@ class assignRoleOptions {
         apiUrl: '',
         width: 900,
         formObj:{
-          role: ''
+          userId: '',
+          roleIds: ''
         },
         oldFormObj:{
-          role: ''
+          userId: '',
+          roleIds: ''
         },
-        idObj: 'xaobBannerId',
-        ueObj: 'xaobBannerContent',
+        idObj: 'id',
         ruleObj: {
-          xaobBannerTitle: [
-            {
-              required: true,
-              message: '标题不能为空',
-              trigger: 'blur'
-            },
-            {
-              max: 100,
-              message: '标题长度不能大于100个字符'
-            }
-          ],
-          xaobBannerImg: [
-            {
-              required: true,
-              message: '图片不能为空',
-              trigger: 'blur'
-            }
-          ],
-          xaobBannerBlueImg: [
-            {
-              required: true,
-              message: '图片不能为空',
-              trigger: 'blur'
-            }
-          ],
-          xaobBannerUrl: [
-            {
-              type: 'url',
-              message: '请输入正确的url格式（http://...）'
-            }
-          ]
+
         },
         widgets: [
           {
-            type: 'input',
+            type: 'radioGroup',
             disabled: false,
             word: 'text',
-            prop: 'xaobBannerTitle',
-            name: '标题',
-            placeholder: '请输入banner标题'
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerImg',
-            name: '图片(红色皮肤)',
-            placeholder: '上传红色皮肤图片',
-            placeholderA: '删除红色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerBlueImg',
-            name: '图片(蓝色皮肤)',
-            placeholder: '上传蓝色皮肤图片',
-            placeholderA: '删除蓝色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'input',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerUrl',
-            name: '链接',
-            placeholder: '请输入banner链接'
-          },
-          {
-            type: 'ueditor',
-            disabled: false,
-            word: 'textarea',
-            prop: 'xaobBannerContent',
-            name: '内容',
-            placeholder: ''
+            prop: 'roleIds',
+            name: '',
+            options: vm.roleList
           }
         ],
         titles: {
