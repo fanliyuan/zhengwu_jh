@@ -20,7 +20,7 @@ class assignRoleOptions {
     return {
       title: '分配角色',
       apis: {
-        listApi: 'assignRoleList',
+        listApi: 'userList',
         editApi: 'assignRoleUpdate'
       },
       modalOpreation: false,
@@ -255,15 +255,30 @@ class assignRoleOptions {
             type: 'input',
             word: 'text',
             prop: 'title',
-            name: '标题',
-            placeholder: '请输入标题'
-          }
+            name: '姓名',
+            placeholder: '请输入用户名/姓名'
+          },
+          {
+            type: 'input',
+            word: 'text',
+            prop: 'title',
+            name: '电话',
+            placeholder: '请输入电话号码'
+          },
+          {
+            type: 'select',
+            prop: 'roleid',
+            disabled: false,
+            name: '角色',
+            placeholder: '请选择角色',
+            options: vm.filterRoleList
+          },
         ]
       },
       opreationData: [
         {
           name: '添加',
-          icon: 'plus-round',
+          icon: 'md-add',
           color: 'primary',
           type: 'add'
         }

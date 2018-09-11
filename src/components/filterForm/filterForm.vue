@@ -13,7 +13,7 @@
       </Input>
     </FormItem>
     <FormItem class="formInline-item">
-      <Button type="primary" size="large" icon="search" @click="handleSubmit('formInline')">搜索</Button>
+      <Button type="primary" size="large" icon="md-search" @click="handleSubmit('formInline')">搜索</Button>
     </FormItem>
   </Form>
 </template>
