@@ -20,13 +20,13 @@
       //翻页
       changePage: function (page) {
         let vm = this;
-        vm.$parent.initData.offset = page - 1;
+        vm.$parent.initData.pageNum = page - 1;
         vm.$parent.initTable();
       },
       //改变每页显示数量
       changePageSize: function (pageSize) {
         let vm = this;
-        vm.$parent.initData.limit = pageSize;
+        vm.$parent.initData.pageSize = pageSize;
         vm.$parent.initTable();
       }
     }

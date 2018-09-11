@@ -53,6 +53,7 @@ class assignRoleOptions {
           {
             type: 'radioGroup',
             disabled: false,
+            show: true,
             word: 'text',
             prop: 'roleIds',
             name: '',
@@ -142,7 +143,7 @@ class assignRoleOptions {
                 },
                 on: {
                   click: () => {
-                    vm.edit(params.row.id);
+                    vm.edit(params.row.id, params.row.roleName, params.row.roleid);
                   }
                 }
               };

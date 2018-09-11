@@ -37,7 +37,7 @@
           <img :src="formValidate[item.prop]">
         </div>
         <UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>
-        <RadioGroup v-model="formValidate[item.prop]" v-if="item.type === 'radioGroup'">
+        <RadioGroup v-model="formValidate[item.prop]" @on-change="changeRadio" v-if="item.type === 'radioGroup'">
           <Radio :label="option.key" :key="option.value" v-for="option in item.options"></Radio>
         </RadioGroup>
       </FormItem>
@@ -138,6 +138,18 @@
         if (vm.oneOfFormArr) {
           for (let i = 0, len = vm.oneOfFormArr.length; i < len; i++) {
             vm.$refs.formValidate.validateField(vm.oneOfFormArr[i]);
+          }
+        }
+      },
+      changeRadio (value) {
+        let vm = this;
+        console.log(value);
+        console.log(vm.$props.widgets)
+        console.log(vm.formValidate)
+        let roleList = vm.$props.widgets.options;
+        for (let i = 0, len = roleList.length; i < len; i++) {
+          if (roleList[i].key === value) {
+//            vm.formValidate.
           }
         }
       },

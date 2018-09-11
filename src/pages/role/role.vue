@@ -91,25 +91,25 @@
         })
       },
       //修改
-      edit: function (id) {
+      edit: function (id, roleName, roleId) {
         let vm = this;
+        if (roleName === '') {
+          roleName = '节点管理员';
+        }
         let ID = {
-          ID: id
+          userId: id,
+          roleIds: roleName
         };
         vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
-          for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data[obj];
-          }
-          vm.modalData.formObj[vm.modalData.idObj] = id;
-          vm.modalData.title = vm.modalData.titles.editTitle;
-          vm.modalData.apiUrl = vm.apis.editApi;
-          vm.modalWidgets = vm.modalData;
-          vm.$Loading.finish();
-          vm.modalOpreation = true;
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
+        for (let obj in vm.modalData.formObj) {
+          vm.modalData.formObj[obj] = ID[obj];
+        }
+//        vm.modalData.formObj[vm.modalData.idObj] = id;
+        vm.modalData.title = vm.modalData.titles.editTitle;
+        vm.modalData.apiUrl = vm.apis.editApi;
+        vm.modalWidgets = vm.modalData;
+        vm.$Loading.finish();
+        vm.modalOpreation = true;
       },
       //删除
       deleteItem: function (id) {
