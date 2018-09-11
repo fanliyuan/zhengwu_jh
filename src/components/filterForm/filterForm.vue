@@ -19,6 +19,7 @@
 </template>
 
 <script>
+// eslint-disable-next-line indent
   export default{
     name: 'ConFilter',
     props: ['options'],
