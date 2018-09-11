@@ -20,6 +20,7 @@ class userManagerOptions {
 
   setData () {
     let vm = this.setVm();
+    vm.roleList = []
     vm.roleList = [{value:'',key:'全部'}];
     vm.statusList = [];
     return {
