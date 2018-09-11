@@ -20,7 +20,7 @@
       //翻页
       changePage: function (page) {
         let vm = this;
-        vm.$parent.initData.pageNum = page - 1;
+        vm.$parent.initData.pageNum = page;
         vm.$parent.initTable();
       },
       //改变每页显示数量
