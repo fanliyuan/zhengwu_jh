@@ -20,8 +20,8 @@ class userManagerOptions {
 
   setData () {
     let vm = this.setVm();
-    vm.roleList = []
-    vm.roleList = [{value:'',key:'全部'}];
+    //vm.roleList = []
+    vm.filterRoleList = [{value:'',key:'全部'}];
     vm.statusList = [];
     return {
       title: '用户管理',
@@ -326,7 +326,7 @@ class userManagerOptions {
             prop: 'role',
             name: '用户角色',
             placeholder: '请选择用户角色',
-            options: vm.roleList
+            options: vm.filterRoleList
           },
           {
             type: 'select',
