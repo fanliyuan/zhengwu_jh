@@ -5,6 +5,7 @@ import AssignRole from './role/role'
 import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
 import Source from './source/source'
+import Catalog from './catalog/catalog'
 import CreateModel from './createModel/createModel'
 
 Vue.use(Router)
@@ -28,6 +29,7 @@ const router = new Router({
         ...AssignRole,
         ...UserManager,
         ...Source,
+        ...Catalog,
         ...CreateModel
       ]
     }
