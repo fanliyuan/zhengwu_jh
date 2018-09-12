@@ -4,7 +4,7 @@ import Login from '@/pages/login/login.vue'
 import AssignRole from './role/role'
 import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
-import Banner from './banner/banner'
+import Source from './source/source'
 import CreateModel from './createModel/createModel'
 
 Vue.use(Router)
@@ -27,7 +27,7 @@ const router = new Router({
         ...NodeOverview,
         ...AssignRole,
         ...UserManager,
-        ...Banner,
+        ...Source,
         ...CreateModel
       ]
     }
