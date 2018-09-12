@@ -441,8 +441,8 @@ class catalogOptions {
             placeholder: '请选择时间段'
           },
           {
-            type: 'checkbox ',
-            word: 'checkbox ',
+            type: 'checkbox',
+            word: 'checkbox',
             prop: 'mount',
             disabled: false,
             name: '已挂接资源'
@@ -459,7 +459,7 @@ class catalogOptions {
         {
           name: '导入',
           icon: 'md-cloud-upload',
-          color: 'primary',
+          color: 'info',
           type: 'importFile'
         }
       ]

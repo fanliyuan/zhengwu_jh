@@ -24,7 +24,7 @@
   import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/banner/banner'
+  import Data from '../../config/catalog/catalog'
 
   export default{
     name: 'catalog',

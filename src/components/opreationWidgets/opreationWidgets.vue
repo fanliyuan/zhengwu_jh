@@ -7,7 +7,7 @@
 */
 <template>
   <div class="opWidgets">
-    <Button class="opWidgets-btn" v-for="(item, index) in options" :key="item.title" size="large" :type="item.color" :icon="item.icon" @click="handleOpreation(item.type, index)">{{item.name}}</Button>
+    <Button class="opWidgets-btn" v-for="(item, index) in options" :key="item.name" size="large" :type="item.color" :icon="item.icon" @click="handleOpreation(item.type, index)">{{item.name}}</Button>
   </div>
 </template>
 
