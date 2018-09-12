@@ -11,5 +11,8 @@ import nodeOverviewPage from '@/pages/nodeOverview/nodeOverview.vue'
 export default [{
   path: '/nodeOverview',
   name: 'NodeOverview',
-  component: nodeOverviewPage
+  component: nodeOverviewPage,
+  meta: {
+    authority: ['admin', 'security', 'auditor', 'user', 'assessor']
+  }
 }]

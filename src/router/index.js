@@ -9,13 +9,15 @@ import CreateModel from './createModel/createModel'
 
 Vue.use(Router)
 const Layout = r => require.ensure([], () => r(require('@/pages/layout.vue')), 'Layout');
-
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: {
+        authority: ['admin', 'security', 'auditor', 'user', 'assessor']
+      }
     },
     {
       path: '/index',
@@ -30,4 +32,15 @@ export default new Router({
       ]
     }
   ]
-})
+});
+router.beforeEach((to, from, next) => {
+  if (to.meta.authority.indexOf(sessionStorage.getItem('authority')) !== -1) {
+    next();
+  } else {
+    next({
+      path: '/'
+    })
+  }
+});
+
+export default router;

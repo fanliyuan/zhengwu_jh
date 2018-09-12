@@ -14,5 +14,8 @@ import UserManagerPage from '@/pages/userManager/userManager.vue'
 export default [{
   path: '/userManage',
   name: 'UserManager',
-  component: UserManagerPage
+  component: UserManagerPage,
+  meta: {
+    authority: ['admin']
+  }
 }]

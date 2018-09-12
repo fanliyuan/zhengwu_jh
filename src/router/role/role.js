@@ -11,5 +11,8 @@ import RolePage from '@/pages/role/role.vue'
 export default [{
   path: '/assignRole',
   name: 'AssignRole',
-  component: RolePage
+  component: RolePage,
+  meta: {
+    authority: ['security']
+  }
 }]
