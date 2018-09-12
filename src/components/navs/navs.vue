@@ -12,16 +12,16 @@
       {{options.title}}
     </div>
     <Menu :active-name="setActiveUrl.childName" :open-names="setActiveUrl.parentName" ref="mainMenu" theme="dark" width="auto" :class="menuitemClasses" @on-select="changeUrl" accordion>
-      <Submenu class="menu-item-li" v-for="option in options.data" :key="option.navId" :name="option.navId" v-if="option.isParent && option.show">
+      <Submenu class="menu-item-li" v-for="option in options.data" :key="option.navId" :name="option.navId" v-if="option.isParent && option.authority.indexOf(options.authority) !== -1">
         <template slot="title">
           <Icon :type="option.icon"></Icon>
           {{option.label}}
         </template>
-        <MenuItem class="menu-item-submenu" v-for="item in option.children" :key="item.navId" :name="item.frontUrl">
+        <MenuItem class="menu-item-submenu" v-for="item in option.children" :key="item.navId" :name="item.frontUrl" v-if="item.authority.indexOf(options.authority) !== -1">
           {{item.label}}
         </MenuItem>
       </Submenu>
-      <MenuItem class="menu-item-noSubmenu" v-for="option in options.data" :key="option.navId" :name="option.frontUrl" v-if="!option.isParent && option.show">
+      <MenuItem class="menu-item-noSubmenu" v-for="option in options.data" :key="option.navId" :name="option.frontUrl" v-if="!option.isParent && option.authority.indexOf(options.authority) !== -1">
         <Icon :type="option.icon"></Icon>
         <span>{{option.label}}</span>
       </MenuItem>
@@ -37,6 +37,9 @@
       return {
 
       }
+    },
+    created () {
+      console.log(this)
     },
     computed: {
       menuitemClasses: function () {
