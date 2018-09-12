@@ -9,6 +9,9 @@ export default {
   //登录
   login: { url: '/login1', method: 'post' },
 
+  //节点数据
+  nodeInfo: { url: '/nodeInfo', method: 'get' },
+
   //机构用户管理
   userManagerList: {url: '/mgr/userList', method: 'get'},
 
