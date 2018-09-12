@@ -16,6 +16,7 @@
       </Select>
       <Cascader size="large" :data="item.options" :placeholder="item.placeholder" v-model="formInline[item.prop]" @on-change="changeCascader" v-if="item.type === 'selectCascader'"></Cascader>
       <DatePicker @on-change="nowDateRange" :editable="false" :type="item.word" placement="bottom-start" :placeholder="item.placeholder" style="width: 200px" v-if="item.type === 'dateRange'"></DatePicker>
+      <Checkbox v-model="formInline[item.prop]" v-if="item.type === 'checkbox'" :disabled="item.disabled">{{option.name}}</Checkbox>
     </FormItem>
     <FormItem class="formInline-item">
       <Button type="primary" size="large" icon="search" @click="handleSubmit('formInline')">搜索</Button>

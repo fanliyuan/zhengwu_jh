@@ -21,10 +21,11 @@ class catalogOptions {
       title: '目录管理',
       apis: {
         addApi: 'catalogAdd',
-        deleteApi: 'bannerDelete',
-        detailApi: 'bannerDetail',
-        listApi: 'bannerList',
-        editApi: 'bannerUpdate'
+        deleteApi: 'catalogDelete',
+        detailApi: 'catalogDetail',
+        listApi: 'catalogList',
+        editApi: 'catalogUpdate',
+        connectApi: 'catalogConnect'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -33,51 +34,109 @@ class catalogOptions {
         apiUrl: '',
         width: 900,
         formObj:{
-          xaobBannerTitle: '',
-          xaobBannerImg: '',
-          xaobBannerBlueImg: '',
-          xaobBannerUrl: '',
-          xaobBannerContent: ''
+          name: '',
+          summary: '',
+          classify: '',
+          providerName: '',
+          providerDept: '',
+          providerNo: '',
+          infoCode: '',
+          infoFormat: '',
+          infoAddDtoList: [
+            {
+              code: '',
+              dataLength: '',
+              dataType: '',
+              name: '',
+              openCondition: '',
+              openType: '',
+              shareCondition: '',
+              shareModeClassify: '',
+              shareModeType: '',
+              shareType: ''
+            }
+          ]
         },
         oldFormObj:{
-          xaobBannerTitle: '',
-          xaobBannerImg: '',
-          xaobBannerBlueImg: '',
-          xaobBannerUrl: '',
-          xaobBannerContent: ''
+          name: '',
+          summary: '',
+          classify: '',
+          providerName: '',
+          providerDept: '',
+          providerNo: '',
+          infoCode: '',
+          infoFormat: '',
+          infoAddDtoList: [
+            {
+              code: '',
+              dataLength: '',
+              dataType: '',
+              name: '',
+              openCondition: '',
+              openType: '',
+              shareCondition: '',
+              shareModeClassify: '',
+              shareModeType: '',
+              shareType: ''
+            }
+          ]
         },
-        idObj: 'xaobBannerId',
-        ueObj: 'xaobBannerContent',
+        idObj: 'id',
         ruleObj: {
-          xaobBannerTitle: [
+          name: [
             {
               required: true,
-              message: '标题不能为空',
-              trigger: 'blur'
-            },
-            {
-              max: 100,
-              message: '标题长度不能大于100个字符'
-            }
-          ],
-          xaobBannerImg: [
-            {
-              required: true,
-              message: '图片不能为空',
+              message: '名称不能为空',
               trigger: 'blur'
             }
           ],
-          xaobBannerBlueImg: [
+          summary: [
             {
               required: true,
-              message: '图片不能为空',
+              message: '摘要不能为空',
               trigger: 'blur'
             }
           ],
-          xaobBannerUrl: [
+          classify: [
             {
-              type: 'url',
-              message: '请输入正确的url格式（http://...）'
+              required: true,
+              message: '请选择分类',
+              trigger: 'blur'
+            }
+          ],
+          providerName: [
+            {
+              required: true,
+              message: '提供方名称不能为空',
+              trigger: 'blur'
+            }
+          ],
+          providerDept: [
+            {
+              required: true,
+              message: '提供方内部部门不能为空',
+              trigger: 'blur'
+            }
+          ],
+          providerNo: [
+            {
+              required: true,
+              message: '资源提供方代码不能为空',
+              trigger: 'blur'
+            }
+          ],
+          infoCode: [
+            {
+              required: true,
+              message: '信息资源编码不能为空',
+              trigger: 'blur'
+            }
+          ],
+          infoFormat: [
+            {
+              required: true,
+              message: '请选择信息资源格式',
+              trigger: 'blur'
             }
           ]
         },
@@ -85,103 +144,130 @@ class catalogOptions {
           {
             type: 'input',
             disabled: false,
+            show: true,
             word: 'text',
-            prop: 'xaobBannerTitle',
-            name: '标题',
-            placeholder: '请输入banner标题'
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerImg',
-            name: '图片(红色皮肤)',
-            placeholder: '上传红色皮肤图片',
-            placeholderA: '删除红色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerBlueImg',
-            name: '图片(蓝色皮肤)',
-            placeholder: '上传蓝色皮肤图片',
-            placeholderA: '删除蓝色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
+            prop: 'name',
+            name: '名称',
+            placeholder: '请输入名称'
           },
           {
             type: 'input',
             disabled: false,
-            word: 'text',
-            prop: 'xaobBannerUrl',
-            name: '链接',
-            placeholder: '请输入banner链接'
+            show: true,
+            word: 'textarea',
+            prop: 'summary',
+            name: '摘要',
+            placeholder: '请输入描述'
           },
           {
-            type: 'ueditor',
+            type: 'select',
             disabled: false,
-            word: 'textarea',
-            prop: 'xaobBannerContent',
-            name: '内容',
-            placeholder: ''
+            show: true,
+            prop: 'classify',
+            name: '分类',
+            placeholder: '请选择分类',
+            options: [
+              {
+                key: '分类1',
+                value: '分类1'
+              },
+              {
+                key: '分类2',
+                value: '分类2'
+              },
+              {
+                key: '分类21',
+                value: '分类21'
+              }
+            ]
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'providerName',
+            name: '提供方名称',
+            placeholder: '请输入提供方名称'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'providerDept',
+            name: '提供方内部部门',
+            placeholder: '请输入提供方内部部门'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'providerNo',
+            name: '资源提供方代码',
+            placeholder: '请输入资源提供方代码'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'infoCode',
+            name: '信息资源编码',
+            placeholder: '请输入信息资源编码'
+          },
+          {
+            type: 'select',
+            disabled: false,
+            show: true,
+            prop: 'infoFormat',
+            name: '信息资源格式',
+            placeholder: '请选择信息资源格式',
+            options: [
+              {
+                key: '分类1',
+                value: '分类1'
+              },
+              {
+                key: '分类2',
+                value: '分类2'
+              },
+              {
+                key: '分类21',
+                value: '分类21'
+              }
+            ]
           }
         ],
         titles: {
-          viewTitle: {
-            name: '查看banner详情',
-            showOkBtn: false
-          },
           addTitle: {
-            name: '添加banner',
+            name: '新建目录',
             showOkBtn: true
           },
           editTitle: {
-            name: '编辑banner',
+            name: '编辑目录',
             showOkBtn: true
           }
         }
       },
       initData: {
-        title: '',
-        order: 'desc',
-        offset: 0,
-        limit: 10
+        name: '',
+        providerName: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
+        mount: false,
+        pageNum: 0,
+        pageSize: 10
       },
       tableData: {
         loading: true,
         tableList: [],
         columns: [
           {
-            type: 'index',
-            width: 60,
-            align: 'center'
-          },
-          {
-            title: '标题',
-            key: 'title',
+            title: '名称',
+            key: 'name',
             render: (h, params) => {
               return h('div', [
                 h('span', {
@@ -193,19 +279,23 @@ class catalogOptions {
                     whiteSpace: 'nowrap'
                   },
                   domProps: {
-                    title: params.row.title
+                    title: params.row.name
                   }
-                }, params.row.title)
+                }, params.row.name)
               ])
             }
           },
           {
-            title: '创建时间',
-            key: 'createTime'
+            title: '提供方',
+            key: 'providerName'
           },
           {
-            title: '发布人',
-            key: 'createName'
+            title: '审核状态',
+            key: 'status'
+          },
+          {
+            title: '注册时间',
+            key: 'registerTime'
           },
           {
             title: '操作',
@@ -238,6 +328,32 @@ class catalogOptions {
                   }
                 }
               };
+              let link = {
+                props: {
+                  type: 'light primary'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.link(params.row.id);
+                  }
+                }
+              };
+              let open = {
+                props: {
+                  type: 'info'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.open(params.row.id);
+                  }
+                }
+              };
               let del = {
                 props: {
                   type: 'error'
@@ -254,8 +370,10 @@ class catalogOptions {
                   }
                 }
               };
+              children.push(h('Button', view, '信息项'));
+              children.push(h('Button', link, 'view'));
+              children.push(h('Button', open, '共享开放'));
               children.push(h('Button', edit, '修改'));
-              children.push(h('Button', view, '查看'));
               children.push(h('Button', del, '删除'));
               return h('div', children);
             }
@@ -267,24 +385,82 @@ class catalogOptions {
       },
       filterData: {
         filiterObj: {
-          title: ''
+          name: '',
+          providerName: '',
+          status: '',
+          beginTime: '',
+          endTime: '',
+          mount: false
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'title',
-            name: '标题',
-            placeholder: '请输入标题'
+            prop: 'name',
+            name: '名称',
+            placeholder: '请输入名称'
+          },
+          {
+            type: 'input',
+            word: 'text',
+            prop: 'providerName',
+            name: '提供方',
+            placeholder: '请输入提供方'
+          },
+          {
+            type: 'select',
+            prop: 'status',
+            disabled: false,
+            name: '审核状态',
+            placeholder: '请选择审核状态',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: 1,
+                key: '待审核'
+              },
+              {
+                value: 2,
+                key: '已通过'
+              },
+              {
+                value: 3,
+                key: '已拒绝'
+              }
+            ]
+          },
+          {
+            type: 'dateRange',
+            word: 'daterange',
+            prop: 'timeRange',
+            disabled: false,
+            name: '时间段',
+            placeholder: '请选择时间段'
+          },
+          {
+            type: 'checkbox ',
+            word: 'checkbox ',
+            prop: 'mount',
+            disabled: false,
+            name: '已挂接资源'
           }
         ]
       },
       opreationData: [
         {
-          name: '添加',
-          icon: 'plus-round',
+          name: '新建',
+          icon: 'md-add',
           color: 'primary',
           type: 'add'
+        },
+        {
+          name: '导入',
+          icon: 'md-cloud-upload',
+          color: 'primary',
+          type: 'importFile'
         }
       ]
     }
