@@ -34,12 +34,16 @@ const router = new Router({
   ]
 });
 router.beforeEach((to, from, next) => {
-  if (to.meta.authority.indexOf(sessionStorage.getItem('authority')) !== -1) {
+  if (to.fullPath === '/') {
     next();
   } else {
-    next({
-      path: '/'
-    })
+    if (to.meta.authority.indexOf(sessionStorage.getItem('authority')) !== -1) {
+      next();
+    } else {
+      next({
+        path: '/'
+      })
+    }
   }
 });
 
