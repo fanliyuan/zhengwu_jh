@@ -20,7 +20,7 @@ class catalogOptions {
     return {
       title: '目录管理',
       apis: {
-        addApi: 'bannerAdd',
+        addApi: 'catalogAdd',
         deleteApi: 'bannerDelete',
         detailApi: 'bannerDetail',
         listApi: 'bannerList',
