@@ -39,4 +39,7 @@ export default {
     background-color: #ffffff;
     padding: 15px 10px;
   }
+  .ivu-message{
+    z-index: 9999;
+  }
 </style>

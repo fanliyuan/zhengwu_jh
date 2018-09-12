@@ -60,9 +60,6 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.code
-                    },
-                    domProps: {
                       value: params.row.code
                     },
                     on: {
@@ -71,7 +68,7 @@ class catalogOptions {
                         vm.$emit('input', val);
                       }
                     }
-                  })
+                  }, params.row.code)
                 } else {
                   return h('span', params.row.code);
                 }
@@ -84,7 +81,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.name
+                      value: params.row.name
                     },
                     domProps: {
                       value: params.row.name
@@ -108,7 +105,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.dataType
+                      value: params.row.dataType
                     },
                     domProps: {
                       value: params.row.dataType
@@ -132,7 +129,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.dataLength
+                      value: params.row.dataLength
                     },
                     domProps: {
                       value: params.row.dataLength
@@ -156,7 +153,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.shareType
+                      value: params.row.shareType
                     },
                     domProps: {
                       value: params.row.shareType
@@ -180,7 +177,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.shareCondition
+                      value: params.row.shareCondition
                     },
                     domProps: {
                       value: params.row.shareCondition
@@ -204,7 +201,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.shareModeClassify
+                      value: params.row.shareModeClassify
                     },
                     domProps: {
                       value: params.row.shareModeClassify
@@ -228,7 +225,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.shareModeType
+                      value: params.row.shareModeType
                     },
                     domProps: {
                       value: params.row.shareModeType
@@ -252,7 +249,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.openType
+                      value: params.row.openType
                     },
                     domProps: {
                       value: params.row.openType
@@ -276,7 +273,7 @@ class catalogOptions {
                 if (params.row.$isEdit) {
                   return h('Input', {
                     props: {
-                      myProp: params.row.openCondition
+                      value: params.row.openCondition
                     },
                     domProps: {
                       value: params.row.openCondition
@@ -308,7 +305,6 @@ class catalogOptions {
                   on: {
                     click: () => {
                       if (params.row.$isEdit) {
-                        console.log(params);
                         vm.handleSave(params.row);
                         for (let obj in vm.modalData.itemTableData.tableList[params.index]) {
                           vm.modalData.itemTableData.tableList[params.index][obj] = params.row[obj];
@@ -329,7 +325,7 @@ class catalogOptions {
                         title: '信息',
                         content: '是否删除选择的信息？',
                         onOk: function () {
-                          vm.deleteItems(params.row.code);
+                          vm.deleteItems(params);
                         }
                       });
                     }
@@ -343,9 +339,10 @@ class catalogOptions {
           ]
         },
         itemPageData: {
-          total: 0
+          total: 1
         },
         formObj:{
+          catalogId: 1,
           name: '',
           summary: '',
           classify: '',
@@ -366,11 +363,12 @@ class catalogOptions {
               shareModeClassify: '',
               shareModeType: '',
               shareType: '',
-              $isEdit: false
+              $isEdit: true
             }
           ]
         },
         oldFormObj:{
+          catalogId: 1,
           name: '',
           summary: '',
           classify: '',
@@ -572,7 +570,7 @@ class catalogOptions {
         beginTime: '',
         endTime: '',
         mount: false,
-        pageNum: 0,
+        pageNum: 1,
         pageSize: 10
       },
       tableData: {
@@ -644,7 +642,7 @@ class catalogOptions {
               };
               let link = {
                 props: {
-                  type: 'light primary'
+                  type: 'warning'
                 },
                 style: {
                   marginRight: '5px'
@@ -685,7 +683,7 @@ class catalogOptions {
                 }
               };
               children.push(h('Button', view, '信息项'));
-              children.push(h('Button', link, 'view'));
+              children.push(h('Button', link, '资源挂接'));
               children.push(h('Button', open, '共享开放'));
               children.push(h('Button', edit, '修改'));
               children.push(h('Button', del, '删除'));

@@ -94,6 +94,7 @@
         let vm = this;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
+          console.log(data)
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
@@ -111,7 +112,6 @@
         vm.modalData.apiUrl = vm.apis.addApi;
         vm.modalWidgets = vm.modalData;
         vm.modalData.itemTableData.tableList.push(vm.deepCopy(vm.modalData.formObj.infoAddDtoList[0], {}));
-//        vm.modalData.itemTableData.tableList = vm.modalData.formObj.infoAddDtoList;
         vm.modalData.itemTableData.loading = false;
         vm.modalData.loading = false;
         vm.modalOpreation = true;
@@ -206,39 +206,50 @@
       //下一步
       next () {
         let vm = this;
-        vm.modalData.current = 1;
-//        vm.$refs['formValidate'].validate((valid) => {
-//          if (valid) {
-//            vm.modalData.current = 1;
-//          } else {
-//            vm.$Message.error('验证失败');
-//          }
-//        });
+        vm.$refs['formValidate'].validate((valid) => {
+          if (valid) {
+            vm.modalData.current = 1;
+          } else {
+            vm.$Message.error('验证失败');
+          }
+        });
       },
       //上一步
       pre () {
         let vm = this;
         vm.modalData.current = 0;
       },
-      //下一步
+      //提交
       ok () {
         let vm = this;
-
+        for (let i = 0, len = vm.modalData.itemTableData.tableList.length; i < len; i++) {
+          delete vm.modalData.itemTableData.tableList[i].$isEdit;
+        }
+        vm.modalData.formObj.infoAddDtoList = vm.modalData.itemTableData.tableList;
+        console.log(vm.modalData.formObj)
+        vm.api[vm.apis.addApi](vm.modalData.formObj).then((data) => {
+          vm.$Loading.finish();
+          vm.initTable();
+          vm.modalOpreation = false;
+          vm.$refs.formValidate.resetFields();
+          vm.deepCopy(vm.oldFormObj, vm.formObj);
+          vm.modalData.itemTableData.tableList = [];
+        }).catch((error) => {
+          vm.$Loading.error();
+        });
       },
       //信息项编辑
       changeRadio () {
 
       },
-      editItem (code) {
-
-      },
-      deleteItems (code) {
-
+      deleteItems (params) {
+        let vm = this;
+        vm.modalData.itemTableData.tableList.splice(params.index, 1);
       },
       addItem () {
         let vm = this;
-        console.log(vm.modalData.itemTableData.tableList)
         vm.modalData.itemTableData.tableList.push(vm.deepCopy(vm.modalData.formObj.infoAddDtoList[0], {}));
+        vm.modalData.itemPageData.total = vm.modalData.itemTableData.tableList.length;
       },
       handleEdit (row) {
         let vm = this;
@@ -246,8 +257,11 @@
       },
       handleSave (row) {
         let vm = this;
-        console.log(vm.modalData.itemTableData.tableList)
-        vm.$set(row, '$isEdit', false)
+        if (row.code === '') {
+          return vm.$Message.error('信息项编码必填！');
+        } else {
+          vm.$set(row, '$isEdit', false)
+        }
       }
     }
   }
