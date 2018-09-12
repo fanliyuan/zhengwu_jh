@@ -32,7 +32,319 @@ class catalogOptions {
       modalData: {
         title: {},
         apiUrl: '',
-        width: 900,
+        width: 1200,
+        current: 0,
+        itemsOpreate: '手工建立',
+        itemsOpreateArr: [
+          {
+            key: '从数据资源导入',
+            value: 1
+          },
+          {
+            key: '模板导入',
+            value: 2
+          },
+          {
+            key: '手工建立',
+            value: 3
+          }
+        ],
+        itemTableData: {
+          loading: true,
+          tableList: [],
+          columns: [
+            {
+              title: '信息项编码',
+              key: 'code',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.code
+                    },
+                    domProps: {
+                      value: params.row.code
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.code = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.code);
+                }
+              }
+            },
+            {
+              title: '信息项名称',
+              key: 'name',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.name
+                    },
+                    domProps: {
+                      value: params.row.name
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.name = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.name);
+                }
+              }
+            },
+            {
+              title: '数据类型',
+              key: 'dataType',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.dataType
+                    },
+                    domProps: {
+                      value: params.row.dataType
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.dataType = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.dataType);
+                }
+              }
+            },
+            {
+              title: '数据长度',
+              key: 'dataLength',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.dataLength
+                    },
+                    domProps: {
+                      value: params.row.dataLength
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.dataLength = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.dataLength);
+                }
+              }
+            },
+            {
+              title: '共享类型',
+              key: 'shareType',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.shareType
+                    },
+                    domProps: {
+                      value: params.row.shareType
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.shareType = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.shareType);
+                }
+              }
+            },
+            {
+              title: '共享条件',
+              key: 'shareCondition',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.shareCondition
+                    },
+                    domProps: {
+                      value: params.row.shareCondition
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.shareCondition = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.shareCondition);
+                }
+              }
+            },
+            {
+              title: '共享方式分类',
+              key: 'shareModeClassify',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.shareModeClassify
+                    },
+                    domProps: {
+                      value: params.row.shareModeClassify
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.shareModeClassify = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.shareModeClassify);
+                }
+              }
+            },
+            {
+              title: '共享方式类型',
+              key: 'shareModeType',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.shareModeType
+                    },
+                    domProps: {
+                      value: params.row.shareModeType
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.shareModeType = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.shareModeType);
+                }
+              }
+            },
+            {
+              title: '开放类型',
+              key: 'openType',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.openType
+                    },
+                    domProps: {
+                      value: params.row.openType
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.openType = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.openType);
+                }
+              }
+            },
+            {
+              title: '开放条件',
+              key: 'openCondition',
+              render: (h, params) => {
+                if (params.row.$isEdit) {
+                  return h('Input', {
+                    props: {
+                      myProp: params.row.openCondition
+                    },
+                    domProps: {
+                      value: params.row.openCondition
+                    },
+                    on: {
+                      input: (val) => {
+                        params.row.openCondition = val;
+                        vm.$emit('input', val);
+                      }
+                    }
+                  })
+                } else {
+                  return h('span', params.row.openCondition);
+                }
+              }
+            },
+            {
+              title: '操作',
+              key: 'operate',
+              render: (h, params) => {
+                let children = [];
+                let edit = {
+                  props: {
+                    type: 'primary'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      if (params.row.$isEdit) {
+                        console.log(params);
+                        vm.handleSave(params.row);
+                        for (let obj in vm.modalData.itemTableData.tableList[params.index]) {
+                          vm.modalData.itemTableData.tableList[params.index][obj] = params.row[obj];
+                        }
+                      } else {
+                        vm.handleEdit(params.row)
+                      }
+                    }
+                  }
+                };
+                let del = {
+                  props: {
+                    type: 'error'
+                  },
+                  on: {
+                    click: () => {
+                      vm.$Modal.confirm({
+                        title: '信息',
+                        content: '是否删除选择的信息？',
+                        onOk: function () {
+                          vm.deleteItems(params.row.code);
+                        }
+                      });
+                    }
+                  }
+                };
+                children.push(h('Button', edit, params.row.$isEdit ? '保存' : '编辑'));
+                children.push(h('Button', del, '删除'));
+                return h('div', children);
+              }
+            }
+          ]
+        },
+        itemPageData: {
+          total: 0
+        },
         formObj:{
           name: '',
           summary: '',
@@ -53,7 +365,8 @@ class catalogOptions {
               shareCondition: '',
               shareModeClassify: '',
               shareModeType: '',
-              shareType: ''
+              shareType: '',
+              $isEdit: false
             }
           ]
         },
@@ -101,7 +414,7 @@ class catalogOptions {
             {
               required: true,
               message: '请选择分类',
-              trigger: 'blur'
+              trigger: 'change'
             }
           ],
           providerName: [
@@ -136,7 +449,7 @@ class catalogOptions {
             {
               required: true,
               message: '请选择信息资源格式',
-              trigger: 'blur'
+              trigger: 'change'
             }
           ]
         },
@@ -151,10 +464,11 @@ class catalogOptions {
             placeholder: '请输入名称'
           },
           {
-            type: 'input',
+            type: 'textarea',
             disabled: false,
             show: true,
             word: 'textarea',
+            rows: 6,
             prop: 'summary',
             name: '摘要',
             placeholder: '请输入描述'
