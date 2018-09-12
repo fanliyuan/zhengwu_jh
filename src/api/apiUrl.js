@@ -23,5 +23,9 @@ export default {
 
   //资源管理
 
+  //目录管理
+  catalogAdd: { url: '/api/v2/daas/swap/resource', method: 'post' }, //新建资源
+  catalogConnect: { url: '/api/v2/daas/swap/resource/connect', method: 'get'}, //连接测试
+  catalogList: { url: '/api/v2/daas/swap/resource/list', method: 'get' }, //资源列表
 
 }
