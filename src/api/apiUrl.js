@@ -35,5 +35,6 @@ export default {
   catalogDelete: { url: '/api/v2/daas/swap/resource', method: 'post' }, //删除资源
   catalogDetail: { url: '/api/v2/daas/swap/resource', method: 'get' }, //资源详情
   catalogUpdate: { url: '/api/v2/daas/swap/resource', method: 'post' }, //修改资源
+  catalogItemsList: { url: '/api/v2/daas/swap/resource', method: 'get' }, //获取资源信息项
 
 }

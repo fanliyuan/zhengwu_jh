@@ -7,6 +7,7 @@
  */
 
 import CatalogPage from '@/pages/catalog/catalog.vue'
+import CatalogItemPage from '@/pages/catalog/catalogItem/catalogItem.vue'
 
 export default [{
   path: '/catalog',
@@ -14,5 +15,15 @@ export default [{
   component: CatalogPage,
   meta: {
     authority: ['user']
-  }
+  },
+  children: [
+    {
+      path: 'itemInfo/:id',
+      name: 'CatalogItemInfo',
+      component: CatalogItemPage,
+      meta: {
+        authority: ['user']
+      }
+    }
+  ]
 }]

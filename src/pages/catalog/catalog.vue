@@ -47,6 +47,25 @@
           <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
         </div>
       </Modal>
+      <Modal fullscreen v-model="modalItems" :title="modalData.title.name" :mask-closable="false" :closable="false">
+        <div class="itemsInfo-card">
+          <Card :dis-hover="true">
+            <ul class="cl itemInfo"></ul>
+          </Card>
+        </div>
+        <div class="tableList-item" v-show="modalData.current === 1">
+          <Table class="tableList" :loading="modalData.itemTableData.loading" ref="selection" :columns="modalData.itemTableData.columns" :data="modalData.itemTableData.tableList" v-show="modalData.current === 1"></Table>
+          <Button class="item-add" type="dashed" @click="addItem">新增数据</Button>
+        </div>
+        <div class="cl pages" v-show="modalData.current === 1">
+          <Pager :options="modalData.itemPageData.total"></Pager>
+        </div>
+        <div class="btn-group">
+          <Button type="primary" @click="next" v-if="modalData.current === 0">下一步</Button>
+          <Button type="info" @click="pre" v-if="modalData.current === 1">上一步</Button>
+          <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
