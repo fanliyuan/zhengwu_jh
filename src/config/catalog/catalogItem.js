@@ -19,8 +19,23 @@ class catalogItemOptions {
     let vm = this.setVm();
     return {
       title: '查看资源信息项',
+      isBackBtn: {
+        name: '返回'
+      },
       apis: {
-        listApi: 'catalogItemsList'
+        listApi: 'catalogItemsList',
+        detailApi: 'catalogDetail'
+      },
+      detailData: {},
+      detailNameData: {
+        name: '名称',
+        classify: '分类',
+        infoCode: '信息资源代码',
+        infoFormat: '信息资源格式',
+        providerName: '提供方名称',
+        providerDept: '提供方内部部门',
+        providerNo: '资源提供方代码',
+        summary: '摘要'
       },
       initData: {
         id: '',

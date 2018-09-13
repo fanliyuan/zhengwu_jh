@@ -7,8 +7,15 @@
 */
 <template>
   <div class="cl">
-    <ContentTitle :options="title"></ContentTitle>
+    <ContentTitle :options="title" :backbtn="isBackBtn"></ContentTitle>
     <div class="main-content cl">
+      <Card class="infoCard" :dis-hover="true">
+        <ul class="infoList cl">
+          <li v-for="(item, key) in detailNameData" :key="key">
+            {{item}}：{{detailData[key]}}
+          </li>
+        </ul>
+      </Card>
       <FilterForm :options="filterData"></FilterForm>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
@@ -34,8 +41,8 @@
       return Data(vm).setData()
     },
     created: function () {
-      console.log(this.$route)
       this.initTable();
+      this.view();
     },
     methods:{
       //初始化表格
@@ -43,8 +50,6 @@
         let vm = this;
         let id = vm.$route.params.id;
         vm.tableData.loading = true;
-        console.log(vm.api)
-//        vm.api[vm.apis.listApi] = vm.api[vm.apis.listApi] + '/' + id + '/infoList';
         vm.initData.id = id;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.tableData.tableList = data.datas;
@@ -54,83 +59,39 @@
 
         })
       },
-      //新增
-      add: function () {
-        let vm = this;
-        if (vm.modalData.formObj[vm.modalData.idObj]) {
-          delete vm.modalData.formObj[vm.modalData.idObj];
-        }
-        vm.modalData.title = vm.modalData.titles.addTitle;
-        vm.modalData.apiUrl = vm.apis.addApi;
-        vm.modalWidgets = vm.modalData;
-        vm.modalOpreation = true;
-      },
-      //查看
-      view: function (id) {
+      //初始化资源详情
+      view: function () {
         let vm = this;
         let ID = {
-          ID: id
+          ID: vm.$route.params.id
         };
-        vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
-          for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data[obj];
-          }
-          vm.modalData.formObj[vm.modalData.idObj] = id;
-          vm.modalData.title = vm.modalData.titles.viewTitle;
-          for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
-            vm.modalData.widgets[i].disabled = true;
-          }
-          vm.modalWidgets = vm.modalData;
-          vm.$Loading.finish();
-          vm.modalOpreation = true;
+          vm.detailData = data.data;
+          console.log(data);
         }).catch((error) => {
-          vm.$Loading.error();
+
         })
       },
-      //修改
-      edit: function (id, roleName, roleId) {
-        let vm = this;
-        if (roleName === '') {
-          roleName = '节点管理员';
-        }
-        let ID = {
-          userId: id,
-          roleName: roleName,
-          roleIds: roleId
-        };
-        vm.$Loading.start();
-        for (let obj in vm.modalData.formObj) {
-          vm.modalData.formObj[obj] = ID[obj];
-        }
-//        vm.modalData.formObj[vm.modalData.idObj] = id;
-        vm.modalData.title = vm.modalData.titles.editTitle;
-        vm.modalData.apiUrl = vm.apis.editApi;
-        vm.modalWidgets = vm.modalData;
-        vm.$Loading.finish();
-        vm.modalOpreation = true;
-      },
-      //删除
-      deleteItem: function (id) {
-        let vm = this;
-        let params = {};
-        params[vm.modalData.idObj] = id;
-        vm.api[vm.apis.deleteApi](params).then((data) => {
-          vm.$Loading.finish();
-          vm.initTable();
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
-      },
-      //是否显示模态框
-      changeModal (status) {
-        let vm = this;
-        vm.modalOpreation = status;
-      }
     }
   }
 </script>
 
 <style lang="less" scoped>
-
+  .main-content{
+    .infoCard{
+      margin: 20px;
+    }
+    .infoList{
+      li{
+        float: left;
+        width: 25%;
+        margin-bottom: 15px;
+        &:last-child{
+          display: block;
+          width: 100%;
+          margin-bottom: 0;
+         }
+      }
+    }
+  }
 </style>
