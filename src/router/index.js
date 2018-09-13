@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/pages/login/login.vue'
+import NotFound from './notFound/notFound'
 import AssignRole from './role/role'
 import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
@@ -34,6 +35,16 @@ const router = new Router({
         ...CreateModel,
         ...ResourceBazaar
       ]
+    },
+    {
+      path: '*',
+      component: Layout,
+      children:[
+        ...NotFound
+      ],
+      meta: {
+        authority: ['admin', 'security', 'auditor', 'user', 'assessor']
+      }
     }
   ]
 });

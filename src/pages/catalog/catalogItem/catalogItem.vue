@@ -34,6 +34,7 @@
       return Data(vm).setData()
     },
     created: function () {
+      console.log(this.$route)
       this.initTable();
     },
     methods:{

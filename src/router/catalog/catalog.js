@@ -15,15 +15,12 @@ export default [{
   component: CatalogPage,
   meta: {
     authority: ['user']
-  },
-  children: [
-    {
-      path: 'itemInfo/:id',
-      name: 'CatalogItemInfo',
-      component: CatalogItemPage,
-      meta: {
-        authority: ['user']
-      }
-    }
-  ]
+  }
+}, {
+  path: '/catalog/itemInfo/:id',
+  name: 'CatalogItemInfo',
+  component: CatalogItemPage,
+  meta: {
+    authority: ['user']
+  }
 }]

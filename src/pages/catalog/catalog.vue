@@ -47,25 +47,6 @@
           <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
         </div>
       </Modal>
-      <Modal fullscreen v-model="modalItems" :title="modalData.title.name" :mask-closable="false" :closable="false">
-        <div class="itemsInfo-card">
-          <Card :dis-hover="true">
-            <ul class="cl itemInfo"></ul>
-          </Card>
-        </div>
-        <div class="tableList-item" v-show="modalData.current === 1">
-          <Table class="tableList" :loading="modalData.itemTableData.loading" ref="selection" :columns="modalData.itemTableData.columns" :data="modalData.itemTableData.tableList" v-show="modalData.current === 1"></Table>
-          <Button class="item-add" type="dashed" @click="addItem">新增数据</Button>
-        </div>
-        <div class="cl pages" v-show="modalData.current === 1">
-          <Pager :options="modalData.itemPageData.total"></Pager>
-        </div>
-        <div class="btn-group">
-          <Button type="primary" @click="next" v-if="modalData.current === 0">下一步</Button>
-          <Button type="info" @click="pre" v-if="modalData.current === 1">上一步</Button>
-          <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
-        </div>
-      </Modal>
     </div>
   </div>
 </template>
@@ -137,25 +118,7 @@
       //查看
       view: function (id) {
         let vm = this;
-        let ID = {
-          ID: id
-        };
-        vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
-          for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data[obj];
-          }
-          vm.modalData.formObj[vm.modalData.idObj] = id;
-          vm.modalData.title = vm.modalData.titles.viewTitle;
-          for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
-            vm.modalData.widgets[i].disabled = true;
-          }
-          vm.modalWidgets = vm.modalData;
-          vm.$Loading.finish();
-          vm.modalOpreation = true;
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
+        vm.$router.push({'path': '/catalog/itemInfo/' + id});
       },
       //修改
       edit: function (id) {
