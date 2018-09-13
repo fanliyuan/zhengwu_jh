@@ -156,7 +156,7 @@ class userManagerOptions {
             name: '手机号',
             placeholder: '请输入手机号'
           },{
-            type: 'select',
+            type: 'input',
             disabled: true,
             show:true,
             prop: 'roleid',

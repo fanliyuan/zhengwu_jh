@@ -12,7 +12,7 @@
  * 描述 ：分配角色配置数据
  */
 
-class userManagerOptions {
+class resourceBazaarOptions {
   constructor(data) {
     this.data = data;
   }
@@ -29,7 +29,7 @@ class userManagerOptions {
     return {
       title: '资源集市',
       apis: {
-        listApi: 'userManagerList',
+        listApi: 'resourceBazaar',
         addApi: 'userAdd',
         roleListApi: 'roleList',
         unfreeze: 'userUnfreeze',
@@ -187,51 +187,36 @@ class userManagerOptions {
         beginTime: '',
         endTime: '',
         pageNum:1,
-        pageSize:10
+        pageSize:10,
+        catalogId: 1
       },
       tableData: {
         loading: true,
         tableList: [],
         columns: [
           {
-            title: '用户名',
+            title: '目录名称',
             key: 'account',
-            /*  render: (h, params) => {
-             return h('div', [
-             h('span', {
-             style: {
-             display: 'inline-block',
-             width: '100%',
-             overflow: 'hidden',
-             textOverflow: 'ellipsis',
-             whiteSpace: 'nowrap'
-             },
-             domProps: {
-             title: params.row.title
-             }
-             }, params.row.title)
-             ])
-             }*/
           },
           {
-            title: '姓名',
+            title: '数据类型',
             key: 'name',
           },
           {
-            title: '电话',
-            key: 'phone',
+            title: '发布机构',
+            key: 'providerName',
           },
           {
-            title: '所属机构',
+            title: '发布时间',
             key: 'deptName',
           },
           {
-            title: '角色',
+            title: '发布方是否审核',
             key: 'roleName',
           },
           {
-            title: '建立时间',
-            key: 'createtime',
+            title: '是否已订阅',
+            key: 'subscribeStatus',
           },
           {
             title: '状态',
@@ -244,10 +229,10 @@ class userManagerOptions {
               let children = [];
               let statusNames = "";
               if (params.row.statusName === '启用') {
-                statusNames = '停用';
+                statusNames = '-';
               }
               else {
-                statusNames = '启用';
+                statusNames = '订阅';
               }
               let edit = {
                 props: {
@@ -264,44 +249,7 @@ class userManagerOptions {
                   }
                 }
               };
-              let view = {
-                props: {
-                  type: 'success'
-                },
-                style: {
-                  marginRight: '5px',
-                  color:'#3fa9ff',
-                  cursor:'pointer'
-                },
-                on: {
-                  click: () => {
-                    vm.edit(params.row.id);
-                  }
-                }
-              };
-              let del = {
-                props: {
-                  type: 'error'
-                },
-                style: {
-                  color:'#3fa9ff',
-                  cursor:'pointer'
-                },
-                on: {
-                  click: () => {
-                    vm.$Modal.confirm({
-                      title: '信息',
-                      content: '是否删除选择的信息？',
-                      onOk: function () {
-                        vm.deleteItem(params.row.id);
-                      }
-                    });
-                  }
-                }
-              };
               children.push(h('span', edit, statusNames));
-              children.push(h('span', view, '修改'));
-              children.push(h('span', del, '删除'));
               return h('div', children);
             }
           }
@@ -324,30 +272,36 @@ class userManagerOptions {
             type: 'input',
             word: 'text',
             prop: 'name',
-            name: '用户名',
-            placeholder: '用户名/姓名'
-          },
-          {
-            type: 'input',
-            word: 'text',
-            prop: 'phone',
-            name: '电话',
-            placeholder: '请输入电话'
+            name: '发布名称',
+            placeholder: '发布名称'
           },
           {
             type: 'select',
             disabled: false,
-            prop: 'role',
-            name: '用户角色',
-            placeholder: '请选择用户角色',
-            options: vm.filterRoleList
+            prop: 'providerName',
+            name: '发布机构',
+            placeholder: '请选择发布机构',
+            options: [
+              {
+                value:'',
+                key:'全部'
+              },
+              {
+                value: '1',
+                key: '机构1'
+              },
+              {
+                value: '2',
+                key: '机构2'
+              }
+            ]
           },
           {
             type: 'select',
             disabled: false,
-            prop: 'status',
-            name: '状态',
-            placeholder: '请选择状态',
+            prop: 'subscribeStatus',
+            name: '是否订阅',
+            placeholder: '是否订阅',
             options: [
               {
                 value:'',
@@ -355,11 +309,11 @@ class userManagerOptions {
               },
               {
                 value:'1',
-                key:'启用'
+                key:'是'
               },
               {
                 value:'2',
-                key:'冻结'
+                key:'否'
               }
             ]
           },
@@ -373,18 +327,18 @@ class userManagerOptions {
           },
         ]
       },
-      opreationData: [
+   /*   opreationData: [
         {
           name: '新建',
           icon: 'plus-round',
           color: 'primary',
           type: 'add'
         }
-      ]
+      ]*/
     }
   }
 }
 
 export default (data) => {
-  return new userManagerOptions(data);
+  return new resourceBazaarOptions(data);
 }

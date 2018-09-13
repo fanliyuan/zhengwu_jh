@@ -37,4 +37,7 @@ export default {
   catalogUpdate: { url: '/api/v2/daas/swap/resource', method: 'put' }, //修改资源
   catalogItemsList: { url: '/api/v2/daas/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
 
+
+  //资源集市
+  resourceBazaar: { url: '/api/v2/daas/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表
 }

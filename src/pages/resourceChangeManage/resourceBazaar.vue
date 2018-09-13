@@ -14,7 +14,7 @@
       </div>
       <div class="right">
          <FilterForm :options="filterData"></FilterForm>
-      <opreationWidgets :options="opreationData"></opreationWidgets>
+      <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
       <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
@@ -33,7 +33,7 @@
   import Data from '../../config/resourceChangeManage/resourceBazaar'
 
   export default{
-    name: 'userManager',
+    name: 'resourceBazaar',
     components: {
       ContentTitle,
       FilterForm,
