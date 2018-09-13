@@ -127,6 +127,15 @@
         let ID = {
           ID: id
         };
+        let initData = {
+          id: id,
+          name: '',
+          code: '',
+          shareType: '',
+          openType: '',
+          pageNum: 1,
+          pageSize: 10
+        };
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
           for (let obj in vm.modalData.formObj) {
@@ -144,7 +153,14 @@
           vm.modalOpreation = true;
         }).catch((error) => {
           vm.$Loading.error();
-        })
+        });
+        vm.api[vm.apis.listItemsApi](initData).then((data) => {
+          vm.modalData.itemTableData.tableList = data.datas;
+          vm.modalData.itemPageData.total = data.totalCounts;
+          vm.modalData.itemTableData.loading = false;
+        }).catch((error) => {
+          vm.$Loading.error();
+        });
       },
       //删除
       deleteItem: function (id) {
@@ -193,6 +209,13 @@
       //取消
       cancel () {
         let vm = this;
+        vm.modalOpreation = false;
+        vm.$refs.formValidate.resetFields();
+        vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
+        delete vm.modalData.formObj.ID;
+        vm.modalData.itemTableData.tableList = [];
+        vm.modalData.current = 0;
+        vm.modalData.currentId = '';
       },
       //下一步
       next () {
@@ -200,24 +223,6 @@
         vm.$refs['formValidate'].validate((valid) => {
           if (valid) {
             vm.modalData.current = 1;
-            if (vm.modalData.apiUrl === 'catalogUpdate') {
-              let initData = {
-                id: vm.modalData.currentId,
-                name: '',
-                code: '',
-                shareType: '',
-                openType: '',
-                pageNum: 1,
-                pageSize: 10
-              };
-              vm.api[vm.apis.listItemsApi](initData).then((data) => {
-                vm.modalData.itemTableData.tableList = data.datas;
-                vm.modalData.itemPageData.total = data.totalCounts;
-                vm.modalData.itemTableData.loading = false;
-              }).catch((error) => {
-                vm.$Loading.error();
-              })
-            }
           } else {
             vm.$Message.error('验证失败');
           }
@@ -241,6 +246,7 @@
         }
         vm.api[vm.modalData.apiUrl](vm.modalData.formObj, params).then((data) => {
           vm.$Loading.finish();
+          vm.$Message.success('提交成功！');
           vm.initTable();
           vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
