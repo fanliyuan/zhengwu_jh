@@ -7,6 +7,7 @@ import NodeOverview from './nodeOverview/nodeOverview'
 import Source from './source/source'
 import Catalog from './catalog/catalog'
 import CreateModel from './createModel/createModel'
+import ResourceBazaar from './resourceChangeManage/resourceBazaar'
 
 Vue.use(Router)
 const Layout = r => require.ensure([], () => r(require('@/pages/layout.vue')), 'Layout');
@@ -30,7 +31,8 @@ const router = new Router({
         ...UserManager,
         ...Source,
         ...Catalog,
-        ...CreateModel
+        ...CreateModel,
+        ...ResourceBazaar
       ]
     }
   ]

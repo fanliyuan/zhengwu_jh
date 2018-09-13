@@ -1,4 +1,7 @@
 /**
+ * Created by Administrator on 2018/9/12 0012.
+ */
+/**
  * Created by Administrator on 2018/9/11 0011.
  */
 /**
@@ -24,7 +27,7 @@ class userManagerOptions {
     vm.filterRoleList = [{value:'',key:'全部'}];
     vm.statusList = [];
     return {
-      title: '用户管理',
+      title: '资源集市',
       apis: {
         listApi: 'userManagerList',
         addApi: 'userAdd',
@@ -33,7 +36,7 @@ class userManagerOptions {
         freeze: 'userFreeze',
         deleteApi: 'userDelete',
         detailApi: 'userDetail',
-        editApi: 'userEdit'
+        editApi: 'assignRoleUpdate'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -43,17 +46,12 @@ class userManagerOptions {
         width: 900,
         formObj:{
           id: '',
-          roleid:'',
-          account:'',
-          name:'',
-          password:'',
-          status:'',
-          // user: '',
+          role:'',
+          user: '',
           salt: '',
           birthday: '',
-          phone: '',
           sex: '',
-          email: '',
+          eamil: '',
           deptid: '',
           createtime: '',
           version: '',
@@ -61,17 +59,11 @@ class userManagerOptions {
         },
         oldFormObj:{
           id: '',
-          roleid:'',
-          account:'',
-          name:'',
-          password:'',
-          status:'',
-          // user: '',
+          user: '',
           salt: '',
           birthday: '',
-          phone: '',
           sex: '',
-          email: '',
+          eamil: '',
           deptid: '',
           createtime: '',
           version: '',
@@ -172,8 +164,8 @@ class userManagerOptions {
             name: '状态',
             openName: '启用',
             closeName: '停用',
-            openVal: 1,
-            closeVal: 2
+            openVal: '1',
+            closeVal: '2'
           }
         ],
         titles: {
@@ -204,22 +196,22 @@ class userManagerOptions {
           {
             title: '用户名',
             key: 'account',
-          /*  render: (h, params) => {
-              return h('div', [
-                h('span', {
-                  style: {
-                    display: 'inline-block',
-                    width: '100%',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  },
-                  domProps: {
-                    title: params.row.title
-                  }
-                }, params.row.title)
-              ])
-            }*/
+            /*  render: (h, params) => {
+             return h('div', [
+             h('span', {
+             style: {
+             display: 'inline-block',
+             width: '100%',
+             overflow: 'hidden',
+             textOverflow: 'ellipsis',
+             whiteSpace: 'nowrap'
+             },
+             domProps: {
+             title: params.row.title
+             }
+             }, params.row.title)
+             ])
+             }*/
           },
           {
             title: '姓名',

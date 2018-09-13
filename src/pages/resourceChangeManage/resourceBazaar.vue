@@ -8,13 +8,18 @@
 <template>
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
-    <div class="main-content cl">
-      <FilterForm :options="filterData"></FilterForm>
-
+    <div class="main-contents cl">
+      <div class="left">
+         11
+      </div>
+      <div class="right">
+         <FilterForm :options="filterData"></FilterForm>
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
+      </div>
+
     </div>
   </div>
 </template>
@@ -25,7 +30,7 @@
   import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/userManager/userManager'
+  import Data from '../../config/resourceChangeManage/resourceBazaar'
 
   export default{
     name: 'userManager',
@@ -95,18 +100,16 @@
       edit: function (id) {
         let vm = this;
         let ID = {
-          userId: id
+          ID: id
         };
         vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
+        vm.api[vm.apis.listApi](ID).then((data) => {
           for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data.data[obj];
+            vm.modalData.formObj[obj] = data[obj];
           }
           vm.modalData.formObj[vm.modalData.idObj] = id;
           vm.modalData.title = vm.modalData.titles.editTitle;
           vm.modalData.apiUrl = vm.apis.editApi;
-          vm.modalData.widgets[1].disabled = true;
-          vm.modalData.widgets[1].show = false;
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
           vm.modalOpreation = true;
@@ -154,8 +157,6 @@
       //是否显示模态框
       changeModal (status) {
         let vm = this;
-        vm.modalData.widgets[1].disabled = false;
-        vm.modalData.widgets[1].show = true;
         vm.modalOpreation = status;
       },
       //查询用户角色列表
@@ -178,4 +179,26 @@
 </script>
 
 <style lang="less" scoped>
+  .main-contents{
+    margin: 20px;
+    background-color: #f0f2f5;
+    padding: 15px 10px;
+  }
+  .left{
+    float: left;
+    width:470px;
+    height: auto;
+    overflow: hidden;
+    background: #fff;
+    color:#666;
+    margin-right:30px;
+  }
+  .right{
+    float: left;
+    width: calc(100% - 500px);
+    height: auto;
+    overflow: hidden;
+    background: #fff;
+    color:#666
+  }
 </style>
