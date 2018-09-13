@@ -46,6 +46,9 @@ const sendApiInstance = (method, url, params, config = {}) => {
   if(!url){
     return
   }
+  if (url.indexOf('{id}') !== -1) {
+    url = url.replace('{id}', params.id);
+  }
   let instance = createApiInstance(config)
 
   instance.interceptors.response.use(response => {

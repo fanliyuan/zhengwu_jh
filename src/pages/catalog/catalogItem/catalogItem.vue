@@ -41,7 +41,11 @@
       //初始化表格
       initTable: function () {
         let vm = this;
+        let id = vm.$route.params.id;
         vm.tableData.loading = true;
+        console.log(vm.api)
+//        vm.api[vm.apis.listApi] = vm.api[vm.apis.listApi] + '/' + id + '/infoList';
+        vm.initData.id = id;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
