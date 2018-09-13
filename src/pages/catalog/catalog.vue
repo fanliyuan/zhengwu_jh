@@ -144,8 +144,9 @@
       //删除
       deleteItem: function (id) {
         let vm = this;
-        let params = {};
-        params[vm.modalData.idObj] = id;
+        let params = {
+          ID: id
+        };
         vm.api[vm.apis.deleteApi](params).then((data) => {
           vm.$Loading.finish();
           vm.initTable();

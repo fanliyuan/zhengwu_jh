@@ -32,7 +32,7 @@ export default {
   catalogAdd: { url: '/api/v2/daas/swap/resource', method: 'post' }, //新建资源
   catalogConnect: { url: '/api/v2/daas/swap/resource/connect', method: 'get'}, //连接测试
   catalogList: { url: '/api/v2/daas/swap/resource/list', method: 'get' }, //资源列表
-  catalogDelete: { url: '/api/v2/daas/swap/resource', method: 'post' }, //删除资源
+  catalogDelete: { url: '/api/v2/daas/swap/resource', method: 'delete' }, //删除资源
   catalogDetail: { url: '/api/v2/daas/swap/resource', method: 'get' }, //资源详情
   catalogUpdate: { url: '/api/v2/daas/swap/resource', method: 'post' }, //修改资源
   catalogItemsList: { url: '/api/v2/daas/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
