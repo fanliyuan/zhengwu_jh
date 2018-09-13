@@ -226,14 +226,15 @@
           delete vm.modalData.itemTableData.tableList[i].$isEdit;
         }
         vm.modalData.formObj.infoAddDtoList = vm.modalData.itemTableData.tableList;
-        console.log(vm.modalData.formObj)
         vm.api[vm.apis.addApi](vm.modalData.formObj).then((data) => {
           vm.$Loading.finish();
           vm.initTable();
           vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
-          vm.deepCopy(vm.oldFormObj, vm.formObj);
+          vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
           vm.modalData.itemTableData.tableList = [];
+          vm.modalData.current = 0;
+          console.log(vm.modalData.itemTableData.tableList)
         }).catch((error) => {
           vm.$Loading.error();
         });

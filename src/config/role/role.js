@@ -149,7 +149,7 @@ class assignRoleOptions {
                   }
                 }
               };
-              children.push(h('Button', edit, '分配角色'));
+              children.push(h('a', edit, '分配角色'));
               return h('div', children);
             }
           }

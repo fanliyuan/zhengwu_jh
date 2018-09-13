@@ -388,7 +388,8 @@ class catalogOptions {
               shareCondition: '',
               shareModeClassify: '',
               shareModeType: '',
-              shareType: ''
+              shareType: '',
+              $isEdit: true
             }
           ]
         },
@@ -564,6 +565,7 @@ class catalogOptions {
         }
       },
       initData: {
+        catalogId: 1,
         name: '',
         providerName: '',
         status: '',
@@ -682,11 +684,11 @@ class catalogOptions {
                   }
                 }
               };
-              children.push(h('Button', view, '信息项'));
-              children.push(h('Button', link, '资源挂接'));
-              children.push(h('Button', open, '共享开放'));
-              children.push(h('Button', edit, '修改'));
-              children.push(h('Button', del, '删除'));
+              children.push(h('a', view, '信息项'));
+              children.push(h('a', link, '资源挂接'));
+              children.push(h('a', open, '共享开放'));
+              children.push(h('a', edit, '修改'));
+              children.push(h('a', del, '删除'));
               return h('div', children);
             }
           }
@@ -697,6 +699,7 @@ class catalogOptions {
       },
       filterData: {
         filiterObj: {
+          catalogId: 1,
           name: '',
           providerName: '',
           status: '',
