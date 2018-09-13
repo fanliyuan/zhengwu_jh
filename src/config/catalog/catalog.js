@@ -605,7 +605,25 @@ class catalogOptions {
           },
           {
             title: '审核状态',
-            key: 'status'
+            key: 'status',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case 1:
+                          return '<span style="color: #5cadff">待审核</span>';
+                        case 2:
+                          return '<span style="color: #19be6b">已通过</span>';
+                        case 3:
+                          return '<span style="color: #ed4014">已拒绝</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '注册时间',

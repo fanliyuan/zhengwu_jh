@@ -39,7 +39,7 @@
       }
     },
     created () {
-      console.log(this)
+
     },
     computed: {
       menuitemClasses: function () {

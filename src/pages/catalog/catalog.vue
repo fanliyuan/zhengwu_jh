@@ -94,7 +94,6 @@
         let vm = this;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          console.log(data)
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
