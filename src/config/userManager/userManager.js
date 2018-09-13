@@ -133,10 +133,12 @@ class userManagerOptions {
             type: 'input',
             disabled: false,
             show:true,
-            word: 'password',
+            word: 'text',
             prop: 'password',
             name: '密码',
-            placeholder: '请输入密码'
+            placeholder: '请输入密码',
+            random: true,
+            copy: true
           },
           {
             type: 'input',
