@@ -25,7 +25,8 @@ class catalogOptions {
         detailApi: 'catalogDetail',
         listApi: 'catalogList',
         editApi: 'catalogUpdate',
-        connectApi: 'catalogConnect'
+        connectApi: 'catalogConnect',
+        listItemsApi: 'catalogItemsList'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -34,6 +35,7 @@ class catalogOptions {
         apiUrl: '',
         width: 1200,
         current: 0,
+        currentId: '',
         itemsOpreate: '手工建立',
         itemsOpreateArr: [
           {

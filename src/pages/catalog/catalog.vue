@@ -13,7 +13,7 @@
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal footer-hide fullscreen v-model="modalOpreation" :title="modalData.title.name" :mask-closable="false">
+      <Modal footer-hide fullscreen v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="填写目录资源内容"></Step>
           <Step title="编辑信息项"></Step>
@@ -45,6 +45,7 @@
           <Button type="primary" @click="next" v-if="modalData.current === 0">下一步</Button>
           <Button type="info" @click="pre" v-if="modalData.current === 1">上一步</Button>
           <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
+          <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
       </Modal>
     </div>
@@ -129,11 +130,15 @@
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
           for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data[obj];
+            if (obj === 'infoAddDtoList' || obj === 'catalogId') {
+              continue
+            } else {
+              vm.modalData.formObj[obj] = data.data[obj];
+            }
           }
-          vm.modalData.formObj[vm.modalData.idObj] = id;
           vm.modalData.title = vm.modalData.titles.editTitle;
           vm.modalData.apiUrl = vm.apis.editApi;
+          vm.modalData.currentId = id;
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
           vm.modalOpreation = true;
@@ -185,12 +190,34 @@
           }
         }
       },
+      //取消
+      cancel () {
+        let vm = this;
+      },
       //下一步
       next () {
         let vm = this;
         vm.$refs['formValidate'].validate((valid) => {
           if (valid) {
             vm.modalData.current = 1;
+            if (vm.modalData.apiUrl === 'catalogUpdate') {
+              let initData = {
+                id: vm.modalData.currentId,
+                name: '',
+                code: '',
+                shareType: '',
+                openType: '',
+                pageNum: 1,
+                pageSize: 10
+              };
+              vm.api[vm.apis.listItemsApi](initData).then((data) => {
+                vm.modalData.itemTableData.tableList = data.datas;
+                vm.modalData.itemPageData.total = data.totalCounts;
+                vm.modalData.itemTableData.loading = false;
+              }).catch((error) => {
+                vm.$Loading.error();
+              })
+            }
           } else {
             vm.$Message.error('验证失败');
           }
@@ -208,15 +235,20 @@
           delete vm.modalData.itemTableData.tableList[i].$isEdit;
         }
         vm.modalData.formObj.infoAddDtoList = vm.modalData.itemTableData.tableList;
-        vm.api[vm.apis.addApi](vm.modalData.formObj).then((data) => {
+        let params = {};
+        if (vm.modalData.apiUrl === 'catalogUpdate') {
+          params.ID = vm.modalData.currentId;
+        }
+        vm.api[vm.modalData.apiUrl](vm.modalData.formObj, params).then((data) => {
           vm.$Loading.finish();
           vm.initTable();
           vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
           vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
+          delete vm.modalData.formObj.ID;
           vm.modalData.itemTableData.tableList = [];
           vm.modalData.current = 0;
-          console.log(vm.modalData.itemTableData.tableList)
+          vm.modalData.currentId = '';
         }).catch((error) => {
           vm.$Loading.error();
         });
