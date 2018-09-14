@@ -181,85 +181,11 @@
         let vm = this;
         let params = {};
         vm.api[vm.apis.showCatalogListApi](params).then((data) => {
-          console.log(data);
           vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
-       // vm.treeData = vm.rebulidCatalogList(data);
-        console.log(vm.treeData);
-         // vm.rebulidCatalogList(data)
         }).catch((error) => {
-          console.log("报错");
         })
       },
 
-      //递归目录列表
-      rebulidCatalogList: function (data) {
-        let vm = this;
-        let temp;
-        let newCatalogListTree = [];
-        for (let i = 0; i < data.length; i++) {
-
-          if (data[i].children.length > 0) {
-            newCatalogListTree[i].children.push(
-              {
-                title: data[i].typeName,
-                expand: true,
-                render: (h, { root, node, data }) => {
-                  return h('span', {
-                    style: {
-                      display: 'inline-block',
-                      width: '100%'
-                    }
-                  }, [
-                    h('span', [
-                      h('Icon', {
-                        props: {
-                          type: 'ios-folder-outline'
-                        },
-                        style: {
-                          marginRight: '8px'
-                        }
-                      }),
-                      h('span', data.title)
-                    ]),
-                  ]);
-                },
-                children:[]
-              }
-            );
-          }
-          else {
-            newCatalogListTree.push(
-              {
-                title: data[i].typeName,
-                expand: true,
-                render: (h, { root, node, data }) => {
-                  return h('span', {
-                    style: {
-                      display: 'inline-block',
-                      width: '100%'
-                    }
-                  }, [
-                    h('span', [
-                      h('Icon', {
-                        props: {
-                          type: 'ios-folder-outline'
-                        },
-                        style: {
-                          marginRight: '8px'
-                        }
-                      }),
-                      h('span', data.title)
-                    ]),
-                  ]);
-                },
-                children:[]
-              }
-            );
-          }
-          vm.rebulidCatalogList(data[i].children);
-        }
-        return newCatalogListTree;
-      }
     }
   }
 </script>
