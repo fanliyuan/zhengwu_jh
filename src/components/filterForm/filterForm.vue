@@ -41,7 +41,11 @@
             vm.$parent.initData[obj] = vm[name][obj];
           }
         }
-        vm.$parent.initTable();
+        if (vm.$parent.catalogId) {
+          vm.$parent.initTable(vm.$parent.catalogId);
+        } else {
+          vm.$parent.initTable();
+        }
       },
       nowDateRange (value) {
         let vm = this;

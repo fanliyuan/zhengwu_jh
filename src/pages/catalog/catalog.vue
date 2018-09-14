@@ -141,6 +141,8 @@
                   },
                   on: {
                     click: () => {
+                      vm.filterData.filiterObj = vm.deepCopy(vm.filterData.defaultFiliterObj, vm.filterData.filiterObj);
+                      vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
                       vm.initTable(data.id);
                       vm.currentTreeNode = node.nodeKey;
                       for (let i = 0, len = root.length; i < len; i++) {

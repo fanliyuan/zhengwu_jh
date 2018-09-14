@@ -21,13 +21,21 @@
       changePage: function (page) {
         let vm = this;
         vm.$parent.initData.pageNum = page;
-        vm.$parent.initTable();
+        if (vm.$parent.catalogId) {
+          vm.$parent.initTable(vm.$parent.catalogId);
+        } else {
+          vm.$parent.initTable();
+        }
       },
       //改变每页显示数量
       changePageSize: function (pageSize) {
         let vm = this;
         vm.$parent.initData.pageSize = pageSize;
-        vm.$parent.initTable();
+        if (vm.$parent.catalogId) {
+          vm.$parent.initTable(vm.$parent.catalogId);
+        } else {
+          vm.$parent.initTable();
+        }
       }
     }
   }

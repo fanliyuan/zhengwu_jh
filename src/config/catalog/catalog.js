@@ -832,6 +832,17 @@ class catalogOptions {
           }
         }
       },
+      defaultInitData: {
+        catalogId: '',
+        name: '',
+        providerName: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
+        mount: false,
+        pageNum: 1,
+        pageSize: 10
+      },
       initData: {
         catalogId: '',
         name: '',
@@ -984,6 +995,15 @@ class catalogOptions {
         total: 0
       },
       filterData: {
+        defaultFiliterObj: {
+          catalogId: '',
+          name: '',
+          providerName: '',
+          status: '',
+          beginTime: '',
+          endTime: '',
+          mount: false
+        },
         filiterObj: {
           catalogId: '',
           name: '',
