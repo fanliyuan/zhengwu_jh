@@ -10,7 +10,7 @@
     <ContentTitle :options="title"></ContentTitle>
     <div class="main-contents cl">
       <div class="left">
-        <Tree :data="treeData"  @on-check-change="getAuthChecked"  multiple></Tree>
+        <Tree :data="treeData"  @on-check-change=""  multiple></Tree>
       </div>
       <div class="right">
          <FilterForm :options="filterData"></FilterForm>
