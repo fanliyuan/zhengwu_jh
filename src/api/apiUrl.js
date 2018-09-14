@@ -36,6 +36,8 @@ export default {
   catalogDetail: { url: '/api/v2/daas/swap/resource', method: 'get' }, //资源详情
   catalogUpdate: { url: '/api/v2/daas/swap/resource', method: 'put' }, //修改资源
   catalogItemsList: { url: '/api/v2/daas/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
+  catalogShareDetail: { url: '/api/v2/daas/swap/resource/{id}/shareopen', method: 'get' }, //获取资源共享开放信息
+  catalogShareUpdate: { url: '/api/v2/daas/swap/resource/{id}/shareopen', method: 'put' }, //修改资源共享开放信息
 
 
   //资源集市
