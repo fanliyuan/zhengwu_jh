@@ -88,14 +88,13 @@
         })
       },
       //修改
-      edit: function (id, roleName, roleId) {
+      edit: function (id, roleId) {
         let vm = this;
-        if (roleName === '') {
-          roleName = '节点管理员';
+        if (roleId === '') {
+          roleId = vm.roleList[vm.roleList.length - 1].value;
         }
         let ID = {
           userId: id,
-          roleName: roleName,
           roleIds: roleId
         };
         vm.$Loading.start();
@@ -133,7 +132,7 @@
         vm.api[vm.apis.listRoleApi](params).then((data) => {
           for (let i = 0, len = data.datas.length; i < len; i++) {
             vm.roleList.push({
-              value: data.datas[i].id,
+              value: data.datas[i].id.toString(),
               key: data.datas[i].name
             });
             vm.filterRoleList.push({

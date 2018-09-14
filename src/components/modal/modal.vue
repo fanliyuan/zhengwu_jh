@@ -8,7 +8,7 @@
 <template>
   <Modal :width="widgets.width" v-model="status" :title="title" :closable="false" :mask-closable="false" :loading="loading" @on-ok="ok('formValidate')" @on-cancel="cancel('formValidate')">
     <Form class="formValidate" ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="120" :show-message="showError">
-      <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in formWidgets" v-show="item.show">
+      <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="(item, index) in formWidgets" v-show="item.show">
         <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
         </Input>
         <a v-if="item.random" style="margin-right: 10px" @click="random(item.prop)">随机生成</a>
@@ -40,8 +40,22 @@
         </div>
         <UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>
         <RadioGroup v-model="formValidate[item.prop]" @on-change="changeRadio" v-if="item.type === 'radioGroup'">
-          <Radio :label="option.key" :key="option.value" v-for="option in item.options"></Radio>
+          <Radio :true-value="true" :false-value="false" :label="option.value" :key="option.value" v-for="option in item.options">
+            {{option.key}}
+          </Radio>
         </RadioGroup>
+        <CheckboxGroup v-model="formValidate[item.prop]" @on-change="changeCheckbox" v-if="item.type === 'checkboxGroup'">
+          <Checkbox :label="option.value" :key="option.value" v-for="option in item.options">
+            {{option.key}}
+          </Checkbox>
+        </CheckboxGroup>
+        <ul class="inlineInput cl" v-if="item.type === 'inputGroup'" v-model="formValidate[item.prop]">
+          <li :key="option.prop" v-for="option in item.options">
+            <Input class="formValidate-widget" size="large" :element-id="option.prop" :ref="option.prop" :type="option.word" v-model="formValidate[option.prop]" :placeholder="option.placeholder" :disabled="option.disabled" autocomplete="off" number v-if="option.type === 'input' && option.isNum === true">
+            </Input>
+            <InputNumber size="large" v-model="formValidate[option.prop]" :min="option.min" :ref="option.prop" :placeholder="option.placeholder" :disabled="option.disabled" v-if="option.type === 'inputNumber'"></InputNumber>
+          </li>
+        </ul>
       </FormItem>
     </Form>
     <Alert show-icon v-if="widgets.tips && widgets.tips.length > 0">
@@ -163,14 +177,9 @@
       },
       changeRadio (value) {
         let vm = this;
-        let roleList = vm.$props.widgets.widgets[0].options;
-        for (let i = 0, len = roleList.length; i < len; i++) {
-          if (roleList[i].key === value) {
-            vm.formValidate[vm.$props.widgets.idObj] = roleList[i].value;
-            break;
-          }
-        }
-        console.log(vm.formValidate);
+      },
+      changeCheckbox (value) {
+        let vm = this;
       },
       changeOption (value) {
         let vm = this;
@@ -213,6 +222,13 @@
             if (vm.formValidate.buildings) {
               delete vm.formValidate.buildings;
             }
+            if (vm.$props.widgets.apiUrl === 'catalogShareUpdate') {
+              vm.formValidate.id = vm.$props.widgets.currentId;
+              vm.formValidate.publishMode = vm.formValidate.publishMode.join(',');
+              for (let i = 0; i < 5; i++) {
+                delete vm.formValidate['timeSet' + i];
+              }
+            }
             vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
               vm.$parent.initTable();
             vm.$emit('modalStatus', false);
@@ -243,6 +259,19 @@
         let vm = this;
         if (vm.$refs['ueditorVal']) {
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
+        }
+        if (vm.formValidate.timeSet) {
+          let valiArr = [];
+          vm.formValidate.timeSet = [];
+          for (let i = 0; i < 5; i++) {
+            if (vm.formValidate['timeSet' + i] === null) {
+              vm.formValidate['timeSet' + i] = '';
+            }
+            valiArr.push(vm.formValidate['timeSet' + i].toString());
+            if (vm.formValidate['timeSet' + i] !== '' && vm.formValidate['timeSet' + i] !== null) {
+              vm.formValidate.timeSet = valiArr;
+            }
+          }
         }
         vm.validateForm(name);
       },
@@ -337,8 +366,14 @@
     height: 100px;
     margin-top: 10px;
     overflow: hidden;
-  img{
-    width: 100%;
+    img{
+      width: 100%;
+    }
   }
+  .inlineInput{
+    li{
+      float: left;
+      width: 15%;
+    }
   }
 </style>

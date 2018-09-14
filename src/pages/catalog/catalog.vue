@@ -8,6 +8,9 @@
 <template>
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
+    <div class="tree-content">
+
+    </div>
     <div class="main-content cl">
       <FilterForm :options="filterData"></FilterForm>
       <opreationWidgets :options="opreationData"></opreationWidgets>
@@ -48,6 +51,7 @@
           <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
       </Modal>
+      <ModalConTent :options="modalShareOpreation" :widgets="modalShareWidgets" @modalStatus="changeModal"></ModalConTent>
     </div>
   </div>
 </template>
@@ -178,7 +182,7 @@
       //是否显示模态框
       changeModal (status) {
         let vm = this;
-        vm.modalOpreation = status;
+        vm.modalShareOpreation = status;
       },
       //导入文件
       importFile () {
@@ -283,12 +287,67 @@
         } else {
           vm.$set(row, '$isEdit', false)
         }
+      },
+      //共享开放
+      open (id) {
+        let vm = this;
+        let ID = {
+          id: id
+        };
+        vm.$Loading.start();
+        vm.api[vm.apis.shareDetailApi](ID).then((data) => {
+          for (let obj in data.data) {
+            if (obj === 'share' || obj === 'open') {
+              if (data.data[obj]) {
+                vm.modalShareData.formObj[obj] = 1;
+              }
+            } else if (obj === 'publishMode') {
+              if (data.data[obj] !== '') {
+                vm.modalShareData.formObj[obj] = data.data[obj].split(',');
+              } else {
+                vm.modalShareData.formObj[obj] = [];
+              }
+            } else if (obj === 'timeSet') {
+              vm.deepCopy(data.data[obj], vm.modalShareData.formObj[obj]);
+              for (let i = 0, len = data.data[obj].length; i < len; i++) {
+                if (data.data[obj][i] !== '') {
+                  vm.modalShareData.formObj['timeSet' + i] = parseInt(data.data[obj][i]);
+                } else {
+                  vm.modalShareData.formObj['timeSet' + i] = '';
+                  vm.modalShareData.formObj[obj].splice(i, 1);
+                }
+              }
+            } else {
+              vm.modalShareData.formObj[obj] = data.data[obj];
+            }
+          }
+          vm.modalShareData.title = vm.modalShareData.titles.editTitle;
+          vm.modalShareData.apiUrl = vm.apis.shareUpdateApi;
+          vm.modalShareData.currentId = id;
+          vm.modalShareWidgets = vm.modalShareData;
+          vm.$Loading.finish();
+          vm.modalShareOpreation = true;
+        }).catch((error) => {
+          vm.$Loading.error();
+        });
       }
     }
   }
 </script>
 
 <style lang="less" scoped>
+  .main-content{
+    width: 70%;
+    float: left;
+  }
+  .tree-content{
+    width: 24%;
+    background-color: #ffffff;
+    height: 100px;
+    float: left;
+    margin: 20px 0 20px 20px;
+    padding: 15px 0;
+  }
   .modal-steps{
     width: 50%;
     position: relative;

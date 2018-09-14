@@ -26,7 +26,9 @@ class catalogOptions {
         listApi: 'catalogList',
         editApi: 'catalogUpdate',
         connectApi: 'catalogConnect',
-        listItemsApi: 'catalogItemsList'
+        listItemsApi: 'catalogItemsList',
+        shareDetailApi: 'catalogShareDetail',
+        shareUpdateApi: 'catalogShareUpdate'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -562,6 +564,265 @@ class catalogOptions {
           },
           editTitle: {
             name: '编辑目录',
+            showOkBtn: true
+          }
+        }
+      },
+      modalShareOpreation: false,
+      modalShareWidgets: {},
+      modalShareData: {
+        title: {},
+        apiUrl: '',
+        width: 900,
+        currentId: '',
+        formObj:{
+          share: 0,
+          open: 0,
+          switchAreaId: [],
+          publishMode: [],
+          publishRate: '',
+          timeSet: [],
+          timeSet0: '',
+          timeSet1: '',
+          timeSet2: '',
+          timeSet3: '',
+          timeSet4: ''
+        },
+        oldFormObj:{
+          share: 0,
+          open: 0,
+          switchAreaId: [],
+          publishMode: [],
+          publishRate: '',
+          timeSet: [],
+          timeSet0: '',
+          timeSet1: '',
+          timeSet2: '',
+          timeSet3: '',
+          timeSet4: ''
+        },
+        idObj: 'id',
+        ruleObj: {
+          switchAreaId: [
+            {
+              required: true,
+              message: '至少选择一个交换域',
+              type: 'array',
+              min: 1,
+              trigger: 'change'
+            }
+          ],
+          publishMode: [
+            {
+              required: true,
+              type: 'array',
+              message: '请选择发布模式',
+              trigger: 'change'
+            }
+          ],
+          publishRate: [
+            {
+              required: true,
+              message: '请选择发布频率',
+              trigger: 'change'
+            }
+          ],
+          timeSet: [
+            {
+              required: true,
+              message: '定时设置至少输入一项',
+              type: 'array',
+              min: 5,
+              trigger: 'change'
+            }
+          ]
+        },
+        widgets: [
+          {
+            type: 'radioGroup',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'share',
+            name: '是否共享',
+            options: [
+              {
+                key: '是',
+                value: 1
+              },
+              {
+                key: '否',
+                value: 0
+              }
+            ]
+          },
+          {
+            type: 'radioGroup',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'open',
+            name: '是否开放',
+            options: [
+              {
+                key: '是',
+                value: 1
+              },
+              {
+                key: '否',
+                value: 0
+              }
+            ]
+          },
+          {
+            type: 'checkboxGroup',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'switchAreaId',
+            name: '交换域',
+            options: [
+              {
+                key: '交换域1',
+                value: '1'
+              },
+              {
+                key: '交换域2',
+                value: '2'
+              },
+              {
+                key: '交换域3',
+                value: '3'
+              }
+            ]
+          },
+          {
+            type: 'selectCascader',
+            disabled: false,
+            show: true,
+            prop: 'publishMode',
+            name: '发布模式',
+            placeholder: '请选择发布模式',
+            options: [
+              {
+                label: '增量',
+                value: '1',
+                children: [
+                  {
+                    value: '11',
+                    label: '日志'
+                  },
+                  {
+                    value: '12',
+                    label: '标志位'
+                  },
+                  {
+                    value: '13',
+                    label: '时间戳'
+                  }
+                ]
+              },
+              {
+                label: '全量',
+                value: '2',
+                children: [
+                  {
+                    value: '21',
+                    label: '日志'
+                  },
+                  {
+                    value: '22',
+                    label: '标志位'
+                  },
+                  {
+                    value: '23',
+                    label: '时间戳'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'select',
+            disabled: false,
+            show: true,
+            prop: 'publishRate',
+            name: '发布频率',
+            placeholder: '请选择发布频率',
+            options: [
+              {
+                key: '定时',
+                value: '1'
+              },
+              {
+                key: '实时',
+                value: '2'
+              },
+              {
+                key: '手动',
+                value: '3'
+              }
+            ]
+          },
+          {
+            type: 'inputGroup',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'timeSet',
+            name: '定时设置',
+            options: [
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 59,
+                min: 0,
+                prop: 'timeSet0',
+                placeholder: '分钟'
+              },
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 23,
+                min: 0,
+                prop: 'timeSet1',
+                placeholder: '小时'
+              },
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 366,
+                min: 0,
+                prop: 'timeSet2',
+                placeholder: '天'
+              },
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 12,
+                min: 0,
+                prop: 'timeSet3',
+                placeholder: '月'
+              },
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 999,
+                min: 0,
+                prop: 'timeSet4',
+                placeholder: '星期'
+              }
+            ]
+          }
+        ],
+        titles: {
+          editTitle: {
+            name: '开放共享',
             showOkBtn: true
           }
         }

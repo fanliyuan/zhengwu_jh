@@ -39,12 +39,10 @@ class assignRoleOptions {
         width: 900,
         formObj:{
           userId: '',
-          roleName: '',
           roleIds: ''
         },
         oldFormObj:{
           userId: '',
-          roleName: '',
           roleIds: ''
         },
         idObj: 'roleIds',
@@ -57,7 +55,7 @@ class assignRoleOptions {
             disabled: false,
             show: true,
             word: 'text',
-            prop: 'roleName',
+            prop: 'roleIds',
             name: '',
             options: vm.roleList
           }
@@ -83,26 +81,6 @@ class assignRoleOptions {
         loading: true,
         tableList: [],
         columns: [
-          //{
-          //  title: '标题',
-          //  key: 'title',
-          //  render: (h, params) => {
-          //    return h('div', [
-          //      h('span', {
-          //        style: {
-          //          display: 'inline-block',
-          //          width: '100%',
-          //          overflow: 'hidden',
-          //          textOverflow: 'ellipsis',
-          //          whiteSpace: 'nowrap'
-          //        },
-          //        domProps: {
-          //          title: params.row.title
-          //        }
-          //      }, params.row.title)
-          //    ])
-          //  }
-          //},
           {
             title: '用户名',
             key: 'account'
@@ -145,7 +123,7 @@ class assignRoleOptions {
                 },
                 on: {
                   click: () => {
-                    vm.edit(params.row.id, params.row.roleName, params.row.roleid);
+                    vm.edit(params.row.id, params.row.roleid);
                   }
                 }
               };
