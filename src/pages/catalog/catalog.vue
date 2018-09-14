@@ -9,6 +9,7 @@
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
     <div class="tree-content">
+      <Input search enter-button placeholder="请输入关键词" @on-search="searchTree"/>
       <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
     </div>
     <div class="main-content cl" v-if="catalogId !== ''">
@@ -184,6 +185,9 @@
         }).catch((error) => {
           vm.$Loading.error();
         })
+      },
+      searchTree (value) {
+
       },
       //初始化表格
       initTable: function (id) {
