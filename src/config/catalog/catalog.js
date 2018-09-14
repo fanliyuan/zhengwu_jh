@@ -28,8 +28,12 @@ class catalogOptions {
         connectApi: 'catalogConnect',
         listItemsApi: 'catalogItemsList',
         shareDetailApi: 'catalogShareDetail',
-        shareUpdateApi: 'catalogShareUpdate'
+        shareUpdateApi: 'catalogShareUpdate',
+        treeApi: 'showCatalogList'
       },
+      treeData: [],
+      treeColor: [],
+      catalogId: '',
       modalOpreation: false,
       modalWidgets: {},
       modalData: {
@@ -346,7 +350,7 @@ class catalogOptions {
           total: 1
         },
         formObj:{
-          catalogId: 1,
+          catalogId: '',
           name: '',
           summary: '',
           classify: '',
@@ -372,7 +376,7 @@ class catalogOptions {
           ]
         },
         oldFormObj:{
-          catalogId: 1,
+          catalogId: '',
           name: '',
           summary: '',
           classify: '',
@@ -574,6 +578,7 @@ class catalogOptions {
         title: {},
         apiUrl: '',
         width: 900,
+        catalogId: '',
         currentId: '',
         formObj:{
           share: 0,
@@ -828,7 +833,7 @@ class catalogOptions {
         }
       },
       initData: {
-        catalogId: 1,
+        catalogId: '',
         name: '',
         providerName: '',
         status: '',
@@ -980,7 +985,7 @@ class catalogOptions {
       },
       filterData: {
         filiterObj: {
-          catalogId: 1,
+          catalogId: '',
           name: '',
           providerName: '',
           status: '',

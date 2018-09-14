@@ -42,4 +42,9 @@ export default {
   .ivu-message{
     z-index: 9999;
   }
+  .tree-nodes{
+    ul{
+      font-size: 14px!important;
+    }
+  }
 </style>

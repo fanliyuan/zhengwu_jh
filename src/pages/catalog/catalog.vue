@@ -9,9 +9,9 @@
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
     <div class="tree-content">
-
+      <Tree class="tree-nodes" :data="treeData" :render="renderNode"></Tree>
     </div>
-    <div class="main-content cl">
+    <div class="main-content cl" v-if="catalogId !== ''">
       <FilterForm :options="filterData"></FilterForm>
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
@@ -53,6 +53,9 @@
       </Modal>
       <ModalConTent :options="modalShareOpreation" :widgets="modalShareWidgets" @modalStatus="changeModal"></ModalConTent>
     </div>
+    <div class="main-content cl" style="height: 600px; line-height: 600px; text-align: center" v-if="catalogId === ''">
+      <h2>请在左侧列表中选择资源</h2>
+    </div>
   </div>
 </template>
 
@@ -78,7 +81,7 @@
       return Data(vm).setData()
     },
     created: function () {
-      this.initTable();
+      this.initTree();
     },
     methods:{
       deepCopy (oldObj, newObj) {
@@ -94,9 +97,107 @@
         }
         return newObj;
       },
-      //初始化表格
-      initTable: function () {
+      //递归树
+      deepTree (arr) {
         let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          vm.treeColor[i] = '#ffffff';
+          if (arr[i].children.length > 0) {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-folder-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  style: {
+                    backgroundColor: '#ffffff'
+                  }
+                }, data.title)
+              ])
+            };
+            vm.deepTree(arr[i].children);
+          } else {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-paper-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  attrs: {
+                    id: 'treeNode' + node.nodeKey
+                  },
+                  style: {
+                    cursor: 'pointer'
+                  },
+                  on: {
+                    click: () => {
+                      vm.initTable(data.id);
+//                      console.log(vm.treeColor)
+//                      document.getElementById('treeNode' + node.nodeKey).style.backgroundColor = '#1890ff';
+////                      for (let i = 0, len = root.length; i < len; i++) {
+////                        if (root[i].children.length > 0) {
+////                          continue;
+////                        } else {
+////                          console.log(document.getElementById('treeNode' + root[i].nodeKey))
+//////                          if (root[i].nodeKey === node.nodeKey) {
+//////                            console.log(root[i].nodeKey)
+//////                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
+//////                          } else {
+//////                            console.log(root[i].nodeKey)
+//////                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
+//////                          }
+////                        }
+////                      }
+//                      console.log(root)
+//                      console.log(node)
+//                      console.log(data)
+//                      console.log(h)
+                    }
+                  }
+                }, data.title)
+              ])
+            }
+          }
+        }
+      },
+      //初始化树形
+      initTree () {
+        let vm = this;
+        vm.api[vm.apis.treeApi]().then((data) => {
+          vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
+          vm.deepTree(vm.treeData);
+          vm.$Loading.finish();
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      renderNode (h, { root, node, data }) {
+//        return h('span', {
+//          style: {
+//            display: 'inline-block',
+//            width: '100%'
+//          }
+//        }
+      },
+      //初始化表格
+      initTable: function (id) {
+        let vm = this;
+        vm.catalogId = id;
+        vm.initData.catalogId = id;
+        vm.filterData.catalogId = id;
+        vm.modalData.formObj.catalogId = id;
+        vm.modalData.oldFormObj.catalogId = id;
+        vm.modalShareData.catalogId = id;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.tableData.tableList = data.datas;
@@ -174,7 +275,7 @@
         };
         vm.api[vm.apis.deleteApi](params).then((data) => {
           vm.$Loading.finish();
-          vm.initTable();
+          vm.initTable(vm.catalogId);
         }).catch((error) => {
           vm.$Loading.error();
         })
@@ -251,7 +352,7 @@
         vm.api[vm.modalData.apiUrl](vm.modalData.formObj, params).then((data) => {
           vm.$Loading.finish();
           vm.$Message.success('提交成功！');
-          vm.initTable();
+          vm.initTable(vm.catalogId);
           vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
           vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
@@ -343,10 +444,9 @@
   .tree-content{
     width: 24%;
     background-color: #ffffff;
-    height: 100px;
     float: left;
     margin: 20px 0 20px 20px;
-    padding: 15px 0;
+    padding: 15px 20px;
   }
   .modal-steps{
     width: 50%;

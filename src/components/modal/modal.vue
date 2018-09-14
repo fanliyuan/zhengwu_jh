@@ -230,7 +230,11 @@
               }
             }
             vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
-              vm.$parent.initTable();
+              if (vm.$props.widgets.catalogId) {
+                vm.$parent.initTable(vm.$props.widgets.catalogId);
+              } else {
+                vm.$parent.initTable();
+              }
             vm.$emit('modalStatus', false);
             vm.$refs.formValidate.resetFields();
             vm.deepCopy(vm.oldFormValidate, vm.formValidate);
