@@ -32,7 +32,7 @@ class catalogOptions {
         treeApi: 'showCatalogList'
       },
       treeData: [],
-      treeColor: [],
+      currentTreeNode: '',
       catalogId: '',
       modalOpreation: false,
       modalWidgets: {},

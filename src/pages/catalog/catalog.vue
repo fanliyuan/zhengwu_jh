@@ -9,7 +9,7 @@
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
     <div class="tree-content">
-      <Tree class="tree-nodes" :data="treeData" :render="renderNode"></Tree>
+      <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
     </div>
     <div class="main-content cl" v-if="catalogId !== ''">
       <FilterForm :options="filterData"></FilterForm>
@@ -101,7 +101,6 @@
       deepTree (arr) {
         let vm = this;
         for (let i = 0, len = arr.length; i < len; i++) {
-          vm.treeColor[i] = '#ffffff';
           if (arr[i].children.length > 0) {
             arr[i].render = (h, { root, node, data }) => {
               return h('span', [
@@ -142,31 +141,36 @@
                   on: {
                     click: () => {
                       vm.initTable(data.id);
-//                      console.log(vm.treeColor)
-//                      document.getElementById('treeNode' + node.nodeKey).style.backgroundColor = '#1890ff';
-////                      for (let i = 0, len = root.length; i < len; i++) {
-////                        if (root[i].children.length > 0) {
-////                          continue;
-////                        } else {
-////                          console.log(document.getElementById('treeNode' + root[i].nodeKey))
-//////                          if (root[i].nodeKey === node.nodeKey) {
-//////                            console.log(root[i].nodeKey)
-//////                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
-//////                          } else {
-//////                            console.log(root[i].nodeKey)
-//////                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
-//////                          }
-////                        }
-////                      }
-//                      console.log(root)
-//                      console.log(node)
-//                      console.log(data)
-//                      console.log(h)
+                      vm.currentTreeNode = node.nodeKey;
+                      for (let i = 0, len = root.length; i < len; i++) {
+                        if (root[i].nodeKey === node.nodeKey) {
+                          document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
+                          document.getElementById('treeNode' + root[i].nodeKey).style.color = '#ffffff';
+                        } else {
+                          if (document.getElementById('treeNode' + root[i].nodeKey)) {
+                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
+                            document.getElementById('treeNode' + root[i].nodeKey).style.color = '#515a6e';
+                          } else {
+                            continue
+                          }
+                        }
+                      }
                     }
                   }
                 }, data.title)
               ])
             }
+          }
+        }
+      },
+      expand (node) {
+        let vm = this;
+        for (let i = 0, len = node.children.length; i < len; i++) {
+          if (node.children[i].nodeKey === vm.currentTreeNode && !document.getElementById('treeNode' + node.children[i].nodeKey)) {
+            vm.$nextTick(() => {
+              document.getElementById('treeNode' + node.children[i].nodeKey).style.backgroundColor = '#1890ff';
+              document.getElementById('treeNode' + node.children[i].nodeKey).style.color = '#ffffff';
+            });
           }
         }
       },
@@ -180,14 +184,6 @@
         }).catch((error) => {
           vm.$Loading.error();
         })
-      },
-      renderNode (h, { root, node, data }) {
-//        return h('span', {
-//          style: {
-//            display: 'inline-block',
-//            width: '100%'
-//          }
-//        }
       },
       //初始化表格
       initTable: function (id) {
