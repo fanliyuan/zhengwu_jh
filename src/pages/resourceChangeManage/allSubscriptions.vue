@@ -8,19 +8,25 @@
 <template>
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
-    <div class="main-contents cl">
-      <div class="left">
-        <Tree :data="treeData"  @on-check-change="getAuthChecked"  multiple></Tree>
-      </div>
-      <div class="right">
-         <FilterForm :options="filterData"></FilterForm>
-      <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
-      <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
-      <Pager :options="pageData.total"></Pager>
-      <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
+    <div class="main-content cl">
+      <template>
+        <Tabs active-key="key1">
+          <Tab-pane label="已订阅" key="key1">
+            <FilterForm :options="filterData"></FilterForm>
+
+            <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
+            <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
+            <Pager :options="pageData.total"></Pager>
+            <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
+          </Tab-pane>
+          <Tab-pane label="待审核" key="key2">标签二的内容</Tab-pane>
+          <Tab-pane label="订阅失败" key="key3">标签三的内容</Tab-pane>
+        </Tabs>
+      </template>
+
+
       </div>
 
-    </div>
   </div>
 </template>
 
@@ -30,10 +36,10 @@
   import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/resourceChangeManage/resourceBazaar'
+  import Data from '../../config/resourceChangeManage/allSubscriptions'
 
   export default{
-    name: 'resourceBazaar',
+    name: 'allSub',
     components: {
       ContentTitle,
       FilterForm,
@@ -48,7 +54,6 @@
     created: function () {
       this.initTable();
       this.getRoleList();
-      this.getCatalogList();
     },
     methods:{
       //初始化表格
@@ -174,91 +179,6 @@
         }).catch((error) => {
 
         })
-      },
-
-      //获取目录列表
-      getCatalogList: function () {
-        let vm = this;
-        let params = {};
-        vm.api[vm.apis.showCatalogListApi](params).then((data) => {
-          console.log(data);
-          vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
-       // vm.treeData = vm.rebulidCatalogList(data);
-        console.log(vm.treeData);
-         // vm.rebulidCatalogList(data)
-        }).catch((error) => {
-          console.log("报错");
-        })
-      },
-
-      //递归目录列表
-      rebulidCatalogList: function (data) {
-        let vm = this;
-        let temp;
-        let newCatalogListTree = [];
-        for (let i = 0; i < data.length; i++) {
-
-          if (data[i].children.length > 0) {
-            newCatalogListTree[i].children.push(
-              {
-                title: data[i].typeName,
-                expand: true,
-                render: (h, { root, node, data }) => {
-                  return h('span', {
-                    style: {
-                      display: 'inline-block',
-                      width: '100%'
-                    }
-                  }, [
-                    h('span', [
-                      h('Icon', {
-                        props: {
-                          type: 'ios-folder-outline'
-                        },
-                        style: {
-                          marginRight: '8px'
-                        }
-                      }),
-                      h('span', data.title)
-                    ]),
-                  ]);
-                },
-                children:[]
-              }
-            );
-          }
-          else {
-            newCatalogListTree.push(
-              {
-                title: data[i].typeName,
-                expand: true,
-                render: (h, { root, node, data }) => {
-                  return h('span', {
-                    style: {
-                      display: 'inline-block',
-                      width: '100%'
-                    }
-                  }, [
-                    h('span', [
-                      h('Icon', {
-                        props: {
-                          type: 'ios-folder-outline'
-                        },
-                        style: {
-                          marginRight: '8px'
-                        }
-                      }),
-                      h('span', data.title)
-                    ]),
-                  ]);
-                },
-                children:[]
-              }
-            );
-          }
-          vm.rebulidCatalogList(data[i].children);
-        }
-        return newCatalogListTree;
       }
     }
   }

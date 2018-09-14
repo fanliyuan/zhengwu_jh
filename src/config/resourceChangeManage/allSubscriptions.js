@@ -1,4 +1,7 @@
 /**
+ * Created by Administrator on 2018/9/14 0014.
+ */
+/**
  * Created by Administrator on 2018/9/12 0012.
  */
 /**
@@ -26,9 +29,8 @@ class resourceBazaarOptions {
     //vm.roleList = []
     vm.filterRoleList = [{value:'',key:'全部'}];
     vm.statusList = [];
-    vm.treeData = [];
     return {
-      title: '资源集市',
+      title: '所有订阅',
       apis: {
         listApi: 'resourceBazaar',
         addApi: 'userAdd',
@@ -37,8 +39,7 @@ class resourceBazaarOptions {
         freeze: 'userFreeze',
         deleteApi: 'userDelete',
         detailApi: 'userDetail',
-        editApi: 'assignRoleUpdate',
-        showCatalogListApi: 'showCatalogList'
+        editApi: 'assignRoleUpdate'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -197,6 +198,11 @@ class resourceBazaarOptions {
         tableList: [],
         columns: [
           {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
+          {
             title: '目录名称',
             key: 'account',
           },
@@ -329,14 +335,14 @@ class resourceBazaarOptions {
           },
         ]
       },
-   /*   opreationData: [
-        {
-          name: '新建',
-          icon: 'plus-round',
-          color: 'primary',
-          type: 'add'
-        }
-      ]*/
+      /*   opreationData: [
+       {
+       name: '新建',
+       icon: 'plus-round',
+       color: 'primary',
+       type: 'add'
+       }
+       ]*/
     }
   }
 }

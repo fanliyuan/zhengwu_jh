@@ -42,4 +42,5 @@ export default {
 
   //资源集市
   resourceBazaar: { url: '/api/v2/daas/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表
+  showCatalogList: { url: '/api/v2/daas/swap/catalog/list', method: 'get' } //获取目录列表
 }
