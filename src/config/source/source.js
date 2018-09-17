@@ -36,16 +36,40 @@ class sourceOptions {
         title: {},
         apiUrl: '',
         width: 900,
-        formObj:{},
+        current: 0,
+        currentDataBase: '',
+        dataType: {
+          '1-1': 'oracle',
+          '1-2': 'sqlserver',
+          '1-3': 'mysql',
+          '1-4': 'kingbase',
+          '1-5': 'dm',
+          '2-1': 'ftp',
+          '2-2': 'sftp'
+        },
+        formObj:{
+        },
         oldFormObj:{},
         sqlObj: {
           name: '',
           summary: '',
-          dbType: '',
+          dbType: [1, 1],
           addr: '',
           port: '',
           username: '',
-          password: ''
+          password: '',
+          alias: '',
+          appsysName: '',
+          createUnit: '',
+          dbDescribe: '',
+          dbName: '',
+          dutyName: '',
+          dutyPhone: '',
+          dutyPosition: '',
+          resourceType: '',
+          structAddDtoList: [],
+          tableName: '',
+          tableNote: ''
         },
         ftpObj: {
 
@@ -75,6 +99,7 @@ class sourceOptions {
           dbType: [
             {
               required: true,
+              type: 'array',
               message: '请选择数据类型',
               trigger: 'change'
             }
@@ -118,6 +143,7 @@ class sourceOptions {
           {
             type: 'input',
             disabled: false,
+            show: true,
             word: 'text',
             prop: 'name',
             name: '名称',
@@ -191,6 +217,7 @@ class sourceOptions {
           {
             type: 'input',
             disabled: false,
+            show: true,
             word: 'text',
             prop: 'addr',
             name: '数据库地址',
@@ -199,6 +226,7 @@ class sourceOptions {
           {
             type: 'input',
             disabled: false,
+            show: true,
             word: 'text',
             prop: 'port',
             name: '数据库端口',
@@ -207,6 +235,7 @@ class sourceOptions {
           {
             type: 'input',
             disabled: false,
+            show: true,
             word: 'text',
             prop: 'username',
             name: '数据库用户名',
@@ -215,7 +244,8 @@ class sourceOptions {
           {
             type: 'input',
             disabled: false,
-            word: 'password',
+            show: true,
+            word: 'text',
             prop: 'password',
             name: '数据库密码',
             placeholder: '请输入数据库密码'
@@ -226,6 +256,72 @@ class sourceOptions {
         //idObj: 'xaobBannerId',
         ruleObj: {},
         widgets: [],
+        sqlDbTable: {
+          options: []
+        },
+        sqlTableTable: {
+          loading: true,
+          tableList: [],
+          total: 0,
+          initData: {
+            pageNum: 1,
+            pageSize: 10
+          },
+          columns: [
+            {
+              type: 'index',
+              width: 60,
+              align: 'center'
+            },
+            {
+              title: '表名称',
+              key: 'name'
+            },
+            {
+              title: '中文标注',
+              key: 'comment'
+            },
+            {
+              title: '操作',
+              key: 'operate',
+              render: (h, params) => {
+                let children = [];
+                let edit = {
+                  props: {
+                    type: 'primary'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      vm.viewSqlStruct(params.row.id);
+                    }
+                  }
+                };
+                let view = {
+                  props: {
+                    type: 'success'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      vm.viewSqlTable(params.row.id);
+                    }
+                  }
+                };
+                children.push(h('a', view, '浏览'));
+                children.push(h('a', edit, '结构'));
+                return h('div', children);
+              }
+            }
+          ]
+        },
+        sqlColumnTable: {
+
+        },
         titles: {
           viewTitle: {
             name: '查看资源',

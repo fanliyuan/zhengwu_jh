@@ -27,27 +27,27 @@ export default {
   roleUpdate: { url: '/mgr/setRole1', method: 'post' }, //设置用户角色
 
   //资源管理
-  resourceAdd: { url: '/api/v2/daas/swap/resource/db', method: 'post' }, //新建资源实体
-  resourceConnect: { url: '/api/v2/daas/swap/resource/connect', method: 'get'}, //连接测试
-  resourceList: { url: '/api/v2/daas/swap/resource/itemList', method: 'get' }, //资源实体列表
-  resourceDelete: { url: '/api/v2/daas/swap/resource/item', method: 'delete' }, //删除资源实体
-  resourceDetail: { url: 'api/v2/daas/swap/resource/db', method: 'get' }, //资源详情
-  resourceUpdate: { url: '/api/v2/daas/swap/resource/db', method: 'put' }, //修改资源
-  resourceMysqlColumn: { url: '/api/v2/daas/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
-  resourceMysqlDb: { url: '/api/v2/daas/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
-  resourceMysqlTable: { url: '/api/v2/daas/swap/resource/mysql/table', method: 'get' }, //获取mysql指定库的数据表list
+  resourceAdd: { url: '/api/v2/zhengwu/swap/resource/db', method: 'post' }, //新建资源实体
+  resourceConnect: { url: '/api/v2/zhengwu/swap/resource/connect', method: 'get'}, //连接测试
+  resourceList: { url: '/api/v2/zhengwu/swap/resource/itemList', method: 'get' }, //资源实体列表
+  resourceDelete: { url: '/api/v2/zhengwu/swap/resource/item', method: 'delete' }, //删除资源实体
+  resourceDetail: { url: 'api/v2/zhengwu/swap/resource/db', method: 'get' }, //资源详情
+  resourceUpdate: { url: '/api/v2/zhengwu/swap/resource/db', method: 'put' }, //修改资源
+  resourceMysqlColumn: { url: '/api/v2/zhengwu/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
+  resourceMysqlDb: { url: '/api/v2/zhengwu/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
+  resourceMysqlTable: { url: '/api/v2/zhengwu/swap/resource/mysql/table', method: 'get' }, //获取mysql指定库的数据表list
 
   //目录管理
-  catalogAdd: { url: '/api/v2/daas/swap/resource', method: 'post' }, //新建资源
-  catalogList: { url: '/api/v2/daas/swap/resource/list', method: 'get' }, //资源列表
-  catalogDelete: { url: '/api/v2/daas/swap/resource', method: 'delete' }, //删除资源
-  catalogDetail: { url: '/api/v2/daas/swap/resource', method: 'get' }, //资源详情
-  catalogUpdate: { url: '/api/v2/daas/swap/resource', method: 'put' }, //修改资源
-  catalogItemsList: { url: '/api/v2/daas/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
-  catalogShareDetail: { url: '/api/v2/daas/swap/resource/{id}/shareopen', method: 'get' }, //获取资源共享开放信息
-  catalogShareUpdate: { url: '/api/v2/daas/swap/resource/{id}/shareopen', method: 'put' }, //修改资源共享开放信息
+  catalogAdd: { url: '/api/v2/zhengwu/swap/resource', method: 'post' }, //新建资源
+  catalogList: { url: '/api/v2/zhengwu/swap/resource/list', method: 'get' }, //资源列表
+  catalogDelete: { url: '/api/v2/zhengwu/swap/resource', method: 'delete' }, //删除资源
+  catalogDetail: { url: '/api/v2/zhengwu/swap/resource', method: 'get' }, //资源详情
+  catalogUpdate: { url: '/api/v2/zhengwu/swap/resource', method: 'put' }, //修改资源
+  catalogItemsList: { url: '/api/v2/zhengwu/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
+  catalogShareDetail: { url: '/api/v2/zhengwu/swap/resource/{id}/shareopen', method: 'get' }, //获取资源共享开放信息
+  catalogShareUpdate: { url: '/api/v2/zhengwu/swap/resource/{id}/shareopen', method: 'put' }, //修改资源共享开放信息
 
   //资源集市
-  resourceBazaar: { url: '/api/v2/daas/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表
-  showCatalogList: { url: '/api/v2/daas/swap/catalog/list', method: 'get' } //获取目录列表
+  resourceBazaar: { url: '/api/v2/zhengwu/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表
+  showCatalogList: { url: '/api/v2/zhengwu/swap/catalog/list', method: 'get' } //获取目录列表
 }
