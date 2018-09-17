@@ -20,11 +20,15 @@ class sourceOptions {
     return {
       title: '资源管理',
       apis: {
-        addApi: 'bannerAdd',
-        deleteApi: 'bannerDelete',
-        detailApi: 'bannerDetail',
-        listApi: 'bannerList',
-        editApi: 'bannerUpdate'
+        addApi: 'resourceAdd',
+        deleteApi: 'resourceDelete',
+        detailApi: 'resourceDetail',
+        listApi: 'resourceList',
+        editApi: 'resourceUpdate',
+        connectApi: 'resourceConnect',
+        mysqlColumnApi: 'resourceMysqlColumn',
+        mysqlDbApi: 'resourceMysqlDb',
+        mysqlTableApi: 'resourceMysqlTable'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -32,156 +36,232 @@ class sourceOptions {
         title: {},
         apiUrl: '',
         width: 900,
-        formObj:{
-          xaobBannerTitle: '',
-          xaobBannerImg: '',
-          xaobBannerBlueImg: '',
-          xaobBannerUrl: '',
-          xaobBannerContent: ''
+        formObj:{},
+        oldFormObj:{},
+        sqlObj: {
+          name: '',
+          summary: '',
+          dbType: '',
+          addr: '',
+          port: '',
+          username: '',
+          password: ''
         },
-        oldFormObj:{
-          xaobBannerTitle: '',
-          xaobBannerImg: '',
-          xaobBannerBlueImg: '',
-          xaobBannerUrl: '',
-          xaobBannerContent: ''
+        ftpObj: {
+
         },
-        idObj: 'xaobBannerId',
-        ueObj: 'xaobBannerContent',
-        ruleObj: {
-          xaobBannerTitle: [
+        filesObj: {
+
+        },
+        sqlRuleObj: {
+          name: [
             {
               required: true,
-              message: '标题不能为空',
+              message: '名称不能为空',
               trigger: 'blur'
             },
             {
-              max: 100,
-              message: '标题长度不能大于100个字符'
+              max: 20,
+              message: '名称长度不能大于20个字符'
             }
           ],
-          xaobBannerImg: [
+          summary: [
             {
               required: true,
-              message: '图片不能为空',
+              message: '摘要不能为空',
               trigger: 'blur'
             }
           ],
-          xaobBannerBlueImg: [
+          dbType: [
             {
               required: true,
-              message: '图片不能为空',
+              message: '请选择数据类型',
+              trigger: 'change'
+            }
+          ],
+          addr: [
+            {
+              required: true,
+              message: '请输入数据库地址',
               trigger: 'blur'
             }
           ],
-          xaobBannerUrl: [
+          port: [
             {
-              type: 'url',
-              message: '请输入正确的url格式（http://...）'
+              required: true,
+              message: '请输入数据库端口',
+              trigger: 'blur'
+            }
+          ],
+          username: [
+            {
+              required: true,
+              message: '请输入数据库用户名',
+              trigger: 'blur'
+            }
+          ],
+          password: [
+            {
+              required: true,
+              message: '请输入数据库密码',
+              trigger: 'blur'
             }
           ]
         },
-        widgets: [
+        ftpRuleObj: {
+
+        },
+        filesRuleObj: {
+
+        },
+        sqlWidgetsObj: [
           {
             type: 'input',
             disabled: false,
             word: 'text',
-            prop: 'xaobBannerTitle',
-            name: '标题',
-            placeholder: '请输入banner标题'
+            prop: 'name',
+            name: '名称',
+            placeholder: '请输入名称'
           },
           {
-            type: 'upload',
+            type: 'textarea',
             disabled: false,
-            word: 'text',
-            prop: 'xaobBannerImg',
-            name: '图片(红色皮肤)',
-            placeholder: '上传红色皮肤图片',
-            placeholderA: '删除红色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'upload',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerBlueImg',
-            name: '图片(蓝色皮肤)',
-            placeholder: '上传蓝色皮肤图片',
-            placeholderA: '删除蓝色皮肤图片',
-            accept: ['jpg', 'jpeg' ,'png'],
-            rules: {
-              maxNum: 1,
-              fileErrorTips: {
-                title: '文件类型上传错误',
-                desc: '请上传 ".jpg", ".jpeg", ".png" 格式的图片。'
-              },
-              fileMaxTips: {
-                title: '文件数量限制',
-                desc: '最多只能上传一张图片。'
-              }
-            }
-          },
-          {
-            type: 'input',
-            disabled: false,
-            word: 'text',
-            prop: 'xaobBannerUrl',
-            name: '链接',
-            placeholder: '请输入banner链接'
-          },
-          {
-            type: 'ueditor',
-            disabled: false,
+            show: true,
             word: 'textarea',
-            prop: 'xaobBannerContent',
-            name: '内容',
-            placeholder: ''
+            rows: 6,
+            prop: 'summary',
+            name: '摘要',
+            placeholder: '请输入描述'
+          },
+          {
+            type: 'selectCascader',
+            disabled: false,
+            show: true,
+            prop: 'dbType',
+            name: '类型',
+            placeholder: '请选择类型',
+            options: [
+              {
+                label: '关系型数据库',
+                value: 1,
+                children: [
+                  {
+                    value: 1,
+                    label: 'Oracle'
+                  },
+                  {
+                    value: 2,
+                    label: 'SQLserver'
+                  },
+                  {
+                    value: 3,
+                    label: 'MySQL'
+                  },
+                  {
+                    value: 4,
+                    label: 'Kingbase'
+                  },
+                  {
+                    value: 5,
+                    label: 'DM'
+                  }
+                ]
+              },
+              {
+                label: '半结构化存储',
+                value: 2,
+                disabled: true,
+                children: [
+                  {
+                    value: 1,
+                    label: 'FTP'
+                  },
+                  {
+                    value: 2,
+                    label: 'SFTP'
+                  },
+                  {
+                    value: 3,
+                    label: '本地文件'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'input',
+            disabled: false,
+            word: 'text',
+            prop: 'addr',
+            name: '数据库地址',
+            placeholder: '请输入数据库地址'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            word: 'text',
+            prop: 'port',
+            name: '数据库端口',
+            placeholder: '请输入数据库端口'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            word: 'text',
+            prop: 'username',
+            name: '数据库用户名',
+            placeholder: '请输入数据库用户名'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            word: 'password',
+            prop: 'password',
+            name: '数据库密码',
+            placeholder: '请输入数据库密码'
           }
         ],
+        ftpWidgetsObj: [],
+        filesWidgetsObj: [],
+        //idObj: 'xaobBannerId',
+        ruleObj: {},
+        widgets: [],
         titles: {
           viewTitle: {
-            name: '查看banner详情',
+            name: '查看资源',
             showOkBtn: false
           },
           addTitle: {
-            name: '添加banner',
+            name: '新建资源',
             showOkBtn: true
           },
           editTitle: {
-            name: '编辑banner',
+            name: '修改资源',
             showOkBtn: true
           }
         }
       },
       initData: {
-        title: '',
-        order: 'desc',
-        offset: 0,
-        limit: 10
+        name: '',
+        dataType: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
+        pageNum: 1,
+        pageSize: 10
       },
       tableData: {
         loading: true,
         tableList: [],
         columns: [
           {
-            type: 'index',
+            type: 'selection',
             width: 60,
             align: 'center'
           },
           {
-            title: '标题',
-            key: 'title',
+            title: '资源名称',
+            key: 'name',
             render: (h, params) => {
               return h('div', [
                 h('span', {
@@ -193,19 +273,41 @@ class sourceOptions {
                     whiteSpace: 'nowrap'
                   },
                   domProps: {
-                    title: params.row.title
+                    title: params.row.name
                   }
-                }, params.row.title)
+                }, params.row.name)
               ])
             }
           },
           {
-            title: '创建时间',
-            key: 'createTime'
+            title: '数据类型',
+            key: 'dataType'
           },
           {
-            title: '发布人',
-            key: 'createName'
+            title: '数据更新时间',
+            key: 'updateTime'
+          },
+          {
+            title: '审核状态',
+            key: 'status',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case 1:
+                          return '<span style="color: #5cadff">待审核</span>';
+                        case 2:
+                          return '<span style="color: #19be6b">已通过</span>';
+                        case 3:
+                          return '<span style="color: #ed4014">已拒绝</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '操作',
@@ -254,9 +356,9 @@ class sourceOptions {
                   }
                 }
               };
-              children.push(h('Button', edit, '修改'));
-              children.push(h('Button', view, '查看'));
-              children.push(h('Button', del, '删除'));
+              children.push(h('a', view, '查看'));
+              children.push(h('a', edit, '修改'));
+              children.push(h('a', del, '删除'));
               return h('div', children);
             }
           }
@@ -267,24 +369,100 @@ class sourceOptions {
       },
       filterData: {
         filiterObj: {
-          title: ''
+          name: '',
+          dataType: '',
+          status: '',
+          beginTime: '',
+          endTime: ''
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'title',
-            name: '标题',
-            placeholder: '请输入标题'
+            prop: 'name',
+            name: '资源名称',
+            placeholder: '请输入资源名称'
+          },
+          {
+            type: 'select',
+            word: 'text',
+            prop: 'dataType',
+            name: '数据类型',
+            placeholder: '请选择数据类型',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: 'mysql',
+                key: 'mysql'
+              },
+              {
+                value: 'oracle',
+                key: 'oracle'
+              },
+              {
+                value: 'sqlserver',
+                key: 'sqlserver'
+              },
+              {
+                value: '文件',
+                key: '文件'
+              },
+              {
+                value: 'ftp',
+                key: 'ftp'
+              }
+            ]
+          },
+          {
+            type: 'select',
+            word: 'text',
+            prop: 'status',
+            name: '审核状态',
+            placeholder: '请选择审核状态',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: 1,
+                key: '待审核'
+              },
+              {
+                value: 2,
+                key: '已通过'
+              },
+              {
+                value: 3,
+                key: '已拒绝'
+              }
+            ]
+          },
+          {
+            type: 'dateRange',
+            word: 'daterange',
+            prop: 'timeRange',
+            disabled: false,
+            name: '时间段',
+            placeholder: '请选择时间段'
           }
         ]
       },
       opreationData: [
         {
-          name: '添加',
-          icon: 'plus-round',
+          name: '新建',
+          icon: 'md-add',
           color: 'primary',
           type: 'add'
+        },
+        {
+          name: '删除',
+          icon: 'md-remove',
+          color: 'error',
+          type: 'deleteItem'
         }
       ]
     }

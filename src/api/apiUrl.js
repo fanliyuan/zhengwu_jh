@@ -31,7 +31,7 @@ export default {
   resourceConnect: { url: '/api/v2/daas/swap/resource/connect', method: 'get'}, //连接测试
   resourceList: { url: '/api/v2/daas/swap/resource/itemList', method: 'get' }, //资源实体列表
   resourceDelete: { url: '/api/v2/daas/swap/resource/item', method: 'delete' }, //删除资源实体
-  //catalogDetail: { url: '/api/v2/daas/swap/resource', method: 'get' }, //资源详情
+  resourceDetail: { url: 'api/v2/daas/swap/resource/db', method: 'get' }, //资源详情
   resourceUpdate: { url: '/api/v2/daas/swap/resource/db', method: 'put' }, //修改资源
   resourceMysqlColumn: { url: '/api/v2/daas/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
   resourceMysqlDb: { url: '/api/v2/daas/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
