@@ -10,6 +10,7 @@
  */
 
 import ResourceBazaarPage from '@/pages/resourceChangeManage/resourceBazaar.vue'
+import SubscribeItemPage from '@/pages/resourceChangeManage/subscribeItem/subscribeItem.vue'
 
 export default [{
   path: '/sourceSubscription',
@@ -17,5 +18,12 @@ export default [{
   component: ResourceBazaarPage,
   meta: {
     authority:['user']
+  }
+}, {
+  path: '/resourceChangeManage/itemInfo/:id',
+  name: 'SubscribeItemInfo',
+  component: SubscribeItemPage,
+  meta: {
+    authority: ['user']
   }
 }]

@@ -26,7 +26,7 @@ class resourceBazaarOptions {
     //vm.roleList = []
     vm.filterRoleList = [{value:'',key:'全部'}];
     vm.statusList = [];
-    vm.treeData = [];
+    //vm.treeData = [];
     return {
       title: '资源集市',
       apis: {
@@ -40,6 +40,9 @@ class resourceBazaarOptions {
         editApi: 'assignRoleUpdate',
         showCatalogListApi: 'showCatalogList'
       },
+      treeData: [],
+      currentTreeNode: '',
+      catalogId: '',
       modalOpreation: false,
       modalWidgets: {},
       modalData: {
@@ -47,7 +50,7 @@ class resourceBazaarOptions {
         apiUrl: '',
         width: 900,
         formObj:{
-          id: '',
+          catalogId: '',
           role:'',
           user: '',
           salt: '',
@@ -60,7 +63,7 @@ class resourceBazaarOptions {
           avatar: ''
         },
         oldFormObj:{
-          id: '',
+          catalogId: '',
           user: '',
           salt: '',
           birthday: '',
@@ -181,16 +184,27 @@ class resourceBazaarOptions {
           }
         }
       },
-      initData: {
+      defaultInitData: {
+        catalogId: '',
         name: '',
-        phone: '',
-        role: '',
+        providerName: '',
         status: '',
         beginTime: '',
         endTime: '',
-        pageNum:1,
-        pageSize:10,
-        catalogId: 1
+        mount: false,
+        pageNum: 1,
+        pageSize: 10
+      },
+      initData: {
+        catalogId: '',
+        name: '',
+        providerName: '',
+        status: '',
+        beginTime: '',
+        endTime: '',
+        mount: false,
+        pageNum: 1,
+        pageSize: 10
       },
       tableData: {
         loading: true,
@@ -198,11 +212,11 @@ class resourceBazaarOptions {
         columns: [
           {
             title: '目录名称',
-            key: 'account',
+            key: 'typeName',
           },
           {
             title: '数据类型',
-            key: 'name',
+            key: 'dataType',
           },
           {
             title: '发布机构',
@@ -214,15 +228,11 @@ class resourceBazaarOptions {
           },
           {
             title: '发布方是否审核',
-            key: 'roleName',
+            key: 'checkStatus',
           },
           {
             title: '是否已订阅',
-            key: 'subscribeStatus',
-          },
-          {
-            title: '状态',
-            key: 'statusName',
+            key: 'disparkType',
           },
           {
             title: '操作',
@@ -230,8 +240,8 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
-              if (params.row.statusName === '启用') {
-                statusNames = '-';
+              if (params.row.disparkType === '') {
+                statusNames = '订阅';
               }
               else {
                 statusNames = '订阅';
@@ -247,7 +257,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.editStatus(params.row.id,params.row.statusName);
+                    vm.subscribe(params.row.resourceId);
                   }
                 }
               };

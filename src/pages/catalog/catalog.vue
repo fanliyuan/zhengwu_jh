@@ -9,7 +9,7 @@
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
     <div class="tree-content">
-      <Input class="searchTree" search enter-button placeholder="请输入关键词" @on-search="searchTree"/>
+      <Input search enter-button placeholder="请输入关键词" class="hiddenInput" @on-search="searchTree"/>
       <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
     </div>
     <div class="main-content cl" v-if="catalogId !== ''">
@@ -449,9 +449,6 @@
     float: left;
     margin: 20px 0 20px 20px;
     padding: 15px 20px;
-    .searchTree{
-      display: none;
-    }
   }
   .modal-steps{
     width: 50%;

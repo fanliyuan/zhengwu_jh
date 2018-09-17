@@ -10,14 +10,20 @@
     <ContentTitle :options="title"></ContentTitle>
     <div class="main-contents cl">
       <div class="left">
-        <Tree :data="treeData"  @on-check-change=""  multiple></Tree>
+        <div class="tree-content">
+          <Input search enter-button placeholder="请输入关键词" class="hiddenInput" @on-search="searchTree"/>
+          <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
+        </div>
       </div>
-      <div class="right">
+      <div class="right"  v-if="catalogId !== ''">
          <FilterForm :options="filterData"></FilterForm>
       <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
       <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
+      </div>
+      <div class="right" style="height: 600px; line-height: 600px; text-align: center" v-if="catalogId === ''">
+        <h2>请在左侧列表中选择资源</h2>
       </div>
 
     </div>
@@ -46,18 +52,131 @@
       return Data(vm).setData()
     },
     created: function () {
-      this.initTable();
-      this.getRoleList();
-      this.getCatalogList();
+     // this.initTable();
+      this.initTree();
+     // this.getCatalogList();
     },
     methods:{
-      //初始化表格
-      initTable: function () {
+      deepCopy (oldObj, newObj) {
         let vm = this;
+        newObj = newObj || {};
+        for (let i in oldObj) {
+          if (typeof oldObj[i] === 'object') {
+            newObj[i] = (oldObj[i].constructor === Array) ? [] : {};
+            vm.deepCopy(oldObj[i], newObj[i]);
+          } else {
+            newObj[i] = oldObj[i];
+          }
+        }
+        return newObj;
+      },
+      //递归树
+      deepTree (arr) {
+        let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          if (arr[i].children.length > 0) {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-folder-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  style: {
+                    backgroundColor: '#ffffff'
+                  }
+                }, data.title)
+              ])
+            };
+            vm.deepTree(arr[i].children);
+          } else {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-paper-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  attrs: {
+                    id: 'treeNode' + node.nodeKey
+                  },
+                  style: {
+                    cursor: 'pointer'
+                  },
+                  on: {
+                    click: () => {
+                      //清空对象
+                      vm.filterData.filiterObj = vm.deepCopy(vm.filterData.defaultFiliterObj, vm.filterData.filiterObj);
+                      vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
+                      console.log(data.id);
+                      vm.initTable(data.id);
+                      vm.currentTreeNode = node.nodeKey;
+                      for (let i = 0, len = root.length; i < len; i++) {
+                        if (root[i].nodeKey === node.nodeKey) {
+                          document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
+                          document.getElementById('treeNode' + root[i].nodeKey).style.color = '#ffffff';
+                        } else {
+                          if (document.getElementById('treeNode' + root[i].nodeKey)) {
+                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
+                            document.getElementById('treeNode' + root[i].nodeKey).style.color = '#515a6e';
+                          } else {
+                            continue
+                          }
+                        }
+                      }
+                    }
+                  }
+                }, data.title)
+              ])
+            }
+          }
+        }
+      },
+      expand (node) {
+        let vm = this;
+        for (let i = 0, len = node.children.length; i < len; i++) {
+          if (node.children[i].nodeKey === vm.currentTreeNode && !document.getElementById('treeNode' + node.children[i].nodeKey)) {
+            vm.$nextTick(() => {
+              document.getElementById('treeNode' + node.children[i].nodeKey).style.backgroundColor = '#1890ff';
+              document.getElementById('treeNode' + node.children[i].nodeKey).style.color = '#ffffff';
+            });
+          }
+        }
+      },
+      //初始化树形
+      initTree () {
+        let vm = this;
+        vm.api[vm.apis.showCatalogListApi]().then((data) => {
+          vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
+          vm.deepTree(vm.treeData);
+          vm.$Loading.finish();
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      searchTree (value) {
+
+      },
+      //初始化表格
+      initTable: function (id) {
+        let vm = this;
+        vm.catalogId = id;
+        vm.initData.catalogId = id;
+        vm.filterData.catalogId = id;
+        vm.modalData.formObj.catalogId = id;
+        vm.modalData.oldFormObj.catalogId = id;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.datas;
-          vm.pageData.total = data.totalCounts;
+          vm.tableData.tableList = data.rows;
+          vm.pageData.total = parseInt(data.total);
           vm.tableData.loading = false;
         }).catch((error) => {
 
@@ -160,31 +279,16 @@
         let vm = this;
         vm.modalOpreation = status;
       },
-      //查询用户角色列表
-      getRoleList: function () {
-        let vm = this;
-        let params = {};
-        vm.api[vm.apis.roleListApi](params).then((data) => {
-          for (let i = 0, len = data.datas.length; i < len; i++) {
-            vm.filterRoleList.push({
-              value: data.datas[i].id,
-              key: data.datas[i].name
-            })
-          }
-        }).catch((error) => {
 
-        })
-      },
-
-      //获取目录列表
-      getCatalogList: function () {
+       //资源订阅
+      subscribe: function (id) {
+        console.log(id);
         let vm = this;
-        let params = {};
-        vm.api[vm.apis.showCatalogListApi](params).then((data) => {
-          vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
-        }).catch((error) => {
-        })
-      },
+        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + id});
+  }
+
+
+
 
     }
   }
@@ -198,19 +302,23 @@
   }
   .left{
     float: left;
-    width:470px;
+    width: 24%;
     height: auto;
     overflow: hidden;
     background: #fff;
     color:#666;
     margin-right:30px;
+    padding: 15px 20px;
   }
   .right{
     float: left;
-    width: calc(100% - 500px);
+    width: 74%;
     height: auto;
     overflow: hidden;
     background: #fff;
     color:#666
+  }
+  .hiddenInput{
+    display: none;
   }
 </style>
