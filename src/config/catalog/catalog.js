@@ -950,7 +950,7 @@ class catalogOptions {
                   click: () => {
                     if (!params.row.havaGj) {
                       let radioGroup = [];
-                      let defaultVal = 'mysql';
+                      let defaultVal = 'db';
                       vm.$Modal.confirm({
                         title: '请选择挂接类型',
                         render: (h) => {
@@ -966,19 +966,19 @@ class catalogOptions {
                               },[
                                 h('Radio',{
                                   props:{
-                                    label: 'mysql'
+                                    label: 'db'
                                   }
-                                },'Mysql'),
+                                },'db'),
                                 h('Radio',{
                                   props:{
                                     label: 'ftp',
-                                    //disabled: true
+                                    disabled: true
                                   }
-                                },'FTP'),
+                                },'ftp'),
                                 h('Radio',{
                                   props:{
                                     label: '文件',
-                                    //disabled: true
+                                    disabled: true
                                   }
                                 },'文件')
                               ]
@@ -994,7 +994,8 @@ class catalogOptions {
                       })
                     } else {
                       vm.$router.push({'path': '/catalog/mount/' + params.row.id, params: {
-                        id: params.row.id,
+                        id: params.row.id
+                      }, query: {
                         mountType: params.row.mountType
                       }});
                     }

@@ -35,6 +35,7 @@ class catalogMountOptions {
       },
       sourceName: '未选择',
       sourceId: '',
+      infoItemIdMap: {},
       detailData: {},
       detailNameData: {
         infoCode: '目录编码',

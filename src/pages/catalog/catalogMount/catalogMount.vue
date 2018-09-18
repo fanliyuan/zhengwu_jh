@@ -128,7 +128,13 @@
             title: '选择映射字段',
             key: 'operate',
             render: (h, params) => {
-              return h('Select', vm.structData.map((item) => {
+              return h('Select', {
+                on: {
+                  'on-change': (value) => {
+                    vm.infoItemIdMap[params.row.id] = value;
+                  }
+                }
+              }, vm.structData.map((item) => {
                 return h('Option', {
                   props: {
                     value: item.id,
@@ -165,6 +171,36 @@
         vm.modalOpreation = false;
         vm.modalOk = true;
       },
+      //保存映射
+      edit () {
+        let vm = this;
+        let ID = {
+          id: vm.$route.params.id
+        };
+        let params = {
+          itemId: vm.sourceId,
+          type: vm.$route.query.mountType,
+          infoItemIdMap: vm.infoItemIdMap
+        };
+        vm.api[vm.apis.updateApi](ID, params).then((data) => {
+          if (data.data === 'SUCCESS') {
+            vm.$Notice.success({
+              title: '',
+              desc: '保存成功！',
+              duration: 5
+            });
+            history.back();
+          } else {
+            vm.$Notice.warning({
+              title: '',
+              desc: '请求数据时出错！',
+              duration: 5
+            });
+          }
+        }).catch((error) => {
+
+        })
+      }
     }
   }
 </script>
