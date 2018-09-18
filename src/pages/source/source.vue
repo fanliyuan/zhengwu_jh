@@ -11,7 +11,7 @@
     <div class="main-content cl">
       <FilterForm :options="filterData"></FilterForm>
       <opreationWidgets :options="opreationData"></opreationWidgets>
-      <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
+      <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList" @on-selection-change="getSelected"></Table>
       <Pager :options="pageData.total"></Pager>
       <Modal footer-hide fullscreen v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
         <Steps :current="modalData.current" class="modal-steps">
@@ -37,16 +37,36 @@
             <Option v-for="option in modalData.sqlDbTable.options" :value="option.name" :key="option.name">{{option.name}}</Option>
           </Select>
           <Divider orientation="left">数据表</Divider>
-          <Table class="tableList" :loading="modalData.sqlTableTable.loading" highlight-row ref="sqlTableTable" :columns="modalData.sqlTableTable.columns" :data="modalData.sqlTableTable.tableList"></Table>
-          <Page class-name="tablePager" :total="modalData.sqlTableTable.total" show-total @on-change="changeTablePage"></Page>
+          <Table class="tableList" :loading="modalData.sqlTableTable.loading" highlight-row @on-current-change="selectTable" ref="sqlTableTable" :columns="modalData.sqlTableTable.columns" :data="modalData.sqlTableTable.tableList"></Table>
+          <Page class-name="tablePager" :total="modalData.sqlTableTable.total" show-total @on-change="changeTablePage" :current="modalData.sqlTableTable.currentPage"></Page>
           <Divider orientation="left">数据项</Divider>
+          <Card style="width:320px; margin: 0 auto;" :dis-hover="true" v-if="modalData.sqlColumnTable.tableList.length === 0">
+            <div style="text-align:center">
+              <h3>请选择数据库表</h3>
+            </div>
+          </Card>
+          <Tabs v-if="modalData.sqlColumnTable.tableList.length > 0">
+            <TabPane label="结构" icon="md-git-network">
+              <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
+            </TabPane>
+            <TabPane label="浏览" icon="md-list">
+              暂无浏览数据
+            </TabPane>
+          </Tabs>
         </div>
         <div class="confirm-info" v-show="modalData.current === 2">
-          确认信息
+          <Card style="width:80%; margin: 0 auto;" :dis-hover="true">
+            <ul class="infoList cl">
+              <li v-for="(item, index) in modalData.infoObj" :key="item.key">
+                <span>{{item.name}}：</span>
+                <span>{{modalData.formObj[item.key]}}</span>
+              </li>
+            </ul>
+          </Card>
         </div>
         <div class="btn-group">
           <Button type="info" @click="pre" v-if="modalData.current >= 1">上一步</Button>
-          <Button type="primary" @click="next" v-if="modalData.current <= 1">下一步</Button>
+          <Button type="primary" @click="next" v-if="modalData.current <= 1" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
           <Button type="primary" @click="ok" v-if="modalData.current === 2">提交</Button>
           <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
@@ -106,6 +126,17 @@
 
         })
       },
+      //获取选择内容
+      getSelected (selection) {
+        let vm = this;
+        vm.tableData.selectedIds = [];
+        for (let i = 0, len = selection.length; i < len; i++) {
+          vm.tableData.selectedIds.push({
+            id: selection[i].id,
+            type: selection[i].type
+          });
+        }
+      },
       //新增
       add: function () {
         let vm = this;
@@ -119,7 +150,6 @@
         vm.deepCopy(vm.modalData.sqlObj, vm.modalData.formObj);
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
-        console.log(vm.modalWidgets)
       },
       //查看
       view: function (id) {
@@ -129,27 +159,23 @@
         };
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
-          for (let obj in vm.modalData.formObj) {
-            vm.modalData.formObj[obj] = data[obj];
+          let content = `<ul>`;
+          for (let i = 0, len = vm.modalData.infoObj.length; i < len; i++ ) {
+            content += `<li>${vm.modalData.infoObj[i].name}：${data.data[vm.modalData.infoObj[i].key]}</li>`
           }
-          vm.modalData.formObj[vm.modalData.idObj] = id;
-          vm.modalData.title = vm.modalData.titles.viewTitle;
-          for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
-            vm.modalData.widgets[i].disabled = true;
-          }
-          vm.modalWidgets = vm.modalData;
+          content += `</ul>`;
+          vm.$Modal.info({
+            title: '摘要信息',
+            content: content
+          });
           vm.$Loading.finish();
-          vm.modalOpreation = true;
         }).catch((error) => {
           vm.$Loading.error();
         })
       },
       //修改
-      edit: function (id, roleName, roleId) {
+      edit: function (id) {
         let vm = this;
-        if (roleName === '') {
-          roleName = '节点管理员';
-        }
         let ID = {
           userId: id,
           roleName: roleName,
@@ -167,16 +193,42 @@
         vm.modalOpreation = true;
       },
       //删除
-      deleteItem: function (id) {
+      deleteItem: function (id, type) {
         let vm = this;
-        let params = {};
-        params[vm.modalData.idObj] = id;
-        vm.api[vm.apis.deleteApi](params).then((data) => {
-          vm.$Loading.finish();
-          vm.initTable();
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
+        let params;
+        if (id && type) {
+          params = [];
+          params.push({
+            id: id,
+            type: type
+          });
+          vm.api[vm.apis.deleteApi](params).then((data) => {
+            vm.$Loading.finish();
+            vm.initTable();
+          }).catch((error) => {
+            vm.$Loading.error();
+          })
+        } else {
+          if (vm.tableData.selectedIds.length === 0) {
+            vm.$Message.error('请选择需要删除的资源！');
+            return false;
+          } else {
+            params = vm.tableData.selectedIds;
+            vm.$Modal.confirm({
+              title: '信息',
+              content: '是否删除选择的信息？',
+              onOk: function () {
+                vm.api[vm.apis.deleteApi](params).then((data) => {
+                  vm.$Loading.finish();
+                  vm.initTable();
+                  vm.tableData.selectedIds = [];
+                }).catch((error) => {
+                  vm.$Loading.error();
+                })
+              }
+            });
+          }
+        }
       },
       //是否显示模态框
       changeModal (status) {
@@ -216,16 +268,11 @@
         let vm = this;
         vm.modalOpreation = false;
         vm.$refs.formValidate.resetFields();
-        vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
-        delete vm.modalData.formObj.ID;
-        vm.modalData.itemTableData.tableList = [];
         vm.modalData.current = 0;
-        vm.modalData.currentId = '';
       },
       //下一步
       next () {
         let vm = this;
-        console.log(vm.modalData)
         vm.$refs['formValidate'].validate((valid) => {
           if (valid) {
             if (vm.modalData.current === 2) {
@@ -272,25 +319,20 @@
       //提交
       ok () {
         let vm = this;
-        for (let i = 0, len = vm.modalData.itemTableData.tableList.length; i < len; i++) {
-          delete vm.modalData.itemTableData.tableList[i].$isEdit;
-        }
-        vm.modalData.formObj.infoAddDtoList = vm.modalData.itemTableData.tableList;
-        let params = {};
-        if (vm.modalData.apiUrl === 'catalogUpdate') {
-          params.ID = vm.modalData.currentId;
-        }
-        vm.api[vm.modalData.apiUrl](vm.modalData.formObj, params).then((data) => {
+//        let params = {};
+//        if (vm.modalData.apiUrl === 'catalogUpdate') {
+//          params.ID = vm.modalData.currentId;
+//        }
+        vm.modalData.formObj.alias = vm.modalData.currentDataBase;
+        vm.modalData.formObj.resourceType = vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')];
+        vm.modalData.formObj.dbType = vm.modalData.formObj.dbType[1];
+        vm.api[vm.modalData.apiUrl](vm.modalData.formObj).then((data) => {
           vm.$Loading.finish();
           vm.$Message.success('提交成功！');
-          vm.initTable(vm.catalogId);
+          vm.initTable();
           vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
-          vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
-          delete vm.modalData.formObj.ID;
-          vm.modalData.itemTableData.tableList = [];
           vm.modalData.current = 0;
-          vm.modalData.currentId = '';
         }).catch((error) => {
           vm.$Loading.error();
         });
@@ -303,7 +345,9 @@
         };
         vm.api[vm.apis.mysqlDbApi](initData).then((data) => {
           vm.modalData.sqlDbTable.options = data.datas;
-          vm.modalData.formObj.dbName = data.datas[0].name;
+          if (vm.modalData.formObj.dbName === '' || vm.modalData.formObj.dbName === undefined) {
+            vm.modalData.formObj.dbName = data.datas[0].name;
+          }
           vm.initSqlTableTable(alias, vm.modalData.formObj.dbName);
         }).catch((error) => {
           vm.$Loading.error();
@@ -313,7 +357,12 @@
       changeDb (value) {
         let vm = this;
         vm.modalData.formObj.dbName = value;
+        vm.modalData.sqlTableTable.initData.pageNum = 1;
+        vm.modalData.sqlTableTable.currentPage = 1;
         vm.initSqlTableTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName);
+        vm.modalData.formObj.tableName = '';
+        vm.modalData.sqlColumnTable.tableList = [];
+        vm.modalData.sqlColumnTable.total = 0;
       },
       //初始化数据库表
       initSqlTableTable (alias, db) {
@@ -324,7 +373,6 @@
         }
         vm.modalData.sqlTableTable.loading = true;
         vm.api[vm.apis.mysqlTableApi](vm.modalData.sqlTableTable.initData).then((data) => {
-          console.log(data)
           vm.modalData.sqlTableTable.tableList = data.datas;
           vm.modalData.sqlTableTable.total = data.totalCounts;
           vm.modalData.sqlTableTable.loading = false;
@@ -337,7 +385,44 @@
         vm.modalData.sqlTableTable.initData.alias = vm.modalData.currentDataBase;
         vm.modalData.sqlTableTable.initData.db = vm.modalData.formObj.dbName;
         vm.modalData.sqlTableTable.initData.pageNum = page;
+        vm.modalData.sqlTableTable.currentPage = page;
         vm.initSqlTableTable();
+      },
+      //选择表
+      selectTable (currentRow, oldCurrentRow) {
+        let vm = this;
+        vm.modalData.formObj.tableName = currentRow.name;
+        vm.modalData.sqlColumnTable.initData.pageNum = 1;
+        vm.initSqlColumnTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName, vm.modalData.formObj.tableName);
+      },
+      //初始化数据库表字段
+      initSqlColumnTable (alias, db, tableName) {
+        let vm = this;
+        if (alias) {
+          vm.modalData.sqlColumnTable.initData.alias = alias;
+          vm.modalData.sqlColumnTable.initData.db = db;
+          vm.modalData.sqlColumnTable.initData.table = tableName;
+        }
+        vm.modalData.sqlColumnTable.loading = true;
+        vm.modalData.formObj.structAddDtoList = [];
+        vm.api[vm.apis.mysqlColumnApi](vm.modalData.sqlColumnTable.initData).then((data) => {
+          for (let i = 0, len = data.datas.length; i < len; i++) {
+            let primaryKey = false;
+            if (data.datas[i].primaryKey) {
+              primaryKey = true;
+            }
+            vm.modalData.formObj.structAddDtoList.push({
+              columnName: data.datas[i].name,
+              columnType: data.datas[i].type,
+              note: data.datas[i].comment,
+              primaryKey: primaryKey
+            });
+          }
+          vm.modalData.sqlColumnTable.tableList = data.datas;
+          vm.modalData.sqlColumnTable.loading = false;
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
       },
       //查看表结构
       viewSqlStruct (id) {
@@ -377,5 +462,11 @@
   .pages{
     width: 90%;
     margin: 0 auto;
+  }
+  .infoList{
+    li{
+      float: left;
+      width: 50%;
+    }
   }
 </style>

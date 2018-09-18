@@ -28,7 +28,8 @@ class sourceOptions {
         connectApi: 'resourceConnect',
         mysqlColumnApi: 'resourceMysqlColumn',
         mysqlDbApi: 'resourceMysqlDb',
-        mysqlTableApi: 'resourceMysqlTable'
+        mysqlTableApi: 'resourceMysqlTable',
+        mysqlStructApi: 'resourceMysqlStruct'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -47,6 +48,32 @@ class sourceOptions {
           '2-1': 'ftp',
           '2-2': 'sftp'
         },
+        infoObj: [
+          {
+            name: '资源名称',
+            key: 'name'
+          },
+          {
+            name: '应用系统名称',
+            key: 'appsysName'
+          },
+          {
+            name: '数据库名称',
+            key: 'dbName'
+          },
+          {
+            name: '数据库表名',
+            key: 'tableName'
+          },
+          {
+            name: '建库单位',
+            key: 'createUnit'
+          },
+          {
+            name: '摘要',
+            key: 'summary'
+          }
+        ],
         formObj:{
         },
         oldFormObj:{},
@@ -129,6 +156,20 @@ class sourceOptions {
             {
               required: true,
               message: '请输入数据库密码',
+              trigger: 'blur'
+            }
+          ],
+          createUnit: [
+            {
+              required: true,
+              message: '请输入建库单位',
+              trigger: 'blur'
+            }
+          ],
+          appsysName: [
+            {
+              required: true,
+              message: '请输入应用系统名称',
               trigger: 'blur'
             }
           ]
@@ -249,6 +290,61 @@ class sourceOptions {
             prop: 'password',
             name: '数据库密码',
             placeholder: '请输入数据库密码'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'createUnit',
+            name: '建库单位',
+            placeholder: '请输入建库单位'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'appsysName',
+            name: '应用系统名称',
+            placeholder: '请输入应用系统名称'
+          },
+          {
+            type: 'textarea',
+            disabled: false,
+            show: true,
+            word: 'textarea',
+            rows: 6,
+            prop: 'dbDescribe',
+            name: '数据库描述',
+            placeholder: '请输入数据库描述'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyName',
+            name: '负责人姓名',
+            placeholder: '请输入负责人姓名'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPhone',
+            name: '负责人手机号',
+            placeholder: '请输入负责人手机号'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPosition',
+            name: '负责人职位',
+            placeholder: '请输入负责人职位'
           }
         ],
         ftpWidgetsObj: [],
@@ -263,6 +359,7 @@ class sourceOptions {
           loading: true,
           tableList: [],
           total: 0,
+          currentPage: 1,
           initData: {
             pageNum: 1,
             pageSize: 10
@@ -280,47 +377,37 @@ class sourceOptions {
             {
               title: '中文标注',
               key: 'comment'
-            },
-            {
-              title: '操作',
-              key: 'operate',
-              render: (h, params) => {
-                let children = [];
-                let edit = {
-                  props: {
-                    type: 'primary'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      vm.viewSqlStruct(params.row.id);
-                    }
-                  }
-                };
-                let view = {
-                  props: {
-                    type: 'success'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      vm.viewSqlTable(params.row.id);
-                    }
-                  }
-                };
-                children.push(h('a', view, '浏览'));
-                children.push(h('a', edit, '结构'));
-                return h('div', children);
-              }
             }
           ]
         },
         sqlColumnTable: {
-
+          loading: true,
+          tableList: [],
+          total: 0,
+          initData: {},
+          columns: [
+            {
+              type: 'index',
+              width: 60,
+              align: 'center'
+            },
+            {
+              title: '主键',
+              key: 'primaryKey'
+            },
+            {
+              title: '字段名称',
+              key: 'name'
+            },
+            {
+              title: '数据类型',
+              key: 'type'
+            },
+            {
+              title: '中文标注',
+              key: 'comment'
+            }
+          ]
         },
         titles: {
           viewTitle: {
@@ -347,6 +434,7 @@ class sourceOptions {
         pageSize: 10
       },
       tableData: {
+        selectedIds: [],
         loading: true,
         tableList: [],
         columns: [
@@ -414,6 +502,9 @@ class sourceOptions {
                 props: {
                   type: 'primary'
                 },
+                domProps: {
+                  disabled: true
+                },
                 style: {
                   marginRight: '5px'
                 },
@@ -446,7 +537,7 @@ class sourceOptions {
                       title: '信息',
                       content: '是否删除选择的信息？',
                       onOk: function () {
-                        vm.deleteItem(params.row.id);
+                        vm.deleteItem(params.row.id, params.row.type);
                       }
                     });
                   }

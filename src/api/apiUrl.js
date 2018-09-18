@@ -36,6 +36,7 @@ export default {
   resourceMysqlColumn: { url: '/api/v2/zhengwu/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
   resourceMysqlDb: { url: '/api/v2/zhengwu/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
   resourceMysqlTable: { url: '/api/v2/zhengwu/swap/resource/mysql/table', method: 'get' }, //获取mysql指定库的数据表list
+  resourceMysqlStruct: { url: '/api/v2/zhengwu/swap/resource/db/{id}/struct', method: 'get' }, //获取mysql指定库的数据表结构
 
   //目录管理
   catalogAdd: { url: '/api/v2/zhengwu/swap/resource', method: 'post' }, //新建资源
