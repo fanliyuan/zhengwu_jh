@@ -23,42 +23,47 @@ class catalogMountOptions {
         name: '返回'
       },
       isSaveBtn: {
-        name: '保存'
+        name: '保存',
+        method: 'edit'
       },
       apis: {
-        listApi: 'catalogItemsList',
-        detailApi: 'catalogDetail'
+        listApi: 'resourceList',
+        detailApi: 'catalogDetail',
+        itemListApi: 'catalogItemsList',
+        tableStructApi: 'resourceMysqlStruct',
+        updateApi: 'catalogMount'
       },
+      sourceName: '未选择',
+      sourceId: '',
       detailData: {},
       detailNameData: {
+        infoCode: '目录编码',
         name: '名称',
-        classify: '分类',
-        infoCode: '信息资源代码',
-        infoFormat: '信息资源格式',
-        providerName: '提供方名称',
-        providerDept: '提供方内部部门',
-        providerNo: '资源提供方代码',
-        summary: '摘要'
+        providerName: '提供方',
+        registerTime: '创建时间'
       },
+      structData: [],
+      modalOpreation: false,
       initData: {
-        id: '',
         name: '',
-        code: '',
-        shareType: '',
-        openType: '',
+        beginTime: '',
+        endTime: '',
         pageNum: 1,
         pageSize: 10
       },
       tableData: {
         loading: true,
         tableList: [],
+        initData: {
+          id: ''
+        },
         columns: [
           {
-            title: '信息项编码',
+            title: '信息编码',
             key: 'code'
           },
           {
-            title: '信息项名称',
+            title: '信息名称',
             key: 'name'
           },
           {
@@ -68,71 +73,64 @@ class catalogMountOptions {
           {
             title: '数据长度',
             key: 'dataLength'
-          },
-          {
-            title: '共享类型',
-            key: 'shareType'
-          },
-          {
-            title: '共享条件',
-            key: 'shareCondition'
-          },
-          {
-            title: '共享方式分类',
-            key: 'shareModeClassify'
-          },
-          {
-            title: '共享方式类型',
-            key: 'shareModeType'
-          },
-          {
-            title: '开放类型',
-            key: 'openType'
-          },
-          {
-            title: '开放条件',
-            key: 'openCondition'
           }
         ]
       },
-      pageData: {
-        total: 0
+      sourceTableData: {
+        loading: true,
+        tableList: [],
+        pageData: {
+          total: 0
+        },
+        columns: [
+          {
+            title: 'ID',
+            key: 'id'
+          },
+          {
+            title: '资源名称',
+            key: 'name'
+          },
+          {
+            title: '数据类型',
+            key: 'dataType'
+          },
+          {
+            title: '注册时间',
+            key: 'registerTime'
+          }
+        ]
       },
       filterData: {
         filiterObj: {
           name: '',
-          code: '',
-          shareType: '',
-          openType: ''
+          beginTime: '',
+          endTime: ''
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'code',
-            name: '信息项编码',
-            placeholder: '请输入信息项编码'
-          },
-          {
-            type: 'input',
-            word: 'text',
             prop: 'name',
-            name: '信息项名称',
-            placeholder: '请输入信息项名称'
+            disabled: false,
+            name: '资源名称',
+            placeholder: '请输入资源名称'
           },
+          //{
+          //  type: 'input',
+          //  word: 'text',
+          //  prop: 'name',
+          //  disabled: false,
+          //  name: '信息项名称',
+          //  placeholder: '请输入信息项名称'
+          //},
           {
-            type: 'input',
-            word: 'text',
-            prop: 'shareType',
-            name: '共享类型',
-            placeholder: '请输入共享类型'
-          },
-          {
-            type: 'input',
-            word: 'text',
-            prop: 'openType',
-            name: '开放类型',
-            placeholder: '请输入开放类型'
+            type: 'dateRange',
+            word: 'daterange',
+            prop: 'timeRange',
+            disabled: false,
+            name: '时间段',
+            placeholder: '请选择时间段'
           }
         ]
       }

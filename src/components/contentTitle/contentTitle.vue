@@ -9,19 +9,24 @@
   <div class="cl titleDiv">
     <h3 class="container-title">{{options}}</h3>
     <Button class="back-btn" v-if="backbtn" @click="back()">{{backbtn.name}}</Button>
+    <Button class="back-btn" type="primary" v-if="saveBtn" @click="save(saveBtn.method)">{{saveBtn.name}}</Button>
   </div>
 </template>
 
 <script>
   export default{
     name: 'ConTitle',
-    props: ['options', 'backbtn'],
+    props: ['options', 'backbtn', 'saveBtn'],
     data () {
       return {}
     },
     methods: {
       back () {
         history.back();
+      },
+      save (method) {
+        let vm = this;
+        vm.$parent[method]();
       }
     }
   }
@@ -49,5 +54,6 @@
   }
   .back-btn{
     float: right;
+    margin-left: 10px;
   }
 </style>

@@ -27,7 +27,7 @@ export default [{
     //keepAlive: true
   }
 }, {
-  path: '/catalog/mount/:id',
+  path: '/catalog/mount/:id/',
   name: 'CatalogMount',
   component: CatalogMountPage,
   meta: {

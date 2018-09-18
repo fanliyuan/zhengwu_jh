@@ -36,15 +36,20 @@
     methods: {
       handleSubmit (name) {
         let vm = this;
-        for (var obj in vm[name]) {
-          if (obj !== 'temporaryBuildings') {
+        if (vm.$parent.$el.dataset.parent === 'sParent') {
+          for (var obj in vm[name]) {
+            vm.$parent.$parent.initData[obj] = vm[name][obj];
+          }
+          vm.$parent.$parent.initTable();
+        } else {
+          for (var obj in vm[name]) {
             vm.$parent.initData[obj] = vm[name][obj];
           }
-        }
-        if (vm.$parent.catalogId) {
-          vm.$parent.initTable(vm.$parent.catalogId);
-        } else {
-          vm.$parent.initTable();
+          if (vm.$parent.catalogId) {
+            vm.$parent.initTable(vm.$parent.catalogId);
+          } else {
+            vm.$parent.initTable();
+          }
         }
       },
       nowDateRange (value) {

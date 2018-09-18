@@ -948,7 +948,56 @@ class catalogOptions {
                 },
                 on: {
                   click: () => {
-                    vm.link(params.row.id);
+                    if (!params.row.havaGj) {
+                      let radioGroup = [];
+                      let defaultVal = 'mysql';
+                      vm.$Modal.confirm({
+                        title: '请选择挂接类型',
+                        render: (h) => {
+                          return h('RadioGroup',{
+                                props:{
+                                  value: defaultVal
+                                },
+                                on:{
+                                  'on-change': (val) => {
+                                    defaultVal = val;
+                                  }
+                                }
+                              },[
+                                h('Radio',{
+                                  props:{
+                                    label: 'mysql'
+                                  }
+                                },'Mysql'),
+                                h('Radio',{
+                                  props:{
+                                    label: 'ftp',
+                                    //disabled: true
+                                  }
+                                },'FTP'),
+                                h('Radio',{
+                                  props:{
+                                    label: '文件',
+                                    //disabled: true
+                                  }
+                                },'文件')
+                              ]
+                          );
+                        },
+                        onOk: () => {
+                          vm.$router.push({'path': '/catalog/mount/' + params.row.id, params: {
+                            id: params.row.id
+                          }, query: {
+                            mountType: defaultVal
+                          }});
+                        }
+                      })
+                    } else {
+                      vm.$router.push({'path': '/catalog/mount/' + params.row.id, params: {
+                        id: params.row.id,
+                        mountType: params.row.mountType
+                      }});
+                    }
                   }
                 }
               };
