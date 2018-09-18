@@ -44,6 +44,7 @@ class catalogMountOptions {
       },
       structData: [],
       modalOpreation: false,
+      modalOk: true,
       initData: {
         name: '',
         beginTime: '',
