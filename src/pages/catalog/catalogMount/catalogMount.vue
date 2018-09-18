@@ -109,6 +109,13 @@
         };
         vm.api[vm.apis.detailApi](ID).then((data) => {
           vm.detailData = data.data;
+          if (data.data.havaMount) {
+            vm.sourceName = data.data.mountItemName;
+            vm.sourceId = data.data.mountItemId;
+            delete data.data.mountInfoItemIdMap['@type'];
+            vm.infoItemIdMap = data.data.mountInfoItemIdMap;
+            vm.initStruct();
+          }
         }).catch((error) => {
 
         })
@@ -128,7 +135,14 @@
             title: '选择映射字段',
             key: 'operate',
             render: (h, params) => {
+              let defaultVal = '';
+              if (vm.infoItemIdMap[params.row.id]) {
+                defaultVal = vm.infoItemIdMap[params.row.id];
+              }
               return h('Select', {
+                props: {
+                  value: defaultVal
+                },
                 on: {
                   'on-change': (value) => {
                     vm.infoItemIdMap[params.row.id] = value;
