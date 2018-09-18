@@ -8,19 +8,30 @@
 
 import CatalogPage from '@/pages/catalog/catalog.vue'
 import CatalogItemPage from '@/pages/catalog/catalogItem/catalogItem.vue'
+import CatalogMountPage from '@/pages/catalog/catalogMount/catalogMount.vue'
 
 export default [{
   path: '/catalog',
   name: 'Catalog',
   component: CatalogPage,
   meta: {
-    authority: ['user']
+    authority: ['user'],
+    //keepAlive: true
   }
 }, {
   path: '/catalog/itemInfo/:id',
   name: 'CatalogItemInfo',
   component: CatalogItemPage,
   meta: {
-    authority: ['user']
+    authority: ['user'],
+    //keepAlive: true
+  }
+}, {
+  path: '/catalog/mount/:id',
+  name: 'CatalogMount',
+  component: CatalogMountPage,
+  meta: {
+    authority: ['user'],
+    //keepAlive: false
   }
 }]

@@ -21,7 +21,7 @@
     },
     methods: {
       back () {
-        history.back(-1);
+        history.back();
       }
     }
   }

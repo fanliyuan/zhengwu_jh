@@ -50,7 +50,8 @@
               <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
             </TabPane>
             <TabPane label="浏览" icon="md-list">
-              暂无浏览数据
+              <Table class="tableList" :loading="modalData.sqlDataTable.loading" ref="sqlDataTable" :columns="modalData.sqlDataTable.columns" :data="modalData.sqlDataTable.tableList"></Table>
+              <Page class-name="tablePager" :total="modalData.sqlDataTable.total" show-total @on-change="changeDataTablePage" :current="modalData.sqlDataTable.currentPage"></Page>
             </TabPane>
           </Tabs>
         </div>
@@ -394,6 +395,7 @@
         vm.modalData.formObj.tableName = currentRow.name;
         vm.modalData.sqlColumnTable.initData.pageNum = 1;
         vm.initSqlColumnTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName, vm.modalData.formObj.tableName);
+        vm.initSqlDataTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName, vm.modalData.formObj.tableName);
       },
       //初始化数据库表字段
       initSqlColumnTable (alias, db, tableName) {
@@ -423,6 +425,41 @@
         }).catch((error) => {
           vm.$Loading.error();
         })
+      },
+      initSqlDataTable (alias, db, tableName) {
+        let vm = this;
+        if (alias) {
+          vm.modalData.sqlDataTable.initData.alias = alias;
+          vm.modalData.sqlDataTable.initData.db = db;
+          vm.modalData.sqlDataTable.initData.table = tableName;
+        }
+        vm.modalData.sqlDataTable.loading = true;
+        vm.api[vm.apis.mysqlDataApi](vm.modalData.sqlDataTable.initData).then((data) => {
+          vm.modalData.sqlDataTable.columns = [];
+          if (data.datas.length > 0) {
+            for (let obj in data.datas[0]) {
+              if (obj !== '@type') {
+                vm.modalData.sqlDataTable.columns.push({
+                  title: obj,
+                  key: obj
+                });
+              }
+            }
+          }
+          vm.modalData.sqlDataTable.tableList = data.datas;
+          vm.modalData.sqlDataTable.total = data.totalCounts;
+          vm.modalData.sqlDataTable.loading = false;
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      changeDataTablePage (page) {
+        let vm = this;
+        vm.modalData.sqlDataTable.initData.alias = vm.modalData.currentDataBase;
+        vm.modalData.sqlDataTable.initData.db = vm.modalData.formObj.dbName;
+        vm.modalData.sqlDataTable.initData.pageNum = page;
+        vm.modalData.sqlDataTable.currentPage = page;
+        vm.initSqlDataTable();
       },
       //查看表结构
       viewSqlStruct (id) {

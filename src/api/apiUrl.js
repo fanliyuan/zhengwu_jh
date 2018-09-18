@@ -34,6 +34,7 @@ export default {
   resourceDetail: { url: 'api/v2/zhengwu/swap/resource/db', method: 'get' }, //资源详情
   resourceUpdate: { url: '/api/v2/zhengwu/swap/resource/db', method: 'put' }, //修改资源
   resourceMysqlColumn: { url: '/api/v2/zhengwu/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
+  resourceMysqlData: { url: '/api/v2/zhengwu/swap/resource/mysql/data', method: 'get' }, //获取mysql指定库表的数据list
   resourceMysqlDb: { url: '/api/v2/zhengwu/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
   resourceMysqlTable: { url: '/api/v2/zhengwu/swap/resource/mysql/table', method: 'get' }, //获取mysql指定库的数据表list
   resourceMysqlStruct: { url: '/api/v2/zhengwu/swap/resource/db/{id}/struct', method: 'get' }, //获取mysql指定库的数据表结构
@@ -47,6 +48,7 @@ export default {
   catalogItemsList: { url: '/api/v2/zhengwu/swap/resource/{id}/infoList/', method: 'get' }, //获取资源信息项
   catalogShareDetail: { url: '/api/v2/zhengwu/swap/resource/{id}/shareopen', method: 'get' }, //获取资源共享开放信息
   catalogShareUpdate: { url: '/api/v2/zhengwu/swap/resource/{id}/shareopen', method: 'put' }, //修改资源共享开放信息
+  catalogMount: { url: '/api/v2/zhengwu/swap/resource/{id}/mount', method: 'post' }, //资源挂接
 
   //资源集市
   resourceBazaar: { url: '/api/v2/zhengwu/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表

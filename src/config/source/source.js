@@ -27,6 +27,7 @@ class sourceOptions {
         editApi: 'resourceUpdate',
         connectApi: 'resourceConnect',
         mysqlColumnApi: 'resourceMysqlColumn',
+        mysqlDataApi: 'resourceMysqlData',
         mysqlDbApi: 'resourceMysqlDb',
         mysqlTableApi: 'resourceMysqlTable',
         mysqlStructApi: 'resourceMysqlStruct'
@@ -408,6 +409,17 @@ class sourceOptions {
               key: 'comment'
             }
           ]
+        },
+        sqlDataTable: {
+          loading: true,
+          tableList: [],
+          total: 0,
+          currentPage: 1,
+          initData: {
+            pageNum: 1,
+            pageSize: 10
+          },
+          columns: []
         },
         titles: {
           viewTitle: {

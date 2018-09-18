@@ -28,6 +28,7 @@ const store = () => new Vuex.Store({
     },
     getters: {
         setActiveUrl: (state) => (navs) => {
+            console.log(navs)
             if (state.navName.childName === '') {
                 state.navName.childName = sessionStorage.getItem('activeName');
             }
