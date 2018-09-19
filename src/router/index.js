@@ -9,6 +9,9 @@ import Source from './source/source'
 import Catalog from './catalog/catalog'
 import ResourceBazaar from './resourceChangeManage/resourceBazaar'
 import AllSubscriptions from './resourceChangeManage/allSubscriptions'
+import SourceAudit from './sourceAudit/sourceAudit'
+import CatalogAudit from './catalogAudit/catalogAudit'
+
 Vue.use(Router)
 const Layout = r => require.ensure([], () => r(require('@/pages/layout.vue')), 'Layout');
 const router = new Router({
@@ -32,7 +35,9 @@ const router = new Router({
         ...Source,
         ...Catalog,
         ...ResourceBazaar,
-        ...AllSubscriptions
+        ...AllSubscriptions,
+        ...SourceAudit,
+        ...CatalogAudit
       ]
     },
     {
