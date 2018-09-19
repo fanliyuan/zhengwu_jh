@@ -1,19 +1,153 @@
+/**
+* 作者 ：yhzzy
+*
+* 日期 ：2018/09/19
+*
+* 描述 ：目录审核
+*/
 <template>
-  <div>
-    {{msg}}
+  <div class="cl">
+    <ContentTitle :options="title"></ContentTitle>
+    <div class="main-content cl">
+      <FilterForm :options="filterData"></FilterForm>
+      <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
+      <Pager :options="pageData.total"></Pager>
+      <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
+    </div>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
+  import ContentTitle from '../../components/contentTitle/contentTitle.vue'
+  import FilterForm from '../../components/filterForm/filterForm.vue'
+  import Pager from '../../components/pager/pager.vue'
+  import ModalConTent from '../../components/modal/modal.vue'
+  import Data from '../../config/catalogAudit/catalogAudit'
+
   export default{
+    name: 'assignRole',
+    components: {
+      ContentTitle,
+      FilterForm,
+      Pager,
+      ModalConTent
+    },
     data () {
-      return {msg: '初始代模板'}
+      let vm = this;
+      return Data(vm).setData()
+    },
+    created: function () {
+      this.initTable();
+      this.getRoleList();
+    },
+    methods:{
+      //初始化表格
+      initTable: function () {
+        let vm = this;
+        vm.tableData.loading = true;
+        vm.api[vm.apis.listApi](vm.initData).then((data) => {
+          vm.tableData.tableList = data.datas;
+          vm.pageData.total = data.totalCounts;
+          vm.tableData.loading = false;
+        }).catch((error) => {
+
+        })
+      },
+      //新增
+      add: function () {
+        let vm = this;
+        if (vm.modalData.formObj[vm.modalData.idObj]) {
+          delete vm.modalData.formObj[vm.modalData.idObj];
+        }
+        vm.modalData.title = vm.modalData.titles.addTitle;
+        vm.modalData.apiUrl = vm.apis.addApi;
+        vm.modalWidgets = vm.modalData;
+        vm.modalOpreation = true;
+      },
+      //查看
+      view: function (id) {
+        let vm = this;
+        let ID = {
+          ID: id
+        };
+        vm.$Loading.start();
+        vm.api[vm.apis.detailApi](ID).then((data) => {
+          for (let obj in vm.modalData.formObj) {
+            vm.modalData.formObj[obj] = data[obj];
+          }
+          vm.modalData.formObj[vm.modalData.idObj] = id;
+          vm.modalData.title = vm.modalData.titles.viewTitle;
+          for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
+            vm.modalData.widgets[i].disabled = true;
+          }
+          vm.modalWidgets = vm.modalData;
+          vm.$Loading.finish();
+          vm.modalOpreation = true;
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      //修改
+      edit: function (id, roleId) {
+        let vm = this;
+        if (roleId === '') {
+          roleId = vm.roleList[vm.roleList.length - 1].value;
+        }
+        let ID = {
+          userId: id,
+          roleIds: roleId
+        };
+        vm.$Loading.start();
+        for (let obj in vm.modalData.formObj) {
+          vm.modalData.formObj[obj] = ID[obj];
+        }
+//        vm.modalData.formObj[vm.modalData.idObj] = id;
+        vm.modalData.title = vm.modalData.titles.editTitle;
+        vm.modalData.apiUrl = vm.apis.editApi;
+        vm.modalWidgets = vm.modalData;
+        vm.$Loading.finish();
+        vm.modalOpreation = true;
+      },
+      //删除
+      deleteItem: function (id) {
+        let vm = this;
+        let params = {};
+        params[vm.modalData.idObj] = id;
+        vm.api[vm.apis.deleteApi](params).then((data) => {
+          vm.$Loading.finish();
+          vm.initTable();
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      //是否显示模态框
+      changeModal (status) {
+        let vm = this;
+        vm.modalOpreation = status;
+      },
+      //查询用户角色列表
+      getRoleList: function () {
+        let vm = this;
+        let params = {};
+        vm.api[vm.apis.listRoleApi](params).then((data) => {
+          for (let i = 0, len = data.datas.length; i < len; i++) {
+            vm.roleList.push({
+              value: data.datas[i].id.toString(),
+              key: data.datas[i].name
+            });
+            vm.filterRoleList.push({
+              value: data.datas[i].id,
+              key: data.datas[i].name
+            })
+          }
+        }).catch((error) => {
+
+        })
+      }
     }
   }
 </script>
 
-<style>
-  body {
-    background-color: green;
-  }
+<style lang="less" scoped>
+
 </style>
