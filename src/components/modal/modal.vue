@@ -204,11 +204,9 @@
       },
       changeCascader (value, selectedData) {
         let vm = this;
-        if (vm.formValidate.buildings) {
-          vm.formValidate.buildingId = selectedData[0].value;
-          vm.formValidate.buildingName = selectedData[0].label;
-          vm.formValidate.floorId = selectedData[1].value;
-          vm.formValidate.floorName = selectedData[1].label;
+        if (vm.formValidate.publishMode) {
+          console.log(value)
+          console.log(selectedData)
         }
       },
       validateForm (name) {

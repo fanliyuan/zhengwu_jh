@@ -652,12 +652,16 @@ class catalogOptions {
             name: '是否共享',
             options: [
               {
-                key: '是',
+                key: '无条件共享',
                 value: 1
               },
               {
-                key: '否',
-                value: 0
+                key: '有条件共享',
+                value: 2
+              },
+              {
+                key: '不予共享',
+                value: 3
               }
             ]
           },
@@ -670,12 +674,16 @@ class catalogOptions {
             name: '是否开放',
             options: [
               {
-                key: '是',
+                key: '有条件开放',
                 value: 1
               },
               {
-                key: '否',
-                value: 0
+                key: '无条件开放',
+                value: 2
+              },
+              {
+                key: '不予开放',
+                value: 3
               }
             ]
           },
@@ -719,31 +727,13 @@ class catalogOptions {
                   },
                   {
                     value: '12',
-                    label: '标志位'
-                  },
-                  {
-                    value: '13',
-                    label: '时间戳'
+                    label: '增量字段'
                   }
                 ]
               },
               {
                 label: '全量',
-                value: '2',
-                children: [
-                  {
-                    value: '21',
-                    label: '日志'
-                  },
-                  {
-                    value: '22',
-                    label: '标志位'
-                  },
-                  {
-                    value: '23',
-                    label: '时间戳'
-                  }
-                ]
+                value: '2'
               }
             ]
           },
