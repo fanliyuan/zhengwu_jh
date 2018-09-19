@@ -1,5 +1,5 @@
 /**
- * Created by Administrator on 2018/9/17 0017.
+ * Created by Administrator on 2018/9/18 0018.
  */
 /**
  * 作者 ：yhzzy
@@ -21,44 +21,24 @@ class catalogItemOptions {
   setData () {
     let vm = this.setVm();
     return {
-      title: '订阅(文件)',
+      title: '查看资源信息项',
       isBackBtn: {
         name: '返回'
       },
-      isSureBtn: {
-        name: '确定',
-        method: 'sure'
-      },
-
-      type: '否',
-      showPath:false,
-      filePath:'',
-      subscribeName:'',
       apis: {
         listApi: 'catalogItemsList',
-        detailApi: 'catalogDetail',
-        subscribeApi: 'subscribe'
+        detailApi: 'catalogDetail'
       },
-      sureData:{
-        catalogId: '1',
-        directoryName: '',
-        dsID: '1',
-        dsName: 'hh',
-        publishInstitution: '发布机构',
-        publisherID: '12',
-        subscribeName: ''
-      },
-      detailData: {
-        catalogName:'1',
-        publishInstitution: '1',
-        dataType: '1',
-        classify: '1',
-      },
+      detailData: {},
       detailNameData: {
-        catalogName: '目录名称',
-        publishInstitution: '发布机构',
-        dataType: '数据类型',
-        classify: '所属分类',
+        name: '名称',
+        classify: '分类',
+        infoCode: '信息资源代码',
+        infoFormat: '信息资源格式',
+        providerName: '提供方名称',
+        providerDept: '提供方内部部门',
+        providerNo: '资源提供方代码',
+        summary: '摘要'
       },
       initData: {
         id: '',
@@ -155,15 +135,6 @@ class catalogItemOptions {
             placeholder: '请输入开放类型'
           }
         ]
-      },
-      modalData : {
-            type: 'input',
-            disabled: false,
-            show:true,
-            word: 'text',
-            prop: 'name',
-            name: '订阅名称',
-            placeholder: '请输入订阅名称'
       }
     }
   }

@@ -132,7 +132,7 @@
                 {
                   navId: 24,
                   label: '订阅审核',
-                  frontUrl: '/sourceManagementAudit',
+                  frontUrl: '/subscriptionModeration',
                   authority: ['assessor']
                 }
               ]

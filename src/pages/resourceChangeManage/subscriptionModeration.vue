@@ -9,24 +9,27 @@
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
     <div class="main-contents cl">
-      <div class="left">
-        <div class="tree-content">
-          <Input search enter-button placeholder="请输入关键词" class="hiddenInput" @on-search="searchTree"/>
-          <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
-        </div>
-      </div>
-      <div class="right"  v-if="catalogId !== ''">
-         <FilterForm :options="filterData"></FilterForm>
-      <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
-      <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
-      <Pager :options="pageData.total"></Pager>
-      <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
-      </div>
-      <div class="right" style="height: 600px; line-height: 600px; text-align: center" v-if="catalogId === ''">
-        <h2>请在左侧列表中选择资源</h2>
-      </div>
 
+        <FilterForm :options="filterData"></FilterForm>
+        <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
+        <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
+        <Pager :options="pageData.total"></Pager>
+        <Modal footer-hide  :width="600" v-model="modalOpreation" title="授权" :closable="false" :mask-closable="false">
+            <RadioGroup v-model="codeReply" @on-change="changeRadio">
+              <Radio :label=0 >通过</Radio>
+              <Radio :label=-1>拒绝</Radio>
+            </RadioGroup>
+          <p v-if="showReason" class="refuseReason">请输入拒绝理由</p>
+          <Input v-model="reason" v-if="showReason" class="reason" type="textarea" :rows="4" placeholder="请输入拒绝理由" />
+          <div class="btn-group">
+            <Button @click="cancel">取消</Button>
+            <Button type="primary" @click="ok">确定</Button>
+          </div>
+      </Modal>
+        <!--<ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>-->
+        <!--<ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>-->
     </div>
+
   </div>
 </template>
 
@@ -36,10 +39,10 @@
   import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/resourceChangeManage/resourceBazaar'
+  import Data from '../../config/resourceChangeManage/subscriptionModeration'
 
   export default{
-    name: 'resourceBazaar',
+    name: 'subscriptionModeration',
     components: {
       ContentTitle,
       FilterForm,
@@ -52,9 +55,9 @@
       return Data(vm).setData()
     },
     created: function () {
-     // this.initTable();
-      this.initTree();
-     // this.getCatalogList();
+      this.initTable();
+     // this.initTree();
+      // this.getCatalogList();
     },
     methods:{
       deepCopy (oldObj, newObj) {
@@ -70,112 +73,20 @@
         }
         return newObj;
       },
-      //递归树
-      deepTree (arr) {
-        let vm = this;
-        for (let i = 0, len = arr.length; i < len; i++) {
-          if (arr[i].children.length > 0) {
-            arr[i].render = (h, { root, node, data }) => {
-              return h('span', [
-                h('Icon', {
-                  props: {
-                    type: 'ios-folder-outline'
-                  },
-                  style: {
-                    marginRight: '8px'
-                  }
-                }),
-                h('span', {
-                  style: {
-                    backgroundColor: '#ffffff'
-                  }
-                }, data.title)
-              ])
-            };
-            vm.deepTree(arr[i].children);
-          } else {
-            arr[i].render = (h, { root, node, data }) => {
-              return h('span', [
-                h('Icon', {
-                  props: {
-                    type: 'ios-paper-outline'
-                  },
-                  style: {
-                    marginRight: '8px'
-                  }
-                }),
-                h('span', {
-                  attrs: {
-                    id: 'treeNode' + node.nodeKey
-                  },
-                  style: {
-                    cursor: 'pointer'
-                  },
-                  on: {
-                    click: () => {
-                      //清空对象
-                      vm.filterData.filiterObj = vm.deepCopy(vm.filterData.defaultFiliterObj, vm.filterData.filiterObj);
-                      vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
-                      vm.initTable(data.id);
-                      vm.currentTreeNode = node.nodeKey;
-                      for (let i = 0, len = root.length; i < len; i++) {
-                        if (root[i].nodeKey === node.nodeKey) {
-                          document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
-                          document.getElementById('treeNode' + root[i].nodeKey).style.color = '#ffffff';
-                        } else {
-                          if (document.getElementById('treeNode' + root[i].nodeKey)) {
-                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
-                            document.getElementById('treeNode' + root[i].nodeKey).style.color = '#515a6e';
-                          } else {
-                            continue
-                          }
-                        }
-                      }
-                    }
-                  }
-                }, data.title)
-              ])
-            }
-          }
-        }
-      },
-      expand (node) {
-        let vm = this;
-        for (let i = 0, len = node.children.length; i < len; i++) {
-          if (node.children[i].nodeKey === vm.currentTreeNode && !document.getElementById('treeNode' + node.children[i].nodeKey)) {
-            vm.$nextTick(() => {
-              document.getElementById('treeNode' + node.children[i].nodeKey).style.backgroundColor = '#1890ff';
-              document.getElementById('treeNode' + node.children[i].nodeKey).style.color = '#ffffff';
-            });
-          }
-        }
-      },
-      //初始化树形
-      initTree () {
-        let vm = this;
-        vm.api[vm.apis.showCatalogListApi]().then((data) => {
-          vm.treeData = JSON.parse(JSON.stringify(data).replace(/typeName/g, "title"));
-          vm.deepTree(vm.treeData);
-          vm.$Loading.finish();
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
-      },
-      searchTree (value) {
 
-      },
       //初始化表格
       initTable: function (id) {
         let vm = this;
-        vm.catalogId = id;
+        console.log(vm.codeReply);
+        /*vm.catalogId = id;
         vm.initData.catalogId = id;
         vm.filterData.catalogId = id;
         vm.modalData.formObj.catalogId = id;
-        vm.modalData.oldFormObj.catalogId = id;
+        vm.modalData.oldFormObj.catalogId = id;*/
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.rows;
-          vm.pageData.total = parseInt(data.total);
+          vm.tableData.tableList = data.datas;
+          vm.pageData.total = parseInt(data.totalCounts);
           vm.tableData.loading = false;
         }).catch((error) => {
 
@@ -279,21 +190,76 @@
         vm.modalOpreation = status;
       },
 
-       //资源订阅
-      subscribe: function (id) {
-        console.log(id);
+
+      changeRadio: function () {
         let vm = this;
-        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + id});
-  }
+        console.log(vm.codeReply);
+        if (vm.codeReply == 0) {
+            vm.showReason = false;
+            vm.reason = "";
+        } else {
+          vm.showReason = true;
+        }
+      },
+      //订阅审核
+      auditing: function (dsId,subId,subscriberId) {
+        let vm = this;
+        vm.modalOkData.dsID = dsId;
+        vm.modalOkData.subID = subId;
+        vm.modalOkData.subscriberID = subscriberId;
+        vm.modalOpreation = true;
+       // vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + id});
+      },
 
+      cancel: function () {
+        let vm = this;
+        vm.modalOpreation = false;
+        vm.modalOk = true;
+      },
+      ok: function () {
+        let vm = this;
+        vm.modalOkData.reason = vm.reason;
+        vm.modalOkData.codeReply = vm.codeReply;
+        if (vm.codeReply == -1 && vm.reason =="") {
+           vm.$Message.info("请填写拒绝理由");
+        } else
+        {
+          vm.api[vm.apis.subscribeAuditApi](vm.modalOkData).then((data) => {
+            console.log(data);
+          /*  vm.tableData.tableList = data.datas;
+            vm.pageData.total = parseInt(data.totalCounts);
+            vm.tableData.loading = false;*/
+            vm.cancel();
+          }).catch((error) => {
 
+          })
+        }
+        console.log(vm.reason);
+      },
 
+      //审核详情
+      auditingDetail: function (dsId,subId,subscriberId) {
+        let vm = this;
+        let id = dsId+"&"+subId+"&"+subscriberId
 
+        vm.$router.push({'path': '/subscriptionModeration/auditDetail/' +id});
+      }
     }
   }
 </script>
 
 <style lang="less" scoped>
+  .btn-group{
+    text-align: right;
+    margin-top: 20px;
+  }
+  .reason{
+    margin-top: 8px;
+  }
+  .refuseReason{
+    margin-top: 20px;
+
+  }
   .main-contents{
     margin: 20px;
     background-color: #f0f2f5;

@@ -186,23 +186,21 @@ class resourceBazaarOptions {
       },
       defaultInitData: {
         catalogId: '',
-        name: '',
-        providerName: '',
-        status: '',
+        dsName: '',
+        publishInstitution: '',
+        subscribeStatus: '',
         beginTime: '',
         endTime: '',
-        mount: false,
         pageNum: 1,
         pageSize: 10
       },
       initData: {
         catalogId: '',
-        name: '',
-        providerName: '',
-        status: '',
+        dsName: '',
+        publishInstitution: '',
+        subscribeStatus: '',
         beginTime: '',
         endTime: '',
-        mount: false,
         pageNum: 1,
         pageSize: 10
       },
@@ -220,7 +218,7 @@ class resourceBazaarOptions {
           },
           {
             title: '发布机构',
-            key: 'providerName',
+            key: 'publishInstitution',
           },
           {
             title: '发布时间',
@@ -286,25 +284,27 @@ class resourceBazaarOptions {
       },
       filterData: {
         filiterObj: {
-          name: '',
-          phone: '',
-          role: '',
-          status: '',
+          catalogId: '',
+          dsName: '',
+          publishInstitution: '',
+          subscribeStatus: '',
           beginTime: '',
-          endTime: ''
+          endTime: '',
+          pageNum: 1,
+          pageSize: 10
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'name',
+            prop: 'dsName',
             name: '发布名称',
             placeholder: '发布名称'
           },
           {
             type: 'select',
             disabled: false,
-            prop: 'providerName',
+            prop: 'publishInstitution',
             name: '发布机构',
             placeholder: '请选择发布机构',
             options: [
@@ -338,7 +338,7 @@ class resourceBazaarOptions {
                 key:'是'
               },
               {
-                value:'2',
+                value:'0',
                 key:'否'
               }
             ]

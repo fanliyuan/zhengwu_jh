@@ -7,6 +7,7 @@ import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
 import Source from './source/source'
 import Catalog from './catalog/catalog'
+import SubscriptionModeration from './resourceChangeManage/subscriptionModeration'
 import ResourceBazaar from './resourceChangeManage/resourceBazaar'
 import AllSubscriptions from './resourceChangeManage/allSubscriptions'
 import SourceAudit from './sourceAudit/sourceAudit'
@@ -37,7 +38,9 @@ const router = new Router({
         ...ResourceBazaar,
         ...AllSubscriptions,
         ...SourceAudit,
-        ...CatalogAudit
+        ...CatalogAudit,
+        ...AllSubscriptions,
+        ...SubscriptionModeration
       ]
     },
     {
