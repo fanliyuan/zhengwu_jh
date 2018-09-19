@@ -38,7 +38,7 @@
         <div class="uploadListImg" v-if="item.type === 'upload'" v-show="formValidate[item.prop] !== ''">
           <img :src="formValidate[item.prop]">
         </div>
-        <UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>
+        <!--<UEditor ref="ueditorVal" v-if="item.type === 'ueditor'" :options="formValidate[item.prop]" :disabled="item.disabled"></UEditor>-->
         <RadioGroup v-model="formValidate[item.prop]" @on-change="changeRadio" v-if="item.type === 'radioGroup'">
           <Radio :true-value="true" :false-value="false" :label="option.value" :key="option.value" v-for="option in item.options">
             {{option.key}}
@@ -70,13 +70,13 @@
 </template>
 
 <script>
-  import UEditor from '../../components/ueditor/UEditor.vue'
+//  import UEditor from '../../components/ueditor/UEditor.vue'
 
   export default{
     name: 'ConModal',
     props: ['options', 'widgets'],
     components: {
-      UEditor
+//      UEditor
     },
     data () {
       return {

@@ -7,7 +7,6 @@ import UserManager from './userManager/userManager'
 import NodeOverview from './nodeOverview/nodeOverview'
 import Source from './source/source'
 import Catalog from './catalog/catalog'
-import CreateModel from './createModel/createModel'
 import ResourceBazaar from './resourceChangeManage/resourceBazaar'
 import AllSubscriptions from './resourceChangeManage/allSubscriptions'
 Vue.use(Router)
@@ -32,7 +31,6 @@ const router = new Router({
         ...UserManager,
         ...Source,
         ...Catalog,
-        ...CreateModel,
         ...ResourceBazaar,
         ...AllSubscriptions
       ]
