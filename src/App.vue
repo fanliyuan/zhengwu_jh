@@ -45,7 +45,7 @@ export default {
     padding: 15px 10px;
   }
   .ivu-message{
-    z-index: 9999;
+    z-index: 9999!important;
   }
   .tree-nodes{
     ul{
