@@ -547,16 +547,28 @@ class catalogOptions {
             placeholder: '请选择信息资源格式',
             options: [
               {
-                key: '分类1',
-                value: '分类1'
+                key: '数据库',
+                value: 'db'
               },
               {
-                key: '分类2',
-                value: '分类2'
+                key: '电子文件',
+                value: 'eDoc'
               },
               {
-                key: '分类21',
-                value: '分类21'
+                key: '电子表格',
+                value: 'eSheet'
+              },
+              {
+                key: '图形图像',
+                value: 'image'
+              },
+              {
+                key: '流媒体',
+                value: 'streaming'
+              },
+              {
+                key: '其它',
+                value: 'other'
               }
             ]
           }
@@ -881,11 +893,11 @@ class catalogOptions {
                   domProps: {
                     innerHTML: function () {
                       switch (params.row.status) {
-                        case 1:
+                        case -1:
                           return '<span style="color: #5cadff">待审核</span>';
-                        case 2:
+                        case 1:
                           return '<span style="color: #19be6b">已通过</span>';
-                        case 3:
+                        case 0:
                           return '<span style="color: #ed4014">已拒绝</span>';
                       }
                     }()
@@ -1023,7 +1035,9 @@ class catalogOptions {
               };
               children.push(h('a', view, '信息项'));
               children.push(h('a', link, '资源挂接'));
-              children.push(h('a', open, '共享开放'));
+              if (params.row.havaGj) {
+                children.push(h('a', open, '共享开放'));
+              }
               children.push(h('a', edit, '修改'));
               children.push(h('a', del, '删除'));
               return h('div', children);
@@ -1080,15 +1094,15 @@ class catalogOptions {
                 key: '全部'
               },
               {
-                value: 1,
+                value: -1,
                 key: '待审核'
               },
               {
-                value: 2,
+                value: 1,
                 key: '已通过'
               },
               {
-                value: 3,
+                value: 0,
                 key: '已拒绝'
               }
             ]
