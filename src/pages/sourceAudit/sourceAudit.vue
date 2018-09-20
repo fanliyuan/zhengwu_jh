@@ -79,13 +79,31 @@
         };
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
-          vm.modalData.sqlTableTable.dbName = data.data.dbName;
-          vm.modalData.sqlTableTable.tableName = data.data.tableName;
-          vm.modalData.sqlTableTable.tableNote = data.data.tableNote;
-          vm.initSqlColumnTable(data.data.alias, data.data.dbName, data.data.tableName);
-          vm.initSqlDataTable(data.data.alias, data.data.dbName, data.data.tableName);
-          vm.$Loading.finish();
-          vm.modalOpreation = true;
+          vm.$Message.info('连接中！');
+          let connectInit = {
+            type: data.data.resourceType,
+            addr: data.data.addr,
+            port: data.data.port,
+            username: data.data.username,
+            password: data.data.password
+          };
+          vm.api[vm.apis.connectApi](connectInit).then((dataA) => {
+            if (dataA.data) {
+              vm.$Message.success('连接成功！');
+              vm.modalData.sqlTableTable.dbName = data.data.dbName;
+              vm.modalData.sqlTableTable.tableName = data.data.tableName;
+              vm.modalData.sqlTableTable.tableNote = data.data.tableNote;
+              vm.initSqlColumnTable(data.data.alias, data.data.dbName, data.data.tableName);
+              vm.initSqlDataTable(data.data.alias, data.data.dbName, data.data.tableName);
+              vm.$Loading.finish();
+              vm.modalOpreation = true;
+            } else {
+              vm.$Message.error('连接失败！');
+            }
+          }).catch((error) => {
+            vm.$Loading.error();
+            vm.$Message.error('连接失败！');
+          })
         }).catch((error) => {
           vm.$Loading.error();
         })

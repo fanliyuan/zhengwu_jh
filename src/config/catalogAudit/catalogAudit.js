@@ -18,12 +18,11 @@ class catalogAuditOptions {
   setData () {
     let vm = this.setVm();
     return {
-      title: '资源审核',
+      title: '目录审核',
       apis: {
-        listApi: '',
-        editApi: '',
-        sourcelistApi: '',
-        auditApi: ''
+        listApi: 'catalogList',
+        editApi: 'catalogReview',
+        logApi: 'catalogReviewLog'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -31,6 +30,32 @@ class catalogAuditOptions {
         title: {},
         apiUrl: '',
         width: 900,
+        infoObj: [
+          {
+            name: '资源名称',
+            key: 'name'
+          },
+          {
+            name: '应用系统名称',
+            key: 'appsysName'
+          },
+          {
+            name: '数据库名称',
+            key: 'dbName'
+          },
+          {
+            name: '数据库表名',
+            key: 'tableName'
+          },
+          {
+            name: '建库单位',
+            key: 'createUnit'
+          },
+          {
+            name: '摘要',
+            key: 'summary'
+          }
+        ],
         formObj:{
           userId: '',
           roleIds: ''
@@ -59,7 +84,52 @@ class catalogAuditOptions {
             name: '分配角色',
             showOkBtn: true
           }
-        }
+        },
+        sqlTableTable: {
+          dbName: '',
+          tableName: '',
+          tableNote: ''
+        },
+        sqlColumnTable: {
+          loading: true,
+          tableList: [],
+          total: 0,
+          initData: {},
+          columns: [
+            {
+              type: 'index',
+              width: 60,
+              align: 'center'
+            },
+            {
+              title: '主键',
+              key: 'primaryKey'
+            },
+            {
+              title: '字段名称',
+              key: 'name'
+            },
+            {
+              title: '数据类型',
+              key: 'type'
+            },
+            {
+              title: '中文标注',
+              key: 'comment'
+            }
+          ]
+        },
+        sqlDataTable: {
+          loading: true,
+          tableList: [],
+          total: 0,
+          currentPage: 1,
+          initData: {
+            pageNum: 1,
+            pageSize: 10
+          },
+          columns: []
+        },
       },
       initData: {
         name: '',
@@ -67,7 +137,7 @@ class catalogAuditOptions {
         status: '',
         beginTime: '',
         endTime: '',
-        pageNum: 0,
+        pageNum: 1,
         pageSize: 10
       },
       tableData: {
@@ -87,26 +157,62 @@ class catalogAuditOptions {
             key: 'dataType'
           },
           {
-            title: '所属机构',
-            key: 'deptName'
-          },
-          {
-            title: '角色',
-            key: 'roleName'
-          },
-          {
-            title: '建立时间',
-            key: 'createtime'
+            title: '注册时间',
+            key: 'registerTime'
           },
           {
             title: '状态',
-            key: 'statusName'
+            key: 'status',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case -1:
+                          return '<span style="color: #5cadff">待审核</span>';
+                        case 1:
+                          return '<span style="color: #19be6b">已通过</span>';
+                        case 0:
+                          return '<span style="color: #ed4014">已拒绝</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '操作',
             key: 'operate',
             render: (h, params) => {
               let children = [];
+              let view = {
+                props: {
+                  type: 'success'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.view(params.row.id);
+                  }
+                }
+              };
+              let source = {
+                props: {
+                  type: 'success'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.source(params.row.id);
+                  }
+                }
+              };
               let edit = {
                 props: {
                   type: 'primary'
@@ -116,11 +222,38 @@ class catalogAuditOptions {
                 },
                 on: {
                   click: () => {
-                    vm.edit(params.row.id, params.row.roleid);
+                    vm.edit(params.row.id, params.row.type);
                   }
                 }
               };
-              children.push(h('a', edit, '分配角色'));
+              let log = {
+                props: {
+                  type: 'primary'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.log(params.row.id, params.row.type);
+                  }
+                }
+              };
+              switch (params.row.status) {
+                case -1:
+                  children.push(h('a', source, '资源'));
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', edit, '审核'));
+                  break;
+                case 1:
+                  children.push(h('a', source, '资源'));
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', log, '审核日志'));
+                  break;
+                case 0:
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', log, '审核日志'));
+              }
               return h('div', children);
             }
           }
@@ -132,8 +265,7 @@ class catalogAuditOptions {
       filterData: {
         filiterObj: {
           name: '',
-          phone: '',
-          role: '',
+          dataType: '',
           status: '',
           beginTime: '',
           endTime: ''
@@ -143,42 +275,64 @@ class catalogAuditOptions {
             type: 'input',
             word: 'text',
             prop: 'name',
-            name: '姓名',
-            placeholder: '请输入用户名/姓名'
+            name: '资源名称',
+            placeholder: '请输入资源名称'
           },
           {
-            type: 'input',
+            type: 'select',
             word: 'text',
-            prop: 'phone',
-            name: '电话',
-            placeholder: '请输入电话号码'
-          },
-          {
-            type: 'select',
-            prop: 'role',
-            disabled: false,
-            name: '角色',
-            placeholder: '请选择角色',
-            options: vm.filterRoleList
-          },
-          {
-            type: 'select',
-            prop: 'status',
-            disabled: false,
-            name: '状态',
-            placeholder: '请选择状态',
+            prop: 'dataType',
+            name: '数据类型',
+            placeholder: '请选择数据类型',
             options: [
               {
                 value: '',
                 key: '全部'
               },
               {
-                value: 1,
-                key: '启用'
+                value: 'mysql',
+                key: 'mysql'
               },
               {
-                value: 2,
-                key: '冻结'
+                value: 'oracle',
+                key: 'oracle'
+              },
+              {
+                value: 'sqlserver',
+                key: 'sqlserver'
+              },
+              {
+                value: '文件',
+                key: '文件'
+              },
+              {
+                value: 'ftp',
+                key: 'ftp'
+              }
+            ]
+          },
+          {
+            type: 'select',
+            word: 'text',
+            prop: 'status',
+            name: '审核状态',
+            placeholder: '请选择审核状态',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: -1,
+                key: '待审核'
+              },
+              {
+                value: 1,
+                key: '已通过'
+              },
+              {
+                value: 0,
+                key: '已拒绝'
               }
             ]
           },

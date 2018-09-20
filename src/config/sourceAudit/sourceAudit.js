@@ -25,7 +25,8 @@ class sourceAuditOptions {
         logApi: 'resourceReviewLog',
         detailApi: 'resourceDetail',
         mysqlColumnApi: 'resourceMysqlColumn',
-        mysqlDataApi: 'resourceMysqlData'
+        mysqlDataApi: 'resourceMysqlData',
+        connectApi: 'resourceConnect'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -59,35 +60,6 @@ class sourceAuditOptions {
             key: 'summary'
           }
         ],
-        formObj:{
-          userId: '',
-          roleIds: ''
-        },
-        oldFormObj:{
-          userId: '',
-          roleIds: ''
-        },
-        idObj: 'roleIds',
-        ruleObj: {
-
-        },
-        widgets: [
-          {
-            type: 'radioGroup',
-            disabled: false,
-            show: true,
-            word: 'text',
-            prop: 'roleIds',
-            name: '',
-            options: vm.roleList
-          }
-        ],
-        titles: {
-          editTitle: {
-            name: '分配角色',
-            showOkBtn: true
-          }
-        },
         sqlTableTable: {
           dbName: '',
           tableName: '',
