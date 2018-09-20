@@ -73,7 +73,7 @@
                       on:{
                         'on-change': (val) => {
                           defaultVal = val;
-                          if (defaultVal === 2) {
+                          if (defaultVal === 0) {
                             document.getElementById('pass').style.display = 'none';
                             document.getElementById('rejectReason').style.display = 'block';
                           } else {
@@ -90,7 +90,7 @@
                       }, '通过'),
                       h('Radio',{
                         props:{
-                          label: 2
+                          label: 0
                         }
                       }, '拒绝')
                     ]
