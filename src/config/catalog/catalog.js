@@ -893,11 +893,11 @@ class catalogOptions {
                   domProps: {
                     innerHTML: function () {
                       switch (params.row.status) {
-                        case 1:
+                        case -1:
                           return '<span style="color: #5cadff">待审核</span>';
-                        case 2:
+                        case 1:
                           return '<span style="color: #19be6b">已通过</span>';
-                        case 3:
+                        case 0:
                           return '<span style="color: #ed4014">已拒绝</span>';
                       }
                     }()
@@ -1094,15 +1094,15 @@ class catalogOptions {
                 key: '全部'
               },
               {
-                value: 1,
+                value: -1,
                 key: '待审核'
               },
               {
-                value: 2,
+                value: 1,
                 key: '已通过'
               },
               {
-                value: 3,
+                value: 0,
                 key: '已拒绝'
               }
             ]
