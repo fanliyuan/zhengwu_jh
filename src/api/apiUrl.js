@@ -56,5 +56,7 @@ export default {
   subscribe: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribe', method: 'post' }, //提交订阅资源
   subscribeAuditList: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditList', method: 'get' }, //订阅审核列表
   subscribeAudit: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeAudit', method: 'post' }, //提交订阅审核
-  subscribeAuditDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditDetail', method: 'get' } //审核详情
+  subscribeAuditDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditDetail', method: 'get' }, //审核详情
+  subscribeResourceDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceDetails', method: 'get' }, //资源详情
+  subscribeResourceList: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceItemList', method: 'get' } //资源详情
 }

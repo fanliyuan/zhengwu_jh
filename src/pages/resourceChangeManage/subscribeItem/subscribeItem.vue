@@ -24,7 +24,7 @@
           </li>
           <li>
 
-            <div class="createFile">
+           <!-- <div class="createFile">
               <span>是否存文件：</span>
               <RadioGroup v-model="type" @on-change="showFile(type)">
                 <Radio label="是"></Radio>
@@ -37,7 +37,7 @@
                 <Button type="primary" @click="browserFolder">选择</Button>
               </div>
 
-            </div>
+            </div>-->
           </li>
         </ul>
       </Card>
@@ -64,45 +64,41 @@
       return Data(vm).setData()
     },
     created: function () {
-      this.initTable();
+      this.initDetail();
       //this.view();
       this.showFile();
     },
     methods:{
       //初始化表格
-      initTable: function () {
+      initDetail: function () {
         let vm = this;
-        let id = vm.$route.params.id;
-        vm.tableData.loading = true;
-        vm.initData.id = id;
+        let paramsArr = (vm.$route.params.id).split("&");
+        vm.detailData = {
+          resourceName: paramsArr[3],
+          resourceProviderName: paramsArr[2],
+          dataType: '数据库',
+          typeName: paramsArr[1]
+        }
 
-        vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.datas;
-          vm.pageData.total = data.totalCounts;
-          vm.tableData.loading = false;
-        }).catch((error) => {
-
-        })
       },
-      //初始化资源详情
+      //跳转到资源详情
       view: function () {
         let vm = this;
-        let idLength = window.location.href.split('/');
-        let id = idLength[idLength.length-1];
-        console.log(vm.$route.params.id);
+        let paramsArr = (vm.$route.params.id).split("&");
+        let id = paramsArr[0] +"&"+paramsArr[1]; //资源id
         vm.$router.push({'path': '/resourceChangeManage/itemInfoDetail/' + id});
       },
+
+
       sure: function () {
         let vm = this;
-       // vm.sureData.apiUrl = vm.apis.subscribeApi;
         vm.sureData.subscribeName = vm.subscribeName;
-        if ( vm.sureData.subscribeName == "" ||  vm.sureData.subscribeName == undefined ||  vm.sureData.subscribeName == null) {
+        if ( vm.subscribeName == "" ||  vm.subscribeName == undefined ||  vm.subscribeName == null) {
           vm.$Message.info('请填写订阅名称');
           return;
         } else {
           vm.api[vm.apis.subscribeApi](vm.sureData).then((data) => {
-           console.log('success');
-
+            history.back(-1);
           }).catch((error) => {
             vm.$Loading.error();
 

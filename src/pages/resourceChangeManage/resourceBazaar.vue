@@ -280,10 +280,10 @@
       },
 
        //资源订阅
-      subscribe: function (id) {
-        console.log(id);
+      subscribe: function (id,typeName,resourceProviderName,resourceName) {
         let vm = this;
-        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + id});
+        let params = id + "&" + typeName + "&" + resourceProviderName + "&"+ resourceName;
+        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + params});
   }
 
 

@@ -49,16 +49,16 @@ class catalogItemOptions {
         subscribeName: ''
       },
       detailData: {
-        catalogName:'1',
-        publishInstitution: '1',
-        dataType: '1',
-        classify: '1',
+        resourceName:'',
+        resourceProviderName: '',
+        dataType: '',
+        typeName: '',
       },
       detailNameData: {
-        catalogName: '目录名称',
-        publishInstitution: '发布机构',
+        resourceName: '资源名称',
+        resourceProviderName: '发布机构',
         dataType: '数据类型',
-        classify: '所属分类',
+        typeName: '所属分类',
       },
       initData: {
         id: '',

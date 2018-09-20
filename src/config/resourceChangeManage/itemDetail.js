@@ -26,26 +26,35 @@ class catalogItemOptions {
         name: '返回'
       },
       apis: {
-        listApi: 'catalogItemsList',
-        detailApi: 'catalogDetail'
+        listApi: 'subscribeResourceList',
+        detailsApi: 'subscribeResourceDetail'
       },
-      detailData: {},
+      detailData: {
+        resourceName: '',
+        typeName: '',
+        resourceCode: '',
+        resourceFormatClassify: '',
+        resourceProviderName: '',
+        resourceProviderDepartment: '',
+        resourceProviderCode: '',
+        resourceAbstract: ''
+      },
       detailNameData: {
-        name: '名称',
-        classify: '分类',
-        infoCode: '信息资源代码',
-        infoFormat: '信息资源格式',
-        providerName: '提供方名称',
-        providerDept: '提供方内部部门',
-        providerNo: '资源提供方代码',
-        summary: '摘要'
+        resourceName: '名称',
+        typeName: '分类',
+        resourceCode: '信息资源代码',
+        resourceFormatClassify: '信息资源格式',
+        resourceProviderName: '提供方名称',
+        resourceProviderDepartment: '提供方内部部门',
+        resourceProviderCode: '资源提供方代码',
+        resourceAbstract: '摘要'
       },
       initData: {
-        id: '',
-        name: '',
-        code: '',
+        resourceId: '',
+        resourceItemName: '',
+        resourceItemCode: '',
         shareType: '',
-        openType: '',
+        disparkType: '',
         pageNum: 1,
         pageSize: 10
       },
@@ -55,19 +64,19 @@ class catalogItemOptions {
         columns: [
           {
             title: '信息项编码',
-            key: 'code'
+            key: 'resourceItemCode'
           },
           {
             title: '信息项名称',
-            key: 'name'
+            key: 'resourceItemName'
           },
           {
             title: '数据类型',
-            key: 'dataType'
+            key: 'resourceType'
           },
           {
             title: '数据长度',
-            key: 'dataLength'
+            key: 'resourceLength'
           },
           {
             title: '共享类型',
@@ -79,19 +88,19 @@ class catalogItemOptions {
           },
           {
             title: '共享方式分类',
-            key: 'shareModeClassify'
+            key: 'shareWayType'
           },
           {
             title: '共享方式类型',
-            key: 'shareModeType'
+            key: 'shareWayClassifyName'
           },
           {
             title: '开放类型',
-            key: 'openType'
+            key: 'disparkType'
           },
           {
             title: '开放条件',
-            key: 'openCondition'
+            key: 'disparkCondition'
           }
         ]
       },
@@ -100,23 +109,23 @@ class catalogItemOptions {
       },
       filterData: {
         filiterObj: {
-          name: '',
-          code: '',
+          resourceItemName: '',
+          resourceItemCode: '',
           shareType: '',
-          openType: ''
+          disparkType: ''
         },
         data: [
           {
             type: 'input',
             word: 'text',
-            prop: 'code',
+            prop: 'resourceItemCode',
             name: '信息项编码',
             placeholder: '请输入信息项编码'
           },
           {
             type: 'input',
             word: 'text',
-            prop: 'name',
+            prop: 'resourceItemName',
             name: '信息项名称',
             placeholder: '请输入信息项名称'
           },
@@ -130,7 +139,7 @@ class catalogItemOptions {
           {
             type: 'input',
             word: 'text',
-            prop: 'openType',
+            prop: 'disparkType',
             name: '开放类型',
             placeholder: '请输入开放类型'
           }

@@ -209,8 +209,8 @@ class resourceBazaarOptions {
         tableList: [],
         columns: [
           {
-            title: '目录名称',
-            key: 'typeName',
+            title: '资源名称',
+            key: 'resourceName',
           },
           {
             title: '数据类型',
@@ -218,11 +218,11 @@ class resourceBazaarOptions {
           },
           {
             title: '发布机构',
-            key: 'publishInstitution',
+            key: 'resourceProviderName',
           },
           {
             title: '发布时间',
-            key: 'deptName',
+            key: 'createTime',
           },
           {
             title: '发布方是否审核',
@@ -252,6 +252,7 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
+              console.log(params.row.typeName);
               if (params.row.disparkType === '') {
                 statusNames = '订阅';
               }
@@ -269,7 +270,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.subscribe(params.row.resourceId);
+                    vm.subscribe(params.row.resourceId,params.row.typeName,params.row.resourceProviderName,params.row.resourceName);
                   }
                 }
               };

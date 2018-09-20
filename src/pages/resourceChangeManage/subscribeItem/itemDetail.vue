@@ -27,10 +27,10 @@
   import ContentTitle from '../../../components/contentTitle/contentTitle.vue'
   import FilterForm from '../../../components/filterForm/filterForm.vue'
   import Pager from '../../../components/pager/pager.vue'
-  import Data from '../../../config/catalog/catalogItem'
+  import Data from '../../../config/resourceChangeManage/itemDetail'
 
   export default{
-    name: 'catalogItemInfo',
+    name: 'itemDetailInfo',
     components: {
       ContentTitle,
       FilterForm,
@@ -48,12 +48,13 @@
       //初始化表格
       initTable: function () {
         let vm = this;
-        let id = vm.$route.params.id;
+        let paramsArr = (vm.$route.params.id).split("&");
+        let id = paramsArr[0];
         vm.tableData.loading = true;
-        vm.initData.id = id;
+        vm.initData.resourceId = id;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          vm.tableData.tableList = data.datas;
-          vm.pageData.total = data.totalCounts;
+          vm.tableData.tableList = data.result;
+          vm.pageData.total = data.total;
           vm.tableData.loading = false;
         }).catch((error) => {
 
@@ -62,12 +63,13 @@
       //初始化资源详情
       view: function () {
         let vm = this;
+        let paramsArr = (vm.$route.params.id).split("&");
         let ID = {
-          ID: vm.$route.params.id
+          resourceId: paramsArr[0]
         };
-        vm.api[vm.apis.detailApi](ID).then((data) => {
-          vm.detailData = data.data;
-          console.log(data);
+        vm.api[vm.apis.detailsApi](ID).then((data) => {
+          vm.detailData = data;
+          vm.detailData.typeName = paramsArr[1];
         }).catch((error) => {
 
         })

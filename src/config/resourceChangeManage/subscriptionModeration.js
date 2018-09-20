@@ -41,7 +41,7 @@ class resourceBazaarOptions {
       treeData: [],
       currentTreeNode: '',
       catalogId: '',
-      codeReply: 0,
+      codeReply: 1,
       reason: '',
       modalOpreation: false,
       modalOk: true,
@@ -139,11 +139,11 @@ class resourceBazaarOptions {
             title: '审核状态',
             key: 'status',
             render: (h, params) => {
-              if (params.row.status === 1) {
+              if (params.row.status === -1) {
                 return h('div', '待审核');
-              } else if (params.row.status === 2) {
+              } else if (params.row.status === 1) {
                 return h('div', '已通过 ');
-              } else if (params.row.status === 3) {
+              } else if (params.row.status === 0) {
                 return h('div', '已拒绝 ');
               }
             }
@@ -154,7 +154,7 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
-              if (params.row.status === 1 || params.row.status === 2 ) {
+              if (params.row.status === 1 || params.row.status === -1 ) {
                 statusNames = '审核';
               }
               else {
