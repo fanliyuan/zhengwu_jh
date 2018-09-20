@@ -12,26 +12,6 @@
       <FilterForm :options="filterData"></FilterForm>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal :width="900" footer-hide v-model="modalOpreation" :closable="false" title="资源详情" :mask-closable="false">
-        <ul class="infoList cl">
-          <li>数据库：{{modalData.sqlTableTable.dbName}}</li>
-          <li>数据表：{{modalData.sqlTableTable.tableName}}</li>
-          <li>中文标注：{{modalData.sqlTableTable.tableNote}}</li>
-        </ul>
-        <Divider orientation="left">数据项</Divider>
-        <Tabs v-if="modalData.sqlColumnTable.tableList.length > 0">
-          <TabPane label="浏览" icon="md-list">
-            <Table class="tableList" :loading="modalData.sqlDataTable.loading" ref="sqlDataTable" :columns="modalData.sqlDataTable.columns" :data="modalData.sqlDataTable.tableList"></Table>
-            <Page class-name="tablePager" :total="modalData.sqlDataTable.total" show-total></Page>
-          </TabPane>
-          <TabPane label="结构" icon="md-git-network">
-            <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
-          </TabPane>
-        </Tabs>
-        <div class="btn-group">
-          <Button type="error" @click="cancel">关闭</Button>
-        </div>
-      </Modal>
     </div>
   </div>
 </template>
@@ -41,7 +21,7 @@
   import FilterForm from '../../components/filterForm/filterForm.vue'
   import Pager from '../../components/pager/pager.vue'
   import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/sourceAudit/sourceAudit'
+  import Data from '../../config/catalogAudit/catalogAudit'
 
   export default{
     name: 'sourceAudit',
@@ -71,100 +51,10 @@
 
         })
       },
-      //资源
-      source: function (id) {
-        let vm = this;
-        let ID = {
-          ID: id
-        };
-        vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
-          vm.modalData.sqlTableTable.dbName = data.data.dbName;
-          vm.modalData.sqlTableTable.tableName = data.data.tableName;
-          vm.modalData.sqlTableTable.tableNote = data.data.tableNote;
-          vm.initSqlColumnTable(data.data.alias, data.data.dbName, data.data.tableName);
-          vm.initSqlDataTable(data.data.alias, data.data.dbName, data.data.tableName);
-          vm.$Loading.finish();
-          vm.modalOpreation = true;
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
-      },
-      //初始化数据库表字段
-      initSqlColumnTable (alias, db, tableName) {
-        let vm = this;
-        if (alias) {
-          vm.modalData.sqlColumnTable.initData.alias = alias;
-          vm.modalData.sqlColumnTable.initData.db = db;
-          vm.modalData.sqlColumnTable.initData.table = tableName;
-        }
-        vm.modalData.sqlColumnTable.loading = true;
-        vm.api[vm.apis.mysqlColumnApi](vm.modalData.sqlColumnTable.initData).then((data) => {
-          for (let i = 0, len = data.datas.length; i < len; i++) {
-            let primaryKey = false;
-            if (data.datas[i].primaryKey) {
-              primaryKey = true;
-            }
-          }
-          vm.modalData.sqlColumnTable.tableList = data.datas;
-          vm.modalData.sqlColumnTable.loading = false;
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
-      },
-      initSqlDataTable (alias, db, tableName) {
-        let vm = this;
-        if (alias) {
-          vm.modalData.sqlDataTable.initData.alias = alias;
-          vm.modalData.sqlDataTable.initData.db = db;
-          vm.modalData.sqlDataTable.initData.table = tableName;
-        }
-        vm.modalData.sqlDataTable.loading = true;
-        vm.api[vm.apis.mysqlDataApi](vm.modalData.sqlDataTable.initData).then((data) => {
-          vm.modalData.sqlDataTable.columns = [];
-          if (data.datas.length > 0) {
-            for (let obj in data.datas[0]) {
-              if (obj !== '@type') {
-                vm.modalData.sqlDataTable.columns.push({
-                  title: obj,
-                  key: obj
-                });
-              }
-            }
-          }
-          vm.modalData.sqlDataTable.tableList = data.datas;
-          vm.modalData.sqlDataTable.total = data.totalCounts;
-          vm.modalData.sqlDataTable.loading = false;
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
-      },
-      //取消
-      cancel () {
-        let vm = this;
-        vm.modalOpreation = false;
-      },
       //查看
       view: function (id) {
         let vm = this;
-        let ID = {
-          ID: id
-        };
-        vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
-          let content = `<ul>`;
-          for (let i = 0, len = vm.modalData.infoObj.length; i < len; i++ ) {
-            content += `<li>${vm.modalData.infoObj[i].name}：${data.data[vm.modalData.infoObj[i].key]}</li>`
-          }
-          content += `</ul>`;
-          vm.$Modal.info({
-            title: '摘要信息',
-            content: content
-          });
-          vm.$Loading.finish();
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
+        vm.$router.push({'path': '/catalog/itemInfo/' + id});
       },
       //修改
       edit: function (id, type) {
@@ -240,8 +130,7 @@
           },
           onOk: () => {
             let ID = {
-              id: id,
-              type: type
+              id: id
             };
             let params = {
               reason: reason,
@@ -276,8 +165,7 @@
       log: function (id, type) {
         let vm = this;
         let ID = {
-          id: id,
-          type: type
+          id: id
         };
         vm.$Loading.start();
         vm.api[vm.apis.logApi](ID).then((data) => {
@@ -304,11 +192,6 @@
         }).catch((error) => {
 
         })
-      },
-      //是否显示模态框
-      changeModal (status) {
-        let vm = this;
-        vm.modalOpreation = status;
       }
     }
   }

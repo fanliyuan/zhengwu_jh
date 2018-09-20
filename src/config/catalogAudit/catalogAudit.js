@@ -24,117 +24,12 @@ class catalogAuditOptions {
         editApi: 'catalogReview',
         logApi: 'catalogReviewLog'
       },
-      modalOpreation: false,
-      modalWidgets: {},
-      modalData: {
-        title: {},
-        apiUrl: '',
-        width: 900,
-        infoObj: [
-          {
-            name: '资源名称',
-            key: 'name'
-          },
-          {
-            name: '应用系统名称',
-            key: 'appsysName'
-          },
-          {
-            name: '数据库名称',
-            key: 'dbName'
-          },
-          {
-            name: '数据库表名',
-            key: 'tableName'
-          },
-          {
-            name: '建库单位',
-            key: 'createUnit'
-          },
-          {
-            name: '摘要',
-            key: 'summary'
-          }
-        ],
-        formObj:{
-          userId: '',
-          roleIds: ''
-        },
-        oldFormObj:{
-          userId: '',
-          roleIds: ''
-        },
-        idObj: 'roleIds',
-        ruleObj: {
-
-        },
-        widgets: [
-          {
-            type: 'radioGroup',
-            disabled: false,
-            show: true,
-            word: 'text',
-            prop: 'roleIds',
-            name: '',
-            options: vm.roleList
-          }
-        ],
-        titles: {
-          editTitle: {
-            name: '分配角色',
-            showOkBtn: true
-          }
-        },
-        sqlTableTable: {
-          dbName: '',
-          tableName: '',
-          tableNote: ''
-        },
-        sqlColumnTable: {
-          loading: true,
-          tableList: [],
-          total: 0,
-          initData: {},
-          columns: [
-            {
-              type: 'index',
-              width: 60,
-              align: 'center'
-            },
-            {
-              title: '主键',
-              key: 'primaryKey'
-            },
-            {
-              title: '字段名称',
-              key: 'name'
-            },
-            {
-              title: '数据类型',
-              key: 'type'
-            },
-            {
-              title: '中文标注',
-              key: 'comment'
-            }
-          ]
-        },
-        sqlDataTable: {
-          loading: true,
-          tableList: [],
-          total: 0,
-          currentPage: 1,
-          initData: {
-            pageNum: 1,
-            pageSize: 10
-          },
-          columns: []
-        },
-      },
       initData: {
+        infoCode: '',
         name: '',
-        dataType: '',
+        providerName: '',
         status: '',
+        mount: false,
         beginTime: '',
         endTime: '',
         pageNum: 1,
@@ -145,15 +40,15 @@ class catalogAuditOptions {
         tableList: [],
         columns: [
           {
-            title: 'ID',
-            key: 'id'
+            title: '目录编码',
+            key: 'infoCode'
           },
           {
-            title: '资源名称',
+            title: '名称',
             key: 'name'
           },
           {
-            title: '数据类型',
+            title: '提供方',
             key: 'dataType'
           },
           {
@@ -161,7 +56,47 @@ class catalogAuditOptions {
             key: 'registerTime'
           },
           {
-            title: '状态',
+            title: '是否挂载资源',
+            key: 'havaGj',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.havaGj) {
+                        case true:
+                          return '是';
+                        case false:
+                          return '否';
+                      }
+                    }()
+                  }
+                }, params.row.havaGj)
+              ])
+            }
+          },
+          {
+            title: '信息项',
+            key: 'xxx',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.xxx) {
+                        case true:
+                          return '是';
+                        case false:
+                          return '否';
+                      }
+                    }()
+                  }
+                }, params.row.xxx)
+              ])
+            }
+          },
+          {
+            title: '审核状态',
             key: 'status',
             render: (h, params) => {
               return h('div', [
@@ -200,19 +135,6 @@ class catalogAuditOptions {
                   }
                 }
               };
-              let source = {
-                props: {
-                  type: 'success'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    vm.source(params.row.id);
-                  }
-                }
-              };
               let edit = {
                 props: {
                   type: 'primary'
@@ -222,7 +144,7 @@ class catalogAuditOptions {
                 },
                 on: {
                   click: () => {
-                    vm.edit(params.row.id, params.row.type);
+                    vm.edit(params.row.id);
                   }
                 }
               };
@@ -235,18 +157,16 @@ class catalogAuditOptions {
                 },
                 on: {
                   click: () => {
-                    vm.log(params.row.id, params.row.type);
+                    vm.log(params.row.id);
                   }
                 }
               };
               switch (params.row.status) {
                 case -1:
-                  children.push(h('a', source, '资源'));
                   children.push(h('a', view, '查看'));
                   children.push(h('a', edit, '审核'));
                   break;
                 case 1:
-                  children.push(h('a', source, '资源'));
                   children.push(h('a', view, '查看'));
                   children.push(h('a', log, '审核日志'));
                   break;
@@ -264,9 +184,11 @@ class catalogAuditOptions {
       },
       filterData: {
         filiterObj: {
+          infoCode: '',
           name: '',
-          dataType: '',
+          providerName: '',
           status: '',
+          mount: false,
           beginTime: '',
           endTime: ''
         },
@@ -274,47 +196,28 @@ class catalogAuditOptions {
           {
             type: 'input',
             word: 'text',
+            prop: 'infoCode',
+            name: '目录编码',
+            placeholder: '请输入目录编码'
+          },
+          {
+            type: 'input',
+            word: 'text',
             prop: 'name',
-            name: '资源名称',
-            placeholder: '请输入资源名称'
+            name: '名称',
+            placeholder: '请输入名称'
+          },
+          {
+            type: 'input',
+            word: 'text',
+            prop: 'providerName',
+            name: '提供方',
+            placeholder: '请输入提供方'
           },
           {
             type: 'select',
-            word: 'text',
-            prop: 'dataType',
-            name: '数据类型',
-            placeholder: '请选择数据类型',
-            options: [
-              {
-                value: '',
-                key: '全部'
-              },
-              {
-                value: 'mysql',
-                key: 'mysql'
-              },
-              {
-                value: 'oracle',
-                key: 'oracle'
-              },
-              {
-                value: 'sqlserver',
-                key: 'sqlserver'
-              },
-              {
-                value: '文件',
-                key: '文件'
-              },
-              {
-                value: 'ftp',
-                key: 'ftp'
-              }
-            ]
-          },
-          {
-            type: 'select',
-            word: 'text',
             prop: 'status',
+            disabled: false,
             name: '审核状态',
             placeholder: '请选择审核状态',
             options: [
@@ -343,6 +246,13 @@ class catalogAuditOptions {
             disabled: false,
             name: '时间段',
             placeholder: '请选择时间段'
+          },
+          {
+            type: 'checkbox',
+            word: 'checkbox',
+            prop: 'mount',
+            disabled: false,
+            name: '已挂接资源'
           }
         ]
       },

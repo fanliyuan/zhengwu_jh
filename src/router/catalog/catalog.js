@@ -23,7 +23,7 @@ export default [{
   name: 'CatalogItemInfo',
   component: CatalogItemPage,
   meta: {
-    authority: ['user'],
+    authority: ['user', 'assessor'],
     //keepAlive: true
   }
 }, {
