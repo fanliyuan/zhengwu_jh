@@ -20,8 +20,8 @@ class sourceAuditOptions {
     return {
       title: '资源审核',
       apis: {
-        listApi: '',
-        editApi: '',
+        listApi: 'resourceList',
+        editApi: 'resourceReview',
         sourcelistApi: '',
         auditApi: ''
       },
@@ -67,7 +67,7 @@ class sourceAuditOptions {
         status: '',
         beginTime: '',
         endTime: '',
-        pageNum: 0,
+        pageNum: 1,
         pageSize: 10
       },
       tableData: {
@@ -87,26 +87,62 @@ class sourceAuditOptions {
             key: 'dataType'
           },
           {
-            title: '所属机构',
-            key: 'deptName'
-          },
-          {
-            title: '角色',
-            key: 'roleName'
-          },
-          {
-            title: '建立时间',
-            key: 'createtime'
+            title: '注册时间',
+            key: 'registerTime'
           },
           {
             title: '状态',
-            key: 'statusName'
+            key: 'status',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case 1:
+                          return '<span style="color: #5cadff">待审核</span>';
+                        case 2:
+                          return '<span style="color: #19be6b">已通过</span>';
+                        case 3:
+                          return '<span style="color: #ed4014">已拒绝</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '操作',
             key: 'operate',
             render: (h, params) => {
               let children = [];
+              let view = {
+                props: {
+                  type: 'success'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.view(params.row.id);
+                  }
+                }
+              };
+              let source = {
+                props: {
+                  type: 'success'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.source(params.row.id);
+                  }
+                }
+              };
               let edit = {
                 props: {
                   type: 'primary'
@@ -120,7 +156,34 @@ class sourceAuditOptions {
                   }
                 }
               };
-              children.push(h('a', edit, '分配角色'));
+              let log = {
+                props: {
+                  type: 'primary'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    vm.log(params.row.id, params.row.roleid);
+                  }
+                }
+              };
+              switch (params.row.status) {
+                case 1:
+                  children.push(h('a', source, '资源'));
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', edit, '审核'));
+                  break;
+                case 2:
+                  children.push(h('a', source, '资源'));
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', log, '审核日志'));
+                  break;
+                case 3:
+                  children.push(h('a', view, '查看'));
+                  children.push(h('a', log, '审核日志'));
+              }
               return h('div', children);
             }
           }
@@ -132,8 +195,7 @@ class sourceAuditOptions {
       filterData: {
         filiterObj: {
           name: '',
-          phone: '',
-          role: '',
+          dataType: '',
           status: '',
           beginTime: '',
           endTime: ''
@@ -143,30 +205,48 @@ class sourceAuditOptions {
             type: 'input',
             word: 'text',
             prop: 'name',
-            name: '姓名',
-            placeholder: '请输入用户名/姓名'
+            name: '资源名称',
+            placeholder: '请输入资源名称'
           },
           {
-            type: 'input',
+            type: 'select',
             word: 'text',
-            prop: 'phone',
-            name: '电话',
-            placeholder: '请输入电话号码'
+            prop: 'dataType',
+            name: '数据类型',
+            placeholder: '请选择数据类型',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: 'mysql',
+                key: 'mysql'
+              },
+              {
+                value: 'oracle',
+                key: 'oracle'
+              },
+              {
+                value: 'sqlserver',
+                key: 'sqlserver'
+              },
+              {
+                value: '文件',
+                key: '文件'
+              },
+              {
+                value: 'ftp',
+                key: 'ftp'
+              }
+            ]
           },
           {
             type: 'select',
-            prop: 'role',
-            disabled: false,
-            name: '角色',
-            placeholder: '请选择角色',
-            options: vm.filterRoleList
-          },
-          {
-            type: 'select',
+            word: 'text',
             prop: 'status',
-            disabled: false,
-            name: '状态',
-            placeholder: '请选择状态',
+            name: '审核状态',
+            placeholder: '请选择审核状态',
             options: [
               {
                 value: '',
@@ -174,11 +254,15 @@ class sourceAuditOptions {
               },
               {
                 value: 1,
-                key: '启用'
+                key: '待审核'
               },
               {
                 value: 2,
-                key: '冻结'
+                key: '已通过'
+              },
+              {
+                value: 3,
+                key: '已拒绝'
               }
             ]
           },
