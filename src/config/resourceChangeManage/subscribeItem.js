@@ -34,10 +34,18 @@ class catalogItemOptions {
       showPath:false,
       filePath:'',
       subscribeName:'',
+      pubfreQuency: '',//发布频率
+      pubMode: '',//发布模式
+      minutes: '',//分钟
+      hours:'',//小时
+      day: '',//日期
+      month:'',//月
+      week: '',//星期
       apis: {
         listApi: 'catalogItemsList',
         detailApi: 'catalogDetail',
-        subscribeApi: 'subscribe'
+        subscribeApi: 'subscribe',
+        resourceTaskInfoApi:'resourceTaskInfo'
       },
       sureData:{
         catalogId: '1',

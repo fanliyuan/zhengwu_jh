@@ -22,8 +22,28 @@
           <li>
             详情：<a @click="view">查看</a>
           </li>
-          <li>
 
+          <li class="publish">
+           发布模式： <Input class="formValidate-widget" size="large" disabled  v-model="pubMode" placeholder="发布模式"  autocomplete="off" >
+          </Input>
+          </li>
+          <li class="publish">
+            发布频率： <Input class="formValidate-widget" size="large"  disabled v-model="pubfreQuency" placeholder="发布频率"  autocomplete="off" >
+            </Input>
+          </li>
+          <li class="publish">
+            定时设置：
+            <Input class="formValidate-widget smallInput" size="large" disabled  v-model="minutes" placeholder="分钟"  autocomplete="off" >
+            </Input>
+            <Input class="formValidate-widget smallInput" size="large" disabled  v-model="hours" placeholder="小时"  autocomplete="off" >
+            </Input>
+            <Input class="formValidate-widget smallInput" size="large"  disabled v-model="day" placeholder="日"  autocomplete="off" >
+            </Input>
+            <Input class="formValidate-widget smallInput" size="large" disabled  v-model="month" placeholder="月"  autocomplete="off" >
+            </Input>
+            <Input class="formValidate-widget smallInput" size="large"  disabled v-model="week" placeholder="星期"  autocomplete="off" >
+            </Input>
+          </li>
            <!-- <div class="createFile">
               <span>是否存文件：</span>
               <RadioGroup v-model="type" @on-change="showFile(type)">
@@ -38,8 +58,9 @@
               </div>
 
             </div>-->
-          </li>
+          <!--</li>-->
         </ul>
+
       </Card>
 
     </div>
@@ -66,6 +87,7 @@
     created: function () {
       this.initDetail();
       //this.view();
+      this.initEntityInfo();
       this.showFile();
     },
     methods:{
@@ -79,6 +101,29 @@
           dataType: '数据库',
           typeName: paramsArr[1]
         }
+
+      },
+
+      //初始化实体资源
+      initEntityInfo: function () {
+        let vm = this;
+        let paramsArr = (vm.$route.params.id).split("&");
+        let ID = {
+          resourceId: paramsArr[0]
+        };
+        vm.api[vm.apis.resourceTaskInfoApi](ID).then((data) => {
+          vm.pubMode = data.pubMode;
+          vm.pubfreQuency = data.pubfreQuency;
+          let timeSetting = (data.timSetting).split(',');
+          vm.minutes = timeSetting[0] + "分钟";
+          vm.hours = timeSetting[1] + "小时";
+          vm.day = timeSetting[2] + "天";
+          vm.month = timeSetting[3] + "月";
+          vm.week = "星期" + timeSetting[4];
+        }).catch((error) => {
+          vm.$Loading.error();
+
+        });
 
       },
       //跳转到资源详情
@@ -154,6 +199,14 @@
             width:100%!important;
           }
         }
+      }
+    }
+    .publish{
+      display: block;
+      clear: both;
+      .smallInput{
+        width:56px!important;
+        display: inline-block;
       }
     }
   }
