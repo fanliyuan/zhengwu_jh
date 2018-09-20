@@ -1023,7 +1023,9 @@ class catalogOptions {
               };
               children.push(h('a', view, '信息项'));
               children.push(h('a', link, '资源挂接'));
-              children.push(h('a', open, '共享开放'));
+              if (params.row.havaGj) {
+                children.push(h('a', open, '共享开放'));
+              }
               children.push(h('a', edit, '修改'));
               children.push(h('a', del, '删除'));
               return h('div', children);
