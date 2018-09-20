@@ -46,12 +46,12 @@
             </div>
           </Card>
           <Tabs v-if="modalData.sqlColumnTable.tableList.length > 0">
-            <TabPane label="结构" icon="md-git-network">
-              <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
-            </TabPane>
             <TabPane label="浏览" icon="md-list">
               <Table class="tableList" :loading="modalData.sqlDataTable.loading" ref="sqlDataTable" :columns="modalData.sqlDataTable.columns" :data="modalData.sqlDataTable.tableList"></Table>
               <Page class-name="tablePager" :total="modalData.sqlDataTable.total" show-total @on-change="changeDataTablePage" :current="modalData.sqlDataTable.currentPage"></Page>
+            </TabPane>
+            <TabPane label="结构" icon="md-git-network">
+              <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
             </TabPane>
           </Tabs>
         </div>
