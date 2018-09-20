@@ -547,16 +547,28 @@ class catalogOptions {
             placeholder: '请选择信息资源格式',
             options: [
               {
-                key: '分类1',
-                value: '分类1'
+                key: '数据库',
+                value: 'db'
               },
               {
-                key: '分类2',
-                value: '分类2'
+                key: '电子文件',
+                value: 'eDoc'
               },
               {
-                key: '分类21',
-                value: '分类21'
+                key: '电子表格',
+                value: 'eSheet'
+              },
+              {
+                key: '图形图像',
+                value: 'image'
+              },
+              {
+                key: '流媒体',
+                value: 'streaming'
+              },
+              {
+                key: '其它',
+                value: 'other'
               }
             ]
           }
