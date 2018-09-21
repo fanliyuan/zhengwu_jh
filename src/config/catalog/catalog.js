@@ -643,8 +643,8 @@ class catalogOptions {
         catalogId: '',
         currentId: '',
         formObj:{
-          share: 1,
-          open: 1,
+          share: 0,
+          open: 0,
           incrementField: '',
           switchAreaId: [],
           publishMode: [],
@@ -657,8 +657,8 @@ class catalogOptions {
           timeSet4: ''
         },
         oldFormObj:{
-          share: 1,
-          open: 1,
+          share: 0,
+          open: 0,
           incrementField: '',
           switchAreaId: [],
           publishMode: [],
