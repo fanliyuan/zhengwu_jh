@@ -734,18 +734,18 @@ class catalogOptions {
                 value: '1',
                 children: [
                   {
-                    value: '11',
+                    value: '5',
                     label: '日志'
                   },
                   {
-                    value: '12',
+                    value: '1',
                     label: '增量字段'
                   }
                 ]
               },
               {
                 label: '全量',
-                value: '2'
+                value: '4'
               }
             ]
           },

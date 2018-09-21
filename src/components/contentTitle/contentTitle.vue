@@ -30,7 +30,7 @@
       save (method) {
         let vm = this;
         vm.$parent[method]();
-        history.back(-1);
+        history.back();
       },
       sure (method) {
         let vm = this;

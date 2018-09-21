@@ -203,7 +203,6 @@
               desc: '保存成功！',
               duration: 5
             });
-            history.back();
           } else {
             vm.$Notice.warning({
               title: '',
