@@ -286,6 +286,10 @@
       changeModal (status) {
         let vm = this;
         vm.modalShareOpreation = status;
+        vm.incrementList = [];
+        vm.modalShareData.widgets[4].disabled = true;
+        vm.modalShareData.widgets[4].show = false;
+        vm.modalShareData.widgets[4].options = vm.incrementList;
       },
       //导入文件
       importFile () {
@@ -397,39 +401,66 @@
         let ID = {
           id: id
         };
+        let params = {
+          ID: id
+        };
         vm.$Loading.start();
-        vm.api[vm.apis.shareDetailApi](ID).then((data) => {
-          for (let obj in data.data) {
-            if (obj === 'share' || obj === 'open') {
-              if (data.data[obj]) {
-                vm.modalShareData.formObj[obj] = 1;
-              }
-            } else if (obj === 'publishMode') {
-              if (data.data[obj] !== '') {
-                vm.modalShareData.formObj[obj] = data.data[obj].split(',');
-              } else {
-                vm.modalShareData.formObj[obj] = [];
-              }
-            } else if (obj === 'timeSet') {
-              vm.deepCopy(data.data[obj], vm.modalShareData.formObj[obj]);
-              for (let i = 0, len = data.data[obj].length; i < len; i++) {
-                if (data.data[obj][i] !== '') {
-                  vm.modalShareData.formObj['timeSet' + i] = parseInt(data.data[obj][i]);
-                } else {
-                  vm.modalShareData.formObj['timeSet' + i] = '';
-                  vm.modalShareData.formObj[obj].splice(i, 1);
-                }
-              }
-            } else {
-              vm.modalShareData.formObj[obj] = data.data[obj];
+        vm.api[vm.apis.detailApi](params).then((data) => {
+          let incrementId = data.data.mountItemId;
+          let initData = {
+            id: incrementId
+          };
+          vm.api[vm.apis.incrementApiUrl](initData).then((data) => {
+            let structData = data.datas;
+            for (let i = 0, len = structData.length; i < len; i++) {
+              vm.incrementList.push({
+                value: structData[i].columnName,
+                key: structData[i].columnName + ' (' + structData[i].columnType + ')'
+              });
             }
-          }
-          vm.modalShareData.title = vm.modalShareData.titles.editTitle;
-          vm.modalShareData.apiUrl = vm.apis.shareUpdateApi;
-          vm.modalShareData.currentId = id;
-          vm.modalShareWidgets = vm.modalShareData;
-          vm.$Loading.finish();
-          vm.modalShareOpreation = true;
+          }).catch((error) => {
+
+          });
+          vm.api[vm.apis.shareDetailApi](ID).then((data) => {
+            for (let obj in data.data) {
+              if (obj === 'share' || obj === 'open') {
+                if (data.data[obj]) {
+                  vm.modalShareData.formObj[obj] = 1;
+                }
+              } else if (obj === 'publishMode') {
+                if (data.data[obj] !== '') {
+                  vm.modalShareData.formObj[obj] = data.data[obj].split(',');
+                  if (data.data[obj] === '1,1') {
+                    vm.modalShareData.widgets[4].disabled = false;
+                    vm.modalShareData.widgets[4].show = true;
+                  }
+                } else {
+                  vm.modalShareData.formObj[obj] = [];
+                }
+              } else if (obj === 'timeSet') {
+                vm.deepCopy(data.data[obj], vm.modalShareData.formObj[obj]);
+                for (let i = 0, len = data.data[obj].length; i < len; i++) {
+                  if (data.data[obj][i] !== '') {
+                    vm.modalShareData.formObj['timeSet' + i] = parseInt(data.data[obj][i]);
+                  } else {
+                    vm.modalShareData.formObj['timeSet' + i] = '';
+                    vm.modalShareData.formObj[obj].splice(i, 1);
+                  }
+                }
+              } else {
+                vm.modalShareData.formObj[obj] = data.data[obj];
+              }
+            }
+            vm.modalShareData.title = vm.modalShareData.titles.editTitle;
+            vm.modalShareData.apiUrl = vm.apis.shareUpdateApi;
+            vm.modalShareData.currentId = id;
+            vm.modalShareData.incrementId = incrementId;
+            vm.modalShareWidgets = vm.modalShareData;
+            vm.$Loading.finish();
+            vm.modalShareOpreation = true;
+          }).catch((error) => {
+            vm.$Loading.error();
+          });
         }).catch((error) => {
           vm.$Loading.error();
         });

@@ -68,7 +68,25 @@ class catalogItemOptions {
           },
           {
             title: '共享类型',
-            key: 'shareType'
+            key: 'shareType',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.shareType) {
+                        case '1':
+                          return '<span>有条件共享</span>';
+                        case '2':
+                          return '<span>无条件共享</span>';
+                        case '3':
+                          return '<span>不共享</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '共享条件',
@@ -84,7 +102,25 @@ class catalogItemOptions {
           },
           {
             title: '开放类型',
-            key: 'openType'
+            key: 'openType',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.openType) {
+                        case '1':
+                          return '<span>有条件开放</span>';
+                        case '2':
+                          return '<span>无条件开放</span>';
+                        case '3':
+                          return '<span>不开放</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '开放条件',
@@ -118,18 +154,54 @@ class catalogItemOptions {
             placeholder: '请输入信息项名称'
           },
           {
-            type: 'input',
+            type: 'select',
             word: 'text',
             prop: 'shareType',
             name: '共享类型',
-            placeholder: '请输入共享类型'
+            placeholder: '请输入共享类型',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: '1',
+                key: '有条件共享'
+              },
+              {
+                value: '2',
+                key: '无条件共享'
+              },
+              {
+                value: '3',
+                key: '不共享'
+              }
+            ]
           },
           {
-            type: 'input',
+            type: 'select',
             word: 'text',
             prop: 'openType',
             name: '开放类型',
-            placeholder: '请输入开放类型'
+            placeholder: '请输入开放类型',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value: '1',
+                key: '有条件开放'
+              },
+              {
+                value: '2',
+                key: '无条件开放'
+              },
+              {
+                value: '3',
+                key: '不开放'
+              }
+            ]
           }
         ]
       }

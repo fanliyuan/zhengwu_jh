@@ -69,7 +69,7 @@
   </Modal>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
 //  import UEditor from '../../components/ueditor/UEditor.vue'
 
   export default{
@@ -205,8 +205,15 @@
       changeCascader (value, selectedData) {
         let vm = this;
         if (vm.formValidate.publishMode) {
-          console.log(value)
-          console.log(selectedData)
+          if (value.join(',') === '1,1') {
+            vm.formValidate.incrementField = vm.formWidgets[4].options[0].value;
+            vm.formWidgets[4].disabled = false;
+            vm.formWidgets[4].show = true;
+          } else {
+            vm.formWidgets[4].disabled = true;
+            vm.formWidgets[4].show = false;
+            vm.formValidate.incrementField = '';
+          }
         }
       },
       validateForm (name) {

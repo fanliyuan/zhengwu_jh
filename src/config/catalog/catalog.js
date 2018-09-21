@@ -17,6 +17,7 @@ class catalogOptions {
 
   setData () {
     let vm = this.setVm();
+    vm.incrementList = [];
     return {
       title: '目录管理',
       apis: {
@@ -29,7 +30,8 @@ class catalogOptions {
         listItemsApi: 'catalogItemsList',
         shareDetailApi: 'catalogShareDetail',
         shareUpdateApi: 'catalogShareUpdate',
-        treeApi: 'showCatalogList'
+        treeApi: 'showCatalogList',
+        incrementApiUrl: 'resourceMysqlStruct'
       },
       treeData: [],
       currentTreeNode: '',
@@ -159,7 +161,7 @@ class catalogOptions {
               key: 'shareType',
               render: (h, params) => {
                 if (params.row.$isEdit) {
-                  return h('Input', {
+                  return h('Select', {
                     props: {
                       value: params.row.shareType
                     },
@@ -167,14 +169,38 @@ class catalogOptions {
                       value: params.row.shareType
                     },
                     on: {
-                      input: (val) => {
+                      'on-change': (val) => {
                         params.row.shareType = val;
                         vm.$emit('input', val);
                       }
                     }
-                  })
+                  }, [
+                    h('Option',{
+                      props:{
+                        label: '有条件共享',
+                        value: 1
+                      }
+                    }, '有条件共享'),
+                    h('Option',{
+                      props:{
+                        label: '无条件共享',
+                        value: 2
+                      }
+                    }, '无条件共享'),
+                    h('Option',{
+                      props:{
+                        label: '不共享',
+                        value: 3
+                      }
+                    }, '不共享')
+                  ])
                 } else {
-                  return h('span', params.row.shareType);
+                  let statusName = {
+                    1: '有条件共享',
+                    2: '无条件共享',
+                    3: '不共享'
+                  };
+                  return h('span', statusName[params.row.shareType]);
                 }
               }
             },
@@ -255,7 +281,7 @@ class catalogOptions {
               key: 'openType',
               render: (h, params) => {
                 if (params.row.$isEdit) {
-                  return h('Input', {
+                  return h('Select', {
                     props: {
                       value: params.row.openType
                     },
@@ -263,14 +289,38 @@ class catalogOptions {
                       value: params.row.openType
                     },
                     on: {
-                      input: (val) => {
+                      'on-change': (val) => {
                         params.row.openType = val;
                         vm.$emit('input', val);
                       }
                     }
-                  })
+                  }, [
+                    h('Option',{
+                      props:{
+                        label: '有条件开放',
+                        value: 1
+                      }
+                    }, '有条件开放'),
+                    h('Option',{
+                      props:{
+                        label: '无条件开放',
+                        value: 2
+                      }
+                    }, '无条件开放'),
+                    h('Option',{
+                      props:{
+                        label: '不开放',
+                        value: 3
+                      }
+                    }, '不开放')
+                  ])
                 } else {
-                  return h('span', params.row.openType);
+                  let statusName = {
+                    1: '有条件开放',
+                    2: '无条件开放',
+                    3: '不开放'
+                  };
+                  return h('span', statusName[params.row.openType]);
                 }
               }
             },
@@ -593,8 +643,9 @@ class catalogOptions {
         catalogId: '',
         currentId: '',
         formObj:{
-          share: 0,
-          open: 0,
+          share: 1,
+          open: 1,
+          incrementField: '',
           switchAreaId: [],
           publishMode: [],
           publishRate: '',
@@ -606,8 +657,9 @@ class catalogOptions {
           timeSet4: ''
         },
         oldFormObj:{
-          share: 0,
-          open: 0,
+          share: 1,
+          open: 1,
+          incrementField: '',
           switchAreaId: [],
           publishMode: [],
           publishRate: '',
@@ -664,16 +716,12 @@ class catalogOptions {
             name: '是否共享',
             options: [
               {
-                key: '无条件共享',
+                key: '是',
                 value: 1
               },
               {
-                key: '有条件共享',
-                value: 2
-              },
-              {
-                key: '不予共享',
-                value: 3
+                key: '否',
+                value: 0
               }
             ]
           },
@@ -686,16 +734,12 @@ class catalogOptions {
             name: '是否开放',
             options: [
               {
-                key: '有条件开放',
+                key: '是',
                 value: 1
               },
               {
-                key: '无条件开放',
-                value: 2
-              },
-              {
-                key: '不予开放',
-                value: 3
+                key: '否',
+                value: 0
               }
             ]
           },
@@ -748,6 +792,15 @@ class catalogOptions {
                 value: '4'
               }
             ]
+          },
+          {
+            type: 'select',
+            disabled: true,
+            show: false,
+            prop: 'incrementField',
+            name: '增量字段',
+            placeholder: '请选择增量字段',
+            options: vm.incrementList
           },
           {
             type: 'select',
