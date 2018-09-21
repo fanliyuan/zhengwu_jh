@@ -280,9 +280,9 @@
       },
 
        //资源订阅
-      subscribe: function (id,typeName,resourceProviderName,resourceName) {
+      subscribe: function (id,typeName,resourceProviderName,resourceName,dataType,mountResourceId,nodeId,typeId) {
         let vm = this;
-        let params = id + "&" + typeName + "&" + resourceProviderName + "&"+ resourceName;
+        let params = id + "&" + typeName + "&" + resourceProviderName + "&"+ resourceName + "&" +dataType+"&"+mountResourceId+"&"+nodeId+"&"+typeId;
         vm.$router.push({'path': '/resourceChangeManage/itemInfo/' + params});
   }
 

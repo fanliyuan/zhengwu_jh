@@ -63,5 +63,12 @@ export default {
   subscribeAuditDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditDetail', method: 'get' }, //审核详情
   subscribeResourceDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceDetails', method: 'get' }, //资源详情
   subscribeResourceList: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceItemList', method: 'get' }, //资源详情列表
-  resourceTaskInfo: { url: 'api/v2/zhengwu/swap/resourceBazaar/resourceTaskInfo', method: 'get' } //任务发布模式、
+  resourceTaskInfo: { url: 'api/v2/zhengwu/swap/resourceBazaar/resourceTaskInfo', method: 'get' }, //任务发布模式、
+
+
+  //所有订阅
+  allSubscribeList: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeList', method: 'get' }, //所有订阅列表
+  auditLogs: { url: '/api/v2/zhengwu/swap/resourceBazaar/reviewLog', method: 'get' }, //审核日志
+  run: { url: '/api/v2/zhengwu/swap/resourceBazaar/run', method: 'post' }, //运行
+  stop: { url: '/api/v2/zhengwu/swap/resourceBazaar/stop', method: 'post' }, //运行
 }

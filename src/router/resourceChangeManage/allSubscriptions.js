@@ -13,7 +13,7 @@
  */
 
 import AllSubscriptionsPage from '@/pages/resourceChangeManage/allSubscriptions.vue'
-
+import AuditLogsPage from '@/pages/resourceChangeManage/auditLogs/auditLogs.vue'
 export default [{
   path: '/allSub',
   name: 'allSub',
@@ -21,4 +21,12 @@ export default [{
   meta: {
     authority:['user']
   }
-}]
+},
+  {
+    path: '/allSub/auditLogs/:id',
+    name: 'auditLogs',
+    component: AuditLogsPage,
+    meta: {
+      authority:['user']
+    }
+  }]

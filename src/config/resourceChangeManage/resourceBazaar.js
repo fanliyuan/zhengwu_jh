@@ -270,7 +270,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.subscribe(params.row.resourceId,params.row.typeName,params.row.resourceProviderName,params.row.resourceName);
+                    vm.subscribe(params.row.resourceId,params.row.typeName,params.row.resourceProviderName,params.row.resourceName,params.row.dataType,params.row.mountResourceId,params.row.nodeId,params.row.typeId);
                   }
                 }
               };

@@ -95,6 +95,9 @@
       initDetail: function () {
         let vm = this;
         let paramsArr = (vm.$route.params.id).split("&");
+        if (paramsArr.length == 5) {
+          vm.subscribeName = paramsArr[4];
+        }
         vm.detailData = {
           resourceName: paramsArr[3],
           resourceProviderName: paramsArr[2],
@@ -104,7 +107,7 @@
 
       },
 
-      //初始化实体资源
+      //初始化发布模式、发布频率和定时设置
       initEntityInfo: function () {
         let vm = this;
         let paramsArr = (vm.$route.params.id).split("&");
@@ -138,6 +141,16 @@
       sure: function () {
         let vm = this;
         vm.sureData.subscribeName = vm.subscribeName;
+        let paramsArr = (vm.$route.params.id).split("&");
+        let id = paramsArr[0] +"&"+paramsArr[1]; //资源id
+        vm.sureData.catalogId = paramsArr[7];
+//        vm.sureData.directoryName = paramsArr[7];
+        vm.sureData.dsID = paramsArr[0];
+        vm.sureData.dsName = paramsArr[3];
+        vm.sureData.publishInstitution = paramsArr[2];
+        vm.sureData.publisherID = paramsArr[6];
+        vm.sureData.mountResourceId = paramsArr[5];
+        vm.sureData.dataType = paramsArr[4];
         if ( vm.subscribeName == "" ||  vm.subscribeName == undefined ||  vm.subscribeName == null) {
           vm.$Message.info('请填写订阅名称');
           return;

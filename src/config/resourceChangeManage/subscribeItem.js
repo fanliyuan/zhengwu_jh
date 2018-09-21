@@ -48,13 +48,15 @@ class catalogItemOptions {
         resourceTaskInfoApi:'resourceTaskInfo'
       },
       sureData:{
-        catalogId: '1',
+        catalogId: '',
         directoryName: '',
-        dsID: '1',
-        dsName: 'hh',
-        publishInstitution: '发布机构',
-        publisherID: '12',
-        subscribeName: ''
+        dsID: '',
+        dsName: '',
+        publishInstitution: '',
+        publisherID: '',
+        subscribeName: '',
+        mountResourceId:'',
+        dataType:''
       },
       detailData: {
         resourceName:'',
