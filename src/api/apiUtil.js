@@ -75,11 +75,18 @@ const sendApiInstance = (method, url, params, config = {}) => {
       })
     }
   )
-  if (typeof params === 'object' && Object.prototype.toString.call(params) === '[object Array]') {
+  if (typeof params === Array.isArray([]) && method === 'post') {
+    console.log(11);
     params = {
-      data: params
+      params: params
     }
   }
+  // if (typeof params === 'object' && Object.prototype.toString.call(params) === '[object Array]') {
+  //   params = {
+  //     data: params
+  //   }
+  // }
+
   if (method === 'get' && !params.ID) {
     params = {
       params: params

@@ -11,7 +11,7 @@
     <div class="main-content cl">
       <template>
         <Tabs active-key="key1"  @on-click="tabClick">
-          <Tab-pane label="已订阅" key="key1">
+          <Tab-pane label="数据库" key="key1">
             <div>
               <div class="f-formItem">
                 <input type="hidden" v-model="catalogId">
@@ -29,26 +29,18 @@
                 <span class="formItem-name" slot="prepend">发布机构</span>
                 </Input>
               </div>
-              <div class="f-formItem">
-                <Select v-model="runStatus"  placeholder="请选择运行状态">
-                  <Option value="">全部</Option>
-                  <Option value=0>已停止</Option>
-                  <Option value=1 >运行中</Option>
-                  <Option value=2>已连接</Option>
-                </Select>
-              </div>
+
               <div class="f-formItem">
                 <DatePicker type="daterange" @on-change="nowDateRange" :editable="false" split-panels placeholder="请选择时间段" ></DatePicker>
               </div>
               <Button type="primary" class="search" size="large" icon="md-search" @click="handleSubmit('table1')">搜索</Button>
             </div>
-            <Button class="back-btn start"  @click="start">启动</Button>
-            <Button class="back-btn stop"  @click="stop">停止</Button>
+
             <Table border class="tableList" @on-selection-change="selectionClick" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
             <Pager :options="pageData.total"></Pager>
             <!--<ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>-->
           </Tab-pane>
-          <Tab-pane label="待审核" key="key2" >
+          <Tab-pane label="数据文件" key="key2" >
             <div>
               <div class="f-formItem">
                 <input type="hidden" v-model="catalogId">
@@ -66,14 +58,7 @@
                 <span class="formItem-name" slot="prepend">发布机构</span>
                 </Input>
               </div>
-              <div class="f-formItem">
-                <Select v-model="runStatus"  placeholder="请选择运行状态">
-                  <Option value="">全部</Option>
-                  <Option value=0>已停止</Option>
-                  <Option value=1 >运行中</Option>
-                  <Option value=2>已连接</Option>
-                </Select>
-              </div>
+
               <div class="f-formItem">
                 <DatePicker type="daterange" @on-change="nowDateRange" :editable="false" split-panels placeholder="请选择时间段"></DatePicker>
               </div>
@@ -82,40 +67,7 @@
             <Table border class="tableList" :loading="tableData1.loading" :columns="tableData1.columns" :data="tableData1.tableList"></Table>
             <Pager :options="pageData1.total"></Pager>
           </Tab-pane>
-          <Tab-pane label="审核失败" key="key3">
-            <div>
-              <div class="f-formItem">
-                <input type="hidden" v-model="catalogId">
-                <Input class="formItem-widget" size="large"  @on-focus="showModal" v-model="catalogName"  placeholder="搜索分类" >
-                <span class="formItem-name" slot="prepend">搜索分类</span>
-                </Input>
-              </div>
-              <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
-                <span class="formItem-name" slot="prepend">名称</span>
-                </Input>
-              </div>
-              <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="publishInstitution" placeholder="请输入发布机构" >
-                <span class="formItem-name" slot="prepend">发布机构</span>
-                </Input>
-              </div>
-              <div class="f-formItem">
-                <Select v-model="runStatus" placeholder="请选择运行状态">
-                  <Option value="">全部</Option>
-                  <Option value=0>已停止</Option>
-                  <Option value=1 >运行中</Option>
-                  <Option value=2>已连接</Option>
-                </Select>
-              </div>
-              <div class="f-formItem">
-                <DatePicker type="daterange" @on-change="nowDateRange" :editable="false" split-panels placeholder="请选择时间段"></DatePicker>
-              </div>
-              <Button type="primary" class="search" size="large" icon="md-search" @click="handleSubmit('table3')">搜索</Button>
-            </div>
-            <Table border class="tableList" :loading="tableData2.loading"  :columns="tableData2.columns" :data="tableData2.tableList"></Table>
-            <Pager :options="pageData2.total"></Pager>
-          </Tab-pane>
+
         </Tabs>
         <Modal :width="520" footer-hide v-model="modalOpreation" :closable="false" title="分类" :mask-closable="false">
           <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
@@ -127,21 +79,21 @@
       </template>
 
 
-      </div>
+    </div>
 
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import ContentTitle from '../../components/contentTitle/contentTitle.vue'
-  import FilterForm from '../../components/filterForm/filterForm.vue'
-  import opreationWidgets from '../../components/opreationWidgets/opreationWidgets.vue'
-  import Pager from '../../components/pager/pager.vue'
-  import ModalConTent from '../../components/modal/modal.vue'
-  import Data from '../../config/resourceChangeManage/allSubscriptions'
+  import ContentTitle from '../../../components/contentTitle/contentTitle.vue'
+  import FilterForm from '../../../components/filterForm/filterForm.vue'
+  import opreationWidgets from '../../../components/opreationWidgets/opreationWidgets.vue'
+  import Pager from '../../../components/pager/pager.vue'
+  import ModalConTent from '../../../components/modal/modal.vue'
+  import Data from '../../../config/resourceChangeManage/resourceManage'
 
   export default{
-    name: 'allSub',
+    name: 'resourceManage',
     components: {
       ContentTitle,
       FilterForm,
@@ -156,7 +108,6 @@
     created: function () {
       this.initTable();
       this.initTable1();
-      this.initTable2();
       this.initTree();
     },
     methods:{
@@ -185,18 +136,7 @@
 
         })
       },
-      initTable2: function () {
-        let vm = this;
-        vm.tableData2.loading = true;
-        vm.initData2.status = -1;
-        vm.api[vm.apis.listApi](vm.initData2).then((data) => {
-          vm.tableData2.tableList = data.datas;
-          vm.pageData2.total = data.totalCounts;
-          vm.tableData2.loading = false;
-        }).catch((error) => {
 
-        })
-      },
       //新增
       add: function () {
         let vm = this;
@@ -233,7 +173,7 @@
             dataType: selection[i].dataType
           });
         }
-      //  return arr;
+        //  return arr;
       },
 
 
@@ -283,7 +223,7 @@
           vm.$Message.error('请选择需要启动的资源！');
           return false;
         } else {
-         params = vm.tableData.selectedIds;
+          params = vm.tableData.selectedIds;
           console.log(params);
           vm.$Modal.confirm({
             title: '信息',
@@ -393,7 +333,7 @@
                       vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
                       vm.catalogId = data.id;
                       vm.catalogName = data.title;
-                     // vm.initTable(data.id);
+                      // vm.initTable(data.id);
                       vm.currentTreeNode = node.nodeKey;
                       for (let i = 0, len = root.length; i < len; i++) {
                         if (root[i].nodeKey === node.nodeKey) {
@@ -479,7 +419,7 @@
   .back-btn{
     /*margin-top:8px!important;*/
     margin-bottom: 12px;
-}
+  }
   .btn-group{
     text-align: right;
   }

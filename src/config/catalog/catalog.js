@@ -1087,7 +1087,9 @@ class catalogOptions {
                 }
               };
               children.push(h('a', view, '信息项'));
-              children.push(h('a', link, '资源挂接'));
+              if (params.row.canGj) {
+                children.push(h('a', link, '资源挂接'));
+              }
               if (params.row.havaGj && params.row.gxkf) {
                 children.push(h('a', open, '共享开放'));
               }

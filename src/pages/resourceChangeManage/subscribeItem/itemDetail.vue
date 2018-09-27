@@ -54,7 +54,7 @@
         vm.initData.resourceId = id;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.tableData.tableList = data.result;
-          vm.pageData.total = data.total;
+          vm.pageData.total = parseInt(data.total);
           vm.tableData.loading = false;
         }).catch((error) => {
 

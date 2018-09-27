@@ -126,7 +126,7 @@
                 {
                   navId: 23,
                   label: '资源管理',
-                  frontUrl: '/sourceManagement',
+                  frontUrl: '/resourceManagement',
                   authority: ['user']
                 },
                 {

@@ -1,4 +1,7 @@
 /**
+ * Created by Administrator on 2018/9/26 0026.
+ */
+/**
  * Created by Administrator on 2018/9/14 0014.
  */
 /**
@@ -30,7 +33,7 @@ class resourceBazaarOptions {
     vm.filterRoleList = [{value:'',key:'全部'}];
     vm.statusList = [];
     return {
-      title: '所有订阅',
+      title: '资源管理',
       apis: {
         listApi: 'allSubscribeList',
         addApi: 'userAdd',
@@ -337,19 +340,19 @@ class resourceBazaarOptions {
           {
             title: '审批状态',
             key: '',
-          /*  render: (h, params) => {
-              let children = [];
-              let runStatusNames = "";
-              if (params.row.runStatus === 0) {
-                runStatusNames = '停止';
-              }
-              else if(params.row.runStatus === 1){
-                runStatusNames = '运行';
-              } else {
-                runStatusNames = '已连接';
-              }
-              return h('div', runStatusNames);
-            }*/
+            /*  render: (h, params) => {
+             let children = [];
+             let runStatusNames = "";
+             if (params.row.runStatus === 0) {
+             runStatusNames = '停止';
+             }
+             else if(params.row.runStatus === 1){
+             runStatusNames = '运行';
+             } else {
+             runStatusNames = '已连接';
+             }
+             return h('div', runStatusNames);
+             }*/
           },
           {
             title: '操作',
@@ -439,19 +442,19 @@ class resourceBazaarOptions {
           {
             title: '审批状态',
             key: '',
-         /*   render: (h, params) => {
-              let children = [];
-              let runStatusNames = "";
-              if (params.row.runStatus === 0) {
-                runStatusNames = '停止';
-              }
-              else if(params.row.runStatus === 1){
-                runStatusNames = '运行';
-              } else {
-                runStatusNames = '已连接';
-              }
-              return h('div', runStatusNames);
-            }*/
+            /*   render: (h, params) => {
+             let children = [];
+             let runStatusNames = "";
+             if (params.row.runStatus === 0) {
+             runStatusNames = '停止';
+             }
+             else if(params.row.runStatus === 1){
+             runStatusNames = '运行';
+             } else {
+             runStatusNames = '已连接';
+             }
+             return h('div', runStatusNames);
+             }*/
           },
           {
             title: '操作',
