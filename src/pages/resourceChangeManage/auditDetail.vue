@@ -55,14 +55,14 @@
           subscriberID: paramsArr[2]
         };
         vm.api[vm.apis.detailApi](params).then((data) => {
-             if (data.datas.status == 3) {
-               data.datas.status = '未通过'
+             if (data.datas.status == 0) {
+               data.datas.status = '已拒绝'
              }
-             if (data.datas.status == 2) {
-               data.datas.status = '已通过'
+             if (data.datas.status == -1) {
+               data.datas.status = '待审核'
              }
              if (data.datas.status == 1) {
-               data.datas.status = '待审核'
+               data.datas.status = '已通过'
              }
 
           vm.detailData = data.datas;

@@ -130,7 +130,7 @@
             vm.initTable();
             vm.cancel();
           }).catch((error) => {
-
+             vm.$Message.error(error);
           })
         }
       },

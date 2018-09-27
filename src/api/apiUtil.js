@@ -76,7 +76,6 @@ const sendApiInstance = (method, url, params, config = {}) => {
     }
   )
   if (typeof params === Array.isArray([]) && method === 'post') {
-    console.log(11);
     params = {
       params: params
     }

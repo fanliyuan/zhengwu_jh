@@ -115,24 +115,24 @@ class resourceBazaarOptions {
             title: 'ID',
             key: 'id',
           },
-          {
-            title: '订阅名称',
-            key: 'subscriberName',
-          },
+          // {
+          //   title: '订阅名称',
+          //   key: 'subscriberName',
+          // },
           {
             title: '资源名称',
             key: 'dsName',
           },
           {
-            title: '目录资源',
+            title: '数据类型',
             key: 'dataType',
           },
           {
-            title: '订阅申请人',
-            key: 'subscriberPeople',
+            title: '订阅机构',
+            key: 'subscribeInstitution',
           },
           {
-            title: '订阅申请时间',
+            title: '订阅时间',
             key: 'subTime',
           },
           {
@@ -154,11 +154,11 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
-              if (params.row.status === 1 || params.row.status === -1 ) {
+              if (params.row.status === -1 ) {
                 statusNames = '审核';
               }
               else {
-                statusNames = '审核详情';
+                statusNames = '查看';
               }
               let edit = {
                 props: {
@@ -205,16 +205,49 @@ class resourceBazaarOptions {
             type: 'input',
             word: 'text',
             prop: 'dsName',
-            name: '发布名称',
-            placeholder: '发布名称'
+            name: '资源名称',
+            placeholder: '资源名称'
           },
           {
+            type: 'select',
+            disabled: false,
+            prop: 'dataType',
+            name: '数据类型',
+            placeholder: '数据类型',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value:'db',
+                key:'db'
+              },
+              {
+                value:'file',
+                key:'file'
+              },
+              {
+                value:'ftp',
+                key:'ftp'
+              }
+            ]
+          },
+          {
+            type: 'input',
+            disabled: false,
+            prop: 'subscribeInstitution',
+            name: '订阅机构',
+            placeholder: '订阅机构',
+
+          },
+          /*{
             type: 'input',
             word: 'text',
             prop: 'subscriberPeople',
             name: '订阅申请人',
             placeholder: '订阅申请人'
-          },
+          },*/
           {
             type: 'dateRange',
             word: 'daterange',
@@ -222,6 +255,31 @@ class resourceBazaarOptions {
             disabled: false,
             name: '时间段',
             placeholder: '请选择时间段'
+          },
+          {
+            type: 'select',
+            disabled: false,
+            prop: 'subscribeStatus',
+            name: '审核状态',
+            placeholder: '审核状态',
+            options: [
+              {
+                value: '',
+                key: '全部'
+              },
+              {
+                value:'1',
+                key:'已通过'
+              },
+              {
+                value:'0',
+                key:'已拒绝'
+              },
+              {
+                value:'-1',
+                key:'待审核'
+              }
+            ]
           },
         ]
       },

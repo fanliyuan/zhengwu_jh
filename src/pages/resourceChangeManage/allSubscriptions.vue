@@ -230,7 +230,8 @@
           vm.tableData.selectedIds.push({
             subscriberID: selection[i].subscriberId,
             dsID: selection[i].dsId,
-            dataType: selection[i].dataType
+            dataType: selection[i].dataType,
+            mountResourceId: selection[i].mountResourceId
           });
         }
       //  return arr;
