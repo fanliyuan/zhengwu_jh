@@ -299,7 +299,7 @@
           console.log(params);
           vm.$Modal.confirm({
             title: '信息',
-            content: '是否启动选择的信息？',
+            content: '启用后当前用户可登录系统，您是否确认启用当前用户？',
             onOk: function () {
               vm.api[vm.apis.runApi](params).then((data) => {
                 vm.$Loading.finish();
@@ -325,7 +325,7 @@
           console.log(params);
           vm.$Modal.confirm({
             title: '信息',
-            content: '是否停止选择的信息？',
+            content: '停用后当前用户不可登录系统，您是否确认停用当前用户？',
             onOk: function () {
               vm.api[vm.apis.stopApi](params).then((data) => {
                 vm.$Loading.finish();
