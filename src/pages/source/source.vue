@@ -120,9 +120,15 @@
         let vm = this;
         vm.tableData.loading = true;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
+          for (let i = 0; i < data.datas.length; i++) {
+           if (!data.datas[i].sc) {
+             data.datas[i]._disabled = true;
+            }
+          }
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
+
         }).catch((error) => {
 
         })
