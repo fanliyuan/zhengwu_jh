@@ -34,7 +34,7 @@
           </Input>-->
         </FormItem>
         <FormItem prop="password" class="login-form-item">
-          <Input placeholder="请输入密码"  type="password" style="width: auto" class="login-form-input" v-model="formLogin.password">
+          <Input placeholder="请输入密码"  type="password" style="width: auto" class="login-form-input" @keyup.enter.native="handleSubmit('formLogin')" v-model="formLogin.password">
           <Icon type="ios-lock" slot="prefix" />
           </Input>
           <!--<Input type="password" class="login-form-input" v-model="formLogin.password" placeholder="请输入密码">
@@ -96,6 +96,8 @@
           }
         });
       }
+
+
     }
   }
 </script>
