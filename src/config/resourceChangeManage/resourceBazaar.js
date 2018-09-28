@@ -253,7 +253,6 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
-              console.log(params.row.typeName);
               if (params.row.disparkType === '') {
                 statusNames = '订阅';
               }

@@ -135,7 +135,6 @@
           }
 
           let timeSetting = (data.timSetting).split(',');
-          console.log(timeSetting[0]);
           if (timeSetting[0] == "") {
             vm.minutes = ""
           } else {
