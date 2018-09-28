@@ -80,11 +80,11 @@ const sendApiInstance = (method, url, params, config = {}) => {
       params: params
     }
   }
-  // if (typeof params === 'object' && Object.prototype.toString.call(params) === '[object Array]') {
-  //   params = {
-  //     data: params
-  //   }
-  // }
+  if (typeof params === 'object' && Object.prototype.toString.call(params) === '[object Array]' && method === 'delete') {
+    params = {
+      data: params
+    }
+  }
 
   if (method === 'get' && !params.ID) {
     params = {
