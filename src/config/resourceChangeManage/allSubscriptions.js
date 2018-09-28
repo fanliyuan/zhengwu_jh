@@ -225,8 +225,8 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '目录名称',
-            key: 'directoryName',
+            title: '资源名称',
+            key: 'dsName',
           },
           {
             title: '发布机构',
@@ -327,8 +327,8 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '目录名称',
-            key: 'directoryName',
+            title: '资源名称',
+            key: 'dsName',
           },
           {
             title: '发布机构',
@@ -429,8 +429,8 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '目录名称',
-            key: 'directoryName',
+            title: '资源名称',
+            key: 'dsName',
           },
           {
             title: '发布机构',
@@ -505,7 +505,7 @@ class resourceBazaarOptions {
             disabled: false,
             prop: 'dsName',
             name: '名称',
-            placeholder: '订阅名称/目录名称',
+            placeholder: '资源名称',
           },
           {
             type: 'input',

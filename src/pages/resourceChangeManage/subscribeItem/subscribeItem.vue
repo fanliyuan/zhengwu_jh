@@ -115,14 +115,53 @@
           resourceId: paramsArr[0]
         };
         vm.api[vm.apis.resourceTaskInfoApi](ID).then((data) => {
-          vm.pubMode = data.pubMode;
-          vm.pubfreQuency = data.pubfreQuency;
+          if (data.pubMode == '1,1') {
+            vm.pubMode = '自增字段';
+          } else if (data.pubMode == '1,5'){
+            vm.pubMode = '日志';
+          } else if (data.pubMode == '4') {
+            vm.pubMode = '全量';
+          }
+          switch (data.pubfreQuency) {
+            case "1" :
+              vm.pubfreQuency = '定时';
+              break;
+            case "2" :
+              vm.pubfreQuency = '实时';
+              break;
+            case "3" :
+              vm.pubfreQuency = '手动';
+              break;
+          }
+
           let timeSetting = (data.timSetting).split(',');
-          vm.minutes = timeSetting[0] + "分钟";
-          vm.hours = timeSetting[1] + "小时";
-          vm.day = timeSetting[2] + "天";
-          vm.month = timeSetting[3] + "月";
-          vm.week = "星期" + timeSetting[4];
+          console.log(timeSetting[0]);
+          if (timeSetting[0] == "") {
+            vm.minutes = ""
+          } else {
+            vm.minutes = timeSetting[0] + "分钟";
+          }
+          if (timeSetting[1] == "") {
+            vm.hours = ""
+          } else {
+            vm.hours = timeSetting[1] + "小时";
+          }
+          if (timeSetting[2] == "") {
+            vm.day = ""
+          } else {
+            vm.day = timeSetting[2] + "天";
+          }
+          if (timeSetting[3] == "") {
+            vm.month = ""
+          } else {
+            vm.month = timeSetting[3] + "月";
+          }
+          if (timeSetting[4] == "") {
+            vm.week = ""
+          } else {
+            vm.week = timeSetting[4] + "星期" ;
+          }
+
         }).catch((error) => {
           vm.$Loading.error();
 

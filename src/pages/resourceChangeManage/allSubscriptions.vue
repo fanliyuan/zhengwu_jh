@@ -188,7 +188,7 @@
       initTable2: function () {
         let vm = this;
         vm.tableData2.loading = true;
-        vm.initData2.status = -1;
+        vm.initData2.status = 0;
         vm.api[vm.apis.listApi](vm.initData2).then((data) => {
           vm.tableData2.tableList = data.datas;
           vm.pageData2.total = data.totalCounts;
@@ -246,34 +246,45 @@
         vm.dsName = "";
         vm.publishInstitution = "";
         vm.runStatus = "";
-        vm.filterData.filiterObj.dsName = "";
-        vm.filterData.filiterObj.catalogId = "";
-        vm.filterData.filiterObj.publishInstitution = "";
-        vm.filterData.filiterObj.runStatus = "";
-        vm.filterData.filiterObj.beginTime = "";
-        vm.filterData.filiterObj.endTime = "";
+        vm.initData.dsName = "";
+        vm.initData.catalogId = "";
+        vm.initData.publishInstitution = "";
+        vm.initData.runStatus = "";
+        vm.initData.beginTime = "";
+        vm.initData.endTime = "";
       },
       //搜索
       handleSubmit: function (types) {
         let vm = this;
-        vm.filterData.filiterObj.dsName = vm.dsName;
-        vm.filterData.filiterObj.catalogId = vm.catalogId;
-        vm.filterData.filiterObj.publishInstitution = vm.publishInstitution;
-        vm.filterData.filiterObj.runStatus = vm.runStatus;
-        console.log(vm.filterData.filiterObj);
+     /*   vm.initData.catalogId = vm.catalogId;
+        vm.initData.publishInstitution = vm.publishInstitution;
+        vm.initData.runStatus = vm.runStatus;
+        vm.initData.dsName = vm.dsName;*/
         if (types == 'table1') {
-          this.initTable(vm.filterData.filiterObj);
+          vm.initData.catalogId = vm.catalogId;
+          vm.initData.publishInstitution = vm.publishInstitution;
+          vm.initData.runStatus = vm.runStatus;
+          vm.initData.dsName = vm.dsName;
+          this.initTable();
         } else if (types == 'table2') {
-          this.initTable1(vm.filterData.filiterObj);
+          vm.initData1.catalogId = vm.catalogId;
+          vm.initData1.publishInstitution = vm.publishInstitution;
+          vm.initData1.runStatus = vm.runStatus;
+          vm.initData1.dsName = vm.dsName;
+          this.initTable1();
         } else if (types == 'table3') {
-          this.initTable2(vm.filterData.filiterObj);
+          vm.initData2.catalogId = vm.catalogId;
+          vm.initData2.publishInstitution = vm.publishInstitution;
+          vm.initData2.runStatus = vm.runStatus;
+          vm.initData2.dsName = vm.dsName;
+          this.initTable2();
         }
       },
       //时间段
       nowDateRange (value) {
         let vm = this;
-        vm.filterData.filiterObj.beginTime = value[0];
-        vm.filterData.filiterObj.endTime = value[1];
+        vm.initData.beginTime = value[0];
+        vm.initData.endTime = value[1];
       },
 
       //启动

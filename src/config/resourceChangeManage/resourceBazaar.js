@@ -228,18 +228,19 @@ class resourceBazaarOptions {
             title: '发布方是否审核',
             key: 'checkStatus',
             render: (h, params) => {
-              if (params.row.checkStatus === '1') {
+              return h('span','是');
+         /*     if (params.row.checkStatus === '1') {
                 return h('div', '待审核');
               } else if (params.row.checkStatus === '2') {
                 return h('div', '已通过 ');
               } else if (params.row.checkStatus === '3') {
                 return h('div', '未通过 ');
-              }
+              }*/
             }
           },
           {
             title: '是否已订阅',
-            key: 'disparkType',
+            key: '',
           /*  render: (h, params) => {
               if (params.rows.disparkType) {
 
