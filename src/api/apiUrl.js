@@ -77,5 +77,5 @@ export default {
   managementList: {url: '/api/v2/zhengwu/swap/resourceBazaar/managementList', method: 'get'}, //资源管理列表
   tableList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableList', method: 'get'}, //数据库表列表
   tableStructureList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableStructureList', method: 'get'}, //数据库表列表
-  tableDataList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableDataList', method: 'get'} //数据库表列表
+  tableDataList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableDataList', method: 'get'} //数据库数据列表
 }
