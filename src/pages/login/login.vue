@@ -87,6 +87,7 @@
               if (!res) {
                 this.$Message.error('账号或密码错误!');
               } else {
+                sessionStorage.setItem('userName', res.data.name);
                 sessionStorage.setItem('authority', res.data.roleEnNames[0]);
                 this.$router.push({'path': '/nodeOverview'});
               }

@@ -10,7 +10,8 @@
     <div class="header-opreation">
       <Dropdown trigger="click" placement="bottom-start">
         <a class="user-name" href="javascript:void(0)">
-          运维管理员
+          <Icon type="ios-contact"></Icon>
+          <span>{{userName}}</span>
           <Icon type="arrow-down-b"></Icon>
         </a>
         <DropdownMenu slot="list">
@@ -46,13 +47,18 @@
             isParent: false,
             frontUrl: ''
           }
-        ]
+        ],
+        userName: window.sessionStorage.getItem("userName")
       }
     }
   }
 </script>
 
 <style lang="less" scoped>
+  .ivu-icon-ios-contact{
+    font-size: 28px;
+    margin-bottom: 2px;
+  }
   .layout-header-bar{
     background: #fff;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
