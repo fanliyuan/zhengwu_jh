@@ -35,14 +35,13 @@ class resourceBazaarOptions {
     return {
       title: '资源管理',
       apis: {
-        listApi: 'allSubscribeList',
+        listApi: 'managementList',
         addApi: 'userAdd',
         deleteApi: 'userDelete',
         detailApi: 'userDetail',
         editApi: 'assignRoleUpdate',
         showCatalogListApi:'showCatalogList',
-        runApi: 'run',
-        stopApi: 'stop',
+
       },
       treeData: [],
       selectValue: '',
@@ -198,8 +197,7 @@ class resourceBazaarOptions {
         catalogId: '',
         dsName: '',
         publishInstitution: '',
-        runStatus: '',
-        status: '',
+        dataType: '',
         beginTime: '',
         endTime: '',
         pageNum:1,
@@ -220,44 +218,27 @@ class resourceBazaarOptions {
             key: 'subscribeName',
           },
           {
-            title: '订阅申请人',
-            key: 'reviewer',
+            title: '资源名称',
+            key: 'dsName',
           },
           {
-            title: '订阅时间',
-            key: 'reviewTime',
-          },
-          {
-            title: '目录名称',
-            key: 'directoryName',
+            title: '数据条数',
+            key: 'dataNum',
           },
           {
             title: '发布机构',
             key: 'publishInstitution',
           },
           {
-            title: '运行状态',
-            key: 'runStatus',
-            render: (h, params) => {
-              let children = [];
-              let runStatusNames = "";
-              if (params.row.runStatus === 0) {
-                runStatusNames = '停止';
-              }
-              else if(params.row.runStatus === 1){
-                runStatusNames = '运行';
-              } else {
-                runStatusNames = '已连接';
-              }
-              return h('div', runStatusNames);
-            }
+            title: '更新时间',
+            key: 'updateTime',
           },
           {
             title: '操作',
             key: 'operate',
             render: (h, params) => {
               let children = [];
-              let view = {
+              let catalog = {
                 props: {
                   type: 'primary'
                 },
@@ -268,11 +249,11 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view(params.row.id,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
+                    vm.catalog(params.row.resourceId);
                   }
                 }
               };
-              let audit = {
+              let resource = {
                 props: {
                   type: 'primary'
                 },
@@ -283,120 +264,18 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.audit(params.row.id);
+                    vm.resource(params.row.resourceId,params.row.dbName,params.row.dbType,params.row.dsName,params.row.publishInstitution,params.row.updateTime);
                   }
                 }
               };
-              children.push(h('span', view, '查看'));
-              children.push(h('span', audit, '审核日志'));
+              children.push(h('span', catalog, '目录'));
+              children.push(h('span', resource, '资源'));
               return h('div', children);
             }
           }
         ]
       },
       pageData: {
-        total: 0
-      },
-      initData2: {
-        catalogId: '',
-        dsName: '',
-        publishInstitution: '',
-        runStatus: '',
-        status: '',
-        beginTime: '',
-        endTime: '',
-        pageNum:1,
-        pageSize:10,
-      },
-      tableData2: {
-        loading: true,
-        tableList: [],
-        columns: [
-          {
-            title: '序号',
-            type: 'index',
-            width: 70,
-          },
-          {
-            title: '订阅名称',
-            key: 'subscribeName',
-          },
-          {
-            title: '订阅申请人',
-            key: 'reviewer',
-          },
-          {
-            title: '订阅时间',
-            key: 'reviewTime',
-          },
-          {
-            title: '目录名称',
-            key: 'directoryName',
-          },
-          {
-            title: '发布机构',
-            key: 'publishInstitution',
-          },
-          {
-            title: '审批状态',
-            key: '',
-            /*  render: (h, params) => {
-             let children = [];
-             let runStatusNames = "";
-             if (params.row.runStatus === 0) {
-             runStatusNames = '停止';
-             }
-             else if(params.row.runStatus === 1){
-             runStatusNames = '运行';
-             } else {
-             runStatusNames = '已连接';
-             }
-             return h('div', runStatusNames);
-             }*/
-          },
-          {
-            title: '操作',
-            key: 'operate',
-            render: (h, params) => {
-              let children = [];
-              let view = {
-                props: {
-                  type: 'primary'
-                },
-                style: {
-                  marginRight: '5px',
-                  color:'#3fa9ff',
-                  cursor:'pointer'
-                },
-                on: {
-                  click: () => {
-                    vm.view(params.row.id,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
-                  }
-                }
-              };
-              let audit = {
-                props: {
-                  type: 'primary'
-                },
-                style: {
-                  marginRight: '5px',
-                  color:'#3fa9ff',
-                  cursor:'pointer'
-                },
-                on: {
-                  click: () => {
-                    vm.audit(params.row.id);
-                  }
-                }
-              };
-              children.push(h('span', view, '查看'));
-              children.push(h('span', audit, '审核日志'));
-              return h('div', children);
-            }
-          }
-        ]
-      },
-      pageData2: {
         total: 0
       },
       initData1: {
@@ -508,7 +387,7 @@ class resourceBazaarOptions {
             disabled: false,
             prop: 'dsName',
             name: '名称',
-            placeholder: '订阅名称/目录名称',
+            placeholder: '资源名称',
           },
           {
             type: 'input',

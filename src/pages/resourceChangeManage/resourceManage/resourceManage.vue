@@ -20,7 +20,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="资源名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -49,7 +49,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="资源名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -107,7 +107,7 @@
     },
     created: function () {
       this.initTable();
-      this.initTable1();
+     // this.initTable1();
       this.initTree();
     },
     methods:{
@@ -115,8 +115,9 @@
       initTable: function () {
         let vm = this;
         vm.tableData.loading = true;
-        vm.initData.status = 1;
+        vm.initData.dataType = 0;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
+          console.log(data);
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
@@ -148,17 +149,19 @@
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
       },
-      //查看
-      view: function (id,directoryName,publishInstitution,dsName,subscribeName) {
+      //目录页面跳转
+      catalog: function (resourceId) {
         let vm = this;
-        let params = id + "&" + directoryName + "&" + publishInstitution + "&"+ dsName + "&"+ subscribeName;
-        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' +params});
+        let params = resourceId;
+        vm.$router.push({'path': '/resourceManagement/viewCatalog/' +params});
       },
 
-      //审核日志
-      audit: function (id) {
+      //资源页面跳转
+      resource: function (resourceId,dbName,dbType,dsName,publishInstitution,updateTime) {
         let vm = this;
-        vm.$router.push({'path': '/allSub/auditLogs/' +id});
+        let params ;
+        params = resourceId +"&"+ dbName +"&"+ dbType +"&"+ dsName +"&"+ publishInstitution +"&"+ updateTime
+        vm.$router.push({'path': '/resourceManagement/viewResource/' +params});
       },
 
       //返回选中的值
@@ -195,10 +198,9 @@
       //搜索
       handleSubmit: function (types) {
         let vm = this;
-        vm.filterData.filiterObj.dsName = vm.dsName;
-        vm.filterData.filiterObj.catalogId = vm.catalogId;
-        vm.filterData.filiterObj.publishInstitution = vm.publishInstitution;
-        vm.filterData.filiterObj.runStatus = vm.runStatus;
+        vm.initData.dsName = vm.dsName;
+        vm.initData.catalogId = vm.catalogId;
+        vm.initData.publishInstitution = vm.publishInstitution;
         console.log(vm.filterData.filiterObj);
         if (types == 'table1') {
           this.initTable(vm.filterData.filiterObj);

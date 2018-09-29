@@ -71,4 +71,11 @@ export default {
   auditLogs: { url: '/api/v2/zhengwu/swap/resourceBazaar/reviewLog', method: 'get' }, //审核日志
   run: { url: '/api/v2/zhengwu/swap/resourceBazaar/run', method: 'post' }, //运行
   stop: { url: '/api/v2/zhengwu/swap/resourceBazaar/stop', method: 'post' }, //运行
+
+
+  //资源交换管理-资源管理
+  managementList: {url: '/api/v2/zhengwu/swap/resourceBazaar/managementList', method: 'get'}, //资源管理列表
+  tableList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableList', method: 'get'}, //数据库表列表
+  tableStructureList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableStructureList', method: 'get'}, //数据库表列表
+  tableDataList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableDataList', method: 'get'} //数据库表列表
 }
