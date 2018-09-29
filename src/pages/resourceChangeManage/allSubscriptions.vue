@@ -300,23 +300,21 @@
              if (params[i].runStatus === 1) {
                vm.$Message.error('所选择的资源里已经包含已启动的资源！');
                return;
-             } else {
-               vm.$Modal.confirm({
-                 title: '信息',
-                 content: '是否启动选择的信息？',
-                 onOk: function () {
-                   vm.api[vm.apis.runApi](params).then((data) => {
-                     vm.$Loading.finish();
-                     vm.initTable();
-                     vm.tableData.selectedIds = [];
-                   }).catch((error) => {
-                     vm.$Loading.error();
-                   })
-                 }
-               });
              }
           }
-
+          vm.$Modal.confirm({
+            title: '信息',
+            content: '是否启动选择的信息？',
+            onOk: function () {
+              vm.api[vm.apis.runApi](params).then((data) => {
+                vm.$Loading.finish();
+                vm.initTable();
+                vm.tableData.selectedIds = [];
+              }).catch((error) => {
+                vm.$Loading.error();
+              })
+            }
+          });
         }
       },
 
@@ -333,23 +331,21 @@
             if (params[i].runStatus === 0) {
               vm.$Message.error('所选择的资源里已经包含已停止的资源！');
               return;
-            } else {
-              vm.$Modal.confirm({
-                title: '信息',
-                content: '是否停止选择的信息？',
-                onOk: function () {
-                  vm.api[vm.apis.stopApi](params).then((data) => {
-                    vm.$Loading.finish();
-                    vm.initTable();
-                    vm.tableData.selectedIds = [];
-                  }).catch((error) => {
-                    vm.$Loading.error();
-                  })
-                }
-              });
             }
           }
-
+          vm.$Modal.confirm({
+            title: '信息',
+            content: '是否停止选择的信息？',
+            onOk: function () {
+              vm.api[vm.apis.stopApi](params).then((data) => {
+                vm.$Loading.finish();
+                vm.initTable();
+                vm.tableData.selectedIds = [];
+              }).catch((error) => {
+                vm.$Loading.error();
+              })
+            }
+          });
         }
       },
 
