@@ -224,14 +224,14 @@
       //返回选中的值
       selectionClick:function (selection) {
         let vm = this;
-        console.log(selection);
         vm.tableData.selectedIds = [];
         for (let i = 0, len = selection.length; i < len; i++) {
           vm.tableData.selectedIds.push({
             subscriberID: selection[i].subscriberId,
             dsID: selection[i].dsId,
             dataType: selection[i].dataType,
-            mountResourceId: selection[i].mountResourceId
+            mountResourceId: selection[i].mountResourceId,
+            runStatus: selection[i].runStatus
           });
         }
       //  return arr;
@@ -296,20 +296,27 @@
           return false;
         } else {
          params = vm.tableData.selectedIds;
-          console.log(params);
-          vm.$Modal.confirm({
-            title: '信息',
-            content: '是否启动选择的信息？',
-            onOk: function () {
-              vm.api[vm.apis.runApi](params).then((data) => {
-                vm.$Loading.finish();
-                vm.initTable();
-                vm.tableData.selectedIds = [];
-              }).catch((error) => {
-                vm.$Loading.error();
-              })
-            }
-          });
+          for (let i = 0; i < params.length; i++) {
+             if (params[i].runStatus === 1) {
+               vm.$Message.error('所选择的资源里已经包含已启动的资源！');
+               return;
+             } else {
+               vm.$Modal.confirm({
+                 title: '信息',
+                 content: '是否启动选择的信息？',
+                 onOk: function () {
+                   vm.api[vm.apis.runApi](params).then((data) => {
+                     vm.$Loading.finish();
+                     vm.initTable();
+                     vm.tableData.selectedIds = [];
+                   }).catch((error) => {
+                     vm.$Loading.error();
+                   })
+                 }
+               });
+             }
+          }
+
         }
       },
 
@@ -322,20 +329,27 @@
           return false;
         } else {
           params = vm.tableData.selectedIds;
-          console.log(params);
-          vm.$Modal.confirm({
-            title: '信息',
-            content: '是否停止选择的信息？',
-            onOk: function () {
-              vm.api[vm.apis.stopApi](params).then((data) => {
-                vm.$Loading.finish();
-                vm.initTable();
-                vm.tableData.selectedIds = [];
-              }).catch((error) => {
-                vm.$Loading.error();
-              })
+          for (let i = 0; i < params.length; i++) {
+            if (params[i].runStatus === 0) {
+              vm.$Message.error('所选择的资源里已经包含已停止的资源！');
+              return;
+            } else {
+              vm.$Modal.confirm({
+                title: '信息',
+                content: '是否停止选择的信息？',
+                onOk: function () {
+                  vm.api[vm.apis.stopApi](params).then((data) => {
+                    vm.$Loading.finish();
+                    vm.initTable();
+                    vm.tableData.selectedIds = [];
+                  }).catch((error) => {
+                    vm.$Loading.error();
+                  })
+                }
+              });
             }
-          });
+          }
+
         }
       },
 
