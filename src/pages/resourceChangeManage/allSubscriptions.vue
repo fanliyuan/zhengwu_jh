@@ -209,9 +209,9 @@
         vm.modalOpreation = true;
       },
       //查看
-      view: function (id,directoryName,publishInstitution,dsName,subscribeName) {
+      view: function (dsId,directoryName,publishInstitution,dsName,subscribeName) {
         let vm = this;
-        let params = id + "&" + directoryName + "&" + publishInstitution + "&"+ dsName + "&"+ subscribeName;
+        let params = dsId +"&"+directoryName + "&" + publishInstitution + "&"+ dsName + "&"+ subscribeName;
         vm.$router.push({'path': '/resourceChangeManage/itemInfo/' +params});
       },
 

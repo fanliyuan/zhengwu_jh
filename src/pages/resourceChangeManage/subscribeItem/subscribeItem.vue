@@ -158,7 +158,7 @@
           if (timeSetting[4] == "") {
             vm.week = ""
           } else {
-            vm.week = timeSetting[4] + "星期" ;
+            vm.week =  "星期" + timeSetting[4];
           }
 
         }).catch((error) => {

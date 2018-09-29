@@ -265,7 +265,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view(params.row.id,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
+                    vm.view(params.row.dsId,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
                   }
                 }
               };
@@ -367,7 +367,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view(params.row.id,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
+                    vm.view(params.row.dsId,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
                   }
                 }
               };
@@ -469,7 +469,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view(params.row.id,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
+                    vm.view(params.row.dsId,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
                   }
                 }
               };
