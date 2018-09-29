@@ -138,27 +138,27 @@
           if (timeSetting[0] == "") {
             vm.minutes = ""
           } else {
-            vm.minutes = timeSetting[0] + "分钟";
+            vm.minutes = timeSetting[0] + "秒";
           }
           if (timeSetting[1] == "") {
             vm.hours = ""
           } else {
-            vm.hours = timeSetting[1] + "小时";
+            vm.hours = timeSetting[1] + "分";
           }
           if (timeSetting[2] == "") {
             vm.day = ""
           } else {
-            vm.day = timeSetting[2] + "天";
+            vm.day = timeSetting[2] + "小时";
           }
           if (timeSetting[3] == "") {
             vm.month = ""
           } else {
-            vm.month = timeSetting[3] + "月";
+            vm.month = timeSetting[3] + "天";
           }
           if (timeSetting[4] == "") {
             vm.week = ""
           } else {
-            vm.week =  "星期" + timeSetting[4];
+            vm.week = timeSetting[4] + "月" ;
           }
 
         }).catch((error) => {
