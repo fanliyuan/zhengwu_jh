@@ -121,19 +121,33 @@
           ID: id
         };
         if (statusName === '启用') {
-          vm.api[vm.apis.freeze](ID).then((data) => {
-            vm.$Message.info('停用成功');
-            vm.initTable();
-          }).catch((error) => {
-            vm.$Loading.error();
-          })
+          vm.$Modal.confirm({
+            title: '信息',
+            content: '停用后当前用户不可登录，您是否确认停用当前用户？',
+            onOk: function () {
+              vm.api[vm.apis.freeze](ID).then((data) => {
+                vm.$Message.info('停用成功');
+                vm.initTable();
+              }).catch((error) => {
+                vm.$Loading.error();
+              })
+            }
+          });
+
         } else {
-          vm.api[vm.apis.unfreeze](ID).then((data) => {
-            vm.$Message.info('启用成功');
-            vm.initTable();
-          }).catch((error) => {
-            vm.$Loading.error();
-          })
+          vm.$Modal.confirm({
+            title: '信息',
+            content: '启用后当前用户可登录系统，您是否确认启用当前用户？',
+            onOk: function () {
+              vm.api[vm.apis.unfreeze](ID).then((data) => {
+                vm.$Message.info('启用成功');
+                vm.initTable();
+              }).catch((error) => {
+                vm.$Loading.error();
+              })
+            }
+          });
+
         }
       },
       //删除
