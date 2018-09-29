@@ -8,24 +8,19 @@
 <template>
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
-    <div class="main-contents cl">
-      <div class="left">
-        <div class="tree-content">
-          <Input search enter-button placeholder="请输入关键词" class="hiddenInput" @on-search="searchTree"/>
-          <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
-        </div>
-      </div>
-      <div class="right"  v-if="catalogId !== ''">
-         <FilterForm :options="filterData"></FilterForm>
+    <div class="tree-content">
+      <Input search enter-button placeholder="请输入关键词" class="hiddenInput" @on-search="searchTree"/>
+      <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
+    </div>
+    <div class="main-content cl"  v-if="catalogId !== ''">
+      <FilterForm :options="filterData"></FilterForm>
       <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
       <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
       <ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>
-      </div>
-      <div class="right" style="height: 600px; line-height: 600px; text-align: center" v-if="catalogId === ''">
-        <h2>请在左侧列表中选择资源</h2>
-      </div>
-
+    </div>
+    <div class="main-content cl" style="height: 600px; line-height: 600px; text-align: center" v-if="catalogId === ''">
+      <h2>请在左侧列表中选择资源</h2>
     </div>
   </div>
 </template>
@@ -294,6 +289,17 @@
 </script>
 
 <style lang="less" scoped>
+  .main-content{
+    width: 70%;
+    float: left;
+  }
+  .tree-content{
+    width: 24%;
+    background-color: #ffffff;
+    float: left;
+    margin: 20px 0 20px 20px;
+    padding: 15px 20px;
+  }
   .main-contents{
     margin: 20px;
     background-color: #f0f2f5;
