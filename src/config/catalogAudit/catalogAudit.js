@@ -49,7 +49,7 @@ class catalogAuditOptions {
           },
           {
             title: '提供方',
-            key: 'dataType'
+            key: 'providerName'
           },
           {
             title: '注册时间',
