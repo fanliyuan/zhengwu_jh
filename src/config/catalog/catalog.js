@@ -1093,8 +1093,13 @@ class catalogOptions {
               if (params.row.havaGj && params.row.gxkf) {
                 children.push(h('a', open, '共享开放'));
               }
-              children.push(h('a', edit, '修改'));
-              children.push(h('a', del, '删除'));
+              if (params.row.xg) {
+                children.push(h('a', edit, '修改'));
+              }
+              if (params.row.sc) {
+                children.push(h('a', del, '删除'));
+              }
+
               return h('div', children);
             }
           }

@@ -556,7 +556,10 @@ class sourceOptions {
                 }
               };
               children.push(h('a', view, '查看'));
-              children.push(h('a', edit, '修改'));
+              if (params.row.xg) {
+                children.push(h('a', edit, '修改'));
+              }
+
               if (params.row.sc) {
                 children.push(h('a', del, '删除'));
               }
