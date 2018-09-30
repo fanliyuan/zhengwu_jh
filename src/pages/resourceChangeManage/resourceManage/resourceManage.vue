@@ -157,10 +157,10 @@
       },
 
       //资源页面跳转
-      resource: function (resourceId,dbName,dbType,dsName,publishInstitution,updateTime) {
+      resource: function (resourceId,dbName,dbType,dsName,publishInstitution,updateTime,fileName) {
         let vm = this;
         let params ;
-        params = resourceId +"&"+ dbName +"&"+ dbType +"&"+ dsName +"&"+ publishInstitution +"&"+ updateTime
+        params = resourceId +"&"+ dbName +"&"+ dbType +"&"+ dsName +"&"+ publishInstitution +"&"+ updateTime + "&" +fileName;
         vm.$router.push({'path': '/resourceManagement/viewResource/' +params});
       },
 

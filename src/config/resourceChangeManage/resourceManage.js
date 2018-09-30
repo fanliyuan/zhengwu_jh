@@ -264,7 +264,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.resource(params.row.resourceId,params.row.dbName,params.row.dbType,params.row.dsName,params.row.publishInstitution,params.row.updateTime);
+                    vm.resource(params.row.resourceId,params.row.dbName,params.row.dbType,params.row.dsName,params.row.publishInstitution,params.row.updateTime,params.row.fileName);
                   }
                 }
               };

@@ -11,13 +11,14 @@
     <Button class="back-btn" v-if="backbtn" @click="back()">{{backbtn.name}}</Button>
     <Button class="back-btn" type="primary" v-if="saveBtn" @click="save(saveBtn.method)">{{saveBtn.name}}</Button>
     <Button class="back-btn" type="primary" v-if="surebtn" @click="sure(surebtn.method)">{{surebtn.name}}</Button>
+    <Button class="back-btn" type="primary" v-if="exportBtn" @click="Export(exportBtn.method)">{{exportBtn.name}}</Button>
   </div>
 </template>
 
 <script>
   export default{
     name: 'ConTitle',
-    props: ['options', 'backbtn', 'saveBtn','surebtn','sureData','subscribeName'],
+    props: ['options', 'backbtn', 'saveBtn','surebtn','sureData','subscribeName','exportBtn'],
     data () {
       return {
 
@@ -36,6 +37,10 @@
         let vm = this;
         vm.$parent[method]();
        // history.back(-1);
+      },
+      Export (method) {
+        let vm = this;
+        vm.$parent[method]();
       }
     }
   }

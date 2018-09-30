@@ -31,11 +31,16 @@ class catalogItemOptions {
       isBackBtn: {
         name: '返回'
       },
+      isExportBtn : {
+        name: '导出',
+        method: 'Export',
+      },
       apis: {
         listApi: 'subscribeResourceList',
         tableListApi: 'tableList',
         tableStructureListApi: 'tableStructureList',
         tableDataListApi: 'tableDataList',
+        downLoadFileApi: 'downLoadFile',
         detailsApi: 'subscribeResourceDetail'
       },
       detailData: {
