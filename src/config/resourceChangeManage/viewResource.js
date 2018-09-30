@@ -149,7 +149,16 @@ class catalogItemOptions {
           },
           {
             title: '主键',
-            key: 'name'
+            key: 'operate',
+            render: (h, params) => {
+              let children = [];
+              if (params.row.comment === "主键") {
+                return h('div', params.row.name);
+              } else {
+                return h('div', "");
+              }
+
+            }
           },
           {
             title: '字段名称',

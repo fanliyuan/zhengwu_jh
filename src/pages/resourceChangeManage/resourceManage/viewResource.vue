@@ -74,7 +74,7 @@
       },
       initTable1: function (name) {
         let vm = this;
-        vm.tableData.loading = true;
+        vm.tableData1.loading = true;
         vm.initData1.tableName = name;
         vm.api[vm.apis.tableStructureListApi](vm.initData1).then((data) => {
           vm.tableData1.tableList = data.datas;
@@ -87,7 +87,7 @@
       },
       initTable2: function (name) {
         let vm = this;
-        vm.tableData.loading = true;
+        vm.tableData2.loading = true;
         vm.initData2.tableName = name;
         vm.tableData2.columns = [];
         vm.api[vm.apis.tableDataListApi](vm.initData2).then((data) => {
@@ -138,12 +138,12 @@
         if (type == "浏览") {
           vm.showStructureTable = false;
           vm.showViewTable = true;
-          this.initTable();
+          //this.initTable();
           this.initTable2(name);
         } else if (type == "结构") {
           vm.showStructureTable = true;
           vm.showViewTable = false;
-          this.initTable();
+         // this.initTable();
           this.initTable1(name);
         }}
     }
