@@ -7,7 +7,7 @@
 */
 <template>
   <div class="cl">
-    <ContentTitle :options="title" :backbtn="isBackBtn"></ContentTitle>
+    <ContentTitle :options="title" :backbtn="isBackBtn" :exportBtn="isExportBtn"></ContentTitle>
     <div class="main-content cl">
       <Card class="infoCard" :dis-hover="true">
         <ul class="infoList cl">
@@ -170,7 +170,17 @@
           vm.showViewTable = false;
          // this.initTable();
           this.initTable1(name);
-        }}
+        }},
+
+      //导出
+      Export: function () {
+        let vm = this;
+        let paramsArr = (vm.$route.params.id).split("&");
+        let resourceId = paramsArr[0];
+        let fileName;
+        fileName = paramsArr[6];
+        console.log(resourceId + ":" + fileName);
+      }
     }
   }
 </script>
