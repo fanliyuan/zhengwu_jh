@@ -136,6 +136,7 @@ class catalogItemOptions {
       tableData1: {
         loading: true,
         tableList: [],
+        currentPage: 1,
         columns: [
           {
             type: 'selection',
@@ -185,6 +186,7 @@ class catalogItemOptions {
       tableData2: {
         loading: true,
         tableList: [],
+        currentPage: 1,
         columns: []
       },
       pageData2: {

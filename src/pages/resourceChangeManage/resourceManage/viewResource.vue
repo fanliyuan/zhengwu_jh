@@ -22,12 +22,14 @@
       <div class="dataItem" v-if="showStructureTable">
         <p class="totalNum">数据项  共<span>{{dataItemTotal}}</span>行</p>
         <Table class="tableList" :loading="tableData1.loading" ref="selection" :columns="tableData1.columns" :data="tableData1.tableList"></Table>
-        <Pager :options="pageData1.total"></Pager>
+        <Page class-name="tablePager" :total="pageData1.total" show-total @on-change="changeStructTablePage" :current="tableData1.currentPage"></Page>
+        <!--<Pager :options="pageData1.total"></Pager>-->
       </div>
       <div class="dataItem" v-if="showViewTable">
         <p class="totalNum">数据项  共<span>{{dataItemTotal1}}</span>行</p>
         <Table class="tableList" :loading="tableData2.loading" ref="selection" :columns="tableData2.columns" :data="tableData2.tableList"></Table>
-        <Pager :options="pageData2.total"></Pager>
+        <Page class-name="tablePager" :total="pageData2.total" show-total @on-change="changeDataTablePage" :current="tableData2.currentPage"></Page>
+        <!--<Pager :options="pageData2.total"></Pager>-->
       </div>
     </div>
   </div>
@@ -76,6 +78,8 @@
         let vm = this;
         vm.tableData1.loading = true;
         vm.initData1.tableName = name;
+        vm.initData1.pageNum = 1;
+        vm.tableData1.currentPage = 1;
         vm.api[vm.apis.tableStructureListApi](vm.initData1).then((data) => {
           vm.tableData1.tableList = data.datas;
           vm.pageData1.total = data.totalCounts;
@@ -89,6 +93,8 @@
         let vm = this;
         vm.tableData2.loading = true;
         vm.initData2.tableName = name;
+        vm.initData2.pageNum = 1;
+        vm.tableData2.currentPage = 1;
         vm.tableData2.columns = [];
         vm.api[vm.apis.tableDataListApi](vm.initData2).then((data) => {
           vm.tableData2.columns.push( {
@@ -117,6 +123,25 @@
         }).catch((error) => {
 
         })
+      },
+
+
+      changeStructTablePage (page) {
+        let vm = this;
+        let name;
+        name = vm.initData1.tableName;
+        vm.initData1.pageNum = page;
+        vm.tableData1.currentPage = page;
+        vm.initTable1(name);
+      },
+
+      changeDataTablePage (page) {
+        let vm = this;
+        let name;
+        name = vm.initData2.tableName;
+        vm.initData2.pageNum = page;
+        vm.tableData2.currentPage = page;
+        vm.initTable2(name);
       },
       //初始化资源详情
       detail: function () {
