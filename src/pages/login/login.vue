@@ -15,8 +15,8 @@
         <div slot="content">
           <p>节点管理员 : admin</p>
           <p>节点安全员 : security</p>
-          <p>节点审核员 : auditor</p>
-          <p>节点审计员 : assessor</p>
+          <p>节点审计员 : auditor</p>
+          <p>节点审核员 : assessor</p>
           <p>节点操作员 : user</p>
         </div>
       </Tooltip>
