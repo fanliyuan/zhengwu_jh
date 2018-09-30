@@ -176,38 +176,7 @@ class catalogItemOptions {
       tableData2: {
         loading: true,
         tableList: [],
-        columns: [
-          {
-            type: 'selection',
-            width: 60,
-            align: 'center'
-          },
-          {
-            title: '序号',
-            type: 'index',
-            width: 70,
-          },
-          {
-            title: 'id',
-            key: 'id'
-          },
-          {
-            title: 'type',
-            key: 'type'
-          },
-          {
-            title: 'createtime',
-            key: 'createtime'
-          },
-          {
-            title: 'title',
-            key: 'title'
-          },
-          {
-            title: 'content',
-            key: 'content'
-          },
-        ]
+        columns: []
       },
       pageData2: {
         total: 0

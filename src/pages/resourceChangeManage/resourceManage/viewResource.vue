@@ -54,7 +54,8 @@
       this.initTable();
 
 //      this.initTable2();
-      this.view();
+    //  this.view();
+      this.detail();
     },
     methods:{
       //初始化表格
@@ -88,7 +89,27 @@
         let vm = this;
         vm.tableData.loading = true;
         vm.initData2.tableName = name;
+        vm.tableData2.columns = [];
         vm.api[vm.apis.tableDataListApi](vm.initData2).then((data) => {
+          vm.tableData2.columns.push( {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
+            {
+              title: '序号',
+              type: 'index',
+              width: 70,
+            });
+          delete data.datas[0]["@type"];
+          for ( let i in data.datas[0]) {
+            vm.tableData2.columns.push(
+              {
+                title: i,
+                key: i
+              }
+            );
+          }
           vm.tableData2.tableList = data.datas;
           vm.pageData2.total = data.totalCounts;
           vm.dataItemTotal1 = data.totalCounts
@@ -97,17 +118,32 @@
 
         })
       },
+      //初始化资源详情
+      detail: function () {
+        let vm = this;
+        let paramsArr = (vm.$route.params.id).split("&");
+        vm.detailData.dbName =  paramsArr[1];
+//        vm.detailData.dbType =  paramsArr[2];
+        if (paramsArr[2] === '3') {
+          vm.detailData.dbType = "Mysql"
+        }
+        vm.detailData.dsName =  paramsArr[3];
+        vm.detailData.publishInstitution =  paramsArr[4];
+        vm.detailData.updateTime =  paramsArr[5];
+
+      },
       //浏览
       view: function (type,name) {
         let vm = this;
-
         if (type == "浏览") {
           vm.showStructureTable = false;
           vm.showViewTable = true;
+          this.initTable();
           this.initTable2(name);
         } else if (type == "结构") {
           vm.showStructureTable = true;
           vm.showViewTable = false;
+          this.initTable();
           this.initTable1(name);
         }}
     }
