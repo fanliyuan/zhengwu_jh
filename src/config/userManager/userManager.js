@@ -88,6 +88,10 @@ class userManagerOptions {
             {
               max: 20,
               message: '用户名长度不能大于20个字符'
+            },
+            {
+              pattern: /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9_]){1,20}$/,
+              message: '用户名1-20位中英文字符或数字'
             }
           ],
           password: [
