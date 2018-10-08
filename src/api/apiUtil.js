@@ -37,7 +37,6 @@ const createApiInstance = (config = {}) => {
 }
 
 const err_check = (code, msg, data) => {
-  console.log(code)
   if (code === 0) {
     return true
   } else if (code === 401) {
