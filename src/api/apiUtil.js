@@ -9,6 +9,7 @@ import axios from 'axios'
 import { Notice } from 'iview';
 
 const root = process.env.API_HOST;
+const rootUrl = process.env.URL_HOST;
 const generateApiMap = (map) => {
   let facade = {}
   _.forEach(map, function (value, key) {
@@ -36,8 +37,11 @@ const createApiInstance = (config = {}) => {
 }
 
 const err_check = (code, msg, data) => {
+  console.log(code)
   if (code === 0) {
     return true
+  } else if (code === 401) {
+    window.location.href = rootUrl;
   }
   return false
 }
