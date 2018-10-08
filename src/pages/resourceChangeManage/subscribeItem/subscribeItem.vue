@@ -193,6 +193,7 @@
           vm.$Message.info('请填写订阅名称');
           return;
         } else {
+
           vm.api[vm.apis.subscribeApi](vm.sureData).then((data) => {
             history.back(-1);
           }).catch((error) => {

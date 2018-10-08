@@ -84,6 +84,7 @@
           for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
             vm.modalData.widgets[i].disabled = true;
           }
+          vm.modalData.widgets[4].disabled = true;
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
           vm.modalOpreation = true;
@@ -107,6 +108,7 @@
           vm.modalData.apiUrl = vm.apis.editApi;
           vm.modalData.widgets[1].disabled = true;
           vm.modalData.widgets[1].show = false;
+          vm.modalData.widgets[4].disabled = true;
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
           vm.modalOpreation = true;

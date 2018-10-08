@@ -9,7 +9,9 @@
   <Modal :width="widgets.width" v-model="status" :title="title" :closable="false" :mask-closable="false" :loading="loading" @on-ok="ok('formValidate')" @on-cancel="cancel('formValidate')">
     <Form class="formValidate" ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="120" :show-message="showError">
       <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="(item, index) in formWidgets" v-show="item.show">
-        <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
+        <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && !item.focues">
+        </Input>
+        <Input class="formValidate-widget" size="large" :readonly="item.readonly" @on-focus="changeType(item.prop)" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && item.focues">
         </Input>
         <a v-if="item.random" style="margin-right: 10px" @click="random(item.prop)">随机生成</a>
         <a v-if="item.copy" @click="copy(item.prop)">复制</a>
@@ -112,6 +114,7 @@
     },
     mounted () {
       let vm = this;
+      let passW  = document
       vm.formValidate = vm.$props.widgets.formObj;
     },
     watch: {
@@ -149,11 +152,18 @@
         }
         return newObj;
       },
+      changeType (prop) {
+        let vm = this;
+        let input = document.getElementById(prop);
+        ///input.setAttribute("type","password");
+      },
       random (prop) {
         let vm = this;
         let len = 8;
         let chars = 'ABCDEFGHIJKLMNOPQRSTUVWWXYZabcdefghijklmnopqrstuvwwxyz0123456789';
         let maxPos = chars.length;
+        let input = document.getElementById(prop);
+        input.setAttribute("type","password");
         let pwd = '';
         for (let i = 0; i < len; i++) {
           pwd += chars.charAt(Math.floor(Math.random() * maxPos));
@@ -163,8 +173,10 @@
       copy (prop) {
         let vm = this;
         let input = document.getElementById(prop);
+        input.setAttribute("type","text");
         input.select();
         document.execCommand("copy");
+        input.setAttribute("type","password");
         vm.$Message.success('复制成功！');
       },
       oneOfFormValidate (event) {

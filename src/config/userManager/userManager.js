@@ -86,8 +86,8 @@ class userManagerOptions {
               trigger: 'blur'
             },
             {
-              max: 50,
-              message: '用户名长度不能大于50个字符'
+              max: 20,
+              message: '用户名长度不能大于20个字符'
             }
           ],
           password: [
@@ -96,6 +96,15 @@ class userManagerOptions {
               message: '密码不能为空',
               trigger: 'blur'
             },
+            {
+              max: 24,
+              min: 6,
+              message: '密码为6-24位英文或数字'
+            },
+            {
+              pattern:/[^\d]/g,
+              message: '密码为纯数字时不可连续'
+            }
           ],
           name: [
             {
@@ -103,6 +112,15 @@ class userManagerOptions {
               message: '姓名不能为空',
               trigger: 'blur'
             },
+            {
+              max: 20,
+              //pattern: /[\d]/g,
+              message: '姓名长度不能大于20个字符'
+            },
+            {
+              pattern: /^[a-zA-Z\u4e00-\u9fa5]+$/,
+              message: '姓名为1-20位中英文字符'
+            }
           ],
           phone: [
             {
@@ -110,6 +128,10 @@ class userManagerOptions {
               message: '手机号不能为空',
               trigger: 'blur'
             },
+            {
+              pattern: 11 && /^((13|14|15|17|18)[0-9]{1}\d{8})$/,
+              message: '请输入正确的手机号'
+            }
           ],
           role: [
             {
@@ -133,10 +155,12 @@ class userManagerOptions {
             type: 'input',
             disabled: false,
             show:true,
-            word: 'text',
+            word: 'password',
             prop: 'password',
             name: '密码',
             placeholder: '请输入密码',
+            readonly:true,
+            focues: true,
             random: true,
             copy: true
           },
@@ -164,7 +188,6 @@ class userManagerOptions {
             prop: 'roleid',
             name: '角色',
             placeholder: '请选择',
-            options: []
           },
           {
             type: 'switch',
