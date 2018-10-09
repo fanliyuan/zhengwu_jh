@@ -160,6 +160,12 @@ class sourceOptions {
               trigger: 'blur'
             }
           ],
+          dutyPhone: [
+            {
+              pattern: 11 && /^((13|14|15|17|18)[0-9]{1}\d{8})$/,
+              message: '请输入正确的手机号'
+            }
+          ]
           //createUnit: [
           //  {
           //    required: true,
