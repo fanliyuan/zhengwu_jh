@@ -158,7 +158,7 @@ class catalogItemOptions {
             word: 'text',
             prop: 'shareType',
             name: '共享类型',
-            placeholder: '请输入共享类型',
+            placeholder: '请选择共享类型',
             options: [
               {
                 value: '',
@@ -183,7 +183,7 @@ class catalogItemOptions {
             word: 'text',
             prop: 'openType',
             name: '开放类型',
-            placeholder: '请输入开放类型',
+            placeholder: '请选择开放类型',
             options: [
               {
                 value: '',
