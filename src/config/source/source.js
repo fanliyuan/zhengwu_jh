@@ -81,7 +81,7 @@ class sourceOptions {
         sqlObj: {
           name: '',
           summary: '',
-          dbType: [1, 1],
+          dbType: [1, 3],
           addr: '',
           port: '',
           username: '',
