@@ -21,7 +21,7 @@
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <a class="login-out" href="">退出</a>
+      <a class="login-out" href="" @click="logout">退出</a>
     </div>
   </Header>
 </template>
@@ -49,6 +49,11 @@
           }
         ],
         userName: window.sessionStorage.getItem("userName")
+      }
+    },
+    methods: {
+      logout () {
+        window.sessionStorage.setItem("authority", "");
       }
     }
   }
