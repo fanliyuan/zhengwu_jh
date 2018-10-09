@@ -42,9 +42,9 @@
           <Table class="tableList" :loading="modalData.itemTableData.loading" ref="selection" :columns="modalData.itemTableData.columns" :data="modalData.itemTableData.tableList" v-show="modalData.current === 1"></Table>
           <Button class="item-add" type="dashed" @click="addItem">新增数据</Button>
         </div>
-        <div class="cl pages" v-show="modalData.current === 1">
-          <Pager :options="modalData.itemPageData.total"></Pager>
-        </div>
+        <!--<div class="cl pages" v-show="modalData.current === 1">-->
+          <!--<Page class-name="tablePager" :total="modalData.itemPageData.total" :page-size="modalData.itemPageData.pageSize" show-total @on-change="changeDataTablePage" :current="modalData.itemPageData.currentPage"></Page>-->
+        <!--</div>-->
         <div class="btn-group">
           <Button type="primary" @click="next" v-if="modalData.current === 0">下一步</Button>
           <Button type="info" @click="pre" v-if="modalData.current === 1">上一步</Button>
@@ -239,9 +239,7 @@
           name: '',
           code: '',
           shareType: '',
-          openType: '',
-          pageNum: 1,
-          pageSize: 10
+          openType: ''
         };
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
@@ -263,7 +261,10 @@
         });
         vm.api[vm.apis.listItemsApi](initData).then((data) => {
           vm.modalData.itemTableData.tableList = data.datas;
-          vm.modalData.itemPageData.total = data.totalCounts;
+          vm.modalData.itemPageData.total = data.datas.length;
+          for (let i = 0, len = vm.modalData.itemPageData.pageSize; i < len; i++) {
+            vm.modalData.itemTableData.currentTableList.push(vm.modalData.itemTableData.tableList[i])
+          }
           vm.modalData.itemTableData.loading = false;
         }).catch((error) => {
           vm.$Loading.error();
@@ -348,6 +349,9 @@
       ok () {
         let vm = this;
         for (let i = 0, len = vm.modalData.itemTableData.tableList.length; i < len; i++) {
+          if (vm.modalData.itemTableData.tableList[i].code === '' || vm.modalData.itemTableData.tableList[i].code === null) {
+            return vm.$Message.error('信息项编码必填！');
+          }
           delete vm.modalData.itemTableData.tableList[i].$isEdit;
         }
         vm.modalData.formObj.infoAddDtoList = vm.modalData.itemTableData.tableList;
@@ -382,6 +386,7 @@
         let vm = this;
         vm.modalData.itemTableData.tableList.push(vm.deepCopy(vm.modalData.formObj.infoAddDtoList[0], {}));
         vm.modalData.itemPageData.total = vm.modalData.itemTableData.tableList.length;
+        console.log(vm.modalData.itemTableData.tableList)
       },
       handleEdit (row) {
         let vm = this;
@@ -394,6 +399,21 @@
         } else {
           vm.$set(row, '$isEdit', false)
         }
+      },
+      changeDataTablePage (page) {
+        let vm = this;
+        console.log(page)
+        vm.modalData.itemTableData.currentTableList = [];
+        let len;
+        if (vm.modalData.itemPageData.pageSize * page > vm.modalData.itemPageData.total) {
+          len = vm.modalData.itemPageData.total;
+        } else {
+          len = vm.modalData.itemPageData.pageSize * page;
+        }
+        for (let i = (page - 1) * vm.modalData.itemPageData.pageSize; i < len; i++) {
+          vm.modalData.itemTableData.currentTableList.push(vm.modalData.itemTableData.tableList[i])
+        }
+        console.log(vm.modalData.itemTableData.tableList)
       },
       //共享开放
       open (id) {

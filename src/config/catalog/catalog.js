@@ -61,7 +61,9 @@ class catalogOptions {
         ],
         itemTableData: {
           loading: true,
+          currentTableList: [],
           tableList: [],
+          currentPage: 1,
           columns: [
             {
               title: '信息项编码',
@@ -397,7 +399,8 @@ class catalogOptions {
           ]
         },
         itemPageData: {
-          total: 1
+          total: 1,
+          pageSize: 10
         },
         formObj:{
           catalogId: '',
