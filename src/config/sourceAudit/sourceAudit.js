@@ -217,7 +217,7 @@ class sourceAuditOptions {
               switch (params.row.status) {
                 case -1:
                   children.push(h('a', source, '资源'));
-                  children.push(h('a', view, '查看'));
+                  //children.push(h('a', view, '查看'));
                   children.push(h('a', edit, '审核'));
                   break;
                 case 1:
