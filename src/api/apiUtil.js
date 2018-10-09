@@ -40,7 +40,14 @@ const err_check = (code, msg, data) => {
   if (code === 0) {
     return true
   } else if (code === 401) {
-    window.location.href = rootUrl;
+    Notice.warning({
+      title: '',
+      desc: msg,
+      duration: 1
+    });
+    setTimeout(function () {
+      window.location.href = rootUrl;
+    }, 1000);
   }
   return false
 }

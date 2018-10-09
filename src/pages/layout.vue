@@ -97,7 +97,7 @@
                 },
                 {
                   navId: 15,
-                  label: '订阅审核',
+                  label: '订阅授权',
                   frontUrl: '/subscriptionModeration',
                   authority: ['assessor']
                 }
