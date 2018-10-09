@@ -162,7 +162,7 @@ class catalogItemOptions {
             options: [
               {
                 value: '',
-                key: '全部'
+                key: '全部共享类型'
               },
               {
                 value: '1',
@@ -187,7 +187,7 @@ class catalogItemOptions {
             options: [
               {
                 value: '',
-                key: '全部'
+                key: '全部开放类型'
               },
               {
                 value: '1',
