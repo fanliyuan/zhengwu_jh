@@ -155,7 +155,7 @@
       changeType (prop) {
         let vm = this;
         let input = document.getElementById(prop);
-        ///input.setAttribute("type","password");
+        input.removeAttribute("readonly");
       },
       random (prop) {
         let vm = this;
