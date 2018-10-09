@@ -160,20 +160,20 @@ class sourceOptions {
               trigger: 'blur'
             }
           ],
-          createUnit: [
-            {
-              required: true,
-              message: '请输入建库单位',
-              trigger: 'blur'
-            }
-          ],
-          appsysName: [
-            {
-              required: true,
-              message: '请输入应用系统名称',
-              trigger: 'blur'
-            }
-          ]
+          //createUnit: [
+          //  {
+          //    required: true,
+          //    message: '请输入建库单位',
+          //    trigger: 'blur'
+          //  }
+          //],
+          //appsysName: [
+          //  {
+          //    required: true,
+          //    message: '请输入应用系统名称',
+          //    trigger: 'blur'
+          //  }
+          //]
         },
         ftpRuleObj: {
 
