@@ -1026,7 +1026,7 @@ class catalogOptions {
                                   props:{
                                     label: 'db'
                                   }
-                                },'db'),
+                                },'关系型数据库'),
                                 h('Radio',{
                                   props:{
                                     label: 'ftp',
