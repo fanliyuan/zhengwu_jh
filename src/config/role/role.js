@@ -107,7 +107,23 @@ class assignRoleOptions {
           },
           {
             title: '状态',
-            key: 'statusName'
+            key: 'status',
+            render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case 1:
+                          return '<span style="color: #19be6b">启用</span>';
+                        case 2:
+                          return '<span style="color: #ed4014">停用</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+            }
           },
           {
             title: '操作',
@@ -185,7 +201,7 @@ class assignRoleOptions {
               },
               {
                 value: 2,
-                key: '冻结'
+                key: '停用'
               }
             ]
           },
