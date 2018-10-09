@@ -287,7 +287,7 @@ class sourceOptions {
             type: 'input',
             disabled: false,
             show: true,
-            word: 'text',
+            word: 'password',
             prop: 'password',
             name: '数据库密码',
             placeholder: '请输入数据库密码'
