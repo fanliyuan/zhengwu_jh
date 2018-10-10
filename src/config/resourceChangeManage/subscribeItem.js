@@ -65,7 +65,7 @@ class catalogItemOptions {
         typeName: '',
       },
       detailNameData: {
-        resourceName: '资源名称',
+        resourceName: '目录名称',
         resourceProviderName: '发布机构',
         dataType: '数据类型',
         typeName: '所属分类',
