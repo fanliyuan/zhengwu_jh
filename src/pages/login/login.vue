@@ -42,11 +42,17 @@
           </Input>-->
         </FormItem>
         <FormItem class="login-form-btn">
-          <Button type="primary" class="login-form-submit" @click="handleSubmit('formLogin')" long>登录</Button>
-          <small class="login-form-tips">{{tips}}</small>
+          <Button type="primary" class="login-form-submit" @click="handleSubmit('formLogin')" long>登 录</Button>
+          <!--<small class="login-form-tips">{{tips}}</small>-->
         </FormItem>
       </Form>
     </Card>
+    <div class="copyright">
+      <div class="links"></div>
+      <div class="index_copyright">
+        Copyright <span class="copyrightIcon">©</span> www.youedata.cn,All Rights Reserved
+      </div>
+    </div>
   </Content>
 </template>
 
@@ -105,13 +111,20 @@
 
 <style lang="less">
   #login {
-    background: url("./img/login_bg.jpg");
-    height: 100%;
-    background-size: cover;
+    background-image: url(/static/img/login_bg.42272de.jpg);
+    /* background-size: cover; */
+    background-color: #2d81bb;
+    background-position: center;
+    height: 100vh;
+    overflow: auto;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    background-repeat: no-repeat;
     .login-form{
       position: absolute;
-      width:395px;
-      height:412px;
+      width:418px;
+      height: 434px;
       text-align: center;
       top: 50%;
       left: 50%;
@@ -146,21 +159,24 @@
         height: 77px;
         width:76px;
         vertical-align: top;
+        margin-top: 5px;
       }
       .login-form-title{
         font-size: 24px;
-        font-weight: bold;
+        font-weight: 600;
         border-bottom: none;
         margin-bottom: 30px;
+        margin-top: 30px;
+        color: #2d81bb;
       }
       .login-form-item{
-        height: 45px;
-        margin-bottom: 15px;
+        height: 40px;
+        margin-bottom:24px;
         //border-bottom: 1px solid #e5e5e5;
         .login-form-input{
           input{
-            width: 325px;
-            height: 38px;
+            width: 368px;
+            height: 40px;
            // border: none;
             background: none;
             outline: none;
@@ -186,21 +202,41 @@
         }
       }
       .login-form-btn{
-        margin-top: 35px;
+        /*margin-top: 35px;*/
         .login-form-submit{
-          height: 38px;
+          height: 40px;
         //  font-size: 22px;
           border: none;
           outline: none;
-          border-radius: 8px;
+          border-radius: 5px;
           box-shadow: 0 1px 10px #8a94b8;
           background: #2d81bb;
           font-size: 16px;
-          width:326px;
+          width:368px;
         }
         .login-form-tips{
           color: #676a6c;
         }
+      }
+    }
+  }
+  .ivu-input-prefix i, .ivu-input-suffix i{
+    line-height: 45px;
+  }
+  .copyright{
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    padding: 0 16px;
+    margin: 48px 0 24px 0;
+    text-align: center;
+    .index_copyright{
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 14px;
+      .copyrightIcon{
+        font-size: 16px;
       }
     }
   }
