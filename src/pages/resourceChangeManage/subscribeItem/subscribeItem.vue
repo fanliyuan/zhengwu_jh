@@ -190,13 +190,15 @@
         vm.sureData.mountResourceId = paramsArr[5];
         vm.sureData.dataType = paramsArr[4];
         if ( vm.subscribeName == "" ||  vm.subscribeName == undefined ||  vm.subscribeName == null) {
-          vm.$Message.info('请填写订阅名称');
+          vm.$Message.warning('请填写订阅名称');
           return;
         } else {
 
           vm.api[vm.apis.subscribeApi](vm.sureData).then((data) => {
+            vm.$Message.success("订阅成功")
             history.back(-1);
           }).catch((error) => {
+            //vm.$Message.info("订阅成功")
             vm.$Loading.error();
 
           });
