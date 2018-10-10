@@ -60,8 +60,15 @@
                   label: '登录日志',
                   frontUrl: '/logging',
                   authority: ['admin', 'security', 'auditor', 'user', 'assessor']
+                },
+                {
+                  navId: 93,
+                  label: '系统通知',
+                  frontUrl: '/systemNotification',
+                  authority: ['user', 'security','assessor']
                 }
               ]
+
             },
             {
               navId: 1,
