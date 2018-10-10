@@ -33,7 +33,8 @@ class userManagerOptions {
         freeze: 'userFreeze',
         deleteApi: 'userDelete',
         detailApi: 'userDetail',
-        editApi: 'userEdit'
+        editApi: 'userEdit',
+        resetPwdApi: 'resetPwd'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -330,6 +331,7 @@ class userManagerOptions {
                   type: 'error'
                 },
                 style: {
+                  marginRight: '5px',
                   color:'#3fa9ff',
                   cursor:'pointer'
                 },
@@ -345,9 +347,24 @@ class userManagerOptions {
                   }
                 }
               };
+              let updatePwd = {
+                props: {
+                  type: 'error'
+                },
+                style: {
+                  color:'#3fa9ff',
+                  cursor:'pointer'
+                },
+                on: {
+                  click: () => {
+                  vm.resetPwd(params.row.id);
+                  }
+                }
+              };
               children.push(h('span', edit, statusNames));
               children.push(h('span', view, '修改'));
               children.push(h('span', del, '删除'));
+              children.push(h('span', updatePwd, '重置密码'));
               return h('div', children);
             }
           }

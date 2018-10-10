@@ -89,7 +89,6 @@
         this.$refs[name].validate((valid) => {
           if (valid) {
             vm.api.login(vm.formLogin).then((res) => {
-              console.log(res)
               if (!res) {
                 this.$Message.error('账号或密码错误!');
               } else {

@@ -166,12 +166,20 @@
           ID: id
         };
         params[vm.modalData.idObj] = id;
-        vm.api[vm.apis.deleteApi](ID).then((data) => {
-          vm.$Loading.finish();
-          vm.initTable();
-        }).catch((error) => {
-          vm.$Loading.error();
-        })
+        vm.$Modal.confirm({
+          title: '信息',
+          content: '是否删除当前用户？',
+          onOk: function () {
+            vm.api[vm.apis.deleteApi](ID).then((data) => {
+              vm.$Message.success("删除成功");
+              vm.$Loading.finish();
+              vm.initTable();
+            }).catch((error) => {
+              vm.$Loading.error();
+            })
+          }
+        });
+
       },
       //是否显示模态框
       changeModal (status) {
@@ -194,6 +202,30 @@
         }).catch((error) => {
 
         })
+      },
+
+      //重置密码
+      resetPwd : function (id) {
+        let vm = this;
+        let params = {};
+        params = {
+          userId: id
+        }
+        let ID = {
+          userId: id
+        };
+        vm.$Modal.confirm({
+          title: '信息',
+          content: '是否重置密码，重置后密码为111111？',
+          onOk: function () {
+            vm.api[vm.apis.resetPwdApi](ID).then((data) => {
+              vm.$Message.info('重置密码成功');
+              vm.initTable();
+            }).catch((error) => {
+              vm.$Loading.error();
+            })
+          }
+        });
       }
     }
   }
