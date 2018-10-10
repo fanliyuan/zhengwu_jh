@@ -20,7 +20,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="目录名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -57,7 +57,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="目录名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -91,7 +91,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="订阅名称/目录名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="目录名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>

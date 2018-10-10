@@ -225,7 +225,7 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '资源名称',
+            title: '目录名称',
             key: 'dsName',
           },
           {
@@ -327,7 +327,7 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '资源名称',
+            title: '目录名称',
             key: 'dsName',
           },
           {
@@ -429,7 +429,7 @@ class resourceBazaarOptions {
             key: 'reviewTime',
           },
           {
-            title: '资源名称',
+            title: '目录名称',
             key: 'dsName',
           },
           {
@@ -505,7 +505,7 @@ class resourceBazaarOptions {
             disabled: false,
             prop: 'dsName',
             name: '名称',
-            placeholder: '资源名称',
+            placeholder: '目录名称',
           },
           {
             type: 'input',

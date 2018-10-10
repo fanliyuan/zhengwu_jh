@@ -209,7 +209,7 @@ class resourceBazaarOptions {
         tableList: [],
         columns: [
           {
-            title: '资源名称',
+            title: '目录名称',
             key: 'resourceName',
           },
           {
@@ -299,16 +299,16 @@ class resourceBazaarOptions {
             type: 'input',
             word: 'text',
             prop: 'dsName',
-            name: '发布名称',
-            placeholder: '发布名称'
+            name: '目录名称',
+            placeholder: '目录名称'
           },
           {
-            type: 'select',
+            type: 'input',
             disabled: false,
             prop: 'publishInstitution',
             name: '发布机构',
-            placeholder: '请选择发布机构',
-            options: [
+            placeholder: '发布机构',
+        /*    options: [
               {
                 value:'',
                 key:'全部'
@@ -321,7 +321,7 @@ class resourceBazaarOptions {
                 value: '2',
                 key: '机构2'
               }
-            ]
+            ]*/
           },
           {
             type: 'select',
