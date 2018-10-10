@@ -31,7 +31,7 @@ class resourceBazaarOptions {
     vm.statusList = [];
     //vm.treeData = [];
     return {
-      title: '订阅审核',
+      title: '订阅授权',
       apis: {
         listApi: 'subscribeAuditList',
         showCatalogListApi: 'showCatalogList',
@@ -140,7 +140,7 @@ class resourceBazaarOptions {
             key: 'status',
             render: (h, params) => {
               if (params.row.status === -1) {
-                return h('div', '待审核');
+                return h('div', '待授权');
               } else if (params.row.status === 1) {
                 return h('div', '已通过 ');
               } else if (params.row.status === 0) {
@@ -155,7 +155,7 @@ class resourceBazaarOptions {
               let children = [];
               let statusNames = "";
               if (params.row.status === -1 ) {
-                statusNames = '审核';
+                statusNames = '授权';
               }
               else {
                 statusNames = '查看';
@@ -171,7 +171,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    if ( statusNames == '审核') {
+                    if ( statusNames == '授权') {
                       vm.auditing(params.row.dsId,params.row.subId,params.row.subscriberId);
                     } else {
                       vm.auditingDetail(params.row.dsId,params.row.subId,params.row.subscriberId);
@@ -260,8 +260,8 @@ class resourceBazaarOptions {
             type: 'select',
             disabled: false,
             prop: 'subscribeStatus',
-            name: '审核状态',
-            placeholder: '审核状态',
+            name: '授权状态',
+            placeholder: '授权状态',
             options: [
               {
                 value: '',
@@ -277,7 +277,7 @@ class resourceBazaarOptions {
               },
               {
                 value:'-1',
-                key:'待审核'
+                key:'待授权'
               }
             ]
           },

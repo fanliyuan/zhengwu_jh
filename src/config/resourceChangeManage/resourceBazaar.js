@@ -225,7 +225,7 @@ class resourceBazaarOptions {
             key: 'createTime',
           },
           {
-            title: '发布方是否审核',
+            title: '发布方是否授权',
             key: 'checkStatus',
             render: (h, params) => {
               return h('span','是');

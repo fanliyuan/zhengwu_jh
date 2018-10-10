@@ -59,7 +59,7 @@
                data.datas.status = '已拒绝'
              }
              if (data.datas.status == -1) {
-               data.datas.status = '待审核'
+               data.datas.status = '待授权'
              }
              if (data.datas.status == 1) {
                data.datas.status = '已通过'
