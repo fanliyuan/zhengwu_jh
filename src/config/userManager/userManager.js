@@ -47,7 +47,7 @@ class userManagerOptions {
           account:'',
           name:'',
           password:'',
-          status:'',
+          status: 1,
           // user: '',
           salt: '',
           birthday: '',
@@ -65,7 +65,7 @@ class userManagerOptions {
           account:'',
           name:'',
           password:'',
-          status:'',
+          status: 1,
           // user: '',
           salt: '',
           birthday: '',
@@ -193,7 +193,7 @@ class userManagerOptions {
             name: '角色',
             placeholder: '请选择',
           },
-          {
+   /*       {
             type: 'switch',
             disabled: false,
             show: true,
@@ -203,8 +203,17 @@ class userManagerOptions {
             closeName: '停用',
             openVal: 1,
             closeVal: 2
+          },*/
+          {
+            type: 'checkboxSingle',
+            disabled: false,
+            show: true,
+            prop: 'status',
+            name: '状态',
+            label: '停用',
+            state: false
           }
-        ],
+    ],
         titles: {
           addTitle: {
             name: '新增用户',

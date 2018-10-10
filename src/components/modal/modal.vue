@@ -46,7 +46,8 @@
             {{option.key}}
           </Radio>
         </RadioGroup>
-        <CheckboxGroup v-model="formValidate[item.prop]" @on-change="changeCheckbox" v-if="item.type === 'checkboxGroup'">
+        <Checkbox v-model="item.state"  @on-change="changeCheckbox(item.prop,item.state,$event)" v-if="item.type === 'checkboxSingle'">{{item.label}}</Checkbox>
+        <CheckboxGroup v-model="formValidate[item.prop]" @on-change="changeCheckbox1" v-if="item.type === 'checkboxGroup'">
           <Checkbox :label="option.value" :key="option.value" v-for="option in item.options">
             {{option.key}}
           </Checkbox>
@@ -190,8 +191,19 @@
       changeRadio (value) {
         let vm = this;
       },
-      changeCheckbox (value) {
+      changeCheckbox (prop,state,event) {
         let vm = this;
+        if (event === true) {
+          vm.formValidate[prop] = 2;
+          state = true;
+        } else if(event === false) {
+          vm.formValidate[prop] = 1;
+          state = false;
+        }
+      },
+      changeCheckbox1 (value) {
+        let vm = this;
+
       },
       changeOption (value) {
         let vm = this;

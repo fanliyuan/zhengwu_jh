@@ -77,10 +77,10 @@ const sendApiInstance = (method, url, params, config = {}) => {
     error => {
       Notice.warning({
         title: '',
-        desc: '请求数据时出错！',
+        desc: error.response.data.message,
         duration: 5
       })
-      return Promise.reject(error).catch(res => {
+      return Promise.resolve(error).catch(res => {
         console.log(res)
       })
     }

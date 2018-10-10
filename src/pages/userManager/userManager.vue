@@ -65,6 +65,7 @@
         }
         vm.modalData.title = vm.modalData.titles.addTitle;
         vm.modalData.apiUrl = vm.apis.addApi;
+        vm.modalData.widgets[4].disabled = true;
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
       },
@@ -81,9 +82,9 @@
           }
           vm.modalData.formObj[vm.modalData.idObj] = id;
           vm.modalData.title = vm.modalData.titles.viewTitle;
-          for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
+         /* for (let i = 0, len = vm.modalData.widgets.length; i < len; i++) {
             vm.modalData.widgets[i].disabled = true;
-          }
+          }*/
           vm.modalData.widgets[4].disabled = true;
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
@@ -103,10 +104,15 @@
           for (let obj in vm.modalData.formObj) {
             vm.modalData.formObj[obj] = data.data[obj];
           }
+          if (vm.modalData.formObj["status"] === 2) {
+            vm.modalData.widgets[5].state = true;
+          } else {
+            vm.modalData.widgets[5].state = false;
+          }
           vm.modalData.formObj[vm.modalData.idObj] = id;
           vm.modalData.title = vm.modalData.titles.editTitle;
           vm.modalData.apiUrl = vm.apis.editApi;
-          vm.modalData.widgets[1].disabled = true;
+           vm.modalData.widgets[1].disabled = true;
           vm.modalData.widgets[1].show = false;
           vm.modalData.widgets[4].disabled = true;
           vm.modalWidgets = vm.modalData;
