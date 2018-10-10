@@ -22,7 +22,7 @@
         <Tabs v-if="modalData.sqlColumnTable.tableList.length > 0">
           <TabPane label="浏览" icon="md-list">
             <Table class="tableList" :loading="modalData.sqlDataTable.loading" ref="sqlDataTable" :columns="modalData.sqlDataTable.columns" :data="modalData.sqlDataTable.tableList"></Table>
-            <Page class-name="tablePager" :total="modalData.sqlDataTable.total" show-total></Page>
+            <Page class-name="tablePager" :total="modalData.sqlDataTable.total" @on-change="changeDataTablePage" :current="modalData.sqlDataTable.currentPage" show-total></Page>
           </TabPane>
           <TabPane label="结构" icon="md-git-network">
             <Table class="tableList" :loading="modalData.sqlColumnTable.loading" ref="sqlColumnTable" :columns="modalData.sqlColumnTable.columns" :data="modalData.sqlColumnTable.tableList"></Table>
@@ -90,6 +90,7 @@
           vm.api[vm.apis.connectApi](connectInit).then((dataA) => {
             if (dataA.data) {
               vm.$Message.success('连接成功！');
+              vm.modalData.currentDataBase = data.data.alias;
               vm.modalData.sqlTableTable.dbName = data.data.dbName;
               vm.modalData.sqlTableTable.tableName = data.data.tableName;
               vm.modalData.sqlTableTable.tableNote = data.data.tableNote;
@@ -157,9 +158,20 @@
           vm.$Loading.error();
         })
       },
+      changeDataTablePage (page) {
+        let vm = this;
+        vm.modalData.sqlDataTable.initData.alias = vm.modalData.currentDataBase;
+        vm.modalData.sqlDataTable.initData.db = vm.modalData.sqlTableTable.dbName;
+        vm.modalData.sqlDataTable.initData.table = vm.modalData.sqlTableTable.tableName;
+        vm.modalData.sqlDataTable.initData.pageNum = page;
+        vm.modalData.sqlDataTable.currentPage = page;
+        vm.initSqlDataTable();
+      },
       //取消
       cancel () {
         let vm = this;
+        vm.modalData.sqlDataTable.initData.pageNum = 1;
+        vm.modalData.sqlDataTable.currentPage = 1;
         vm.modalOpreation = false;
       },
       //查看

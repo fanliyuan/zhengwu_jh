@@ -839,28 +839,37 @@ class catalogOptions {
                 type: 'inputNumber',
                 disabled: false,
                 show: true,
-                max: 59,
+                max: 60,
                 min: 0,
                 prop: 'timeSet0',
-                placeholder: '分钟'
+                placeholder: '秒'
               },
               {
                 type: 'inputNumber',
                 disabled: false,
                 show: true,
-                max: 23,
+                max: 60,
                 min: 0,
                 prop: 'timeSet1',
-                placeholder: '小时'
+                placeholder: '分'
               },
               {
                 type: 'inputNumber',
                 disabled: false,
                 show: true,
-                max: 366,
+                max: 60,
                 min: 0,
                 prop: 'timeSet2',
-                placeholder: '天'
+                placeholder: '时'
+              },
+              {
+                type: 'inputNumber',
+                disabled: false,
+                show: true,
+                max: 31,
+                min: 0,
+                prop: 'timeSet3',
+                placeholder: '日'
               },
               {
                 type: 'inputNumber',
@@ -868,17 +877,8 @@ class catalogOptions {
                 show: true,
                 max: 12,
                 min: 0,
-                prop: 'timeSet3',
-                placeholder: '月'
-              },
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 999,
-                min: 0,
                 prop: 'timeSet4',
-                placeholder: '星期'
+                placeholder: '月'
               }
             ]
           }

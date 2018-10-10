@@ -34,6 +34,7 @@ class sourceAuditOptions {
         title: {},
         apiUrl: '',
         width: 900,
+        currentDataBase: '',
         infoObj: [
           {
             name: '资源名称',
