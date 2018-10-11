@@ -52,7 +52,14 @@ const err_check = (code, msg, data) => {
     Notice.warning({
       title: '',
       desc: msg,
-      duration: 1
+      duration: 5
+    });
+    return false
+  } else if (code === 404) {
+    Notice.warning({
+      title: '',
+      desc: msg,
+      duration: 5
     });
     return false
   }
@@ -71,6 +78,9 @@ const sendApiInstance = (method, url, params, config = {}) => {
   }
   if (url.indexOf('{userId}') !== -1) {
     url = url.replace('{userId}', params.userId);
+  }
+  if (url.indexOf('{resourceId}') !== -1) {
+    url = url.replace('{resourceId}', params.resourceId);
   }
   let instance = createApiInstance(config)
 

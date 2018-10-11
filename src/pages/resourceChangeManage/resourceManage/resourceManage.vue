@@ -20,7 +20,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="资源名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="目录名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -49,7 +49,7 @@
                 </Input>
               </div>
               <div class="f-formItem">
-                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="资源名称" >
+                <Input class="formItem-widget" size="large"  v-model="dsName" placeholder="目录名称" >
                 <span class="formItem-name" slot="prepend">名称</span>
                 </Input>
               </div>
@@ -117,7 +117,6 @@
         vm.tableData.loading = true;
         vm.initData.dataType = 0;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
-          console.log(data);
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
           vm.tableData.loading = false;
@@ -167,7 +166,6 @@
       //返回选中的值
       selectionClick:function (selection) {
         let vm = this;
-        console.log(selection);
         vm.tableData.selectedIds = [];
         for (let i = 0, len = selection.length; i < len; i++) {
           vm.tableData.selectedIds.push({
@@ -201,7 +199,6 @@
         vm.initData.dsName = vm.dsName;
         vm.initData.catalogId = vm.catalogId;
         vm.initData.publishInstitution = vm.publishInstitution;
-        console.log(vm.filterData.filiterObj);
         if (types == 'table1') {
           this.initTable(vm.filterData.filiterObj);
         } else if (types == 'table2') {
@@ -226,7 +223,6 @@
           return false;
         } else {
           params = vm.tableData.selectedIds;
-          console.log(params);
           vm.$Modal.confirm({
             title: '信息',
             content: '是否启动选择的信息？',
@@ -252,7 +248,6 @@
           return false;
         } else {
           params = vm.tableData.selectedIds;
-          console.log(params);
           vm.$Modal.confirm({
             title: '信息',
             content: '是否停止选择的信息？',

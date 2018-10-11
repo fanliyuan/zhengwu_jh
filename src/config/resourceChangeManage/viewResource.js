@@ -53,7 +53,7 @@ class catalogItemOptions {
       detailNameData: {
         dbName: '数据库',
         dbType: '数据类型',
-        dsName: '资源名称',
+        dsName: '目录名称',
         publishInstitution: '所属机构',
         updateTime: '数据更新时间',
       },
@@ -91,11 +91,17 @@ class catalogItemOptions {
           {
             title: '操作',
             key: 'operate',
+            className: 'operateStyle',
             render: (h, params) => {
               let children = [];
+              let audit;
               let view = {
                 props: {
                   type: 'primary'
+                },
+                'class': {
+                  foo: true,
+                  active: false,
                 },
                 style: {
                   marginRight: '5px',
@@ -108,23 +114,49 @@ class catalogItemOptions {
                   }
                 }
               };
-              let audit = {
-                props: {
-                  type: 'primary'
-                },
-                style: {
-                  marginRight: '5px',
-                  color:'#3fa9ff',
-                  cursor:'pointer'
-                },
-                on: {
-                  click: () => {
-                    vm.view("结构",params.row.name);
+              if (params.index === 0) {
+                audit = {
+                  props: {
+                    type: 'primary'
+                  },
+                  'class': {
+                    foo: true,
+                    active: true,
+                  },
+                 /* style: {
+
+                  },*/
+                  on: {
+                    click: () => {
+                      vm.view("结构",params.row.name);
+                    }
                   }
-                }
-              };
+                };
+              } else {
+                audit = {
+                  props: {
+                    type: 'primary'
+                  },
+                  'class': {
+                    foo: true,
+                    active: false,
+                  },
+                  style: {
+                    marginRight: '5px',
+                    color:'#3fa9ff',
+                    cursor:'pointer'
+                  },
+                  on: {
+                    click: () => {
+                      vm.view("结构",params.row.name);
+                    }
+                  }
+                };
+              }
+
               children.push(h('span', view, '浏览'));
               children.push(h('span', audit, '结构'));
+
               return h('div', children);
             }
           }

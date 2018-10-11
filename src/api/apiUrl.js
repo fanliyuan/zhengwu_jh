@@ -66,7 +66,7 @@ export default {
   subscribeResourceDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceDetails', method: 'get' }, //资源详情
   subscribeResourceList: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceItemList', method: 'get' }, //资源详情列表
   resourceTaskInfo: { url: 'api/v2/zhengwu/swap/resourceBazaar/resourceTaskInfo', method: 'get' }, //任务发布模式、
-
+ // downLoadFile: { url: '/api/v2/zhengwu/swap/resource/{type}/{id}/review', method: 'get' }, //下载文件
 
   //所有订阅
   allSubscribeList: { url: '/api/v2/zhengwu/swap/resourceBazaar/subscribeList', method: 'get' }, //所有订阅列表
@@ -80,5 +80,5 @@ export default {
   tableList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableList', method: 'get'}, //数据库表列表
   tableStructureList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableStructureList', method: 'get'}, //数据库表列表
   tableDataList: {url: '/api/v2/zhengwu/swap/resourceBazaar/tableDataList', method: 'get'}, //数据库数据列表
-  downLoadFile: {url: '/api/v2/zhengwu/swap/resourceBazaar/downLoadFile', method: 'post'} //下载文件
+  downLoadFile: {url: '/api/v2/zhengwu/swap/resourceBazaar/downLoadFile/{resourceId}', method: 'post'} //下载文件
 }

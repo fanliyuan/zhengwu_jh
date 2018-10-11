@@ -18,7 +18,7 @@
 import resourceManagePage from '@/pages/resourceChangeManage/resourceManage/resourceManage.vue'
 import viewCatalogPage from '@/pages/resourceChangeManage/resourceManage/viewCatalog.vue'
 import viewResourcePage from '@/pages/resourceChangeManage/resourceManage/viewResource.vue'
-
+import exportPage from '@/pages/resourceChangeManage/resourceManage/export.vue'
 
 export default [{
   path: '/resourceManagement',
@@ -38,6 +38,13 @@ export default [{
   path: '/resourceManagement/viewResource/:id',
   name: 'viewResource',
   component: viewResourcePage,
+  meta: {
+    authority:['user']
+  }
+},{
+  path: '/resourceManagement/export/:id',
+  name: 'export',
+  component: exportPage,
   meta: {
     authority:['user']
   }

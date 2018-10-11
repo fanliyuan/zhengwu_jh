@@ -160,6 +160,7 @@
       //浏览
       view: function (type,name) {
         let vm = this;
+        console.log(vm);
         if (type == "浏览") {
           vm.showStructureTable = false;
           vm.showViewTable = true;
@@ -178,8 +179,9 @@
         let paramsArr = (vm.$route.params.id).split("&");
         let resourceId = paramsArr[0];
         let fileName;
-        fileName = paramsArr[6];
-        console.log(resourceId + ":" + fileName);
+        vm.$router.push({'path': '/resourceManagement/export/' +resourceId});
+//        fileName = paramsArr[6];
+//        console.log(resourceId + ":" + fileName);
       }
     }
   }
@@ -218,5 +220,18 @@
         }
       }
     }
+  }
+  .operateStyle{
+    background: yellow!important;
+  }
+  .foo{
+    color:#3fa9ff;
+  }
+  .active1{
+    color:silver;
+    background: red;
+    margin-right: 5px;
+    /*color:'#3fa9ff',*/
+    cursor:pointer;
   }
 </style>
