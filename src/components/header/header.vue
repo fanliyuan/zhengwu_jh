@@ -15,7 +15,7 @@
           <Icon type="arrow-down-b"></Icon>
         </a>
         <DropdownMenu slot="list">
-          <DropdownItem v-for="item in dropdownMenu" :key="item.navId" class="header-drop-menu">
+          <DropdownItem v-for="item in dropdownMenu" :key="item.navId" class="header-drop-menu" @click.native="personalInfo(item.frontUrl)">
             <Icon :type="item.icon"></Icon>
             {{item.label}}
           </DropdownItem>
@@ -45,7 +45,7 @@
             label: '修改密码',
             icon: 'wrench',
             isParent: false,
-            frontUrl: ''
+            frontUrl: '/changePassword'
           }
         ],
         userName: window.sessionStorage.getItem("userName")
@@ -54,6 +54,9 @@
     methods: {
       logout () {
         window.sessionStorage.setItem("authority", "");
+      },
+      personalInfo (frontUrl) {
+        this.$router.push({'path': frontUrl});
       }
     }
   }

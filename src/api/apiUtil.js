@@ -48,8 +48,15 @@ const err_check = (code, msg, data) => {
     setTimeout(function () {
       window.location.href = rootUrl;
     }, 1000);
+  } else if (code === 500) {
+    Notice.warning({
+      title: '',
+      desc: msg,
+      duration: 1
+    });
+    return false
   }
-  return false
+ // return false
 }
 
 const sendApiInstance = (method, url, params, config = {}) => {
@@ -61,6 +68,9 @@ const sendApiInstance = (method, url, params, config = {}) => {
   }
   if (url.indexOf('{type}') !== -1) {
     url = url.replace('{type}', params.type);
+  }
+  if (url.indexOf('{userId}') !== -1) {
+    url = url.replace('{userId}', params.userId);
   }
   let instance = createApiInstance(config)
 

@@ -25,6 +25,8 @@ export default {
   userEdit: { url: '/mgr/edit1', method: 'put'}, //用户编辑
   roleList: { url: '/role/roleList', method: 'get' }, //角色列表
   roleUpdate: { url: '/mgr/setRole1', method: 'post' }, //设置用户角色
+  resetPwd: { url: '/mgr/resetPwd1/{userId}', method: 'post' }, //重置密码
+  changePwd: { url: '/mgr/changePwd1', method: 'post' }, //修改密码
 
   //资源管理
   resourceAdd: { url: '/api/v2/zhengwu/swap/resource/db', method: 'post' }, //新建资源实体

@@ -13,6 +13,7 @@ import AllSubscriptions from './resourceChangeManage/allSubscriptions'
 import SourceAudit from './sourceAudit/sourceAudit'
 import CatalogAudit from './catalogAudit/catalogAudit'
 import ResourceManage from './resourceChangeManage/resourceManage'
+import ChangePassword from './changePassword/changePassword'
 Vue.use(Router)
 const Layout = r => require.ensure([], () => r(require('@/pages/layout.vue')), 'Layout');
 const router = new Router({
@@ -41,7 +42,8 @@ const router = new Router({
         ...CatalogAudit,
         ...AllSubscriptions,
         ...SubscriptionModeration,
-        ...ResourceManage
+        ...ResourceManage,
+        ...ChangePassword
       ]
     },
     {
