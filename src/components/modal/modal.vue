@@ -225,6 +225,27 @@
             }
           }
         }
+        if (vm.formValidate.publishRate) {
+          if (vm.formValidate.publishRate === '1') {
+            vm.formWidgets.push({
+              type: 'input',
+              disabled: false,
+              show: true,
+              word: 'text',
+              prop: 'timeSet',
+              name: '定时设置',
+              placeholder: '请输定时表达式'
+            });
+            vm.ruleValidate.timeSet.push({
+              required: true,
+              message: '请输入定时设置',
+              trigger: 'blur'
+            });
+          } else {
+            vm.formWidgets.splice(6, 1);
+            vm.ruleValidate.timeSet.splice(0, 1);
+          }
+        }
       },
       changeCascader (value, selectedData) {
         let vm = this;
@@ -254,9 +275,6 @@
             if (vm.$props.widgets.apiUrl === 'catalogShareUpdate') {
               vm.formValidate.id = vm.$props.widgets.currentId;
               vm.formValidate.publishMode = vm.formValidate.publishMode.join(',');
-              for (let i = 0; i < 5; i++) {
-                delete vm.formValidate['timeSet' + i];
-              }
             }
             vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
               if (vm.$props.widgets.catalogId) {
@@ -265,6 +283,10 @@
                 vm.$parent.initTable();
               }
             vm.$emit('modalStatus', false);
+            if (vm.formValidate.publishRate) {
+              vm.formWidgets.splice(6, 1);
+              vm.ruleValidate.timeSet.splice(0, 1);
+            }
             vm.$refs.formValidate.resetFields();
             vm.deepCopy(vm.oldFormValidate, vm.formValidate);
             for (let i in vm.uploadNames) {
@@ -293,19 +315,6 @@
         if (vm.$refs['ueditorVal']) {
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
         }
-        if (vm.formValidate.timeSet) {
-          let valiArr = [];
-          vm.formValidate.timeSet = [];
-          for (let i = 0; i < 5; i++) {
-            if (vm.formValidate['timeSet' + i] === null) {
-              vm.formValidate['timeSet' + i] = '';
-            }
-            valiArr.push(vm.formValidate['timeSet' + i].toString());
-            if (vm.formValidate['timeSet' + i] !== '' && vm.formValidate['timeSet' + i] !== null) {
-              vm.formValidate.timeSet = valiArr;
-            }
-          }
-        }
         vm.validateForm(name);
       },
       cancel () {
@@ -313,10 +322,15 @@
         if (vm.$refs['ueditorVal']) {
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
         }
+        if (vm.formValidate.publishRate) {
+          vm.formWidgets.splice(6, 1);
+          vm.ruleValidate.timeSet.splice(0, 1);
+        }
         vm.$nextTick(() => {
           vm.$refs.formValidate.resetFields();
-        vm.deepCopy(vm.oldFormValidate, vm.formValidate);
-      });
+          vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+          console.log(vm)
+        });
         for (let i in vm.uploadNames) {
           if (i) {
             vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);

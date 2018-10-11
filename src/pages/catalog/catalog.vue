@@ -457,19 +457,25 @@
                 } else {
                   vm.modalShareData.formObj[obj] = [];
                 }
-              } else if (obj === 'timeSet') {
-                vm.deepCopy(data.data[obj], vm.modalShareData.formObj[obj]);
-                for (let i = 0, len = data.data[obj].length; i < len; i++) {
-                  if (data.data[obj][i] !== '') {
-                    vm.modalShareData.formObj['timeSet' + i] = parseInt(data.data[obj][i]);
-                  } else {
-                    vm.modalShareData.formObj['timeSet' + i] = '';
-                    vm.modalShareData.formObj[obj].splice(i, 1);
-                  }
-                }
               } else {
                 vm.modalShareData.formObj[obj] = data.data[obj];
               }
+            }
+            if (data.data.publishRate === '1') {
+              vm.modalShareData.widgets.push({
+                type: 'input',
+                disabled: false,
+                show: true,
+                word: 'text',
+                prop: 'timeSet',
+                name: '定时设置',
+                placeholder: '请输定时表达式'
+              });
+              vm.modalShareData.ruleObj.timeSet.push({
+                required: true,
+                message: '请输入定时设置',
+                trigger: 'blur'
+              });
             }
             vm.modalShareData.title = vm.modalShareData.titles.editTitle;
             vm.modalShareData.apiUrl = vm.apis.shareUpdateApi;

@@ -652,12 +652,7 @@ class catalogOptions {
           switchAreaId: [],
           publishMode: [],
           publishRate: '',
-          timeSet: [],
-          timeSet0: '',
-          timeSet1: '',
-          timeSet2: '',
-          timeSet3: '',
-          timeSet4: ''
+          timeSet: ''
         },
         oldFormObj:{
           share: 0,
@@ -666,12 +661,7 @@ class catalogOptions {
           switchAreaId: [],
           publishMode: [],
           publishRate: '',
-          timeSet: [],
-          timeSet0: '',
-          timeSet1: '',
-          timeSet2: '',
-          timeSet3: '',
-          timeSet4: ''
+          timeSet: ''
         },
         idObj: 'id',
         ruleObj: {
@@ -700,13 +690,7 @@ class catalogOptions {
             }
           ],
           timeSet: [
-            {
-              required: true,
-              message: '定时设置至少输入一项',
-              type: 'array',
-              min: 5,
-              trigger: 'change'
-            }
+
           ]
         },
         widgets: [
@@ -827,61 +811,70 @@ class catalogOptions {
               }
             ]
           },
-          {
-            type: 'inputGroup',
-            disabled: false,
-            show: true,
-            word: 'text',
-            prop: 'timeSet',
-            name: '定时设置',
-            options: [
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 60,
-                min: 0,
-                prop: 'timeSet0',
-                placeholder: '秒'
-              },
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 60,
-                min: 0,
-                prop: 'timeSet1',
-                placeholder: '分'
-              },
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 60,
-                min: 0,
-                prop: 'timeSet2',
-                placeholder: '时'
-              },
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 31,
-                min: 0,
-                prop: 'timeSet3',
-                placeholder: '日'
-              },
-              {
-                type: 'inputNumber',
-                disabled: false,
-                show: true,
-                max: 12,
-                min: 0,
-                prop: 'timeSet4',
-                placeholder: '月'
-              }
-            ]
-          }
+          //{
+          //  type: 'input',
+          //  disabled: false,
+          //  show: true,
+          //  word: 'text',
+          //  prop: 'timeSet',
+          //  name: '定时设置',
+          //  placeholder: '请输定时表达式'
+          //}
+          //{
+          //  type: 'inputGroup',
+          //  disabled: false,
+          //  show: true,
+          //  word: 'text',
+          //  prop: 'timeSet',
+          //  name: '定时设置',
+          //  options: [
+          //    {
+          //      type: 'inputNumber',
+          //      disabled: false,
+          //      show: true,
+          //      max: 60,
+          //      min: 0,
+          //      prop: 'timeSet0',
+          //      placeholder: '秒'
+          //    },
+          //    {
+          //      type: 'inputNumber',
+          //      disabled: false,
+          //      show: true,
+          //      max: 60,
+          //      min: 0,
+          //      prop: 'timeSet1',
+          //      placeholder: '分'
+          //    },
+          //    {
+          //      type: 'inputNumber',
+          //      disabled: false,
+          //      show: true,
+          //      max: 60,
+          //      min: 0,
+          //      prop: 'timeSet2',
+          //      placeholder: '时'
+          //    },
+          //    {
+          //      type: 'inputNumber',
+          //      disabled: false,
+          //      show: true,
+          //      max: 31,
+          //      min: 0,
+          //      prop: 'timeSet3',
+          //      placeholder: '日'
+          //    },
+          //    {
+          //      type: 'inputNumber',
+          //      disabled: false,
+          //      show: true,
+          //      max: 12,
+          //      min: 0,
+          //      prop: 'timeSet4',
+          //      placeholder: '月'
+          //    }
+          //  ]
+          //}
         ],
         titles: {
           editTitle: {
