@@ -9,6 +9,7 @@ import axios from 'axios'
 import _ from 'lodash'
 import api from './api/index'
 import 'iview/dist/styles/iview.css'
+import 'babel-polyfill'
 
 Vue.use(iView)
 Vue.prototype.$http = axios
