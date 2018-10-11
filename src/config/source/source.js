@@ -17,6 +17,7 @@ class sourceOptions {
 
   setData () {
     let vm = this.setVm();
+    vm.incrementList = [];
     return {
       title: '资源管理',
       apis: {
@@ -75,9 +76,10 @@ class sourceOptions {
             key: 'summary'
           }
         ],
-        formObj:{
-        },
+        formObj:{},
+        formTimeObj: {},
         oldFormObj:{},
+        oldFormTimeObj:{},
         sqlObj: {
           name: '',
           summary: '',
@@ -98,6 +100,12 @@ class sourceOptions {
           structAddDtoList: [],
           tableName: '',
           tableNote: ''
+        },
+        sqlTimeObj: {
+          incrementField: '',
+          collectMode: [],
+          collectRate: '',
+          timeSet: ''
         },
         ftpObj: {
 
@@ -180,6 +188,26 @@ class sourceOptions {
           //    trigger: 'blur'
           //  }
           //]
+        },
+        sqlRuleTimeObj: {
+          collectMode: [
+            {
+              required: true,
+              type: 'array',
+              message: '请选择采集模式',
+              trigger: 'change'
+            }
+          ],
+          collectRate: [
+            {
+              required: true,
+              message: '请选择采集频率',
+              trigger: 'change'
+            }
+          ],
+          timeSet: [
+
+          ]
         },
         ftpRuleObj: {
 
@@ -354,11 +382,74 @@ class sourceOptions {
             placeholder: '请输入负责人职位'
           }
         ],
+        sqlWidgetsTimeObj: [
+          {
+            type: 'selectCascader',
+            disabled: false,
+            show: true,
+            prop: 'collectMode',
+            name: '采集模式',
+            placeholder: '请选择采集模式',
+            options: [
+              {
+                label: '增量',
+                value: '1',
+                children: [
+                  {
+                    value: '5',
+                    label: '日志'
+                  },
+                  {
+                    value: '1',
+                    label: '增量字段'
+                  }
+                ]
+              },
+              {
+                label: '全量',
+                value: '4'
+              }
+            ]
+          },
+          {
+            type: 'select',
+            disabled: true,
+            show: false,
+            prop: 'incrementField',
+            name: '增量字段',
+            placeholder: '请选择增量字段',
+            options: vm.incrementList
+          },
+          {
+            type: 'select',
+            disabled: false,
+            show: true,
+            prop: 'collectRate',
+            name: '采集频率',
+            placeholder: '请选择采集频率',
+            options: [
+              {
+                key: '定时',
+                value: '1'
+              },
+              {
+                key: '实时',
+                value: '2'
+              },
+              {
+                key: '手动',
+                value: '3'
+              }
+            ]
+          }
+        ],
         ftpWidgetsObj: [],
         filesWidgetsObj: [],
         //idObj: 'xaobBannerId',
         ruleObj: {},
+        ruleTimeObj: {},
         widgets: [],
+        widgetsTime: [],
         sqlDbTable: {
           options: []
         },

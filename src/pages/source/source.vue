@@ -13,10 +13,11 @@
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList" @on-selection-change="getSelected"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal footer-hide fullscreen v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
+      <Modal footer-hide :width="1080" v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="选择资源类型"></Step>
           <Step title="选择数据库"></Step>
+          <Step title="设置采集计划"></Step>
           <Step title="确认信息"></Step>
         </Steps>
         <Form class="formValidate" ref="formValidate" :model="modalData.formObj" :rules="modalData.ruleObj" :label-width="120" :show-message="true" v-show="modalData.current === 0">
@@ -55,7 +56,17 @@
             </TabPane>
           </Tabs>
         </div>
-        <div class="confirm-info" v-show="modalData.current === 2">
+        <Form class="formValidate" ref="formValidateTime" :model="modalData.formTimeObj" :rules="modalData.ruleTimeObj" :label-width="120" :show-message="true" v-show="modalData.current === 2">
+          <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgetsTime" v-show="item.show">
+            <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="modalData.formTimeObj[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
+            </Input>
+            <Select @on-change="changeOption" v-model="modalData.formTimeObj[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select'" style="width:300px">
+              <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
+            </Select>
+            <Cascader :data="item.options" :placeholder="item.placeholder" v-model="modalData.formTimeObj[item.prop]" @on-change="changeCascaderTime" v-if="item.type === 'selectCascader'"></Cascader>
+          </FormItem>
+        </Form>
+        <div class="confirm-info" v-show="modalData.current === 3">
           <Card style="width:80%; margin: 0 auto;" :dis-hover="true">
             <ul class="infoList cl">
               <li v-for="(item, index) in modalData.infoObj" :key="item.key">
@@ -67,8 +78,8 @@
         </div>
         <div class="btn-group">
           <Button type="info" @click="pre" v-if="modalData.current >= 1">上一步</Button>
-          <Button type="primary" @click="next" v-if="modalData.current <= 1" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
-          <Button type="primary" @click="ok" v-if="modalData.current === 2">提交</Button>
+          <Button type="primary" @click="next" v-if="modalData.current <= 2" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
+          <Button type="primary" @click="ok" v-if="modalData.current === 3">提交</Button>
           <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
       </Modal>
@@ -153,8 +164,11 @@
         vm.modalData.title = vm.modalData.titles.addTitle;
         vm.modalData.apiUrl = vm.apis.addApi;
         vm.modalData.ruleObj = vm.modalData.sqlRuleObj;
+        vm.modalData.ruleTimeObj = vm.modalData.sqlRuleTimeObj;
         vm.modalData.widgets = vm.modalData.sqlWidgetsObj;
+        vm.modalData.widgetsTime = vm.modalData.sqlWidgetsTimeObj;
         vm.deepCopy(vm.modalData.sqlObj, vm.modalData.formObj);
+        vm.deepCopy(vm.modalData.sqlTimeObj, vm.modalData.formTimeObj);
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
       },
@@ -270,21 +284,60 @@
           vm.$Message.error('连接失败！');
         })
       },
+      //设置采集计划-选择采集频率
+      changeOption (value) {
+        let vm = this;
+        if (vm.modalData.formTimeObj.collectRate === '1') {
+          vm.modalData.widgetsTime.push({
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'timeSet',
+            name: '定时设置',
+            placeholder: '请输定时表达式'
+          });
+          vm.modalData.sqlRuleTimeObj.timeSet.push({
+            required: true,
+            message: '请输入定时设置',
+            trigger: 'blur'
+          });
+        } else {
+          vm.modalData.widgetsTime.splice(3, 1);
+          vm.modalData.sqlRuleTimeObj.timeSet.splice(0, 1);
+        }
+      },
+      //设置采集计划-选择采集模式
+      changeCascaderTime (value) {
+        let vm = this;
+        if (value.join(',') === '1,1') {
+          vm.modalData.formTimeObj.incrementField = vm.modalData.widgetsTime[1].options[0].value;
+          vm.modalData.widgetsTime[1].disabled = false;
+          vm.modalData.widgetsTime[1].show = true;
+        } else {
+          vm.modalData.widgetsTime[1].disabled = true;
+          vm.modalData.widgetsTime[1].show = false;
+          vm.modalData.formTimeObj.incrementField = '';
+        }
+      },
       //取消
       cancel () {
         let vm = this;
         vm.modalOpreation = false;
+        vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
+        vm.incrementList.splice(0, vm.incrementList.length);
+        vm.modalData.sqlWidgetsTimeObj[1].disabled = true;
+        vm.modalData.sqlWidgetsTimeObj[1].show = false;
         vm.$refs.formValidate.resetFields();
+        vm.$refs.formValidateTime.resetFields();
         vm.modalData.current = 0;
       },
       //下一步
       next () {
         let vm = this;
-        vm.$refs['formValidate'].validate((valid) => {
-          if (valid) {
-            if (vm.modalData.current === 2) {
-              vm.modalData.current = 2;
-            } else if (vm.modalData.current === 0) {
+        if (vm.modalData.current === 0) {
+          vm.$refs['formValidate'].validate((valid) => {
+            if (valid) {
               vm.$Message.info('连接中！');
               let connectInit = {
                 type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
@@ -307,12 +360,24 @@
                 vm.$Message.error('连接失败！');
               })
             } else {
-              vm.modalData.current += 1;
+              vm.$Message.error('验证失败');
             }
+          });
+        } else if (vm.modalData.current === 2) {
+          vm.$refs['formValidateTime'].validate((valid) => {
+            if (valid) {
+              vm.modalData.current += 1;
+            } else {
+              vm.$Message.error('验证失败');
+            }
+          });
+        } else {
+          if (vm.modalData.current === 3) {
+            vm.modalData.current = 3;
           } else {
-            vm.$Message.error('验证失败');
+            vm.modalData.current += 1;
           }
-        });
+        }
       },
       //上一步
       pre () {
@@ -333,12 +398,18 @@
         vm.modalData.formObj.alias = vm.modalData.currentDataBase;
         vm.modalData.formObj.resourceType = vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')];
         vm.modalData.formObj.dbType = vm.modalData.formObj.dbType[1];
+        vm.modalData.formObj.collectEditDto = vm.modalData.formTimeObj;
         vm.api[vm.modalData.apiUrl](vm.modalData.formObj).then((data) => {
           vm.$Loading.finish();
           vm.$Message.success('提交成功！');
           vm.initTable();
           vm.modalOpreation = false;
+          vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
+          vm.incrementList.splice(0, vm.incrementList.length);
+          vm.modalData.sqlWidgetsTimeObj[1].disabled = true;
+          vm.modalData.sqlWidgetsTimeObj[1].show = false;
           vm.$refs.formValidate.resetFields();
+          vm.$refs.formValidateTime.resetFields();
           vm.modalData.current = 0;
         }).catch((error) => {
           vm.$Loading.error();
@@ -366,7 +437,9 @@
         vm.modalData.formObj.dbName = value;
         vm.modalData.sqlTableTable.initData.pageNum = 1;
         vm.modalData.sqlTableTable.currentPage = 1;
-        vm.initSqlTableTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName);
+        if (vm.modalData.sqlDbTable.options.length !== 0) {
+          vm.initSqlTableTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName);
+        }
         vm.modalData.formObj.tableName = '';
         vm.modalData.sqlColumnTable.tableList = [];
         vm.modalData.sqlColumnTable.total = 0;
@@ -413,9 +486,16 @@
         }
         vm.modalData.sqlColumnTable.loading = true;
         vm.modalData.formObj.structAddDtoList = [];
+        if (vm.incrementList.length !== 0) {
+          vm.incrementList.splice(0, vm.incrementList.length);
+        }
         vm.api[vm.apis.mysqlColumnApi](vm.modalData.sqlColumnTable.initData).then((data) => {
           for (let i = 0, len = data.datas.length; i < len; i++) {
             let primaryKey = false;
+            vm.incrementList.push({
+              value: data.datas[i].name,
+              key: data.datas[i].name + ' (' + data.datas[i].type + ')'
+            });
             if (data.datas[i].primaryKey) {
               primaryKey = true;
             }
