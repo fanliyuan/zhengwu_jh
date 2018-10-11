@@ -110,7 +110,7 @@
 
 <style lang="less">
   #login {
-    background-image: url(/static/img/login_bg.42272de.jpg);
+    background-image: url('./img/login_bg.jpg');
     /* background-size: cover; */
     background-color: #2d81bb;
     background-position: center;
