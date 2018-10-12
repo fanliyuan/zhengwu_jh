@@ -22,6 +22,7 @@ class sourceOptions {
       title: '资源管理',
       apis: {
         addApi: 'resourceAdd',
+        addFilesApi: 'resourceFilesAdd',
         deleteApi: 'resourceDelete',
         detailApi: 'resourceDetail',
         listApi: 'resourceList',
@@ -31,7 +32,9 @@ class sourceOptions {
         mysqlDataApi: 'resourceMysqlData',
         mysqlDbApi: 'resourceMysqlDb',
         mysqlTableApi: 'resourceMysqlTable',
-        mysqlStructApi: 'resourceMysqlStruct'
+        mysqlStructApi: 'resourceMysqlStruct',
+        fileUp: 'resourceFileUp',
+        fileDown: 'resourceFileDown'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -76,32 +79,52 @@ class sourceOptions {
             key: 'summary'
           }
         ],
-        formObj:{},
-        formTimeObj: {},
-        oldFormObj:{},
-        oldFormTimeObj:{},
-        sqlObj: {
+        formObj:{
           name: '',
           summary: '',
           dbType: [1, 3],
+          appsysName: '',
+          createUnit: '',
+          dbDescribe: '',
+          dutyName: '',
+          dutyPhone: '',
+          dutyPosition: ''
+        },
+        formTimeObj: {},
+        oldFormObj:{
+          name: '',
+          summary: '',
+          dbType: [1, 3],
+          appsysName: '',
+          createUnit: '',
+          dbDescribe: '',
+          dutyName: '',
+          dutyPhone: '',
+          dutyPosition: ''
+        },
+        oldFormTimeObj:{},
+        sqlObj: {
+          //name: '',
+          //summary: '',
+          //dbType: [1, 3],
           addr: '',
           port: '',
           username: '',
           password: '',
           alias: '',
-          appsysName: '',
-          createUnit: '',
-          dbDescribe: '',
+          //appsysName: '',
+          //createUnit: '',
+          //dbDescribe: '',
           dbName: '',
-          dutyName: '',
-          dutyPhone: '',
-          dutyPosition: '',
+          //dutyName: '',
+          //dutyPhone: '',
+          //dutyPosition: '',
           resourceType: '',
           structAddDtoList: [],
           tableName: '',
           tableNote: ''
         },
-        sqlTimeObj: {
+        timeObj: {
           incrementField: '',
           collectMode: [],
           collectRate: '',
@@ -111,7 +134,7 @@ class sourceOptions {
 
         },
         filesObj: {
-
+          fileAddDtoList: []
         },
         sqlRuleObj: {
           name: [
@@ -174,22 +197,8 @@ class sourceOptions {
               message: '请输入正确的手机号'
             }
           ]
-          //createUnit: [
-          //  {
-          //    required: true,
-          //    message: '请输入建库单位',
-          //    trigger: 'blur'
-          //  }
-          //],
-          //appsysName: [
-          //  {
-          //    required: true,
-          //    message: '请输入应用系统名称',
-          //    trigger: 'blur'
-          //  }
-          //]
         },
-        sqlRuleTimeObj: {
+        setRuleTimeObj: {
           collectMode: [
             {
               required: true,
@@ -213,7 +222,38 @@ class sourceOptions {
 
         },
         filesRuleObj: {
-
+          name: [
+            {
+              required: true,
+              message: '名称不能为空',
+              trigger: 'blur'
+            },
+            {
+              max: 20,
+              message: '名称长度不能大于20个字符'
+            }
+          ],
+          summary: [
+            {
+              required: true,
+              message: '摘要不能为空',
+              trigger: 'blur'
+            }
+          ],
+          dbType: [
+            {
+              required: true,
+              type: 'array',
+              message: '请选择数据类型',
+              trigger: 'change'
+            }
+          ],
+          dutyPhone: [
+            {
+              pattern: 11 && /^((13|14|15|17|18)[0-9]{1}\d{8})$/,
+              message: '请输入正确的手机号'
+            }
+          ]
         },
         sqlWidgetsObj: [
           {
@@ -272,7 +312,7 @@ class sourceOptions {
               {
                 label: '半结构化存储',
                 value: 2,
-                disabled: true,
+                disabled: false,
                 children: [
                   {
                     value: 1,
@@ -382,7 +422,7 @@ class sourceOptions {
             placeholder: '请输入负责人职位'
           }
         ],
-        sqlWidgetsTimeObj: [
+        setWidgetsTimeObj: [
           {
             type: 'selectCascader',
             disabled: false,
@@ -444,7 +484,137 @@ class sourceOptions {
           }
         ],
         ftpWidgetsObj: [],
-        filesWidgetsObj: [],
+        filesWidgetsObj: [
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'name',
+            name: '名称',
+            placeholder: '请输入名称'
+          },
+          {
+            type: 'textarea',
+            disabled: false,
+            show: true,
+            word: 'textarea',
+            rows: 6,
+            prop: 'summary',
+            name: '摘要',
+            placeholder: '请输入描述'
+          },
+          {
+            type: 'selectCascader',
+            disabled: false,
+            show: true,
+            prop: 'dbType',
+            name: '类型',
+            placeholder: '请选择类型',
+            options: [
+              {
+                label: '关系型数据库',
+                value: 1,
+                children: [
+                  {
+                    value: 1,
+                    label: 'Oracle'
+                  },
+                  {
+                    value: 2,
+                    label: 'SQLserver'
+                  },
+                  {
+                    value: 3,
+                    label: 'MySQL'
+                  },
+                  {
+                    value: 4,
+                    label: 'Kingbase'
+                  },
+                  {
+                    value: 5,
+                    label: 'DM'
+                  }
+                ]
+              },
+              {
+                label: '半结构化存储',
+                value: 2,
+                disabled: false,
+                children: [
+                  {
+                    value: 1,
+                    label: 'FTP'
+                  },
+                  {
+                    value: 2,
+                    label: 'SFTP'
+                  },
+                  {
+                    value: 3,
+                    label: '本地文件'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'createUnit',
+            name: '建库单位',
+            placeholder: '请输入建库单位'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'appsysName',
+            name: '应用系统名称',
+            placeholder: '请输入应用系统名称'
+          },
+          {
+            type: 'textarea',
+            disabled: false,
+            show: true,
+            word: 'textarea',
+            rows: 6,
+            prop: 'dbDescribe',
+            name: '数据库描述',
+            placeholder: '请输入数据库描述'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyName',
+            name: '负责人姓名',
+            placeholder: '请输入负责人姓名'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPhone',
+            name: '负责人手机号',
+            placeholder: '请输入负责人手机号'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPosition',
+            name: '负责人职位',
+            placeholder: '请输入负责人职位'
+          }
+        ],
         //idObj: 'xaobBannerId',
         ruleObj: {},
         ruleTimeObj: {},

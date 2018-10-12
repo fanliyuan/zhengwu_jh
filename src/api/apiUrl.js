@@ -29,7 +29,8 @@ export default {
   changePwd: { url: '/mgr/changePwd1', method: 'post' }, //修改密码
 
   //资源管理
-  resourceAdd: { url: '/api/v2/zhengwu/swap/resource/db', method: 'post' }, //新建资源实体
+  resourceAdd: { url: '/api/v2/zhengwu/swap/resource/db', method: 'post' }, //新建mysql资源实体
+  resourceFilesAdd: { url: '/api/v2/zhengwu/swap/resource/folder', method: 'post' }, //新建文件资源实体
   resourceConnect: { url: '/api/v2/zhengwu/swap/resource/connect', method: 'get'}, //连接测试
   resourceList: { url: '/api/v2/zhengwu/swap/resource/itemList', method: 'get' }, //资源实体列表
   resourceDelete: { url: '/api/v2/zhengwu/swap/resource/item', method: 'delete' }, //删除资源实体
@@ -42,6 +43,8 @@ export default {
   resourceMysqlStruct: { url: '/api/v2/zhengwu/swap/resource/db/{id}/struct', method: 'get' }, //获取mysql指定库的数据表结构
   resourceReview: { url: '/api/v2/zhengwu/swap/resource/{type}/{id}/review', method: 'post' }, //资源审核
   resourceReviewLog: { url: '/api/v2/zhengwu/swap/resource/{type}/{id}/review', method: 'get' }, //资源审核日志
+  resourceFileUp: { url: '/api/v2/zhengwu/swap/resource/file/up', method: 'post' }, //文件上传
+  resourceFileDown: { url: '/api/v2/zhengwu/swap/resource/file/down', method: 'get' }, //文件下载
 
   //目录管理
   catalogAdd: { url: '/api/v2/zhengwu/swap/resource', method: 'post' }, //新建资源

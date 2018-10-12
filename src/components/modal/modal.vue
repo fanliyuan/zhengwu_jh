@@ -22,7 +22,10 @@
         <Input class="formValidate-widget" @on-change="oneOfFormValidate" @on-blur="oneOfFormValidate" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'inputValidateOther'">
         </Input>
         <InputNumber style="width:300px" size="large" v-model="formValidate[item.prop]" :max="item.max" :min="item.min" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'inputNumber'"></InputNumber>
-        <Select @on-open-change="oneOfFormValidate" @on-change="changeOption" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select'" style="width:300px">
+        <Select @on-open-change="oneOfFormValidate" @on-change="changePublishRate" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select' && item.prop === 'publishRate'" style="width:300px">
+          <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
+        </Select>
+        <Select @on-change="changeOption" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select' && item.prop !== 'publishRate'" style="width:300px">
           <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
         </Select>
         <Select @on-open-change="oneOfFormValidate" v-model="formValidate[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'selectValidateOther'" style="width:300px">
@@ -206,6 +209,10 @@
 
       },
       changeOption (value) {
+        let vm = this;
+
+      },
+      changePublishRate (value) {
         let vm = this;
         if (vm.formValidate.publishRate) {
           if (vm.formValidate.publishRate === '1') {

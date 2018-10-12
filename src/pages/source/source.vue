@@ -60,7 +60,10 @@
           <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgetsTime" v-show="item.show">
             <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="modalData.formTimeObj[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
             </Input>
-            <Select @on-change="changeOption" v-model="modalData.formTimeObj[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select'" style="width:300px">
+            <Select @on-change="changeOption" v-model="modalData.formTimeObj[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select' && item.prop === 'collectRate'" style="width:300px">
+              <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
+            </Select>
+            <Select v-model="modalData.formTimeObj[item.prop]" :element-id="item.prop" :ref="item.prop" :placeholder="item.placeholder" :disabled="item.disabled" v-if="item.type === 'select' && item.prop !== 'collectRate'" style="width:300px">
               <Option v-for="option in item.options" :value="option.value" :key="option.value">{{option.key}}</Option>
             </Select>
             <Cascader :data="item.options" :placeholder="item.placeholder" v-model="modalData.formTimeObj[item.prop]" @on-change="changeCascaderTime" v-if="item.type === 'selectCascader'"></Cascader>
@@ -164,11 +167,11 @@
         vm.modalData.title = vm.modalData.titles.addTitle;
         vm.modalData.apiUrl = vm.apis.addApi;
         vm.modalData.ruleObj = vm.modalData.sqlRuleObj;
-        vm.modalData.ruleTimeObj = vm.modalData.sqlRuleTimeObj;
+        vm.modalData.ruleTimeObj = vm.modalData.setRuleTimeObj;
         vm.modalData.widgets = vm.modalData.sqlWidgetsObj;
-        vm.modalData.widgetsTime = vm.modalData.sqlWidgetsTimeObj;
+        vm.modalData.widgetsTime = vm.modalData.setWidgetsTimeObj;
         vm.deepCopy(vm.modalData.sqlObj, vm.modalData.formObj);
-        vm.deepCopy(vm.modalData.sqlTimeObj, vm.modalData.formTimeObj);
+        vm.deepCopy(vm.modalData.timeObj, vm.modalData.formTimeObj);
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
       },
@@ -259,7 +262,26 @@
       //改变类型
       changeCascader (value, selectedData) {
         let vm = this;
-
+        console.log(vm)
+        for (let obj in vm.modalData.formObj) {
+          if (vm.modalData.oldFormObj[obj] === undefined) {
+            delete vm.modalData.formObj[obj];
+          }
+        }
+        switch (value[0]) {
+          case 1:
+            vm.modalData.ruleObj = vm.modalData.sqlRuleObj;
+            vm.modalData.widgets = vm.modalData.sqlWidgetsObj;
+            vm.deepCopy(vm.modalData.sqlObj, vm.modalData.formObj);
+            break;
+          case 2:
+            if (value.join(',') === '2,3') {
+              vm.modalData.ruleObj = vm.modalData.filesRuleObj;
+              vm.modalData.widgets = vm.modalData.filesWidgetsObj;
+              vm.deepCopy(vm.modalData.filesObj, vm.modalData.formObj);
+            }
+            break;
+        }
       },
       //连通性测试
       connect () {
@@ -297,14 +319,14 @@
             name: '定时设置',
             placeholder: '请输定时表达式'
           });
-          vm.modalData.sqlRuleTimeObj.timeSet.push({
+          vm.modalData.setRuleTimeObj.timeSet.push({
             required: true,
             message: '请输入定时设置',
             trigger: 'blur'
           });
         } else {
           vm.modalData.widgetsTime.splice(3, 1);
-          vm.modalData.sqlRuleTimeObj.timeSet.splice(0, 1);
+          vm.modalData.setRuleTimeObj.timeSet.splice(0, 1);
         }
       },
       //设置采集计划-选择采集模式
@@ -326,8 +348,8 @@
         vm.modalOpreation = false;
         vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
         vm.incrementList.splice(0, vm.incrementList.length);
-        vm.modalData.sqlWidgetsTimeObj[1].disabled = true;
-        vm.modalData.sqlWidgetsTimeObj[1].show = false;
+        vm.modalData.setWidgetsTimeObj[1].disabled = true;
+        vm.modalData.setWidgetsTimeObj[1].show = false;
         vm.$refs.formValidate.resetFields();
         vm.$refs.formValidateTime.resetFields();
         vm.modalData.current = 0;
@@ -406,8 +428,8 @@
           vm.modalOpreation = false;
           vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
           vm.incrementList.splice(0, vm.incrementList.length);
-          vm.modalData.sqlWidgetsTimeObj[1].disabled = true;
-          vm.modalData.sqlWidgetsTimeObj[1].show = false;
+          vm.modalData.setWidgetsTimeObj[1].disabled = true;
+          vm.modalData.setWidgetsTimeObj[1].show = false;
           vm.$refs.formValidate.resetFields();
           vm.$refs.formValidateTime.resetFields();
           vm.modalData.current = 0;
