@@ -648,6 +648,7 @@ class catalogOptions {
         formObj:{
           share: 0,
           open: 0,
+          subscribeLicense: 0,
           incrementField: '',
           switchAreaId: [],
           publishMode: [],
@@ -657,6 +658,7 @@ class catalogOptions {
         oldFormObj:{
           share: 0,
           open: 0,
+          subscribeLicense: 0,
           incrementField: '',
           switchAreaId: [],
           publishMode: [],
@@ -719,6 +721,24 @@ class catalogOptions {
             word: 'text',
             prop: 'open',
             name: '是否开放',
+            options: [
+              {
+                key: '是',
+                value: 1
+              },
+              {
+                key: '否',
+                value: 0
+              }
+            ]
+          },
+          {
+            type: 'radioGroup',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'subscribeLicense',
+            name: '订阅是否授权',
             options: [
               {
                 key: '是',

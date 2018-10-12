@@ -443,7 +443,7 @@
           });
           vm.api[vm.apis.shareDetailApi](ID).then((data) => {
             for (let obj in data.data) {
-              if (obj === 'share' || obj === 'open') {
+              if (obj === 'share' || obj === 'open' || obj === 'subscribeLicense') {
                 if (data.data[obj]) {
                   vm.modalShareData.formObj[obj] = 1;
                 }
