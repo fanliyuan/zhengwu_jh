@@ -288,9 +288,9 @@
         let vm = this;
         vm.modalShareOpreation = status;
         vm.incrementList = [];
-        vm.modalShareData.widgets[4].disabled = true;
-        vm.modalShareData.widgets[4].show = false;
-        vm.modalShareData.widgets[4].options = vm.incrementList;
+        vm.modalShareData.widgets[5].disabled = true;
+        vm.modalShareData.widgets[5].show = false;
+        vm.modalShareData.widgets[5].options = vm.incrementList;
       },
       //导入文件
       importFile () {
@@ -299,24 +299,7 @@
       //下拉框选择
       changeOption (value) {
         let vm = this;
-        if (vm.hideToken) {
-          let options = vm.$props.widgets.widgets[3].options;
-          let tokenSelect = vm.$props.widgets.widgets[4];
-          let tokenShow = '';
-          for (let i = 0, len = options.length; i < len; i++) {
-            if (value === options[i].value) {
-              tokenShow = options[i].tokenStatus;
-              switch (tokenShow) {
-                case 0:
-                  tokenSelect.show = false;
-                  break;
-                case 1:
-                  tokenSelect.show = true;
-                  break;
-              }
-            }
-          }
-        }
+
       },
       //取消
       cancel () {
@@ -386,7 +369,6 @@
         let vm = this;
         vm.modalData.itemTableData.tableList.push(vm.deepCopy(vm.modalData.formObj.infoAddDtoList[0], {}));
         vm.modalData.itemPageData.total = vm.modalData.itemTableData.tableList.length;
-        console.log(vm.modalData.itemTableData.tableList)
       },
       handleEdit (row) {
         let vm = this;
@@ -402,7 +384,6 @@
       },
       changeDataTablePage (page) {
         let vm = this;
-        console.log(page)
         vm.modalData.itemTableData.currentTableList = [];
         let len;
         if (vm.modalData.itemPageData.pageSize * page > vm.modalData.itemPageData.total) {
@@ -413,7 +394,6 @@
         for (let i = (page - 1) * vm.modalData.itemPageData.pageSize; i < len; i++) {
           vm.modalData.itemTableData.currentTableList.push(vm.modalData.itemTableData.tableList[i])
         }
-        console.log(vm.modalData.itemTableData.tableList)
       },
       //共享开放
       open (id) {
@@ -451,8 +431,8 @@
                 if (data.data[obj] !== '') {
                   vm.modalShareData.formObj[obj] = data.data[obj].split(',');
                   if (data.data[obj] === '1,1') {
-                    vm.modalShareData.widgets[4].disabled = false;
-                    vm.modalShareData.widgets[4].show = true;
+                    vm.modalShareData.widgets[5].disabled = false;
+                    vm.modalShareData.widgets[5].show = true;
                   }
                 } else {
                   vm.modalShareData.formObj[obj] = [];

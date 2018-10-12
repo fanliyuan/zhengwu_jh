@@ -207,24 +207,6 @@
       },
       changeOption (value) {
         let vm = this;
-        if (vm.hideToken) {
-          let options = vm.$props.widgets.widgets[3].options;
-          let tokenSelect = vm.$props.widgets.widgets[4];
-          let tokenShow = '';
-          for (let i = 0, len = options.length; i < len; i++) {
-            if (value === options[i].value) {
-              tokenShow = options[i].tokenStatus;
-              switch (tokenShow) {
-                case 0:
-                  tokenSelect.show = false;
-                  break;
-                case 1:
-                  tokenSelect.show = true;
-                  break;
-              }
-            }
-          }
-        }
         if (vm.formValidate.publishRate) {
           if (vm.formValidate.publishRate === '1') {
             vm.formWidgets.push({
@@ -242,7 +224,7 @@
               trigger: 'blur'
             });
           } else {
-            vm.formWidgets.splice(6, 1);
+            vm.formWidgets.splice(7, 1);
             vm.ruleValidate.timeSet.splice(0, 1);
           }
         }
@@ -251,12 +233,12 @@
         let vm = this;
         if (vm.formValidate.publishMode) {
           if (value.join(',') === '1,1') {
-            vm.formValidate.incrementField = vm.formWidgets[4].options[0].value;
-            vm.formWidgets[4].disabled = false;
-            vm.formWidgets[4].show = true;
+            vm.formValidate.incrementField = vm.formWidgets[5].options[0].value;
+            vm.formWidgets[5].disabled = false;
+            vm.formWidgets[5].show = true;
           } else {
-            vm.formWidgets[4].disabled = true;
-            vm.formWidgets[4].show = false;
+            vm.formWidgets[5].disabled = true;
+            vm.formWidgets[5].show = false;
             vm.formValidate.incrementField = '';
           }
         }
@@ -284,7 +266,7 @@
               }
             vm.$emit('modalStatus', false);
             if (vm.formValidate.publishRate) {
-              vm.formWidgets.splice(6, 1);
+              vm.formWidgets.splice(7, 1);
               vm.ruleValidate.timeSet.splice(0, 1);
             }
             vm.$refs.formValidate.resetFields();
@@ -323,13 +305,12 @@
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
         }
         if (vm.formValidate.publishRate) {
-          vm.formWidgets.splice(6, 1);
+          vm.formWidgets.splice(7, 1);
           vm.ruleValidate.timeSet.splice(0, 1);
         }
         vm.$nextTick(() => {
           vm.$refs.formValidate.resetFields();
           vm.deepCopy(vm.oldFormValidate, vm.formValidate);
-          console.log(vm)
         });
         for (let i in vm.uploadNames) {
           if (i) {

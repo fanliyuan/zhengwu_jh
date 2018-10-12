@@ -738,7 +738,7 @@ class catalogOptions {
             show: true,
             word: 'text',
             prop: 'subscribeLicense',
-            name: '订阅是否授权',
+            name: '是否订阅授权',
             options: [
               {
                 key: '是',
