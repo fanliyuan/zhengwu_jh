@@ -254,7 +254,7 @@
         let vm = this;
         vm.$refs[name].validate((valid) => {
           if (valid) {
-            vm.$Message.success('验证通过, 提交中！');
+//            vm.$Message.success('验证通过, 提交中！');
             if (vm.formValidate.targetPersons) {
               delete vm.formValidate.targetPersons;
             }
@@ -271,13 +271,25 @@
               } else {
                 vm.$parent.initTable();
               }
-            vm.$emit('modalStatus', false);
-            if (vm.formValidate.publishRate) {
+              if (vm.formValidate.publishRate) {
               vm.formWidgets.splice(7, 1);
               vm.ruleValidate.timeSet.splice(0, 1);
             }
-            vm.$refs.formValidate.resetFields();
-            vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+              if (data === "") {
+                vm.$refs.formValidate.resetFields();
+                vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+                vm.$emit('modalStatus', false);
+                if (vm.title.indexOf("新增") != -1) {
+                  vm.$Message.success('新增成功');
+                }
+                if (vm.title.indexOf("修改") != -1) {
+                  vm.$Message.success('修改成功');
+                }
+              } else {
+                vm.loading = false;
+                vm.$emit('modalStatus', true);
+              }
+
             for (let i in vm.uploadNames) {
               if (i) {
                 vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
@@ -292,9 +304,9 @@
           });
           } else {
             vm.$Message.error('验证失败');
-        vm.loading = false;
-        vm.$nextTick(() => {
-          vm.loading = true;
+            vm.loading = false;
+            vm.$nextTick(() => {
+             vm.loading = true;
       });
       }
       });
@@ -304,7 +316,7 @@
         if (vm.$refs['ueditorVal']) {
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
         }
-        vm.validateForm(name);
+       vm.validateForm(name);
       },
       cancel () {
         let vm = this;

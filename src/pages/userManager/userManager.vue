@@ -112,9 +112,10 @@
           vm.modalData.formObj[vm.modalData.idObj] = id;
           vm.modalData.title = vm.modalData.titles.editTitle;
           vm.modalData.apiUrl = vm.apis.editApi;
-           vm.modalData.widgets[1].disabled = true;
+          vm.modalData.widgets[1].disabled = true;
           vm.modalData.widgets[1].show = false;
           vm.modalData.widgets[4].disabled = true;
+          vm.modalData.formObj.password = "youedata";
           vm.modalWidgets = vm.modalData;
           vm.$Loading.finish();
           vm.modalOpreation = true;

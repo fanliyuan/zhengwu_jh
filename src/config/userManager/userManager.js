@@ -221,7 +221,7 @@ class userManagerOptions {
             showOkBtn: true
           },
           editTitle: {
-            name: '用户管理',
+            name: '修改用户',
             showOkBtn: true
           }
         }
