@@ -121,10 +121,6 @@
         let vm = this;
         vm.modalOkData.reason = vm.reason;
         vm.modalOkData.codeReply = vm.codeReply;
-        if (vm.codeReply == 0 && vm.reason =="") {
-           vm.$Message.info("请填写拒绝理由");
-        } else
-        {
           vm.api[vm.apis.subscribeAuditApi](vm.modalOkData).then((data) => {
             vm.modalOpreation = false;
             vm.initTable();
@@ -132,7 +128,7 @@
           }).catch((error) => {
              vm.$Message.error(error);
           })
-        }
+
       },
 
       //审核详情
