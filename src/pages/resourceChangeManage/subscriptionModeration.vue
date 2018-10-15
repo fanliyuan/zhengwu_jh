@@ -8,8 +8,7 @@
 <template>
   <div class="cl">
     <ContentTitle :options="title"></ContentTitle>
-    <div class="main-contents cl">
-
+    <div class="main-content cl">
         <FilterForm :options="filterData"></FilterForm>
         <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
         <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
