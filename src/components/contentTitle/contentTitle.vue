@@ -18,7 +18,7 @@
 <script>
   export default{
     name: 'ConTitle',
-    props: ['options', 'backbtn', 'saveBtn','surebtn','sureData','subscribeName','exportBtn'],
+    props: ['options', 'backbtn', 'saveBtn','surebtn','exportBtn','Surebtn'],
     data () {
       return {
 

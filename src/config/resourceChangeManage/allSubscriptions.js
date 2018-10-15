@@ -205,6 +205,7 @@ class resourceBazaarOptions {
       tableData: {
         selectedIds: [],
         loading: true,
+        currentPage: 1,
         tableList: [],
         columns: [
           {
@@ -308,6 +309,7 @@ class resourceBazaarOptions {
       tableData2: {
         loading: true,
         tableList: [],
+        currentPage: 1,
         columns: [
           {
             title: '序号',
@@ -410,6 +412,7 @@ class resourceBazaarOptions {
       tableData1: {
         loading: true,
         tableList: [],
+        currentPage: 1,
         columns: [
           {
             title: '序号',

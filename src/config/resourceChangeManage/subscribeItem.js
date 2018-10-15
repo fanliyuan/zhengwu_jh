@@ -26,13 +26,15 @@ class catalogItemOptions {
         name: '返回'
       },
       isSureBtn: {
-        name: '确定',
-        method: 'sure'
+        name: '确定12',
+        method: 'sure',
+        show: 'true'
       },
 
       type: '否',
       showPath:false,
       filePath:'',
+      orderStatus: true, //是否订阅
       subscribeName:'',
       pubfreQuency: '',//发布频率
       pubMode: '',//发布模式

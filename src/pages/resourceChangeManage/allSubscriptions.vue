@@ -45,7 +45,8 @@
             <Button class="back-btn start"  @click="start">启动</Button>
             <Button class="back-btn stop"  @click="stop">停止</Button>
             <Table border class="tableList" @on-selection-change="selectionClick" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
-            <Pager :options="pageData.total"></Pager>
+            <!--<Pager :options="pageData.total"></Pager>-->
+            <Page class-name="tablePager" :total="pageData.total" show-total @on-change="changePassTablePage" :current="tableData.currentPage"></Page>
             <!--<ModalConTent :options="modalOpreation" :widgets="modalWidgets" @modalStatus="changeModal"></ModalConTent>-->
           </Tab-pane>
           <Tab-pane label="待审核" key="key2" >
@@ -80,7 +81,8 @@
               <Button type="primary" class="search" size="large" icon="md-search" @click="handleSubmit('table2')">搜索</Button>
             </div>
             <Table border class="tableList" :loading="tableData1.loading" :columns="tableData1.columns" :data="tableData1.tableList"></Table>
-            <Pager :options="pageData1.total"></Pager>
+            <!--<Pager :options="pageData1.total"></Pager>-->
+            <Page class-name="tablePager" :total="pageData1.total" show-total @on-change="changeAuditedTablePage" :current="tableData1.currentPage"></Page>
           </Tab-pane>
           <Tab-pane label="审核失败" key="key3">
             <div>
@@ -114,7 +116,8 @@
               <Button type="primary" class="search" size="large" icon="md-search" @click="handleSubmit('table3')">搜索</Button>
             </div>
             <Table border class="tableList" :loading="tableData2.loading"  :columns="tableData2.columns" :data="tableData2.tableList"></Table>
-            <Pager :options="pageData2.total"></Pager>
+            <!--<Pager :options="pageData2.total"></Pager>-->
+            <Page class-name="tablePager" :total="pageData2.total" show-total @on-change="changeRefuseTablePage" :current="tableData2.currentPage"></Page>
           </Tab-pane>
         </Tabs>
         <Modal :width="520" footer-hide v-model="modalOpreation" :closable="false" title="分类" :mask-closable="false">
@@ -196,6 +199,39 @@
         }).catch((error) => {
 
         })
+      },
+
+
+      //已订阅分页
+      changePassTablePage (page) {
+        let vm = this;
+        let name;
+//        name = vm.initData1.tableName;
+        vm.initData.pageNum = page;
+        vm.tableData.currentPage = page;
+        vm.initTable();
+      },
+
+
+      //待审核分页
+      changeAuditedTablePage (page) {
+        let vm = this;
+        let name;
+//        name = vm.initData1.tableName;
+        vm.initData.pageNum = page;
+        vm.tableData.currentPage = page;
+        vm.initTable1();
+      },
+
+
+      //审核失败分页
+      changeRefuseTablePage (page) {
+        let vm = this;
+        let name;
+//        name = vm.initData1.tableName;
+        vm.initData2.pageNum = page;
+        vm.tableData2.currentPage = page;
+        vm.initTable2();
       },
       //新增
       add: function () {

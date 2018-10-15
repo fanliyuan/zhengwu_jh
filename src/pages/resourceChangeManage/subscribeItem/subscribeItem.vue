@@ -7,18 +7,26 @@
 */
 <template>
   <div class="cl">
-    <ContentTitle :options="title"  :surebtn="isSureBtn" :backbtn="isBackBtn" :sureData="sureData" :subscribeName="subscribeName"></ContentTitle>
+    <!--<ContentTitle :options="title"  :surebtn="isSureBtn" :backbtn="isBackBtn"></ContentTitle>-->
+    <div class="cl titleDiv">
+      <h3 class="container-title">{{title}}</h3>
+      <Button class="back-btn"  @click="back()">返回</Button>
+      <Button class="back-btn" type="primary" v-if="!orderStatus" @click="sure()">确定</Button>
+    </div>
     <div class="main-content cl">
       <Card class="infoCard" :dis-hover="true">
         <ul class="infoList cl">
           <li>
             <label><span style="color:red">*</span>订阅名称:</label>
-            <Input class="formValidate-widget" size="large"   v-model="subscribeName" placeholder="请输入订阅名称"  autocomplete="off" >
+            <Input class="formValidate-widget" size="large"   v-model="subscribeName" placeholder="请输入订阅名称"  autocomplete="off" :disabled="orderStatus">
             </Input>
           </li>
           <li v-for="(item, key) in detailNameData" :key="key">
             {{item}}：{{detailData[key]}}
           </li>
+        <!--  <li>
+            是否订阅：{{orderStatus}}
+          </li>-->
           <li>
             详情：<a @click="view">查看</a>
           </li>
@@ -122,6 +130,14 @@
           } else if (data.pubMode == '4') {
             vm.pubMode = '全量';
           }
+//          vm.orderStatus = data.orderStatus;
+          if (data.orderStatus === "是") {
+            vm.orderStatus = true;
+            vm.subscribeName = data.subscribeName;
+          } else {
+            vm.orderStatus = false;
+            vm.subscribeName = "";
+          }
           switch (data.pubfreQuency) {
             case "1" :
               vm.pubfreQuency = '定时';
@@ -204,6 +220,10 @@
           });
         }
       },
+
+      back () {
+        history.back();
+      },
       //是否显示选择文件
       showFile: function (type) {
         let vm = this;
@@ -223,6 +243,35 @@
 </script>
 
 <style lang="less" scoped>
+  .titleDiv{
+    background-color: #ffffff;
+    border-bottom: 1px solid #e7eaec;
+    padding: 15px 20px;
+  }
+  .container-title{
+    float: left;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 30px;
+    &:before{
+      content: '';
+      display: inline-block;
+      height: 19px;
+      vertical-align: middle;
+      margin-right: 4px;
+      border-left: 4px solid #2d81bb;
+    }
+  }
+  .back-btn{
+    float: right;
+    margin-left: 10px;
+  }
+  .back-btn1{
+    float: right;
+    .back{
+      margin-left: 10px;
+    }
+  }
   .main-content{
     .infoCard{
       margin: 20px;
