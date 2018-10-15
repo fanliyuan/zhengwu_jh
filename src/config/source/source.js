@@ -44,6 +44,9 @@ class sourceOptions {
         width: 900,
         current: 0,
         currentDataBase: '',
+        currentType: 'sql',
+        fileNext: false,
+        stepTwoName: '选择数据库',
         dataType: {
           '1-1': 'oracle',
           '1-2': 'sqlserver',
@@ -441,6 +444,7 @@ class sourceOptions {
                   },
                   {
                     value: '1',
+                    disabled: true,
                     label: '增量字段'
                   }
                 ]

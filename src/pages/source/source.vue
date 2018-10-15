@@ -16,7 +16,7 @@
       <Modal footer-hide :width="1080" v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="选择资源类型"></Step>
-          <Step title="选择数据库"></Step>
+          <Step :title="modalData.stepTwoName"></Step>
           <Step title="设置采集计划"></Step>
           <Step title="确认信息"></Step>
         </Steps>
@@ -28,11 +28,11 @@
             </Input>
             <Cascader :data="item.options" :placeholder="item.placeholder" v-model="modalData.formObj[item.prop]" @on-change="changeCascader" v-if="item.type === 'selectCascader'"></Cascader>
           </FormItem>
-          <FormItem class="formValidate-item" label="连通性测试">
+          <FormItem class="formValidate-item" label="连通性测试" v-if="modalData.currentType !== 'file'">
             <a @click="connect">测试</a>
           </FormItem>
         </Form>
-        <div class="table-group" v-show="modalData.current === 1">
+        <div class="table-group" v-if="modalData.current === 1 && modalData.currentType === 'sql'">
           <Divider orientation="left">数据库</Divider>
           <Select @on-change="changeDb" v-model="modalData.formObj['dbName']" element-id="dbName" ref="dbName" placeholder="请选择数据库" style="width:300px">
             <Option v-for="option in modalData.sqlDbTable.options" :value="option.name" :key="option.name">{{option.name}}</Option>
@@ -56,6 +56,16 @@
             </TabPane>
           </Tabs>
         </div>
+        <Form class="formValidate" ref="formValidateFile" :model="modalData.formObj" :label-width="120" :show-message="true" v-if="modalData.current === 1 && modalData.currentType === 'file'">
+          <FormItem class="formValidate-item" label="上传文件" prop="fileAddDtoList">
+            <Upload multiple type="drag" action="/api/api/v2/zhengwu/swap/resource/file/up" :max-size="51200" :default-file-list="modalData.formObj.fileAddDtoList" :before-upload="handleBeforeUpload" :on-success="uploadFileSuccess" :on-remove="removeFile" :on-error="uploadError" :on-exceeded-size="uploadExceededSize">
+              <div style="padding: 20px 0">
+                <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                <p>点击或拖拽上传文件</p>
+              </div>
+            </Upload>
+          </FormItem>
+        </Form>
         <Form class="formValidate" ref="formValidateTime" :model="modalData.formTimeObj" :rules="modalData.ruleTimeObj" :label-width="120" :show-message="true" v-show="modalData.current === 2">
           <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgetsTime" v-show="item.show">
             <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="modalData.formTimeObj[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
@@ -81,7 +91,8 @@
         </div>
         <div class="btn-group">
           <Button type="info" @click="pre" v-if="modalData.current >= 1">上一步</Button>
-          <Button type="primary" @click="next" v-if="modalData.current <= 2" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
+          <Button type="primary" @click="next" v-if="modalData.current <= 2 && modalData.currentType === 'sql'" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
+          <Button type="primary" @click="next" v-if="modalData.current <= 2 && modalData.currentType === 'file'" :disabled="modalData.current === 1 && !modalData.fileNext">下一步</Button>
           <Button type="primary" @click="ok" v-if="modalData.current === 3">提交</Button>
           <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
@@ -262,7 +273,6 @@
       //改变类型
       changeCascader (value, selectedData) {
         let vm = this;
-        console.log(vm)
         for (let obj in vm.modalData.formObj) {
           if (vm.modalData.oldFormObj[obj] === undefined) {
             delete vm.modalData.formObj[obj];
@@ -270,12 +280,17 @@
         }
         switch (value[0]) {
           case 1:
+            vm.modalData.stepTwoName = '选择数据库';
+            vm.modalData.currentType = 'sql';
             vm.modalData.ruleObj = vm.modalData.sqlRuleObj;
             vm.modalData.widgets = vm.modalData.sqlWidgetsObj;
             vm.deepCopy(vm.modalData.sqlObj, vm.modalData.formObj);
             break;
           case 2:
             if (value.join(',') === '2,3') {
+              vm.modalData.stepTwoName = '上传文件';
+              vm.modalData.currentType = 'file';
+              vm.modalData.apiUrl = vm.apis.addFilesApi;
               vm.modalData.ruleObj = vm.modalData.filesRuleObj;
               vm.modalData.widgets = vm.modalData.filesWidgetsObj;
               vm.deepCopy(vm.modalData.filesObj, vm.modalData.formObj);
@@ -305,6 +320,55 @@
           vm.$Loading.error();
           vm.$Message.error('连接失败！');
         })
+      },
+      //上传本地文件-成功
+      handleBeforeUpload (file) {
+
+      },
+      uploadFileSuccess (response, file, fileList) {
+        let vm = this;
+        let fileInfo = response.result.data;
+        vm.$set(vm.modalData.formObj.fileAddDtoList, vm.modalData.formObj.fileAddDtoList.length, {
+          uid: file.uid,
+          name: fileInfo.name,
+          size: fileInfo.size,
+          type: fileInfo.type,
+          uploadTime: fileInfo.uploadTime,
+          url: fileInfo.url
+        });
+        vm.modalData.fileNext = true;
+      },
+      //上传本地文件-删除
+      removeFile (file, fileList) {
+        let vm = this;
+        let files = vm.modalData.formObj.fileAddDtoList;
+        for (let i = 0, len = files.length; i < len; i++) {
+          if (files[i].uid === file.uid) {
+            files.splice(i, 1);
+            break;
+          }
+        }
+        if (files.length < 1) {
+          vm.modalData.fileNext = false;
+        }
+      },
+      //上传本地文件-上传失败
+      uploadError () {
+        let vm = this;
+        vm.$Notice.warning({
+          title: '',
+          desc: '文件上传失败！',
+          duration: 3
+        });
+      },
+      //上传本地文件-大小超出
+      uploadExceededSize () {
+        let vm = this;
+        vm.$Notice.warning({
+          title: '',
+          desc: '最大上传文件大小：50MB',
+          duration: 3
+        });
       },
       //设置采集计划-选择采集频率
       changeOption (value) {
@@ -360,27 +424,31 @@
         if (vm.modalData.current === 0) {
           vm.$refs['formValidate'].validate((valid) => {
             if (valid) {
-              vm.$Message.info('连接中！');
-              let connectInit = {
-                type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
-                addr: vm.modalData.formObj.addr,
-                port: vm.modalData.formObj.port,
-                username: vm.modalData.formObj.username,
-                password: vm.modalData.formObj.password
-              };
-              vm.api[vm.apis.connectApi](connectInit).then((data) => {
-                if (data.data) {
-                  vm.modalData.currentDataBase = data.data;
-                  vm.$Message.success('连接成功！');
-                  vm.initSqlDbList(vm.modalData.currentDataBase);
-                  vm.modalData.current += 1;
-                } else {
+              if (vm.modalData.currentType === 'sql') {
+                vm.$Message.info('连接中！');
+                let connectInit = {
+                  type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
+                  addr: vm.modalData.formObj.addr,
+                  port: vm.modalData.formObj.port,
+                  username: vm.modalData.formObj.username,
+                  password: vm.modalData.formObj.password
+                };
+                vm.api[vm.apis.connectApi](connectInit).then((data) => {
+                  if (data.data) {
+                    vm.modalData.currentDataBase = data.data;
+                    vm.$Message.success('连接成功！');
+                    vm.initSqlDbList(vm.modalData.currentDataBase);
+                    vm.modalData.current += 1;
+                  } else {
+                    vm.$Message.error('连接失败！');
+                  }
+                }).catch((error) => {
+                  vm.$Loading.error();
                   vm.$Message.error('连接失败！');
-                }
-              }).catch((error) => {
-                vm.$Loading.error();
-                vm.$Message.error('连接失败！');
-              })
+                })
+              } else {
+                vm.modalData.current += 1;
+              }
             } else {
               vm.$Message.error('验证失败');
             }
@@ -417,20 +485,39 @@
 //        if (vm.modalData.apiUrl === 'catalogUpdate') {
 //          params.ID = vm.modalData.currentId;
 //        }
-        vm.modalData.formObj.alias = vm.modalData.currentDataBase;
-        vm.modalData.formObj.resourceType = vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')];
-        vm.modalData.formObj.dbType = vm.modalData.formObj.dbType[1];
+        switch (vm.modalData.currentType) {
+          case 'sql':
+            vm.modalData.formObj.alias = vm.modalData.currentDataBase;
+            vm.modalData.formObj.resourceType = vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')];
+            vm.modalData.formObj.dbType = vm.modalData.formObj.dbType[1];
+            break;
+          case 'file':
+            break;
+          case 'ftp':
+            break;
+        }
         vm.modalData.formObj.collectEditDto = vm.modalData.formTimeObj;
         vm.api[vm.modalData.apiUrl](vm.modalData.formObj).then((data) => {
           vm.$Loading.finish();
           vm.$Message.success('提交成功！');
           vm.initTable();
           vm.modalOpreation = false;
-          vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
-          vm.incrementList.splice(0, vm.incrementList.length);
-          vm.modalData.setWidgetsTimeObj[1].disabled = true;
-          vm.modalData.setWidgetsTimeObj[1].show = false;
-          vm.$refs.formValidate.resetFields();
+          switch (vm.modalData.currentType) {
+            case 'sql':
+              vm.modalData.sqlDbTable.options.splice(0, vm.modalData.sqlDbTable.options.length);
+              vm.incrementList.splice(0, vm.incrementList.length);
+              vm.modalData.setWidgetsTimeObj[1].disabled = true;
+              vm.modalData.setWidgetsTimeObj[1].show = false;
+              vm.$refs.formValidate.resetFields();
+              break;
+            case 'file':
+              vm.modalData.currentType = 'sql';
+              vm.modalData.fileNext = false;
+              vm.modalData.stepTwoName = '选择数据库';
+              break;
+            case 'ftp':
+              break;
+          }
           vm.$refs.formValidateTime.resetFields();
           vm.modalData.current = 0;
         }).catch((error) => {
