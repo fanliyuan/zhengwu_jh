@@ -220,7 +220,7 @@
           content: '是否重置密码，重置后密码为111111？',
           onOk: function () {
             vm.api[vm.apis.resetPwdApi](ID).then((data) => {
-              vm.$Message.info('重置密码成功');
+              vm.$Message.success('重置密码成功');
               vm.initTable();
             }).catch((error) => {
               vm.$Loading.error();
