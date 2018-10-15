@@ -218,11 +218,11 @@ class resourceBazaarOptions {
           },
           {
             title: '订阅申请人',
-            key: 'reviewer',
+            key: 'subscriber',
           },
           {
             title: '订阅时间',
-            key: 'reviewTime',
+            key: 'subscribeTime',
           },
           {
             title: '目录名称',
@@ -320,11 +320,11 @@ class resourceBazaarOptions {
           },
           {
             title: '订阅申请人',
-            key: 'reviewer',
+            key: 'subscriber',
           },
           {
             title: '订阅时间',
-            key: 'reviewTime',
+            key: 'subscriberTime',
           },
           {
             title: '目录名称',
@@ -422,11 +422,11 @@ class resourceBazaarOptions {
           },
           {
             title: '订阅申请人',
-            key: 'reviewer',
+            key: 'subscriber',
           },
           {
             title: '订阅时间',
-            key: 'reviewTime',
+            key: 'subscribeTime',
           },
           {
             title: '目录名称',
