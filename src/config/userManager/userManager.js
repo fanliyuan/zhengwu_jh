@@ -439,7 +439,7 @@ class userManagerOptions {
       opreationData: [
         {
           name: '新建',
-          icon: 'plus-round',
+          icon: 'md-add',
           color: 'primary',
           type: 'add'
         }
