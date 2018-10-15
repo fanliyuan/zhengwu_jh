@@ -139,13 +139,30 @@ class resourceBazaarOptions {
             title: '授权状态',
             key: 'status',
             render: (h, params) => {
+              return h('div', [
+                h('span', {
+                  domProps: {
+                    innerHTML: function () {
+                      switch (params.row.status) {
+                        case -1:
+                          return '<span style="color: #5cadff">待授权</span>';
+                        case 1:
+                          return '<span style="color: #19be6b">已通过</span>';
+                        case 0:
+                          return '<span style="color: #ed4014">已拒绝</span>';
+                      }
+                    }()
+                  }
+                }, params.row.status)
+              ])
+              /*
               if (params.row.status === -1) {
-                return h('div', '待授权');
+                return '<span style="color: #5cadff">待授权</span>';
               } else if (params.row.status === 1) {
-                return h('div', '已通过 ');
+                return '<span style="color: #19be6b">已通过</span>';
               } else if (params.row.status === 0) {
-                return h('div', '已拒绝 ');
-              }
+                return '<span style="color: #ed4014">已拒绝</span>';
+              }*/
             }
           },
           {
