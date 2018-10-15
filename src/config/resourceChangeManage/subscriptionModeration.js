@@ -136,7 +136,7 @@ class resourceBazaarOptions {
             key: 'subTime',
           },
           {
-            title: '审核状态',
+            title: '授权状态',
             key: 'status',
             render: (h, params) => {
               if (params.row.status === -1) {

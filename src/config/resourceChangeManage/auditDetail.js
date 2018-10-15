@@ -24,7 +24,7 @@ class catalogItemOptions {
   setData () {
     let vm = this.setVm();
     return {
-      title: '审核详情',
+      title: '查看授权',
       isBackBtn: {
         name: '返回'
       },
