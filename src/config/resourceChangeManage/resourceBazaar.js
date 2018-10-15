@@ -238,23 +238,21 @@ class resourceBazaarOptions {
               }*/
             }
           },
-         /* {
+          {
             title: '是否已订阅',
-            key: '',
-          /!*  render: (h, params) => {
-              if (params.rows.disparkType) {
-
-              }
-            }*!/
-          },*/
+            key: 'orderStatus',
+          },
           {
             title: '操作',
             key: 'operate',
             render: (h, params) => {
               let children = [];
               let statusNames = "";
-              statusNames = '订阅查看';
-
+              if (params.row.orderStatus === "否") {
+                statusNames = '订阅';
+              } else if (params.row.orderStatus === "是") {
+                statusNames = '查看';
+              }
               let edit = {
                 props: {
                   type: 'primary'
