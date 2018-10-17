@@ -1048,8 +1048,7 @@ class catalogOptions {
                                 },'ftp'),
                                 h('Radio',{
                                   props:{
-                                    label: '文件',
-                                    disabled: true
+                                    label: 'file'
                                   }
                                 },'文件')
                               ]
@@ -1082,7 +1081,7 @@ class catalogOptions {
                 },
                 on: {
                   click: () => {
-                    vm.open(params.row.id);
+                    vm.open(params.row.id, params.row.mountType);
                   }
                 }
               };

@@ -396,7 +396,7 @@
         }
       },
       //共享开放
-      open (id) {
+      open (id, type) {
         let vm = this;
         let ID = {
           id: id
@@ -410,17 +410,22 @@
           let initData = {
             id: incrementId
           };
-          vm.api[vm.apis.incrementApiUrl](initData).then((data) => {
-            let structData = data.datas;
-            for (let i = 0, len = structData.length; i < len; i++) {
-              vm.incrementList.push({
-                value: structData[i].columnName,
-                key: structData[i].columnName + ' (' + structData[i].columnType + ')'
-              });
-            }
-          }).catch((error) => {
+          if (type === 'db') {
+            vm.modalShareData.widgets[4].options[0].children[1].disabled = false;
+            vm.api[vm.apis.incrementApiUrl](initData).then((data) => {
+              let structData = data.datas;
+              for (let i = 0, len = structData.length; i < len; i++) {
+                vm.incrementList.push({
+                  value: structData[i].columnName,
+                  key: structData[i].columnName + ' (' + structData[i].columnType + ')'
+                });
+              }
+            }).catch((error) => {
 
-          });
+            });
+          } else {
+            vm.modalShareData.widgets[4].options[0].children[1].disabled = true;
+          }
           vm.api[vm.apis.shareDetailApi](ID).then((data) => {
             for (let obj in data.data) {
               if (obj === 'share' || obj === 'open' || obj === 'subscribeLicense') {

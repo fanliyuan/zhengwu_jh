@@ -18,7 +18,7 @@
       <div class="selectSource">
         <span>挂接资源名称: {{sourceName}}</span>
         <a @click="selectSource">去选择</a>
-        <h4 v-if="structData.length === 0" style="color: red">
+        <h4 v-if="sourceId === ''" style="color: red">
           暂未挂接资源，请选择资源需要挂接的资源
         </h4>
       </div>
@@ -71,9 +71,10 @@
 
         })
       },
-      initTable: function () {
+      initTable: function (type) {
         let vm = this;
         vm.sourceTableData.loading = true;
+        vm.initData.type = type;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.sourceTableData.tableList = data.datas;
           vm.sourceTableData.pageData.total = data.totalCounts;
@@ -95,7 +96,9 @@
             vm.sourceId = data.data.mountItemId;
             delete data.data.mountInfoItemIdMap['@type'];
             vm.infoItemIdMap = data.data.mountInfoItemIdMap;
-            vm.initStruct();
+            if (vm.$route.query.mountType === 'db') {
+              vm.initStruct();
+            }
           }
         }).catch((error) => {
 
@@ -147,7 +150,7 @@
       //选择资源
       selectSource () {
         let vm = this;
-        vm.initTable();
+        vm.initTable(vm.$route.query.mountType);
         vm.modalOpreation = true;
       },
       //选择表
@@ -159,7 +162,10 @@
       },
       ok (name) {
         let vm = this;
-        vm.initStruct();
+        if (vm.$route.query.mountType === 'db') {
+          vm.initStruct();
+        }
+        vm.modalOpreation = false;
       },
       cancel () {
         let vm = this;
