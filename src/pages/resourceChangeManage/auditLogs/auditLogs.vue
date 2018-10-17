@@ -13,7 +13,7 @@
       <Card class="infoCard" :dis-hover="true">
         <ul class="infoList cl">
           <li v-for="(item, key) in detailNameData" :key="key">
-            {{item}}：{{detailData[key]}}
+            <span>{{item}}：</span><span>{{detailData[key]}}</span>
           </li>
         </ul>
       </Card>
@@ -63,6 +63,7 @@
           }
 
           vm.detailData = data.datas;
+          vm.detailData.reason = ""
         }).catch((error) => {
 
         })
@@ -77,16 +78,21 @@
   }
   .main-content{
     .infoCard{
-      margin: 20px;
+      margin: 20px 200px;
       clear: both;
-      text-align: center;
-      border:none!important;
+      border: none!important;
+      padding-left: 150px;
     }
     .infoList{
       li{
         float: left;
-        width: 34%;
+        width: 40%;
         margin-bottom: 15px;
+        span:first-of-type{
+          text-align: right;
+          display: inline-block;
+          width: 100px;
+        }
       }
     }
   }

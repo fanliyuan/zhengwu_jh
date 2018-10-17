@@ -129,15 +129,15 @@
           vm.detailTitleData.registerTime = data.datas.registerTime;
              if (data.datas.status == 0) {
 //               data.datas.status = '已拒绝'
-               vm.subscriptionData.status = '已拒绝';
+               vm.subscriptionData.status = '已拒绝 '+ data.datas.reviewTime;
              }
              if (data.datas.status == -1) {
 //               data.datas.status = '待授权'
-               vm.subscriptionData.status = '待授权';
+               vm.subscriptionData.status = '待授权 '+ data.datas.reviewTime;
              }
              if (data.datas.status == 1) {
 //               data.datas.status = '已通过'
-               vm.subscriptionData.status = '已通过';
+               vm.subscriptionData.status = '已通过 '+ data.datas.reviewTime;
              }
 
           vm.detailData = data.datas;
