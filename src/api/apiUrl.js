@@ -31,12 +31,14 @@ export default {
   //资源管理
   resourceAdd: { url: '/api/v2/zhengwu/swap/resource/db', method: 'post' }, //新建mysql资源实体
   resourceFilesAdd: { url: '/api/v2/zhengwu/swap/resource/folder', method: 'post' }, //新建文件资源实体
+  resourceFtpAdd: { url: '/api/v2/zhengwu/swap/resource/ftp', method: 'post' }, //新建FTP资源实体
   resourceConnect: { url: '/api/v2/zhengwu/swap/resource/connect', method: 'get'}, //连接测试
   resourceList: { url: '/api/v2/zhengwu/swap/resource/itemList', method: 'get' }, //资源实体列表
   resourceDelete: { url: '/api/v2/zhengwu/swap/resource/item', method: 'delete' }, //删除资源实体
   resourceDetail: { url: 'api/v2/zhengwu/swap/resource/db', method: 'get' }, //资源详情
   resourceUpdate: { url: '/api/v2/zhengwu/swap/resource/db', method: 'put' }, //修改资源
   resourceMysqlColumn: { url: '/api/v2/zhengwu/swap/resource/mysql/column', method: 'get' }, //获取mysql指定库表的字段list
+  resourceFtpData: { url: '/api/v2/zhengwu/swap/resource/ftp/data', method: 'get' }, //获取FTP指定库表的数据list
   resourceMysqlData: { url: '/api/v2/zhengwu/swap/resource/mysql/data', method: 'get' }, //获取mysql指定库表的数据list
   resourceMysqlDb: { url: '/api/v2/zhengwu/swap/resource/mysql/db', method: 'get' }, //获取mysql的数据库list
   resourceMysqlTable: { url: '/api/v2/zhengwu/swap/resource/mysql/table', method: 'get' }, //获取mysql指定库的数据表list

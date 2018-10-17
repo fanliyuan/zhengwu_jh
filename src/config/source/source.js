@@ -23,6 +23,7 @@ class sourceOptions {
       apis: {
         addApi: 'resourceAdd',
         addFilesApi: 'resourceFilesAdd',
+        addFtpApi: 'resourceFtpAdd',
         deleteApi: 'resourceDelete',
         detailApi: 'resourceDetail',
         listApi: 'resourceList',
@@ -34,7 +35,8 @@ class sourceOptions {
         mysqlTableApi: 'resourceMysqlTable',
         mysqlStructApi: 'resourceMysqlStruct',
         fileUp: 'resourceFileUp',
-        fileDown: 'resourceFileDown'
+        fileDown: 'resourceFileDown',
+        ftpDataApi: 'resourceFtpData'
       },
       modalOpreation: false,
       modalWidgets: {},
@@ -46,6 +48,7 @@ class sourceOptions {
         currentDataBase: '',
         currentType: 'sql',
         fileNext: false,
+        ftpList: [],
         stepTwoName: '选择数据库',
         dataType: {
           '1-1': 'oracle',
@@ -107,21 +110,12 @@ class sourceOptions {
         },
         oldFormTimeObj:{},
         sqlObj: {
-          //name: '',
-          //summary: '',
-          //dbType: [1, 3],
           addr: '',
           port: '',
           username: '',
           password: '',
           alias: '',
-          //appsysName: '',
-          //createUnit: '',
-          //dbDescribe: '',
           dbName: '',
-          //dutyName: '',
-          //dutyPhone: '',
-          //dutyPosition: '',
           resourceType: '',
           structAddDtoList: [],
           tableName: '',
@@ -134,7 +128,12 @@ class sourceOptions {
           timeSet: ''
         },
         ftpObj: {
-
+          alias: '',
+          addr: '',
+          port: '',
+          username: '',
+          password: '',
+          ftpfileAddDtoList: []
         },
         filesObj: {
           fileAddDtoList: []
@@ -222,7 +221,66 @@ class sourceOptions {
           ]
         },
         ftpRuleObj: {
-
+          name: [
+            {
+              required: true,
+              message: '名称不能为空',
+              trigger: 'blur'
+            },
+            {
+              max: 20,
+              message: '名称长度不能大于20个字符'
+            }
+          ],
+          summary: [
+            {
+              required: true,
+              message: '摘要不能为空',
+              trigger: 'blur'
+            }
+          ],
+          dbType: [
+            {
+              required: true,
+              type: 'array',
+              message: '请选择数据类型',
+              trigger: 'change'
+            }
+          ],
+          addr: [
+            {
+              required: true,
+              message: '请输入FTP地址',
+              trigger: 'blur'
+            }
+          ],
+          port: [
+            {
+              required: true,
+              message: '请输入FTP端口',
+              trigger: 'blur'
+            }
+          ],
+          username: [
+            {
+              required: true,
+              message: '请输入FTP用户名',
+              trigger: 'blur'
+            }
+          ],
+          password: [
+            {
+              required: true,
+              message: '请输入FTP密码',
+              trigger: 'blur'
+            }
+          ],
+          dutyPhone: [
+            {
+              pattern: 11 && /^((13|14|15|17|18)[0-9]{1}\d{8})$/,
+              message: '请输入正确的手机号'
+            }
+          ]
         },
         filesRuleObj: {
           name: [
@@ -487,7 +545,173 @@ class sourceOptions {
             ]
           }
         ],
-        ftpWidgetsObj: [],
+        ftpWidgetsObj: [
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'name',
+            name: '名称',
+            placeholder: '请输入名称'
+          },
+          {
+            type: 'textarea',
+            disabled: false,
+            show: true,
+            word: 'textarea',
+            rows: 6,
+            prop: 'summary',
+            name: '摘要',
+            placeholder: '请输入描述'
+          },
+          {
+            type: 'selectCascader',
+            disabled: false,
+            show: true,
+            prop: 'dbType',
+            name: '类型',
+            placeholder: '请选择类型',
+            options: [
+              {
+                label: '关系型数据库',
+                value: 1,
+                children: [
+                  {
+                    value: 1,
+                    label: 'Oracle'
+                  },
+                  {
+                    value: 2,
+                    label: 'SQLserver'
+                  },
+                  {
+                    value: 3,
+                    label: 'MySQL'
+                  },
+                  {
+                    value: 4,
+                    label: 'Kingbase'
+                  },
+                  {
+                    value: 5,
+                    label: 'DM'
+                  }
+                ]
+              },
+              {
+                label: '半结构化存储',
+                value: 2,
+                disabled: false,
+                children: [
+                  {
+                    value: 1,
+                    label: 'FTP'
+                  },
+                  {
+                    value: 2,
+                    label: 'SFTP'
+                  },
+                  {
+                    value: 3,
+                    label: '本地文件'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'addr',
+            name: 'FTP地址',
+            placeholder: '请输入FTP地址'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'port',
+            name: 'FTP端口',
+            placeholder: '请输入FTP端口'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'username',
+            name: '用户名',
+            placeholder: '请输入FTP用户名'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'password',
+            prop: 'password',
+            name: '密码',
+            placeholder: '请输入FTP密码'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'createUnit',
+            name: '建库单位',
+            placeholder: '请输入建库单位'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'appsysName',
+            name: '应用系统名称',
+            placeholder: '请输入应用系统名称'
+          },
+          {
+            type: 'textarea',
+            disabled: false,
+            show: true,
+            word: 'textarea',
+            rows: 6,
+            prop: 'dbDescribe',
+            name: '数据库描述',
+            placeholder: '请输入数据库描述'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyName',
+            name: '负责人姓名',
+            placeholder: '请输入负责人姓名'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPhone',
+            name: '负责人手机号',
+            placeholder: '请输入负责人手机号'
+          },
+          {
+            type: 'input',
+            disabled: false,
+            show: true,
+            word: 'text',
+            prop: 'dutyPosition',
+            name: '负责人职位',
+            placeholder: '请输入负责人职位'
+          }
+        ],
         filesWidgetsObj: [
           {
             type: 'input',

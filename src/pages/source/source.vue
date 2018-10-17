@@ -66,6 +66,7 @@
             </Upload>
           </FormItem>
         </Form>
+        <Tree :data="modalData.ftpList" :load-data="loadData" @on-check-change="checkTree" @on-select-change="selectTree" show-checkbox v-if="modalData.current === 1 && modalData.currentType === 'ftp'"></Tree>
         <Form class="formValidate" ref="formValidateTime" :model="modalData.formTimeObj" :rules="modalData.ruleTimeObj" :label-width="120" :show-message="true" v-show="modalData.current === 2">
           <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgetsTime" v-show="item.show">
             <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="modalData.formTimeObj[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
@@ -92,7 +93,7 @@
         <div class="btn-group">
           <Button type="info" @click="pre" v-if="modalData.current >= 1">上一步</Button>
           <Button type="primary" @click="next" v-if="modalData.current <= 2 && modalData.currentType === 'sql'" :disabled="modalData.current === 1 && modalData.formObj.tableName === ''">下一步</Button>
-          <Button type="primary" @click="next" v-if="modalData.current <= 2 && modalData.currentType === 'file'" :disabled="modalData.current === 1 && !modalData.fileNext">下一步</Button>
+          <Button type="primary" @click="next" v-if="modalData.current <= 2 && modalData.currentType !== 'sql'" :disabled="modalData.current === 1 && !modalData.fileNext">下一步</Button>
           <Button type="primary" @click="ok" v-if="modalData.current === 3">提交</Button>
           <Button type="error" @click="cancel('formValidate')">取消</Button>
         </div>
@@ -294,6 +295,13 @@
               vm.modalData.ruleObj = vm.modalData.filesRuleObj;
               vm.modalData.widgets = vm.modalData.filesWidgetsObj;
               vm.deepCopy(vm.modalData.filesObj, vm.modalData.formObj);
+            } else {
+              vm.modalData.stepTwoName = '选择文件';
+              vm.modalData.currentType = 'ftp';
+              vm.modalData.apiUrl = vm.apis.addFtpApi;
+              vm.modalData.ruleObj = vm.modalData.ftpRuleObj;
+              vm.modalData.widgets = vm.modalData.ftpWidgetsObj;
+              vm.deepCopy(vm.modalData.ftpObj, vm.modalData.formObj);
             }
             break;
         }
@@ -424,7 +432,7 @@
         if (vm.modalData.current === 0) {
           vm.$refs['formValidate'].validate((valid) => {
             if (valid) {
-              if (vm.modalData.currentType === 'sql') {
+              if (vm.modalData.currentType !== 'file') {
                 vm.$Message.info('连接中！');
                 let connectInit = {
                   type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
@@ -437,7 +445,11 @@
                   if (data.data) {
                     vm.modalData.currentDataBase = data.data;
                     vm.$Message.success('连接成功！');
-                    vm.initSqlDbList(vm.modalData.currentDataBase);
+                    if (vm.modalData.currentType === 'sql') {
+                      vm.initSqlDbList(vm.modalData.currentDataBase);
+                    } else {
+                      vm.initFtpData(vm.modalData.currentDataBase, '/')
+                    }
                     vm.modalData.current += 1;
                   } else {
                     vm.$Message.error('连接失败！');
@@ -523,6 +535,147 @@
         }).catch((error) => {
           vm.$Loading.error();
         });
+      },
+      //初始化FTP数据
+      initFtpData (alias, path) {
+        let vm = this;
+        let initData = {
+          alias: alias,
+          path: path
+        };
+        vm.api[vm.apis.ftpDataApi](initData).then((data) => {
+          for (let i = 0, len = data.datas.length; i < len; i++) {
+            if (data.datas[i].open) {
+              vm.modalData.ftpList.push({
+                title: data.datas[i].name,
+                loading: false,
+                children: [],
+                open: data.datas[i].open,
+                path: data.datas[i].path,
+                type: data.datas[i].type
+              });
+            } else {
+              vm.modalData.ftpList.push({
+                title: data.datas[i].name,
+                children: [],
+                open: data.datas[i].open,
+                path: data.datas[i].path,
+                type: data.datas[i].type
+              });
+            }
+          }
+          vm.deepTree(vm.modalData.ftpList);
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      //异步加载FTP数据
+      loadData (item, callback) {
+        let vm = this;
+        let initData = {
+          alias: vm.modalData.currentDataBase,
+          path: item.path + item.title + '/'
+        };
+        let childrenData = [];
+        vm.api[vm.apis.ftpDataApi](initData).then((data) => {
+          for (let i = 0, len = data.datas.length; i < len; i++) {
+            if (data.datas[i].open) {
+              childrenData.push({
+                title: data.datas[i].name,
+                loading: false,
+                children: [],
+                open: data.datas[i].open,
+                path: data.datas[i].path,
+                type: data.datas[i].type
+              });
+            } else {
+              childrenData.push({
+                title: data.datas[i].name,
+                children: [],
+                open: data.datas[i].open,
+                path: data.datas[i].path,
+                type: data.datas[i].type
+              });
+            }
+          }
+          vm.deepTree(childrenData);
+          callback(childrenData);
+        }).catch((error) => {
+          vm.$Loading.error();
+        })
+      },
+      checkTree (value) {
+        console.log(value)
+      },
+      selectTree (value) {
+        console.log(value)
+      },
+      //递归树
+      deepTree (arr) {
+        let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          if (arr[i].open) {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-folder-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  style: {
+                    backgroundColor: '#ffffff'
+                  }
+                }, data.title)
+              ])
+            };
+          } else {
+            arr[i].render = (h, { root, node, data }) => {
+              return h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-paper-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', {
+                  attrs: {
+                    id: 'treeNode' + node.nodeKey
+                  },
+                  style: {
+                    cursor: 'pointer'
+                  },
+                  on: {
+                    click: () => {
+//                      vm.filterData.filiterObj = vm.deepCopy(vm.filterData.defaultFiliterObj, vm.filterData.filiterObj);
+//                      vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
+//                      vm.initTable(data.id);
+//                      vm.currentTreeNode = node.nodeKey;
+//                      for (let i = 0, len = root.length; i < len; i++) {
+//                        if (root[i].nodeKey === node.nodeKey) {
+//                          document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#1890ff';
+//                          document.getElementById('treeNode' + root[i].nodeKey).style.color = '#ffffff';
+//                        } else {
+//                          if (document.getElementById('treeNode' + root[i].nodeKey)) {
+//                            document.getElementById('treeNode' + root[i].nodeKey).style.backgroundColor = '#ffffff';
+//                            document.getElementById('treeNode' + root[i].nodeKey).style.color = '#515a6e';
+//                          } else {
+//                            continue
+//                          }
+//                        }
+//                      }
+                    }
+                  }
+                }, data.title)
+              ])
+            }
+          }
+        }
       },
       //初始化数据库
       initSqlDbList (alias) {

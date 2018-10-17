@@ -300,7 +300,7 @@
             vm.loading = false;
             vm.$nextTick(() => {
               vm.loading = true;
-          });
+            });
           });
           } else {
             vm.$Message.error('验证失败');
