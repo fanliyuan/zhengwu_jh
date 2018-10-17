@@ -171,11 +171,23 @@ class resourceBazaarOptions {
             render: (h, params) => {
               let children = [];
               let statusNames = "";
+              let view = {
+                props: {
+                  type: 'primary'
+                },
+                style: {
+                  marginRight: '5px',
+                  color:'#3fa9ff',
+                  cursor:'pointer'
+                },
+                on: {
+                  click: () => {
+                      vm.auditingDetail(params.row.dsId,params.row.subId,params.row.subscriberId,params.row.id);
+                  }
+                }
+              };
               if (params.row.status === -1 ) {
                 statusNames = '授权';
-              }
-              else {
-                statusNames = '查看';
               }
               let edit = {
                 props: {
@@ -191,17 +203,13 @@ class resourceBazaarOptions {
                     if ( statusNames == '授权') {
                       vm.auditing(params.row.dsId,params.row.subId,params.row.subscriberId);
                     } else {
-                      vm.auditingDetail(params.row.dsId,params.row.subId,params.row.subscriberId);
+                      vm.auditingDetail(params.row.dsId,params.row.subId,params.row.subscriberId,params.row.id);
                     }
-
-
-                      //vm.unSubscribe(params.row.id,statusNames);
-
-
                   }
                 }
               };
               children.push(h('span', edit, statusNames));
+              children.push(h('span', view, '查看'));
               return h('div', children);
             }
           }

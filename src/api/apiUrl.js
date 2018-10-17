@@ -69,6 +69,7 @@ export default {
   subscribeResourceDetail: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceDetails', method: 'get' }, //资源详情
   subscribeResourceList: { url: '/api/v2/zhengwu/swap/resourceBazaar/resourceItemList', method: 'get' }, //资源详情列表
   resourceTaskInfo: { url: 'api/v2/zhengwu/swap/resourceBazaar/resourceTaskInfo', method: 'get' }, //任务发布模式、
+  mountResourceId: { url: 'api/v2/zhengwu/swap/resourceBazaar/getMountResourceId', method: 'get' }, //查询实体资源id、
  // downLoadFile: { url: '/api/v2/zhengwu/swap/resource/{type}/{id}/review', method: 'get' }, //下载文件
 
   //所有订阅

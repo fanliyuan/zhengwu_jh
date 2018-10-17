@@ -131,9 +131,9 @@
       },
 
       //审核详情
-      auditingDetail: function (dsId,subId,subscriberId) {
+      auditingDetail: function (dsId,subId,subscriberId,rowId) {
         let vm = this;
-        let id = dsId+"&"+subId+"&"+subscriberId
+        let id = dsId+"&"+subId+"&"+subscriberId + "&" + rowId;
         vm.$router.push({'path': '/subscriptionModeration/auditDetail/' +id});
       }
     }
