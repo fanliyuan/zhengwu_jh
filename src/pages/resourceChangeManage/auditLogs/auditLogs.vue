@@ -78,10 +78,10 @@
   }
   .main-content{
     .infoCard{
-      margin: 20px 200px;
+      margin: 20px auto;
       clear: both;
       border: none!important;
-      padding-left: 150px;
+      display: table;
     }
     .infoList{
       li{
