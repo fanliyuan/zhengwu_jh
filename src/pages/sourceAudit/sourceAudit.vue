@@ -295,6 +295,7 @@
                 vm.$Loading.finish();
               } else {
                 vm.$Message.info('审核失败！');
+                vm.$Loading.finish();
               }
             }).catch((error) => {
 
