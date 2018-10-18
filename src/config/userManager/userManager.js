@@ -339,13 +339,8 @@ class userManagerOptions {
                 },
                 on: {
                   click: () => {
-                    vm.$Modal.confirm({
-                      title: '信息',
-                      content: '是否删除选择的信息？',
-                      onOk: function () {
-                        vm.deleteItem(params.row.id);
-                      }
-                    });
+                    vm.deleteItem(params.row.id);
+
                   }
                 }
               };
