@@ -7,8 +7,7 @@
  */
 import axios from 'axios'
 import { Notice } from 'iview';
-console.log(location);
-console.log(process.env);
+
 let root;
 let rootUrl;
 if (process.env.NODE_ENV === 'development') {
@@ -57,14 +56,7 @@ const err_check = (code, msg, data) => {
     setTimeout(function () {
       window.location.href = rootUrl;
     }, 1000);
-  } else if (code === 500) {
-    Notice.warning({
-      title: '',
-      desc: msg,
-      duration: 5
-    });
-    return false
-  } else if (code === 404) {
+  } else {
     Notice.warning({
       title: '',
       desc: msg,
@@ -106,9 +98,9 @@ const sendApiInstance = (method, url, params, config = {}) => {
     error => {
       Notice.warning({
         title: '',
-        desc: error.response.data.message,
+        desc: '请求服务器出错！',
         duration: 5
-      })
+      });
       return Promise.resolve(error).catch(res => {
         console.log(res)
       })

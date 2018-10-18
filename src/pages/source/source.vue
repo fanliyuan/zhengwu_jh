@@ -66,7 +66,7 @@
             </Upload>
           </FormItem>
         </Form>
-        <Tree :data="modalData.ftpList" :load-data="loadData" @on-check-change="checkTree" @on-select-change="selectTree" show-checkbox v-if="modalData.current === 1 && modalData.currentType === 'ftp'"></Tree>
+        <Tree :data="modalData.ftpList" :load-data="loadData" @on-check-change="checkTree" show-checkbox v-if="modalData.current === 1 && modalData.currentType === 'ftp'"></Tree>
         <Form class="formValidate" ref="formValidateTime" :model="modalData.formTimeObj" :rules="modalData.ruleTimeObj" :label-width="120" :show-message="true" v-show="modalData.current === 2">
           <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgetsTime" v-show="item.show">
             <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="modalData.formTimeObj[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum">
@@ -336,15 +336,17 @@
       uploadFileSuccess (response, file, fileList) {
         let vm = this;
         let fileInfo = response.result.data;
-        vm.$set(vm.modalData.formObj.fileAddDtoList, vm.modalData.formObj.fileAddDtoList.length, {
-          uid: file.uid,
-          name: fileInfo.name,
-          size: fileInfo.size,
-          type: fileInfo.type,
-          uploadTime: fileInfo.uploadTime,
-          url: fileInfo.url
-        });
-        vm.modalData.fileNext = true;
+        if (fileInfo) {
+          vm.$set(vm.modalData.formObj.fileAddDtoList, vm.modalData.formObj.fileAddDtoList.length, {
+            uid: file.uid,
+            name: fileInfo.name,
+            size: fileInfo.size,
+            type: fileInfo.type,
+            uploadTime: fileInfo.uploadTime,
+            url: fileInfo.url
+          });
+          vm.modalData.fileNext = true;
+        }
       },
       //上传本地文件-删除
       removeFile (file, fileList) {
@@ -448,7 +450,7 @@
                     if (vm.modalData.currentType === 'sql') {
                       vm.initSqlDbList(vm.modalData.currentDataBase);
                     } else {
-                      vm.initFtpData(vm.modalData.currentDataBase, '/')
+                      vm.initFtpData(vm.modalData.currentDataBase, '/');
                     }
                     vm.modalData.current += 1;
                   } else {
@@ -506,6 +508,7 @@
           case 'file':
             break;
           case 'ftp':
+            vm.modalData.formObj.alias = vm.modalData.currentDataBase;
             break;
         }
         vm.modalData.formObj.collectEditDto = vm.modalData.formTimeObj;
@@ -543,6 +546,7 @@
           alias: alias,
           path: path
         };
+        vm.modalData.ftpList = [];
         vm.api[vm.apis.ftpDataApi](initData).then((data) => {
           for (let i = 0, len = data.datas.length; i < len; i++) {
             if (data.datas[i].open) {
@@ -605,16 +609,59 @@
         })
       },
       checkTree (value) {
-        console.log(value)
+        let vm = this;
+        vm.modalData.formObj.ftpfileAddDtoList = [];
+        for (let i = 0, len = value.length; i < len; i++) {
+          delete value[i].notPost;
+        }
+        vm.deepNodes(value);
+        vm.setNodes(value);
       },
-      selectTree (value) {
-        console.log(value)
+      //设置需要传输的节点
+      setNodes (arr) {
+        let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          if (!arr[i].notPost) {
+            vm.modalData.formObj.ftpfileAddDtoList.push({
+              name: arr[i].title,
+              open: arr[i].open,
+              path: arr[i].path,
+              type: arr[i].type
+            });
+          }
+        }
+        if (vm.modalData.formObj.ftpfileAddDtoList.length > 0) {
+          vm.modalData.fileNext = true;
+        } else {
+          vm.modalData.fileNext = false;
+        }
+      },
+      //递归传输节点
+      deepNodes (arr) {
+        let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          if (arr[i].children.length > 0) {
+            vm.deleteChildren(arr[i].title, arr);
+            vm.deepNodes(arr[i].children);
+          }
+        }
+      },
+      //删除子节点
+      deleteChildren (title, arr) {
+        let vm = this;
+        for (let i = 0, len = arr.length; i < len; i++) {
+          let path = arr[i].path.substr(arr[i].path.lastIndexOf('/', arr[i].path.lastIndexOf('/') - 1) + 1);
+          let pathStr = path.substring(0, path.length - 1);
+          if (pathStr === title) {
+            arr[i].notPost = true;
+          }
+        }
       },
       //递归树
       deepTree (arr) {
         let vm = this;
         for (let i = 0, len = arr.length; i < len; i++) {
-          if (arr[i].open) {
+          if (arr[i].type === 'folder') {
             arr[i].render = (h, { root, node, data }) => {
               return h('span', [
                 h('Icon', {
