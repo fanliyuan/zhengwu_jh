@@ -102,14 +102,15 @@ class userManagerOptions {
               trigger: 'blur'
             },
             {
-              max: 24,
-              min: 6,
+           /*   max: 24,
+              min: 6,*/
+              pattern: /^[0-9A-Za-z]{6,24}$/,
               message: '密码为6-24位英文或数字'
             },
-            {
-              pattern:/[^\d]/g,
-              message: '密码为纯数字时不可连续'
-            }
+            // {
+            //   pattern:/[^\d]/g,
+            //   message: '密码为纯数字时不可连续'
+            // }
           ],
           name: [
             {
@@ -166,6 +167,7 @@ class userManagerOptions {
             placeholder: '请输入密码',
             readonly:true,
             focues: true,
+            showPwdError: false,
             random: true,
             copy: true
           },

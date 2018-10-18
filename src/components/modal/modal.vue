@@ -11,10 +11,11 @@
       <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="(item, index) in formWidgets" v-show="item.show">
         <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && !item.focues">
         </Input>
-        <Input class="formValidate-widget" size="large" :readonly="item.readonly" @on-focus="changeType(item.prop)" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && item.focues">
+        <Input class="formValidate-widget" size="large" :readonly="item.readonly" @on-blur="changeVal(item.prop)" @on-focus="changeType(item.prop)" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && item.focues">
         </Input>
         <a v-if="item.random" style="margin-right: 10px" @click="random(item.prop)">随机生成</a>
         <a v-if="item.copy" @click="copy(item.prop)">复制</a>
+        <div class="ivu-form-item-error-tip" v-if="item.focues && showPwdError">密码不能为连续的数字</div>
         <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" number v-if="item.type === 'input' && item.isNum === true">
         </Input>
         <Input class="formValidate-widget" size="large" :rows="item.rows" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'textarea'">
@@ -91,6 +92,7 @@
         selfName: 'ConModal',
         loading: true,
         showError: true,
+        showPwdError: false,
         uploadNames: {},
         formValidate: {},
         ruleValidate: this.$props.widgets.ruleObj,
@@ -156,10 +158,38 @@
         }
         return newObj;
       },
+      changeVal (prop) {
+        let vm = this;
+        let re = /^[0-9]{6,24}$/g;
+        let t1,t2;
+        let lineFlag = false;
+        let pwd = vm.formValidate[prop];
+        if (re.test(vm.formValidate[prop])) {
+          for (let i = 0; i < vm.formValidate[prop].length-1; i++ ) {
+            t1 = pwd.charCodeAt(i);
+            t2 = pwd.charCodeAt(i+1);
+            if (t2 == t1 + 1 || t2 == t1 - 1) {
+              lineFlag = true;
+              continue;
+            } else {
+              lineFlag = false;
+              break;
+            }
+          }
+          if (lineFlag) {
+            vm.showPwdError = true;
+           // alert("不允许输入连续的数字或字母，请重新输入！");
+            return;
+          } else {
+            vm.showPwdError = false;
+          }
+        }
+      },
       changeType (prop) {
         let vm = this;
         let input = document.getElementById(prop);
         input.removeAttribute("readonly");
+
       },
       random (prop) {
         let vm = this;
@@ -252,71 +282,82 @@
       },
       validateForm (name) {
         let vm = this;
-        vm.$refs[name].validate((valid) => {
-          if (valid) {
+          vm.$refs[name].validate((valid) => {
+            if (valid) {
 //            vm.$Message.success('验证通过, 提交中！');
-            if (vm.formValidate.targetPersons) {
-              delete vm.formValidate.targetPersons;
-            }
-            if (vm.formValidate.buildings) {
-              delete vm.formValidate.buildings;
-            }
-            if (vm.$props.widgets.apiUrl === 'catalogShareUpdate') {
-              vm.formValidate.id = vm.$props.widgets.currentId;
-              vm.formValidate.publishMode = vm.formValidate.publishMode.join(',');
-            }
-            vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
-              if (vm.$props.widgets.catalogId) {
-                vm.$parent.initTable(vm.$props.widgets.catalogId);
-              } else {
-                vm.$parent.initTable();
+              if (vm.formValidate.targetPersons) {
+                delete vm.formValidate.targetPersons;
               }
-              if (vm.formValidate.publishRate) {
-              vm.formWidgets.splice(7, 1);
-              vm.ruleValidate.timeSet.splice(0, 1);
-            }
-              if (data === "") {
-                vm.$refs.formValidate.resetFields();
-                vm.deepCopy(vm.oldFormValidate, vm.formValidate);
-                vm.$emit('modalStatus', false);
-                if (vm.title.indexOf("新增") != -1) {
-                  vm.$Message.success('新增成功');
-                }
-                if (vm.title.indexOf("修改") != -1) {
-                  vm.$Message.success('修改成功');
-                }
-              } else {
-                vm.loading = false;
-                vm.$emit('modalStatus', true);
+              if (vm.formValidate.buildings) {
+                delete vm.formValidate.buildings;
               }
+              if (vm.$props.widgets.apiUrl === 'catalogShareUpdate') {
+                vm.formValidate.id = vm.$props.widgets.currentId;
+                vm.formValidate.publishMode = vm.formValidate.publishMode.join(',');
+              }
+              vm.api[vm.$props.widgets.apiUrl](vm.formValidate).then((data) => {
+                if (vm.$props.widgets.catalogId) {
+                  vm.$parent.initTable(vm.$props.widgets.catalogId);
+                } else {
+                  vm.$parent.initTable();
+                }
+                if (vm.formValidate.publishRate) {
+                  vm.formWidgets.splice(7, 1);
+                  vm.ruleValidate.timeSet.splice(0, 1);
+                }
+                if (data === "") {
+                  vm.$refs.formValidate.resetFields();
+                  vm.deepCopy(vm.oldFormValidate, vm.formValidate);
+                  vm.$emit('modalStatus', false);
+                  if (vm.title.indexOf("新增") != -1) {
+                    vm.$Message.success('新增成功');
+                  }
+                  if (vm.title.indexOf("修改") != -1) {
+                    vm.$Message.success('修改成功');
+                  }
+                } else {
+                  vm.loading = false;
+                  vm.$emit('modalStatus', true);
+                }
 
-            for (let i in vm.uploadNames) {
-              if (i) {
-                vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
-              }
+                for (let i in vm.uploadNames) {
+                  if (i) {
+                    vm[i + 'UploadList'].splice(0, vm[i + 'UploadList'].length);
+                  }
+                }
+              }).catch((error) => {
+                vm.$Loading.error();
+                vm.loading = false;
+                vm.$nextTick(() => {
+                  vm.loading = true;
+                });
+              });
+            } else {
+              vm.$Message.error('验证失败');
+              vm.loading = false;
+              vm.$nextTick(() => {
+                vm.loading = true;
+              });
             }
-          }).catch((error) => {
-              vm.$Loading.error();
-            vm.loading = false;
-            vm.$nextTick(() => {
-              vm.loading = true;
-            });
           });
-          } else {
-            vm.$Message.error('验证失败');
-            vm.loading = false;
-            vm.$nextTick(() => {
-             vm.loading = true;
-      });
-      }
-      });
+
       },
       ok (name) {
         let vm = this;
         if (vm.$refs['ueditorVal']) {
           vm.formValidate[vm.ueName] = vm.$refs['ueditorVal'][0].editorVal;
         }
-       vm.validateForm(name);
+        if (vm.showPwdError === false) {
+          vm.validateForm(name);
+          vm.loading = false;
+        } else if(vm.showPwdError){
+          vm.$Message.error("密码验证未通过");
+          vm.loading = false;
+          vm.$nextTick(() => {
+            vm.loading = true;
+          });
+        }
+
       },
       cancel () {
         let vm = this;
