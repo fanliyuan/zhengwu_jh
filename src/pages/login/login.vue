@@ -96,6 +96,8 @@
                 sessionStorage.setItem('authority', res.data.roleEnNames[0]);
                 this.$router.push({'path': '/nodeOverview'});
               }
+            }).catch((error) => {
+              vm.$Loading.error();
             });
           } else {
             this.$Message.error('请填写完整的登录信息!');
