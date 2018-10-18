@@ -24,6 +24,14 @@
               <Option v-for="item in exportEncodeFormat" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
           </FormItem>
+     <!--     <FormItem label="导出编码格式" prop="checkPwd">
+            <Select v-model="formValidate.checkPwd">
+              <Option value="UTF-8">UTF-8</Option>
+              <Option value="GBK">GBK</Option>
+
+            &lt;!&ndash;  <Option v-for="item in exportEncodeFormat" :value="item.value" :key="item.value">{{item.label}}</Option>&ndash;&gt;
+            </Select>
+          </FormItem>-->
           <FormItem>
             <Button type="primary" @click="handleSubmit('formValidate')">开始导出</Button>
             <Button @click="handleReset('formValidate')" style="margin-left: 8px">返回</Button>
@@ -76,10 +84,6 @@
         let vm = this;
         vm.$refs[name].validate((valid) => {
           if (valid) {
-            // vm.$Message.success('密码验证通过');
-            if (vm.formValidate.checkPwd) {
-              delete vm.formValidate.checkPwd;
-            }
             let id = vm.$route.params.id;
             let ID = {
               resourceId: id

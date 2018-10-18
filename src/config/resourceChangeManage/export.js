@@ -73,30 +73,20 @@ class catalogMountOptions {
       showErrorPwd: false,
       tips: '',
       ruleValidate: {
+
         oldPwd: [
-          { required: true, message: '导出格式不能为空', trigger: 'blur' }
-        ],
-/*        newPwd: [
-          {
-            required: true,
-            message: '新密码不能为空',
-            trigger: 'blur'
-          },
-          {
-            max: 24,
-            min: 6,
-            message: '密码为6-24位英文或数字'
-          },
-          {
-            pattern:/[^\d]/g,
-            message: '密码为纯数字时不可连续'
+          { required: true,
+            message: '导出格式不能为空', trigger: 'change',
+            // type:'number'
           }
-        ],*/
+        ],
         checkPwd: [
           {
             required: true,
             message: '导出编码格式不能为空',
-            trigger: 'blur' }
+            trigger: 'change',
+            type:'string'
+          }
         ],
 
       },
