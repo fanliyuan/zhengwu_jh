@@ -17,7 +17,7 @@
             </Select>
           </FormItem>
           <FormItem label="导出文件名" prop="newPwd">
-            <Input v-model="formValidate.newPwd" placeholder="请输入文件名" type="password"></Input>
+            <Input v-model="formValidate.newPwd" placeholder="请输入文件名" type="text"></Input>
           </FormItem>
           <FormItem label="导出编码格式" prop="checkPwd">
             <Select v-model="formValidate.checkPwd">
