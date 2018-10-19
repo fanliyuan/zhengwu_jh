@@ -21,6 +21,7 @@
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="填写目录资源内容"></Step>
           <Step title="编辑信息项"></Step>
+          <Step title="完成"></Step>
         </Steps>
         <Form class="formValidate" ref="formValidate" :model="modalData.formObj" :rules="modalData.ruleObj" :label-width="120" :show-message="true" v-show="modalData.current === 0">
           <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="item in modalData.widgets" v-show="item.show">
@@ -45,11 +46,16 @@
         <!--<div class="cl pages" v-show="modalData.current === 1">-->
           <!--<Page class-name="tablePager" :total="modalData.itemPageData.total" :page-size="modalData.itemPageData.pageSize" show-total @on-change="changeDataTablePage" :current="modalData.itemPageData.currentPage"></Page>-->
         <!--</div>-->
+        <div class="infoComplete" v-show="modalData.current === 2">
+          <Icon class="icon-complete" type="ios-checkmark-circle" />
+          <p>提交成功</p>
+        </div>
         <div class="btn-group">
           <Button type="primary" @click="next" v-if="modalData.current === 0">下一步</Button>
           <Button type="info" @click="pre" v-if="modalData.current === 1">上一步</Button>
           <Button type="primary" @click="ok" v-if="modalData.current === 1">提交</Button>
-          <Button type="error" @click="cancel('formValidate')">取消</Button>
+          <Button type="error" @click="cancel('formValidate')" v-if="modalData.current < 2">取消</Button>
+          <Button type="error" @click="close" v-if="modalData.current === 2">关闭</Button>
         </div>
       </Modal>
       <ModalConTent :options="modalShareOpreation" :widgets="modalShareWidgets" @modalStatus="changeModal"></ModalConTent>
@@ -328,6 +334,12 @@
         let vm = this;
         vm.modalData.current = 0;
       },
+      //关闭
+      close () {
+        let vm = this;
+        vm.modalOpreation = false;
+        vm.modalData.current = 0;
+      },
       //提交
       ok () {
         let vm = this;
@@ -346,12 +358,11 @@
           vm.$Loading.finish();
           vm.$Message.success('提交成功！');
           vm.initTable(vm.catalogId);
-          vm.modalOpreation = false;
           vm.$refs.formValidate.resetFields();
           vm.deepCopy(vm.modalData.oldFormObj, vm.modalData.formObj);
           delete vm.modalData.formObj.ID;
           vm.modalData.itemTableData.tableList = [];
-          vm.modalData.current = 0;
+          vm.modalData.current = 2;
           vm.modalData.currentId = '';
         }).catch((error) => {
           vm.$Loading.error();
@@ -525,5 +536,15 @@
   }
   .hiddenInput{
     display: none;
+  }
+  .infoComplete{
+    text-align: center;
+    .icon-complete{
+      font-size: 100px;
+      color: #52c41a;
+    }
+    p{
+      font-size: 24px;
+    }
   }
 </style>
