@@ -56,15 +56,9 @@ const err_check = (code, msg, data) => {
     setTimeout(function () {
       window.location.href = rootUrl;
     }, 1000);
-  } else {
-    Notice.warning({
-      title: '',
-      desc: msg,
-      duration: 5
-    });
-    return false
   }
- // return false
+
+ return false
 }
 
 const sendApiInstance = (method, url, params, config = {}) => {
@@ -92,13 +86,13 @@ const sendApiInstance = (method, url, params, config = {}) => {
       if (err_check(code, msg, data)) {
         return Promise.resolve(data)
       } else {
-        return Promise.reject(data)
+        return Promise.resolve(data)
       }
     },
     error => {
       Notice.warning({
         title: '',
-        desc: '请求服务器出错！',
+        desc: error.response.data.message,
         duration: 5
       });
       return Promise.resolve(error).catch(res => {

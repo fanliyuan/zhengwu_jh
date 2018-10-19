@@ -317,7 +317,9 @@
                   }
                 } else {
                   vm.loading = false;
-                  vm.$emit('modalStatus', true);
+                  vm.$nextTick(() => {
+                    vm.loading = true;
+                  });
                 }
 
                 for (let i in vm.uploadNames) {
