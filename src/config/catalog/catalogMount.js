@@ -52,7 +52,8 @@ class catalogMountOptions {
         endTime: '',
         status: 1,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        type: vm.$route.query.mountType
       },
       tableData: {
         loading: true,
@@ -85,6 +86,7 @@ class catalogMountOptions {
         pageData: {
           total: 0
         },
+        currentPage: 1,
         columns: [
           {
             title: 'ID',

@@ -26,7 +26,7 @@
       <Modal footer-hide data-parent="sParent" :width="900" v-model="modalOpreation" :closable="false" title="选择要挂接的资源" :mask-closable="false">
         <FilterForm :options="filterData"></FilterForm>
         <Table class="tableList" :loading="sourceTableData.loading" ref="sourceTableData" highlight-row @on-current-change="selectTable" :columns="sourceTableData.columns" :data="sourceTableData.tableList"></Table>
-        <Pager :options="sourceTableData.pageData.total"></Pager>
+        <Page class-name="tablePager" :total="sourceTableData.pageData.total" show-total @on-change="changeTablePage" :current="sourceTableData.currentPage"></Page>
         <div class="btn-group">
           <Button @click="cancel">取消</Button>
           <Button type="primary" @click="ok" :disabled="modalOk">确定</Button>
@@ -71,10 +71,9 @@
 
         })
       },
-      initTable: function (type) {
+      initTable: function () {
         let vm = this;
         vm.sourceTableData.loading = true;
-        vm.initData.type = type;
         vm.api[vm.apis.listApi](vm.initData).then((data) => {
           vm.sourceTableData.tableList = data.datas;
           vm.sourceTableData.pageData.total = data.totalCounts;
@@ -82,6 +81,12 @@
         }).catch((error) => {
 
         })
+      },
+      changeTablePage (page) {
+        let vm = this;
+        vm.initData.pageNum = page;
+        vm.sourceTableData.currentPage = page;
+        vm.initTable();
       },
       //初始化资源详情
       view: function () {
@@ -150,7 +155,7 @@
       //选择资源
       selectSource () {
         let vm = this;
-        vm.initTable(vm.$route.query.mountType);
+        vm.initTable();
         vm.modalOpreation = true;
       },
       //选择表
@@ -166,11 +171,15 @@
           vm.initStruct();
         }
         vm.modalOpreation = false;
+        vm.sourceTableData.currentPage = 1;
+        vm.initData.pageNum = 1;
       },
       cancel () {
         let vm = this;
         vm.modalOpreation = false;
         vm.modalOk = true;
+        vm.sourceTableData.currentPage = 1;
+        vm.initData.pageNum = 1;
       },
       //保存映射
       edit () {
