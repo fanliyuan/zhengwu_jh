@@ -32,11 +32,11 @@
           </li>
 
           <li class="publish">
-           发布模式： <Input class="formValidate-widget" size="large" disabled  v-model="pubMode" placeholder="发布模式"  autocomplete="off" >
+           发布模式： <Input class="formValidate-widget" size="large" disabled  v-model="pubMode"   autocomplete="off" >
           </Input>
           </li>
           <li class="publish">
-            发布频率： <Input class="formValidate-widget" size="large"  disabled v-model="pubfreQuency" placeholder="发布频率"  autocomplete="off" >
+            发布频率： <Input class="formValidate-widget" size="large"  disabled v-model="pubfreQuency"  autocomplete="off" >
             </Input>
           </li>
           <li class="publish">
