@@ -43,6 +43,8 @@ class catalogItemOptions {
         downLoadFileApi: 'downLoadFile',
         detailsApi: 'subscribeResourceDetail'
       },
+      showClass: 0,
+      operateName: '结构',
       detailData: {
         dbName: '',
         dbType: '',
@@ -92,16 +94,15 @@ class catalogItemOptions {
             title: '操作',
             key: 'operate',
             className: 'operateStyle',
-            render: (h, params) => {
-              let children = [];
+            render: (h,params) => {
+             let children = [];
               let audit;
               let view = {
                 props: {
                   type: 'primary'
                 },
                 'class': {
-                  foo: true,
-                  active: false,
+                  active: vm.showClass == params.index && vm.operateName === "浏览",
                 },
                 style: {
                   marginRight: '5px',
@@ -110,36 +111,16 @@ class catalogItemOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view("浏览",params.row.name);
+                    vm.view("浏览",params.row.name,params.index);
                   }
                 }
               };
-              if (params.index === 0) {
                 audit = {
                   props: {
                     type: 'primary'
                   },
                   'class': {
-                    foo: true,
-                    active: true,
-                  },
-                 /* style: {
-
-                  },*/
-                  on: {
-                    click: () => {
-                      vm.view("结构",params.row.name);
-                    }
-                  }
-                };
-              } else {
-                audit = {
-                  props: {
-                    type: 'primary'
-                  },
-                  'class': {
-                    foo: true,
-                    active: false,
+                    active: vm.showClass === params.index && vm.operateName === "结构",
                   },
                   style: {
                     marginRight: '5px',
@@ -148,16 +129,15 @@ class catalogItemOptions {
                   },
                   on: {
                     click: () => {
-                      vm.view("结构",params.row.name);
+                      vm.view("结构",params.row.name,params.index);
                     }
                   }
                 };
-              }
 
               children.push(h('span', view, '浏览'));
               children.push(h('span', audit, '结构'));
-
               return h('div', children);
+
             }
           }
         ]

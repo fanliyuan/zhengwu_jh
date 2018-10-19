@@ -158,18 +158,17 @@
 
       },
       //浏览
-      view: function (type,name) {
+      view: function (type,name,index) {
         let vm = this;
-        console.log(vm);
-        if (type == "浏览") {
+        vm.showClass = index;
+        vm.operateName = type;
+        if (type === "浏览") {
           vm.showStructureTable = false;
           vm.showViewTable = true;
-          //this.initTable();
           this.initTable2(name);
-        } else if (type == "结构") {
+        } else if (type === "结构") {
           vm.showStructureTable = true;
           vm.showViewTable = false;
-         // this.initTable();
           this.initTable1(name);
         }},
 
@@ -180,14 +179,23 @@
         let resourceId = paramsArr[0];
         let fileName;
         vm.$router.push({'path': '/resourceManagement/export/' +resourceId});
-//        fileName = paramsArr[6];
-//        console.log(resourceId + ":" + fileName);
+
       }
     }
   }
 </script>
 
-<style lang="less" scoped>
+<style>
+  .foo{
+    color:red;
+    margin-left: 30px;
+  }
+  .active{
+    color:silver!important;
+    margin-right: 5px;
+    /*color:'#3fa9ff',*/
+    cursor:pointer;
+  }
   .dataItem{
     margin-top: 90px;
   }
@@ -197,11 +205,11 @@
     margin-bottom: 10px;
   }
   .tableList1 span{
-    color:red!important;
+    /*color:red!important;*/
     cursor: default;
   }
   #tableList1 tr:nth-child(1)>td:last-of-type span:last-of-type{
-       color:red!important;
+       /*color:red!important;*/
        cursor: default;
   }
   .main-content{
@@ -221,17 +229,6 @@
       }
     }
   }
-  .operateStyle{
-    background: yellow!important;
-  }
-  .foo{
-    color:#3fa9ff;
-  }
-  .active1{
-    color:silver;
-    background: red;
-    margin-right: 5px;
-    /*color:'#3fa9ff',*/
-    cursor:pointer;
-  }
+
+
 </style>
