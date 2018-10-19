@@ -54,7 +54,7 @@
           </li>
         </ul>
       </Card>-->
-      <Modal :width="900" footer-hide v-model="modalOpreation" :closable="false" title="资源详情" :mask-closable="false">
+      <Modal :width="900" footer-hide v-model="modalOpreation" :closable="true" title="资源详情" :mask-closable="false" @on-cancel="cancel">
         <ul class="infoLists cl">
           <li>数据库：{{modalData.sqlTableTable.dbName}}</li>
           <li>数据表：{{modalData.sqlTableTable.tableName}}</li>

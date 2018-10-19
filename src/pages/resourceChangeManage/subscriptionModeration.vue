@@ -13,7 +13,7 @@
         <!--<opreationWidgets :options="opreationData"></opreationWidgets>-->
         <Table border class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
         <Pager :options="pageData.total"></Pager>
-        <Modal footer-hide  :width="600" v-model="modalOpreation" title="授权" :closable="false" :mask-closable="false">
+        <Modal footer-hide  :width="600" v-model="modalOpreation" title="授权" :closable="true" :mask-closable="false" @on-cancel="cancel">
             <RadioGroup v-model="codeReply" @on-change="changeRadio">
               <Radio :label=1 >通过</Radio>
               <Radio :label=0>拒绝</Radio>

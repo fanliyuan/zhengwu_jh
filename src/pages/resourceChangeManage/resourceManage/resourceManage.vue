@@ -69,7 +69,7 @@
           </Tab-pane>
 
         </Tabs>
-        <Modal :width="520" footer-hide v-model="modalOpreation" :closable="false" title="分类" :mask-closable="false">
+        <Modal :width="520" footer-hide v-model="modalOpreation" :closable="true" title="分类" :mask-closable="false" @on-cancel="cancel">
           <Tree class="tree-nodes" :data="treeData" @on-toggle-expand="expand"></Tree>
           <div class="btn-group">
             <Button type="error" @click="cancel">关闭</Button>
