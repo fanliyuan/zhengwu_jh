@@ -26,6 +26,8 @@ class sourceOptions {
         addFtpApi: 'resourceFtpAdd',
         deleteApi: 'resourceDelete',
         detailApi: 'resourceDetail',
+        detailFileApi: 'resourceFileDetail',
+        detailFtpApi: 'resourceFtpDetail',
         listApi: 'resourceList',
         editApi: 'resourceUpdate',
         connectApi: 'resourceConnect',
@@ -75,6 +77,24 @@ class sourceOptions {
           {
             name: '数据库表名',
             key: 'tableName'
+          },
+          {
+            name: '建库单位',
+            key: 'createUnit'
+          },
+          {
+            name: '摘要',
+            key: 'summary'
+          }
+        ],
+        infoFileAndFtpObj: [
+          {
+            name: '资源名称',
+            key: 'name'
+          },
+          {
+            name: '应用系统名称',
+            key: 'appsysName'
           },
           {
             name: '建库单位',
@@ -1030,7 +1050,17 @@ class sourceOptions {
                 },
                 on: {
                   click: () => {
-                    vm.view(params.row.id);
+                    switch (params.row.type) {
+                      case 'db':
+                        vm.view(params.row.id, vm.apis.detailApi, vm.modalData.infoObj);
+                        break;
+                      case 'file':
+                        vm.view(params.row.id, vm.apis.detailFileApi, vm.modalData.infoFileAndFtpObj);
+                        break;
+                      case 'ftp':
+                        vm.view(params.row.id, vm.apis.detailFtpApi, vm.modalData.infoFileAndFtpObj);
+                        break;
+                    }
                   }
                 }
               };

@@ -187,17 +187,17 @@
         vm.modalWidgets = vm.modalData;
         vm.modalOpreation = true;
       },
-      //查看
-      view: function (id) {
+      //查看sql资源详情
+      view: function (id, api, items) {
         let vm = this;
         let ID = {
           ID: id
         };
         vm.$Loading.start();
-        vm.api[vm.apis.detailApi](ID).then((data) => {
+        vm.api[api](ID).then((data) => {
           let content = `<ul>`;
-          for (let i = 0, len = vm.modalData.infoObj.length; i < len; i++ ) {
-            content += `<li>${vm.modalData.infoObj[i].name}：${data.data[vm.modalData.infoObj[i].key]}</li>`
+          for (let i = 0, len = items.length; i < len; i++ ) {
+            content += `<li>${items[i].name}：${data.data[items[i].key]}</li>`
           }
           content += `</ul>`;
           vm.$Modal.info({
