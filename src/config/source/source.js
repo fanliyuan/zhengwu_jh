@@ -1127,15 +1127,15 @@ class sourceOptions {
                 key: '全部'
               },
               {
-                value: 1,
+                value: -1,
                 key: '待审核'
               },
               {
-                value: 2,
+                value: 1,
                 key: '已通过'
               },
               {
-                value: 3,
+                value: 0,
                 key: '已拒绝'
               }
             ]
