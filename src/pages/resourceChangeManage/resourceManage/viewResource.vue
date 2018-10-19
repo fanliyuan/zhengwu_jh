@@ -9,7 +9,7 @@
   <div class="cl">
     <ContentTitle :options="title" :backbtn="isBackBtn" :exportBtn="isExportBtn"></ContentTitle>
     <div class="main-content cl">
-      <Card class="infoCard" :dis-hover="true">
+      <Card class="infoCard_f" :dis-hover="true">
         <ul class="infoList cl">
           <li v-for="(item, key) in detailNameData" :key="key">
             {{item}}：{{detailData[key]}}
@@ -212,22 +212,20 @@
        /*color:red!important;*/
        cursor: default;
   }
-  .main-content{
-    .infoCard{
+
+    .infoCard_f{
       margin: 20px;
     }
-    .infoList{
-      li{
+  .infoCard_f .infoList li{
         float: left;
         width: 25%;
         margin-bottom: 15px;
-        &:last-child{
-          display: block;
-          width: 100%;
-          margin-bottom: 0;
-        }
-      }
-    }
+
+  }
+  .infoCard_f .infoList li:last-child{
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
   }
 
 
