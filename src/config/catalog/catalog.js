@@ -1042,8 +1042,7 @@ class catalogOptions {
                                 },'关系型数据库'),
                                 h('Radio',{
                                   props:{
-                                    label: 'ftp',
-                                    disabled: true
+                                    label: 'ftp'
                                   }
                                 },'ftp'),
                                 h('Radio',{
