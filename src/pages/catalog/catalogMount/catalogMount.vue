@@ -23,7 +23,7 @@
         </h4>
       </div>
       <Table class="tableList" :loading="tableData.loading" ref="tableData" :columns="tableData.columns" :data="tableData.tableList"></Table>
-      <Modal footer-hide data-parent="sParent" :width="900" v-model="modalOpreation" :closable="false" title="选择要挂接的资源" :mask-closable="false">
+      <Modal footer-hide data-parent="sParent" :width="900" v-model="modalOpreation" :closable="true" title="选择要挂接的资源" :mask-closable="false" @on-cancel="cancel">
         <FilterForm :options="filterData"></FilterForm>
         <Table class="tableList" :loading="sourceTableData.loading" ref="sourceTableData" highlight-row @on-current-change="selectTable" :columns="sourceTableData.columns" :data="sourceTableData.tableList"></Table>
         <Page class-name="tablePager" :total="sourceTableData.pageData.total" show-total @on-change="changeTablePage" :current="sourceTableData.currentPage"></Page>

@@ -6,7 +6,7 @@
 * 描述 ：公共弹窗组件
 */
 <template>
-  <Modal :width="widgets.width" v-model="status" :title="title" :closable="false" :mask-closable="false" :loading="loading" @on-ok="ok('formValidate')" @on-cancel="cancel('formValidate')">
+  <Modal :width="widgets.width" v-model="status" :title="title" :closable="true" :mask-closable="false" :loading="loading" @on-ok="ok('formValidate')" @on-cancel="cancel('formValidate')">
     <Form class="formValidate" ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="120" :show-message="showError">
       <FormItem class="formValidate-item" :label="item.name" :prop="item.prop" :key="item.prop" v-for="(item, index) in formWidgets" v-show="item.show">
         <Input class="formValidate-widget" size="large" :element-id="item.prop" :ref="item.prop" :type="item.word" v-model="formValidate[item.prop]" :placeholder="item.placeholder" :disabled="item.disabled" autocomplete="off" v-if="item.type === 'input' && !item.isNum && !item.focues">

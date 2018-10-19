@@ -12,7 +12,7 @@
       <FilterForm :options="filterData"></FilterForm>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal :width="900" footer-hide v-model="modalOpreation" :closable="false" title="资源详情" :mask-closable="false">
+      <Modal :width="900" footer-hide v-model="modalOpreation" :closable="true" title="资源详情" :mask-closable="false" @on-cancel="cancel">
         <ul class="infoList cl">
           <li>数据库：{{modalData.sqlTableTable.dbName}}</li>
           <li>数据表：{{modalData.sqlTableTable.tableName}}</li>

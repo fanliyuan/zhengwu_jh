@@ -13,7 +13,7 @@
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList" @on-selection-change="getSelected"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal footer-hide :width="1080" v-model="modalOpreation" :closable="false" :title="modalData.title.name" :mask-closable="false">
+      <Modal footer-hide :width="1080" v-model="modalOpreation" :closable="true" :title="modalData.title.name" :mask-closable="false" @on-cancel="cancel">
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="选择资源类型"></Step>
           <Step :title="modalData.stepTwoName"></Step>
