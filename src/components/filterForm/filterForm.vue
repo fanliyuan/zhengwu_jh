@@ -40,14 +40,17 @@
           for (var obj in vm[name]) {
             vm.$parent.$parent.initData[obj] = vm[name][obj];
           }
+          vm.$parent.$parent.initData.pageNum = 1;
           vm.$parent.$parent.initTable();
         } else {
           for (var obj in vm[name]) {
             vm.$parent.initData[obj] = vm[name][obj];
           }
           if (vm.$parent.catalogId) {
+            vm.$parent.initData.pageNum = 1;
             vm.$parent.initTable(vm.$parent.catalogId);
           } else {
+            vm.$parent.initData.pageNum = 1;
             vm.$parent.initTable();
           }
         }

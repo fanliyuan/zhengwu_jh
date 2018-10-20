@@ -782,6 +782,8 @@
         let vm = this;
         vm.modalData.formObj.tableName = currentRow.name;
         vm.modalData.sqlColumnTable.initData.pageNum = 1;
+        vm.modalData.sqlDataTable.initData.pageNum = 1;
+        vm.modalData.sqlDataTable.currentPage = 1;
         vm.initSqlColumnTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName, vm.modalData.formObj.tableName);
         vm.initSqlDataTable(vm.modalData.currentDataBase, vm.modalData.formObj.dbName, vm.modalData.formObj.tableName);
       },

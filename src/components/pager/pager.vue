@@ -6,7 +6,7 @@
 * 描述 ：分页组件
 */
 <template>
-  <Page class-name="tablePager" :total="options" show-sizer show-total @on-change="changePage" @on-page-size-change="changePageSize"></Page>
+  <Page class-name="tablePager" :total="options" :current="$parent.initData.pageNum" show-sizer show-total @on-change="changePage" @on-page-size-change="changePageSize"></Page>
 </template>
 
 <script>
