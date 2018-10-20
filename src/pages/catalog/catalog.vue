@@ -235,7 +235,7 @@
         vm.$router.push({'path': '/catalog/itemInfo/' + id});
       },
       //修改
-      edit: function (id) {
+      edit: function (id, name) {
         let vm = this;
         let ID = {
           ID: id
@@ -247,6 +247,7 @@
           shareType: '',
           openType: ''
         };
+        vm.modalData.oldName = name;
         vm.$Loading.start();
         vm.api[vm.apis.detailApi](ID).then((data) => {
           for (let obj in vm.modalData.formObj) {
@@ -317,17 +318,22 @@
         vm.modalData.itemTableData.tableList = [];
         vm.modalData.current = 0;
         vm.modalData.currentId = '';
+        vm.modalData.oldName = '';
       },
       //下一步
       next () {
         let vm = this;
-        vm.$refs['formValidate'].validate((valid) => {
-          if (valid) {
-            vm.modalData.current = 1;
-          } else {
-            vm.$Message.error('验证失败');
-          }
-        });
+        if (vm.modalData.oldName !== '' && vm.modalData.formObj.name === vm.modalData.oldName) {
+          vm.$refs['formValidate'].validate((valid) => {
+            if (valid) {
+              vm.modalData.current = 1;
+            } else {
+              vm.$Message.error('验证失败');
+            }
+          });
+        } else {
+          vm.isSameName(vm.modalData.formObj.name);
+        }
       },
       //上一步
       pre () {
@@ -339,6 +345,30 @@
         let vm = this;
         vm.modalOpreation = false;
         vm.modalData.current = 0;
+      },
+      //判断是否重名
+      isSameName (name) {
+        let vm = this;
+        let initData = {
+          name: name
+        };
+        vm.api[vm.apis.sameNameApi](initData).then((data) => {
+          if (data.data) {
+            vm.$Message.error('目录名称已经被注册！');
+            return false;
+          } else {
+            vm.$refs['formValidate'].validate((valid) => {
+              if (valid) {
+                vm.modalData.current = 1;
+              } else {
+                vm.$Message.error('验证失败');
+              }
+            });
+          }
+        }).catch((error) => {
+          vm.$Loading.error();
+          vm.$Message.error('验证失败！');
+        })
       },
       //提交
       ok () {
@@ -364,6 +394,7 @@
           vm.modalData.itemTableData.tableList = [];
           vm.modalData.current = 2;
           vm.modalData.currentId = '';
+          vm.modalData.oldName = '';
         }).catch((error) => {
           vm.$Loading.error();
         });

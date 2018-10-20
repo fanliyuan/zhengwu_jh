@@ -31,7 +31,8 @@ class catalogOptions {
         shareDetailApi: 'catalogShareDetail',
         shareUpdateApi: 'catalogShareUpdate',
         treeApi: 'showCatalogList',
-        incrementApiUrl: 'resourceMysqlStruct'
+        incrementApiUrl: 'resourceMysqlStruct',
+        sameNameApi: 'catalogSameName'
       },
       treeData: [],
       currentTreeNode: '',
@@ -44,6 +45,7 @@ class catalogOptions {
         width: 1200,
         current: 0,
         currentId: '',
+        oldName: '',
         itemsOpreate: '手工建立',
         itemsOpreateArr: [
           {
@@ -993,7 +995,7 @@ class catalogOptions {
                 },
                 on: {
                   click: () => {
-                    vm.edit(params.row.id);
+                    vm.edit(params.row.id, params.row.name);
                   }
                 }
               };

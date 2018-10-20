@@ -38,7 +38,8 @@ class sourceOptions {
         mysqlStructApi: 'resourceMysqlStruct',
         fileUp: 'resourceFileUp',
         fileDown: 'resourceFileDown',
-        ftpDataApi: 'resourceFtpData'
+        ftpDataApi: 'resourceFtpData',
+        sameNameApi: 'resourceSameName'
       },
       modalOpreation: false,
       modalWidgets: {},

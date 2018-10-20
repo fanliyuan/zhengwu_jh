@@ -56,6 +56,12 @@ const err_check = (code, msg, data) => {
     setTimeout(function () {
       window.location.href = rootUrl;
     }, 1000);
+  } else {
+    Notice.warning({
+      title: '',
+      desc: msg,
+      duration: 3
+    });
   }
 
  return false

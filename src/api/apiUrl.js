@@ -49,6 +49,7 @@ export default {
   resourceReviewLog: { url: '/api/v2/zhengwu/swap/resource/{type}/{id}/review', method: 'get' }, //资源审核日志
   resourceFileUp: { url: '/api/v2/zhengwu/swap/resource/file/up', method: 'post' }, //文件上传
   resourceFileDown: { url: '/api/v2/zhengwu/swap/resource/file/down', method: 'get' }, //文件下载
+  resourceSameName: { url: '/api/v2/zhengwu/swap/resource/item/name', method: 'get' }, //验证资源名字是否重复
 
   //目录管理
   catalogAdd: { url: '/api/v2/zhengwu/swap/resource', method: 'post' }, //新建资源
@@ -62,6 +63,7 @@ export default {
   catalogMount: { url: '/api/v2/zhengwu/swap/resource/{id}/mount', method: 'post' }, //资源挂接
   catalogReview: { url: '/api/v2/zhengwu/swap/resource/{id}/review', method: 'post' }, //目录审核
   catalogReviewLog: { url: '/api/v2/zhengwu/swap/resource/{id}/review', method: 'get' }, //目录审核日志
+  catalogSameName: { url: '/api/v2/zhengwu/swap/resource/name', method: 'get' }, //验证目录名字是否重复
 
   //资源集市
   resourceBazaar: { url: '/api/v2/zhengwu/swap/resourceBazaar/list', method: 'get' }, //获取资源集市列表

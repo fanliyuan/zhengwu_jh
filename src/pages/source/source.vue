@@ -432,41 +432,7 @@
       next () {
         let vm = this;
         if (vm.modalData.current === 0) {
-          vm.$refs['formValidate'].validate((valid) => {
-            if (valid) {
-              if (vm.modalData.currentType !== 'file') {
-                vm.$Message.info('连接中！');
-                let connectInit = {
-                  type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
-                  addr: vm.modalData.formObj.addr,
-                  port: vm.modalData.formObj.port,
-                  username: vm.modalData.formObj.username,
-                  password: vm.modalData.formObj.password
-                };
-                vm.api[vm.apis.connectApi](connectInit).then((data) => {
-                  if (data.data) {
-                    vm.modalData.currentDataBase = data.data;
-                    vm.$Message.success('连接成功！');
-                    if (vm.modalData.currentType === 'sql') {
-                      vm.initSqlDbList(vm.modalData.currentDataBase);
-                    } else {
-                      vm.initFtpData(vm.modalData.currentDataBase, '/');
-                    }
-                    vm.modalData.current += 1;
-                  } else {
-                    vm.$Message.error('连接失败！');
-                  }
-                }).catch((error) => {
-                  vm.$Loading.error();
-                  vm.$Message.error('连接失败！');
-                })
-              } else {
-                vm.modalData.current += 1;
-              }
-            } else {
-              vm.$Message.error('验证失败');
-            }
-          });
+          vm.isSameName(vm.modalData.formObj.name);
         } else if (vm.modalData.current === 2) {
           vm.$refs['formValidateTime'].validate((valid) => {
             if (valid) {
@@ -491,6 +457,58 @@
         } else {
           vm.modalData.current -= 1;
         }
+      },
+      //判断是否重名
+      isSameName (name) {
+        let vm = this;
+        let initData = {
+          name: name
+        };
+        vm.api[vm.apis.sameNameApi](initData).then((data) => {
+          if (data.data) {
+            vm.$Message.error('资源名称已经被注册！');
+            return false;
+          } else {
+            vm.$refs['formValidate'].validate((valid) => {
+              if (valid) {
+                if (vm.modalData.currentType !== 'file') {
+                  vm.$Message.info('连接中！');
+                  let connectInit = {
+                    type: vm.modalData.dataType[vm.modalData.formObj.dbType.join('-')],
+                    addr: vm.modalData.formObj.addr,
+                    port: vm.modalData.formObj.port,
+                    username: vm.modalData.formObj.username,
+                    password: vm.modalData.formObj.password
+                  };
+                  vm.api[vm.apis.connectApi](connectInit).then((data) => {
+                    if (data.data) {
+                      vm.modalData.currentDataBase = data.data;
+                      vm.$Message.success('连接成功！');
+                      if (vm.modalData.currentType === 'sql') {
+                        vm.initSqlDbList(vm.modalData.currentDataBase);
+                      } else {
+                        vm.initFtpData(vm.modalData.currentDataBase, '/');
+                      }
+                      vm.modalData.current += 1;
+                    } else {
+                      vm.$Message.error('连接失败！');
+                    }
+                  }).catch((error) => {
+                    vm.$Loading.error();
+                    vm.$Message.error('连接失败！');
+                  })
+                } else {
+                  vm.modalData.current += 1;
+                }
+              } else {
+                vm.$Message.error('验证失败');
+              }
+            });
+          }
+        }).catch((error) => {
+          vm.$Loading.error();
+          vm.$Message.error('验证失败！');
+        })
       },
       //提交
       ok () {
