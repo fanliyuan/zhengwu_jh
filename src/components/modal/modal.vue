@@ -315,11 +315,13 @@
                   if (vm.title.indexOf("修改") != -1) {
                     vm.$Message.success('修改成功');
                   }
+                  vm.loading = true;
                 } else {
                   vm.loading = false;
                   vm.$nextTick(() => {
                     vm.loading = true;
                   });
+                  return
                 }
 
                 for (let i in vm.uploadNames) {
