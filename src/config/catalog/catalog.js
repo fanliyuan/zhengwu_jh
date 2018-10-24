@@ -212,72 +212,96 @@ class catalogOptions {
               title: '共享条件',
               key: 'shareCondition',
               render: (h, params) => {
-                if (params.row.$isEdit) {
-                  return h('Input', {
-                    props: {
-                      value: params.row.shareCondition
-                    },
-                    domProps: {
-                      value: params.row.shareCondition
-                    },
-                    on: {
-                      input: (val) => {
-                        params.row.shareCondition = val;
-                        vm.$emit('input', val);
-                      }
-                    }
-                  })
-                } else {
-                  return h('span', params.row.shareCondition);
-                }
+                return h('span', {
+                  props: {
+                    value: params.row.shareCondition
+                  },
+                  domProps: {
+                    innerHTML: '-'
+                  }
+                })
+                //if (params.row.$isEdit) {
+                //  return h('Input', {
+                //    props: {
+                //      value: params.row.shareCondition
+                //    },
+                //    domProps: {
+                //      value: params.row.shareCondition
+                //    },
+                //    on: {
+                //      input: (val) => {
+                //        params.row.shareCondition = val;
+                //        vm.$emit('input', val);
+                //      }
+                //    }
+                //  })
+                //} else {
+                //  return h('span', params.row.shareCondition);
+                //}
               }
             },
             {
               title: '共享方式分类',
               key: 'shareModeClassify',
               render: (h, params) => {
-                if (params.row.$isEdit) {
-                  return h('Input', {
-                    props: {
-                      value: params.row.shareModeClassify
-                    },
-                    domProps: {
-                      value: params.row.shareModeClassify
-                    },
-                    on: {
-                      input: (val) => {
-                        params.row.shareModeClassify = val;
-                        vm.$emit('input', val);
-                      }
-                    }
-                  })
-                } else {
-                  return h('span', params.row.shareModeClassify);
-                }
+                return h('span', {
+                  props: {
+                    value: params.row.shareCondition
+                  },
+                  domProps: {
+                    innerHTML: '-'
+                  }
+                })
+                //if (params.row.$isEdit) {
+                //  return h('Input', {
+                //    props: {
+                //      value: params.row.shareModeClassify
+                //    },
+                //    domProps: {
+                //      value: params.row.shareModeClassify
+                //    },
+                //    on: {
+                //      input: (val) => {
+                //        params.row.shareModeClassify = val;
+                //        vm.$emit('input', val);
+                //      }
+                //    }
+                //  })
+                //} else {
+                //  return h('span', params.row.shareModeClassify);
+                //}
               }
             },
             {
               title: '共享方式类型',
               key: 'shareModeType',
               render: (h, params) => {
-                if (params.row.$isEdit) {
-                  return h('Input', {
-                    props: {
-                      value: params.row.shareModeType
-                    },
-                    domProps: {
-                      value: params.row.shareModeType
-                    },
-                    on: {
-                      input: (val) => {
-                        params.row.shareModeType = val;
-                        vm.$emit('input', val);
-                      }
-                    }
-                  })
-                } else {
-                  return h('span', params.row.shareModeType);
-                }
+                return h('span', {
+                  props: {
+                    value: params.row.shareCondition
+                  },
+                  domProps: {
+                    innerHTML: '-'
+                  }
+                })
+                //if (params.row.$isEdit) {
+                //  return h('Input', {
+                //    props: {
+                //      value: params.row.shareModeType
+                //    },
+                //    domProps: {
+                //      value: params.row.shareModeType
+                //    },
+                //    on: {
+                //      input: (val) => {
+                //        params.row.shareModeType = val;
+                //        vm.$emit('input', val);
+                //      }
+                //    }
+                //  })
+                //} else {
+                //  return h('span', params.row.shareModeType);
+                //}
               }
             },
             {
@@ -332,24 +356,32 @@ class catalogOptions {
               title: '开放条件',
               key: 'openCondition',
               render: (h, params) => {
-                if (params.row.$isEdit) {
-                  return h('Input', {
-                    props: {
-                      value: params.row.openCondition
-                    },
-                    domProps: {
-                      value: params.row.openCondition
-                    },
-                    on: {
-                      input: (val) => {
-                        params.row.openCondition = val;
-                        vm.$emit('input', val);
-                      }
-                    }
-                  })
-                } else {
-                  return h('span', params.row.openCondition);
-                }
+                return h('span', {
+                  props: {
+                    value: params.row.shareCondition
+                  },
+                  domProps: {
+                    innerHTML: '-'
+                  }
+                })
+                //if (params.row.$isEdit) {
+                //  return h('Input', {
+                //    props: {
+                //      value: params.row.openCondition
+                //    },
+                //    domProps: {
+                //      value: params.row.openCondition
+                //    },
+                //    on: {
+                //      input: (val) => {
+                //        params.row.openCondition = val;
+                //        vm.$emit('input', val);
+                //      }
+                //    }
+                //  })
+                //} else {
+                //  return h('span', params.row.openCondition);
+                //}
               }
             },
             {
@@ -420,11 +452,11 @@ class catalogOptions {
               dataLength: '',
               dataType: '',
               name: '',
-              openCondition: '',
+              openCondition: '1',
               openType: '',
-              shareCondition: '',
-              shareModeClassify: '',
-              shareModeType: '',
+              shareCondition: '1',
+              shareModeClassify: '1',
+              shareModeType: '1',
               shareType: '',
               $isEdit: true
             }
@@ -446,11 +478,11 @@ class catalogOptions {
               dataLength: '',
               dataType: '',
               name: '',
-              openCondition: '',
+              openCondition: '1',
               openType: '',
-              shareCondition: '',
-              shareModeClassify: '',
-              shareModeType: '',
+              shareCondition: '1',
+              shareModeClassify: '1',
+              shareModeType: '1',
               shareType: '',
               $isEdit: true
             }
