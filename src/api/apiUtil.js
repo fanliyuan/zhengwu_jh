@@ -98,11 +98,19 @@ const sendApiInstance = (method, url, params, config = {}) => {
       }
     },
     error => {
-      Notice.warning({
-        title: '',
-        desc: error.response.data.message,
-        duration: 5
-      });
+      if (error.response.data.message) {
+        Notice.warning({
+          title: '',
+          desc: error.response.data.message,
+          duration: 5
+        });
+      } else {
+        Notice.warning({
+          title: '',
+          desc: '请求服务器出错！',
+          duration: 5
+        });
+      }
       return Promise.resolve(error).catch(res => {
         console.log(res)
       })
