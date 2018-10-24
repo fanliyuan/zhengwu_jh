@@ -8,15 +8,17 @@
 import axios from 'axios'
 import { Notice } from 'iview';
 
-let root;
-let rootUrl;
-if (process.env.NODE_ENV === 'development') {
-  root = process.env.API_HOST;
-  rootUrl = process.env.URL_HOST;
-} else {
-  root = location.host;
-  rootUrl = location.host;
-}
+//let root;
+//let rootUrl;
+//if (process.env.NODE_ENV === 'development') {
+//  root = process.env.API_HOST;
+//  rootUrl = process.env.URL_HOST;
+//} else {
+//  root = location.host;
+//  rootUrl = location.host;
+//}
+const root = process.env.API_HOST;
+const rootUrl = process.env.URL_HOST;
 
 const generateApiMap = (map) => {
   let facade = {}
