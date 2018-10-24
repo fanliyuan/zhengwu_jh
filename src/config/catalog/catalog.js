@@ -472,13 +472,13 @@ class catalogOptions {
               trigger: 'blur'
             }
           ],
-          classify: [
-            {
-              required: true,
-              message: '请选择分类',
-              trigger: 'change'
-            }
-          ],
+          //classify: [
+          //  {
+          //    required: true,
+          //    message: '请选择分类',
+          //    trigger: 'change'
+          //  }
+          //],
           providerName: [
             {
               required: true,
@@ -536,27 +536,36 @@ class catalogOptions {
             placeholder: '请输入描述'
           },
           {
-            type: 'select',
-            disabled: false,
+            type: 'input',
+            disabled: true,
             show: true,
+            word: 'text',
             prop: 'classify',
             name: '分类',
-            placeholder: '请选择分类',
-            options: [
-              {
-                key: '分类1',
-                value: '分类1'
-              },
-              {
-                key: '分类2',
-                value: '分类2'
-              },
-              {
-                key: '分类21',
-                value: '分类21'
-              }
-            ]
+            placeholder: '请输入提供方名称'
           },
+          //{
+          //  type: 'select',
+          //  disabled: false,
+          //  show: true,
+          //  prop: 'classify',
+          //  name: '分类',
+          //  placeholder: '请选择分类',
+          //  options: [
+          //    {
+          //      key: '分类1',
+          //      value: '分类1'
+          //    },
+          //    {
+          //      key: '分类2',
+          //      value: '分类2'
+          //    },
+          //    {
+          //      key: '分类21',
+          //      value: '分类21'
+          //    }
+          //  ]
+          //},
           {
             type: 'input',
             disabled: false,
