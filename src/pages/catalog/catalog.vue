@@ -147,7 +147,6 @@
                   },
                   on: {
                     click: () => {
-                      console.log(node)
                       vm.filterData.filiterObj = vm.deepCopy(vm.filterData.defaultFiliterObj, vm.filterData.filiterObj);
                       vm.initData = vm.deepCopy(vm.defaultInitData, vm.initData);
                       vm.initTable(data.id);
@@ -230,7 +229,6 @@
         vm.modalData.itemTableData.loading = false;
         vm.modalData.loading = false;
         vm.modalOpreation = true;
-        console.log(vm)
       },
       //查看
       view: function (id) {
