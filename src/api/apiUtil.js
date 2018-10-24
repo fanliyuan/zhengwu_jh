@@ -94,7 +94,7 @@ const sendApiInstance = (method, url, params, config = {}) => {
       if (err_check(code, msg, data)) {
         return Promise.resolve(data)
       } else {
-        return Promise.resolve(data)
+        return Promise.reject(data)
       }
     },
     error => {
