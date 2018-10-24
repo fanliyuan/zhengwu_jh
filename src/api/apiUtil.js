@@ -48,11 +48,6 @@ const createApiInstance = (config = {}) => {
 
 const err_check = (code, msg, data) => {
   if (code === 0) {
-    Notice.warning({
-      title: '',
-      desc: msg,
-      duration: 3
-    });
     return true
   } else if (code === 401) {
     Notice.warning({
