@@ -17,7 +17,7 @@
       <opreationWidgets :options="opreationData"></opreationWidgets>
       <Table class="tableList" :loading="tableData.loading" ref="selection" :columns="tableData.columns" :data="tableData.tableList"></Table>
       <Pager :options="pageData.total"></Pager>
-      <Modal footer-hide :width="1780" v-model="modalOpreation" :closable="true" :title="modalData.title.name" :mask-closable="false" @on-cancel="cancel">
+      <Modal footer-hide :width="1080" v-model="modalOpreation" :closable="true" :title="modalData.title.name" :mask-closable="false" @on-cancel="cancel">
         <Steps :current="modalData.current" class="modal-steps">
           <Step title="填写目录资源内容"></Step>
           <Step title="编辑信息项"></Step>
