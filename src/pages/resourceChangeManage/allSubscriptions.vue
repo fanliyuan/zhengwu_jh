@@ -344,6 +344,7 @@
             onOk: function () {
               vm.api[vm.apis.runApi](params).then((data) => {
                 vm.$Loading.finish();
+                vm.$Message.success("启动成功");
                 vm.initTable();
                 vm.tableData.selectedIds = [];
               }).catch((error) => {
@@ -375,6 +376,7 @@
             onOk: function () {
               vm.api[vm.apis.stopApi](params).then((data) => {
                 vm.$Loading.finish();
+                vm.$Message.success("停止成功");
                 vm.initTable();
                 vm.tableData.selectedIds = [];
               }).catch((error) => {
