@@ -344,8 +344,8 @@
             onOk: function () {
               vm.api[vm.apis.runApi](params).then((data) => {
                 vm.$Loading.finish();
-                vm.$Message.success("启动成功");
-                vm.initTable();
+                  vm.$Message.success("启动成功");
+                  vm.initTable();
                 vm.tableData.selectedIds = [];
               }).catch((error) => {
                 vm.$Loading.error();
@@ -375,9 +375,9 @@
             content: '是否停止选择的信息？',
             onOk: function () {
               vm.api[vm.apis.stopApi](params).then((data) => {
-                vm.$Loading.finish();
-                vm.$Message.success("停止成功");
-                vm.initTable();
+                  vm.$Loading.finish();
+                  vm.$Message.success("停止成功");
+                  vm.initTable();
                 vm.tableData.selectedIds = [];
               }).catch((error) => {
                 vm.$Loading.error();

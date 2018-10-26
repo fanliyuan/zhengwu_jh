@@ -8,6 +8,7 @@ import NodeOverview from './nodeOverview/nodeOverview'
 import Source from './source/source'
 import Catalog from './catalog/catalog'
 import SubscriptionModeration from './resourceChangeManage/subscriptionModeration'
+import SubscribeAuditing from './resourceChangeManage/subscribeAuditing'
 import ResourceBazaar from './resourceChangeManage/resourceBazaar'
 import AllSubscriptions from './resourceChangeManage/allSubscriptions'
 import SourceAudit from './sourceAudit/sourceAudit'
@@ -43,7 +44,8 @@ const router = new Router({
         ...AllSubscriptions,
         ...SubscriptionModeration,
         ...ResourceManage,
-        ...ChangePassword
+        ...ChangePassword,
+        ...SubscribeAuditing
       ]
     },
     {

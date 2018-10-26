@@ -47,7 +47,7 @@ const createApiInstance = (config = {}) => {
 }
 
 const err_check = (code, msg, data) => {
-  if (code === 0) {
+  if (code === 200) {
     return true
   } else if (code === 401) {
     Notice.warning({
@@ -58,7 +58,13 @@ const err_check = (code, msg, data) => {
     setTimeout(function () {
       window.location.href = rootUrl;
     }, 1000);
-  } else {
+  } else if (code === 604) {
+    Notice.warning({
+      title: '',
+      desc: msg,
+      duration: 1
+    });
+  }else {
     Notice.warning({
       title: '',
       desc: msg,

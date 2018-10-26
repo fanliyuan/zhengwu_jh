@@ -138,8 +138,8 @@
                 },
                 {
                   navId: 24,
-                  label: '订阅授权',
-                  frontUrl: '/subscriptionModeration1',
+                  label: '订阅审核',
+                  frontUrl: '/subscribeAuditing',
                   authority: ['assessor']
                 }
               ]
