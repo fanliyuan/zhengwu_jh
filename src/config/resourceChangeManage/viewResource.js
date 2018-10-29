@@ -66,7 +66,8 @@ class catalogItemOptions {
       showViewTable: false,
       initData: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        id: ''
       },
       tableData: {
         loading: true,

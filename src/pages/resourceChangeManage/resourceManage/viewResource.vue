@@ -64,6 +64,8 @@
       initTable: function () {
         let vm = this;
         vm.tableData.loading = true;
+        let paramsArr = (vm.$route.params.id).split("&");
+        vm.initData.id = paramsArr[7];
         vm.api[vm.apis.tableListApi](vm.initData).then((data) => {
           vm.tableData.tableList = data.datas;
           vm.pageData.total = data.totalCounts;
