@@ -187,7 +187,7 @@ class resourceBazaarOptions {
                 },
                 on: {
                   click: () => {
-                    vm.auditingDetail(params.row.dsId,params.row.subId,params.row.subscriberId,params.row.id);
+                    vm.auditingDetail(params.row.dsId,params.row.directoryName,params.row.publishInstitution,params.row.dsName,params.row.subscribeName);
                   }
                 }
               };
@@ -210,7 +210,7 @@ class resourceBazaarOptions {
                     if ( statusNames == '审核') {
                       vm.auditing(params.row.id,params.row.higherUpStatus);
                     } else {
-                      vm.auditingDetail(params.row.id);
+                      vm.auditingLogs(params.row.id);
                     }
                   }
                 }

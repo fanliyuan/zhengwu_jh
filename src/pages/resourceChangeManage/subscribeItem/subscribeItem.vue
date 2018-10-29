@@ -123,13 +123,14 @@
           resourceId: paramsArr[0]
         };
         vm.api[vm.apis.resourceTaskInfoApi](ID).then((data) => {
-          if (data.pubMode == '1,1') {
+          if (data.pubMode === '1,1') {
             vm.pubMode = '自增字段';
-          } else if (data.pubMode == '1,5'){
+          } else if (data.pubMode === '1,5'){
             vm.pubMode = '日志';
-          } else if (data.pubMode == '4') {
+          } else if (data.pubMode === '4') {
             vm.pubMode = '全量';
           }
+          console.log(vm.pubMode);
 //          vm.orderStatus = data.orderStatus;
           if (data.orderStatus === "是") {
             vm.orderStatus = true;

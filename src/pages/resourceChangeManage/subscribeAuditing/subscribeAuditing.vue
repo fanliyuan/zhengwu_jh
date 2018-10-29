@@ -133,7 +133,14 @@
       },
 
       //审核详情
-      auditingDetail: function (id) {
+      auditingDetail: function (dsId,directoryName,publishInstitution,dsName,subscribeName) {
+        let vm = this;
+        //let id = dsId+"&"+subId+"&"+subscriberId + "&" + rowId;
+        let params = dsId +"&"+directoryName + "&" + publishInstitution + "&"+ dsName + "&"+ subscribeName;
+        vm.$router.push({'path': '/resourceChangeManage/itemInfo/' +params});
+      },
+      //审核日志
+      auditingLogs: function (id) {
         let vm = this;
 //        let id = dsId+"&"+subId+"&"+subscriberId + "&" + rowId;
         vm.$router.push({'path': '/subscribeAuditing/subscribeAuditingLogs/' +id});

@@ -47,7 +47,7 @@ const createApiInstance = (config = {}) => {
 }
 
 const err_check = (code, msg, data) => {
-  if (code === 200) {
+  if (code === 200 || code === 0) {
     return true
   } else if (code === 401) {
     Notice.warning({

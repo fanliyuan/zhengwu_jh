@@ -24,13 +24,13 @@ export default [{
   name: 'SubscribeItemInfo',
   component: SubscribeItemPage,
   meta: {
-    authority: ['user']
+    authority: ['user','assessor']
   }
 }, {
   path: '/resourceChangeManage/itemInfoDetail/:id',
   name: 'SubscribeItemInfoDetail',
   component: SubscribeItemDetailPage,
   meta: {
-    authority: ['user']
+    authority: ['user','assessor']
   }
 }]
