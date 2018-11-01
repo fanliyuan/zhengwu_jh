@@ -22,7 +22,7 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 @connect(({ loading }) => ({
-  connecting: loading.effects['dataSource/connection'],
+  connecting: loading.effects['opreateDataSource/connection'],
 }))
 @Form.create()
 class ConfigDataSource extends PureComponent {
@@ -30,7 +30,6 @@ class ConfigDataSource extends PureComponent {
     super(props);
     this.state = {
       connectName: '测试',
-      submitDisabled: false,
     };
   }
 

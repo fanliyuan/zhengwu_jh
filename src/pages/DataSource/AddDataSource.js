@@ -35,9 +35,9 @@ const steps = [
   },
 ];
 
-@connect(({ dataSource, loading }) => ({
-  dataSource,
-  submitting: loading.effects['dataSource/submit'],
+@connect(({ opreateDataSource, loading }) => ({
+  opreateDataSource,
+  submitting: loading.effects['opreateDataSource/submit'],
 }))
 class StepForm extends PureComponent {
   constructor(props) {
@@ -51,7 +51,7 @@ class StepForm extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'dataSource/reset',
+      type: 'opreateDataSource/reset',
     });
   }
 
@@ -69,7 +69,7 @@ class StepForm extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'dataSource/reset',
+          type: 'opreateDataSource/reset',
         });
         const current = this.state.current - 1;
         this.setState({ current });
@@ -86,7 +86,7 @@ class StepForm extends PureComponent {
     const { dispatch } = this.props;
     this.setState({ dataType });
     dispatch({
-      type: 'dataSource/setParams',
+      type: 'opreateDataSource/setParams',
       payload: {
         type: val,
       },
@@ -94,7 +94,7 @@ class StepForm extends PureComponent {
   };
 
   handleAdd = () => {
-    const { alias } = this.props.dataSource.params;
+    const { alias } = this.props.opreateDataSource.params;
     if (alias !== '') {
       this.submit();
     } else {
@@ -104,10 +104,10 @@ class StepForm extends PureComponent {
 
   connectTest = (obj, sub) => {
     const { dispatch } = this.props;
-    const { type } = this.props.dataSource.params;
-    this.props.dataSource.params = { ...this.props.dataSource.params, ...obj };
+    const { type } = this.props.opreateDataSource.params;
+    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
     dispatch({
-      type: 'dataSource/connection',
+      type: 'opreateDataSource/connection',
       payload: {
         type: type,
         addr: obj.ip,
@@ -126,9 +126,9 @@ class StepForm extends PureComponent {
 
   submit = obj => {
     const { dispatch } = this.props;
-    const { params } = this.props.dataSource;
+    const { params } = this.props.opreateDataSource;
     dispatch({
-      type: 'dataSource/submit',
+      type: 'opreateDataSource/submit',
       payload: params,
       callback: res => {
         if (res.code < 300) {
@@ -145,7 +145,7 @@ class StepForm extends PureComponent {
   render() {
     const {
       location,
-      dataSource: { params },
+      opreateDataSource: { params },
     } = this.props;
     const { submitting } = this.props;
     const { current } = this.state;
