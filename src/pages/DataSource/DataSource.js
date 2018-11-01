@@ -36,7 +36,7 @@ const paramsPage = { pageNum: 1, pageSize: 10 };
 
 @connect(({ dataSource, loading }) => ({
   dataSource,
-  loading: loading.models.rule,
+  loading: loading.effects['dataSource/fetch'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -231,6 +231,7 @@ class TableList extends PureComponent {
               dataSource={data.datas}
               pagination={paginationProps}
               locale={locale}
+              loading={loading}
             />
           </div>
         </Card>
