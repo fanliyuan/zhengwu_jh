@@ -31,6 +31,7 @@ export default {
     *reset({ payload }, { call, put }) {
       yield put({
         type: 'resetParams',
+        payload: payload,
       });
     },
     *connection({ payload, callback }, { call, put }) {
@@ -56,11 +57,7 @@ export default {
       }
       const response = yield call(callbackApi, payload); // post
       callback(response);
-      if (response.code < 300) {
-        yield put({
-          type: 'resetParams',
-        });
-      } else {
+      if (response.code >= 300) {
         notification.error({
           message: response.message,
         });
@@ -69,6 +66,23 @@ export default {
   },
 
   reducers: {
+    next(state, { payload }) {
+      console.log(state);
+      console.log(payload);
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+    prev(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+        params: {
+          ...initParams(),
+        },
+      };
+    },
     updateParams(state, { payload }) {
       return {
         ...state,
@@ -78,9 +92,10 @@ export default {
         },
       };
     },
-    resetParams(state) {
+    resetParams(state, { payload }) {
       return {
         ...state,
+        ...payload,
         params: {
           ...initParams(),
         },

@@ -46,20 +46,31 @@ class StepForm extends PureComponent {
     };
   }
 
-  componentwillunmount() {
+  componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'opreateDataSource/reset',
+      payload: {
+        current: 0,
+        dataType: '',
+      },
     });
   }
 
   next() {
-    const current = this.state.current + 1;
-    this.setState({ current });
+    const { dispatch } = this.props;
+    const { current } = this.props.opreateDataSource;
+    dispatch({
+      type: 'opreateDataSource/next',
+      payload: {
+        current: current + 1,
+      },
+    });
   }
 
   prev() {
     const { dispatch } = this.props;
+    const { current } = this.props.opreateDataSource;
     Modal.confirm({
       title: '警告',
       content: '返回数据源页面，当前信息将不会被保存，是否返回？',
@@ -67,10 +78,11 @@ class StepForm extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'opreateDataSource/reset',
+          type: 'opreateDataSource/prev',
+          payload: {
+            current: current - 1,
+          },
         });
-        const current = this.state.current - 1;
-        this.setState({ current });
       },
     });
   }
@@ -146,7 +158,7 @@ class StepForm extends PureComponent {
       opreateDataSource: { params },
     } = this.props;
     const { submitting } = this.props;
-    const { current } = this.state;
+    const { current } = this.props.opreateDataSource;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
@@ -163,7 +175,7 @@ class StepForm extends PureComponent {
             </Steps>
             <div className="steps-content">
               {(() => {
-                switch (this.state.current) {
+                switch (current) {
                   case 0:
                     return <SelectDataSource {...parentMethods} type={params.type} />;
                     break;
