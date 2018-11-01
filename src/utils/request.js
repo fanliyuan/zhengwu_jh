@@ -24,6 +24,19 @@ const codeMessage = {
 
 const checkStatus = response => {
   if (response.status >= 200 && response.status < 300) {
+    response
+      .clone()
+      .json()
+      .then(data => {
+        if (data.code === 401) {
+          notification.error({
+            message: `请求错误`,
+            description: data.message,
+          });
+          localStorage.setItem('antd-pro-authority', 'guest');
+          router.push(`/user/login?redirect=${window.location.href}`);
+        }
+      });
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
@@ -31,11 +44,11 @@ const checkStatus = response => {
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
   });
-  return response;
-  //const error = new Error(errortext);
-  //error.name = response.status;
-  //error.response = response;
-  //throw error;
+  //return response;
+  const error = new Error(errortext);
+  error.name = response.status;
+  error.response = response;
+  throw error;
 };
 
 const cachedSave = (response, hashcode) => {

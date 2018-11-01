@@ -16,29 +16,29 @@ export default {
   effects: {
     *login({ payload }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
       // Login successfully
-      if (response.code === 200) {
+      if (response && response.code === 200) {
+        yield put({
+          type: 'changeLoginStatus',
+          payload: response,
+        });
         reloadAuthorized();
-        //const urlParams = new URL(window.location.href);
-        //const params = getPageQuery();
-        //let { redirect } = params;
-        //if (redirect) {
-        //  const redirectUrlParams = new URL(redirect);
-        //  if (redirectUrlParams.origin === urlParams.origin) {
-        //    redirect = redirect.substr(urlParams.origin.length);
-        //    if (redirect.startsWith('/#')) {
-        //      redirect = redirect.substr(2);
-        //    }
-        //  } else {
-        //    window.location.href = redirect;
-        //    return;
-        //  }
-        //}
-        yield put(routerRedux.replace('/dashboard/analysis'));
+        const urlParams = new URL(window.location.href);
+        const params = getPageQuery();
+        let { redirect } = params;
+        if (redirect) {
+          const redirectUrlParams = new URL(redirect);
+          if (redirectUrlParams.origin === urlParams.origin) {
+            redirect = redirect.substr(urlParams.origin.length);
+            if (redirect.startsWith('/#')) {
+              redirect = redirect.substr(2);
+            }
+          } else {
+            window.location.href = redirect;
+            return;
+          }
+        }
+        yield put(routerRedux.replace(redirect || '/dashboard/analysis'));
       }
     },
 
@@ -69,7 +69,7 @@ export default {
   reducers: {
     changeLoginStatus(state, { payload }) {
       let auth;
-      if (payload.result) {
+      if (payload.result && payload.result !== '') {
         auth = payload.result.data.roleEnNames[0];
       } else {
         auth = payload.currentAuthority;

@@ -22,14 +22,21 @@ export default {
 
   reducers: {
     queryList(state, { payload }) {
-      console.log(payload);
-      return {
-        ...state,
-        data: {
-          datas: payload.result.datas,
-          totalCounts: payload.result.totalCounts,
-        },
-      };
+      if (payload && payload.result) {
+        return {
+          ...state,
+          data: {
+            ...payload.result,
+          },
+        };
+      } else {
+        return {
+          ...state,
+          data: {
+            ...payload,
+          },
+        };
+      }
     },
   },
 };
