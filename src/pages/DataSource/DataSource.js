@@ -107,10 +107,19 @@ class TableList extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
+      let paramsTime = {};
+      if (fieldsValue.date) {
+        paramsTime = {
+          beginTime: moment(fieldsValue.date[0]).format('YYYY-MM-DD'),
+          endTime: moment(fieldsValue.date[1]).format('YYYY-MM-DD'),
+        };
+        delete fieldsValue.date;
+      }
+
       const values = {
         ...fieldsValue,
         ...paramsPage,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        ...paramsTime,
       };
 
       this.setState({
@@ -201,7 +210,6 @@ class TableList extends PureComponent {
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',
     };
-    console.log(this.props);
     return (
       <PageHeaderWrapper title="">
         <Card bordered={false}>
