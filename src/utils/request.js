@@ -44,7 +44,6 @@ const checkStatus = response => {
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
   });
-  //return response;
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
