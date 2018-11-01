@@ -46,8 +46,6 @@ class StepForm extends PureComponent {
     };
   }
 
-  componentDidMount() {}
-
   componentwillunmount() {
     const { dispatch } = this.props;
     dispatch({
