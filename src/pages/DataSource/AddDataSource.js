@@ -21,8 +21,6 @@ import AddSuccess from './AddSuccess';
 import styles from './AddDataSource.less';
 
 const { Step } = Steps;
-const { Meta } = Card;
-const { Option } = Select;
 const steps = [
   {
     title: '选择数据源类型',
@@ -48,7 +46,9 @@ class StepForm extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount() {}
+
+  componentwillunmount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'opreateDataSource/reset',
