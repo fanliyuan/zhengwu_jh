@@ -8,6 +8,7 @@ export default {
       datas: [],
       totalCounts: 0,
     },
+    page: 1,
   },
 
   effects: {
@@ -16,6 +17,10 @@ export default {
       yield put({
         type: 'queryList',
         payload: response,
+      });
+      yield put({
+        type: 'setPage',
+        payload: payload,
       });
     },
   },
@@ -37,6 +42,12 @@ export default {
           },
         };
       }
+    },
+    setPage(state, { payload }) {
+      return {
+        ...state,
+        page: payload.pageNum,
+      };
     },
   },
 };

@@ -198,14 +198,25 @@ class TableList extends PureComponent {
     return this.renderAdvancedForm();
   }
 
+  changePage = (current, pageSize) => {
+    const { dispatch } = this.props;
+    const newParamsPage = { pageNum: current, pageSize: pageSize };
+    dispatch({
+      type: 'dataSource/fetch',
+      payload: newParamsPage,
+    });
+  };
+
   render() {
     const {
-      dataSource: { data },
+      dataSource: { data, page },
       loading,
     } = this.props;
-    const paginationProps = {
+    let paginationProps = {
       showQuickJumper: true,
       total: data.totalCounts,
+      current: page,
+      onChange: this.changePage,
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',
