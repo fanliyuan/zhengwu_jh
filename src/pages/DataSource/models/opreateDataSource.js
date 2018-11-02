@@ -131,7 +131,7 @@ export default {
         callbackApi = addDataSource;
       }
       const response = yield call(callbackApi, payload);
-      if (response.code >= 300) {
+      if (response && response.code >= 300) {
         return notification.error({
           message: response.message,
         });
