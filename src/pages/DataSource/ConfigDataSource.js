@@ -49,12 +49,16 @@ class ConfigDataSource extends PureComponent {
 
   connectTest = () => {
     const connectName = '重新测试';
-    const iconLoading = true;
     const { form } = this.props;
     const connectParams = form.getFieldsValue();
     this.props.connectTest(connectParams);
     this.setState({ connectName });
-    this.setState({ iconLoading });
+  };
+
+  setParams = () => {
+    const { form } = this.props;
+    const params = form.getFieldsValue();
+    this.props.setParams(params);
   };
 
   render() {

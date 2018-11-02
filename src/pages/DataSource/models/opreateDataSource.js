@@ -1,4 +1,9 @@
-import { connectBase, addDataSource, updateDataSource } from '@/services/dataSource/dataSource';
+import {
+  connectBase,
+  addDataSource,
+  updateDataSource,
+  isSameNameSource,
+} from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
 function initParams() {
   return {
@@ -34,50 +39,72 @@ export default {
         payload: payload,
       });
     },
-    *connection({ payload, callback }, { call, put }) {
-      const response = yield call(connectBase, payload);
+    *connection({ payload }, { call, put }) {
+      const response = yield call(connectBase, {
+        type: payload.params.type,
+        addr: payload.params.ip,
+        port: payload.params.port,
+        username: payload.params.username,
+        password: payload.params.password,
+      });
       message.destroy();
-      if (response.code < 300) {
-        message.success(response.message);
-        yield put({
-          type: 'setAlias',
-          payload: response,
-        });
-      } else {
-        message.error(response.message);
+      if (response.code >= 300) {
+        return message.error(response.message);
       }
-      callback(response);
+      message.success(response.message);
+      yield put({
+        type: 'setAlias',
+        payload: response,
+      });
+      if (payload.sub === 'sub') {
+        yield put({
+          type: 'testName',
+          payload: payload.params,
+        });
+      }
     },
-    *submit({ payload, callback }, { call, put }) {
+    *submit({ payload }, { call, put }) {
       let callbackApi;
       if (payload.id) {
         callbackApi = updateDataSource;
       } else {
         callbackApi = addDataSource;
       }
-      const response = yield call(callbackApi, payload); // post
-      callback(response);
+      const response = yield call(callbackApi, payload);
       if (response.code >= 300) {
-        notification.error({
+        return notification.error({
           message: response.message,
         });
       }
+      yield put({
+        type: 'next',
+      });
+    },
+    *testName({ payload }, { call, put }) {
+      const response = yield call(isSameNameSource, { name: payload.name });
+      if (response && response.result.data) {
+        return notification.error({
+          message: '数据源名称重复！',
+        });
+      }
+      yield put({
+        type: 'submit',
+        payload: payload,
+      });
     },
   },
 
   reducers: {
-    next(state, { payload }) {
-      console.log(state);
-      console.log(payload);
+    next(state) {
       return {
         ...state,
-        ...payload,
+        current: state.current + 1,
       };
     },
-    prev(state, { payload }) {
+    prev(state) {
       return {
         ...state,
-        ...payload,
+        current: state.current - 1,
         params: {
           ...initParams(),
         },

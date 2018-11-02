@@ -55,12 +55,8 @@ class StepForm extends PureComponent {
 
   next() {
     const { dispatch } = this.props;
-    const { current } = this.props.opreateDataSource;
     dispatch({
       type: 'opreateDataSource/next',
-      payload: {
-        current: current + 1,
-      },
     });
   }
 
@@ -75,9 +71,6 @@ class StepForm extends PureComponent {
       onOk: () => {
         dispatch({
           type: 'opreateDataSource/prev',
-          payload: {
-            current: current - 1,
-          },
         });
       },
     });
@@ -102,29 +95,29 @@ class StepForm extends PureComponent {
   handleAdd = () => {
     const { alias } = this.props.opreateDataSource.params;
     if (alias !== '') {
-      this.submit();
+      this.child.setParams();
     } else {
       this.child.handleSubmit('sub');
     }
   };
 
+  setParams = obj => {
+    const { dispatch } = this.props;
+    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
+    dispatch({
+      type: 'opreateDataSource/testName',
+      payload: this.props.opreateDataSource.params,
+    });
+  };
+
   connectTest = (obj, sub) => {
     const { dispatch } = this.props;
-    const { type } = this.props.opreateDataSource.params;
     this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
     dispatch({
       type: 'opreateDataSource/connection',
       payload: {
-        type: type,
-        addr: obj.ip,
-        port: obj.port,
-        username: obj.username,
-        password: obj.password,
-      },
-      callback: res => {
-        if (res.code < 300 && sub === 'sub') {
-          this.submit();
-        }
+        params: this.props.opreateDataSource.params,
+        sub: sub,
       },
     });
     message.info('连接测试中，请勿进行其他操作...', 0);
@@ -136,11 +129,6 @@ class StepForm extends PureComponent {
     dispatch({
       type: 'opreateDataSource/submit',
       payload: params,
-      callback: res => {
-        if (res.code < 300) {
-          this.next();
-        }
-      },
     });
   };
 
@@ -159,6 +147,7 @@ class StepForm extends PureComponent {
       setType: this.setType,
       handleAdd: this.handleAdd,
       connectTest: this.connectTest,
+      setParams: this.setParams,
     };
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>
