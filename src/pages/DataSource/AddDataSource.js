@@ -62,7 +62,6 @@ class StepForm extends PureComponent {
 
   prev() {
     const { dispatch } = this.props;
-    const { current } = this.props.opreateDataSource;
     Modal.confirm({
       title: '警告',
       content: '返回数据源页面，当前信息将不会被保存，是否返回？',
@@ -123,7 +122,7 @@ class StepForm extends PureComponent {
     message.info('连接测试中，请勿进行其他操作...', 0);
   };
 
-  submit = obj => {
+  submit = () => {
     const { dispatch } = this.props;
     const { params } = this.props.opreateDataSource;
     dispatch({
