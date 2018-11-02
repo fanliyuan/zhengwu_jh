@@ -23,7 +23,7 @@ import styles from './AddDataSource.less';
 const { Step } = Steps;
 const steps = [
   {
-    title: '选择数据源类型',
+    title: '选择数据源类型1',
   },
   {
     title: '配置数据源',
