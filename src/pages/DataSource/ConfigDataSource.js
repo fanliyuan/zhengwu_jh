@@ -54,12 +54,6 @@ class ConfigDataSource extends PureComponent {
     this.setState({ connectName });
   };
 
-  setParams = () => {
-    const { form } = this.props;
-    const params = form.getFieldsValue();
-    this.props.setParams(params);
-  };
-
   render() {
     const { dataType, params } = this.props;
     const { connecting } = this.props;
@@ -87,7 +81,7 @@ class ConfigDataSource extends PureComponent {
 
     return (
       <Card bordered={false}>
-        <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
+        <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem
             {...formItemLayout}
             label={<FormattedMessage id="form.dataSource.dataType.label" />}
@@ -202,7 +196,7 @@ class ConfigDataSource extends PureComponent {
                   message: formatMessage({ id: 'validation.dataSource.password.max' }),
                 },
               ],
-            })(<Input type="password" />)}
+            })(<Input type="password" autoComplete="new-password" />)}
           </FormItem>
           <FormItem
             {...formItemLayout}

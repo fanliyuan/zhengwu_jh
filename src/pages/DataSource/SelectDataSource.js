@@ -89,7 +89,7 @@ class SelectDataSource extends PureComponent {
             <List.Item>
               <Card
                 onClick={() => setType(item.title, item.type)}
-                className={`${styles.card} ${item.title === type ? 'active' : null}`}
+                className={`${styles.card} ${item.title === type ? `${styles.cardActive}` : null}`}
                 hoverable
                 cover={<IconFont className={styles.cardIcon} type={item.icon} />}
               >

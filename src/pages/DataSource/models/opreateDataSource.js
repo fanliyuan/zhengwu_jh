@@ -3,6 +3,7 @@ import {
   addDataSource,
   updateDataSource,
   isSameNameSource,
+  viewDataSource,
 } from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
 function initParams() {
@@ -23,10 +24,65 @@ export default {
   state: {
     current: 0,
     dataType: '',
+    oldName: '',
     params: initParams(),
   },
 
   effects: {
+    *detail({ payload }, { call, put }) {
+      const response = yield call(viewDataSource, payload);
+      if (response.code < 300) {
+        let dataType = '';
+        const { type, name } = response.result.data;
+        const typeData = [
+          {
+            title: 'mysql',
+            type: 'db',
+          },
+          {
+            title: 'sqlserver',
+            type: 'db',
+          },
+          {
+            title: 'oracle',
+            type: 'db',
+          },
+          {
+            title: 'dm',
+            type: 'db',
+          },
+          {
+            title: 'kingbase',
+            type: 'db',
+          },
+          {
+            title: 'ftp',
+            type: 'ftp',
+          },
+          {
+            title: 'sftp',
+            type: 'sftp',
+          },
+          {
+            title: '本地文件上传',
+            type: 'file',
+          },
+        ];
+        typeData.map(item => {
+          if (item.title === type) {
+            dataType = item.type;
+          }
+        });
+        yield put({
+          type: 'updateParams',
+          payload: {
+            dataType: dataType,
+            oldName: name,
+            params: response.result.data,
+          },
+        });
+      }
+    },
     *setParams({ payload }, { call, put }) {
       yield put({
         type: 'updateParams',
@@ -52,15 +108,19 @@ export default {
         return message.error(response.message);
       }
       message.success(response.message);
-      yield put({
-        type: 'setAlias',
-        payload: response,
-      });
+      payload.params.alias = response.result.data;
       if (payload.sub === 'sub') {
-        yield put({
-          type: 'testName',
-          payload: payload.params,
-        });
+        if (payload.oldName !== '' && payload.oldName === payload.params.name) {
+          yield put({
+            type: 'submit',
+            payload: payload.params,
+          });
+        } else {
+          yield put({
+            type: 'testName',
+            payload: payload.params,
+          });
+        }
       }
     },
     *submit({ payload }, { call, put }) {
@@ -113,9 +173,11 @@ export default {
     updateParams(state, { payload }) {
       return {
         ...state,
+        dataType: payload.dataType,
+        oldName: payload.oldName,
         params: {
           ...state.params,
-          ...payload,
+          ...payload.params,
         },
       };
     },
@@ -125,15 +187,6 @@ export default {
         ...payload,
         params: {
           ...initParams(),
-        },
-      };
-    },
-    setAlias(state, { payload }) {
-      return {
-        ...state,
-        params: {
-          ...state.params,
-          alias: payload.result.data,
         },
       };
     },

@@ -42,6 +42,22 @@ class StepForm extends PureComponent {
     super(props);
   }
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const { name } = this.props.route;
+    if (name === 'sourceUpdate') {
+      dispatch({
+        type: 'opreateDataSource/next',
+      });
+      dispatch({
+        type: 'opreateDataSource/detail',
+        payload: {
+          id: this.props.match.params.id,
+        },
+      });
+    }
+  }
+
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
@@ -80,43 +96,33 @@ class StepForm extends PureComponent {
   }
 
   setType = (val, type) => {
-    const dataType = type;
     const { dispatch } = this.props;
-    this.setState({ dataType });
     dispatch({
       type: 'opreateDataSource/setParams',
       payload: {
-        type: val,
+        dataType: type,
+        oldName: '',
+        params: {
+          type: val,
+        },
       },
     });
   };
 
   handleAdd = () => {
-    const { alias } = this.props.opreateDataSource.params;
-    if (alias !== '') {
-      this.child.setParams();
-    } else {
-      this.child.handleSubmit('sub');
-    }
-  };
-
-  setParams = obj => {
-    const { dispatch } = this.props;
-    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
-    dispatch({
-      type: 'opreateDataSource/testName',
-      payload: this.props.opreateDataSource.params,
-    });
+    this.child.handleSubmit('sub');
   };
 
   connectTest = (obj, sub) => {
     const { dispatch } = this.props;
+    const { oldName } = this.props.opreateDataSource;
     this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
     dispatch({
       type: 'opreateDataSource/connection',
       payload: {
         params: this.props.opreateDataSource.params,
         sub: sub,
+        oldName: oldName,
       },
     });
     message.info('连接测试中，请勿进行其他操作...', 0);
@@ -141,12 +147,12 @@ class StepForm extends PureComponent {
       opreateDataSource: { params },
     } = this.props;
     const { submitting } = this.props;
-    const { current } = this.props.opreateDataSource;
+    const { current, dataType } = this.props.opreateDataSource;
+    const { name } = this.props.route;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
       connectTest: this.connectTest,
-      setParams: this.setParams,
     };
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>
@@ -168,7 +174,7 @@ class StepForm extends PureComponent {
                       <ConfigDataSource
                         onRef={this.onRef}
                         {...parentMethods}
-                        dataType={this.state.dataType}
+                        dataType={dataType}
                         params={params}
                       />
                     );
@@ -182,12 +188,11 @@ class StepForm extends PureComponent {
               })()}
             </div>
             <div className={styles.stepsAction}>
-              {current < steps.length - 2 &&
-                params.type !== '' && (
-                  <Button type="primary" onClick={() => this.next()}>
-                    下一步
-                  </Button>
-                )}
+              {current < steps.length - 2 && (
+                <Button type="primary" disabled={params.type === ''} onClick={() => this.next()}>
+                  下一步
+                </Button>
+              )}
               {current === 1 && (
                 <Button
                   type="primary"
@@ -198,11 +203,12 @@ class StepForm extends PureComponent {
                   提交
                 </Button>
               )}
-              {current === 1 && (
-                <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
-                  上一步
-                </Button>
-              )}
+              {name !== 'sourceUpdate' &&
+                current === 1 && (
+                  <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
+                    上一步
+                  </Button>
+                )}
               {
                 <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                   返回
