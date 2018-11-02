@@ -64,7 +64,7 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
+          <a>修改</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id)}>删除</a>
           <Divider type="vertical" />
