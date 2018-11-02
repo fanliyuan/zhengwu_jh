@@ -39,7 +39,6 @@ class ConfigDataSource extends PureComponent {
 
   handleSubmit = sub => {
     const { form } = this.props;
-    //e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.props.connectTest(values, sub);
