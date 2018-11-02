@@ -26,7 +26,7 @@ class ConfigDataSource extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      connectName: '测试',
+      connectName: '测试1',
     };
   }
 
