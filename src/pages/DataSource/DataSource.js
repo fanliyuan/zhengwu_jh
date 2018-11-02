@@ -32,7 +32,10 @@ import styles from './DataSource.less';
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const { Option, OptGroup } = Select;
-const paramsPage = { pageNum: 1, pageSize: 10 };
+const resetParamsPage = { pageNum: 1, pageSize: 3 };
+let paramsPage = { pageNum: 1, pageSize: 3 };
+let formValues;
+let formTime;
 
 @connect(({ dataSource, loading }) => ({
   dataSource,
@@ -44,7 +47,6 @@ class TableList extends PureComponent {
     modalVisible: false,
     updateModalVisible: false,
     selectedRows: [],
-    formValues: {},
     stepFormValues: {},
   };
 
@@ -71,7 +73,7 @@ class TableList extends PureComponent {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
           <Divider type="vertical" />
-          <a href="">删除</a>
+          <a onClick={() => this.handleDelete(record.id)}>删除</a>
           <Divider type="vertical" />
           <a href="">接入数据</a>
         </Fragment>
@@ -80,51 +82,68 @@ class TableList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, form } = this.props;
+    if (formTime !== undefined && formValues !== undefined) {
+      if (formTime.beginTime) {
+        formValues.date = [
+          moment(formTime.beginTime, 'YYYY-MM-DD'),
+          moment(formTime.endTime, 'YYYY-MM-DD'),
+        ];
+        form.setFieldsValue(formValues);
+        delete formValues.date;
+      }
+    }
+    form.setFieldsValue(formValues);
     dispatch({
       type: 'dataSource/fetch',
-      payload: paramsPage,
+      payload: {
+        ...paramsPage,
+        ...formValues,
+        ...formTime,
+      },
     });
   }
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
-    this.setState({
-      formValues: {},
-    });
+    formValues = {};
+    formTime = {};
+    paramsPage = { pageNum: 1, pageSize: 3 };
     dispatch({
       type: 'dataSource/fetch',
-      payload: paramsPage,
+      payload: resetParamsPage,
     });
   };
 
   handleSearch = e => {
     e.preventDefault();
+    paramsPage = { pageNum: 1, pageSize: 3 };
+    this.getFormValues();
+  };
 
+  getFormValues = () => {
     const { dispatch, form } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
       let paramsTime = {};
       if (fieldsValue.date) {
         paramsTime = {
           beginTime: moment(fieldsValue.date[0]).format('YYYY-MM-DD'),
           endTime: moment(fieldsValue.date[1]).format('YYYY-MM-DD'),
         };
+        formTime = paramsTime;
         delete fieldsValue.date;
       }
+
+      formValues = fieldsValue;
 
       const values = {
         ...fieldsValue,
         ...paramsPage,
         ...paramsTime,
       };
-
-      this.setState({
-        formValues: values,
-      });
 
       dispatch({
         type: 'dataSource/fetch',
@@ -137,6 +156,45 @@ class TableList extends PureComponent {
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
+    });
+  };
+
+  handleDelete = id => {
+    const { dispatch, form } = this.props;
+    Modal.confirm({
+      title: '警告',
+      content: '是否删除数据源？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          let paramsTime = {};
+          if (fieldsValue.date) {
+            paramsTime = {
+              beginTime: moment(fieldsValue.date[0]).format('YYYY-MM-DD'),
+              endTime: moment(fieldsValue.date[1]).format('YYYY-MM-DD'),
+            };
+            delete fieldsValue.date;
+          }
+
+          const values = {
+            ...fieldsValue,
+            ...resetParamsPage,
+            ...paramsTime,
+          };
+
+          dispatch({
+            type: 'dataSource/deleteItem',
+            payload: {
+              values: values,
+              item: {
+                id: id,
+              },
+            },
+          });
+        });
+      },
     });
   };
 
@@ -200,10 +258,14 @@ class TableList extends PureComponent {
 
   changePage = (current, pageSize) => {
     const { dispatch } = this.props;
-    const newParamsPage = { pageNum: current, pageSize: pageSize };
+    paramsPage = { pageNum: current, pageSize: pageSize };
     dispatch({
       type: 'dataSource/fetch',
-      payload: newParamsPage,
+      payload: {
+        ...paramsPage,
+        ...formValues,
+        ...formTime,
+      },
     });
   };
 
@@ -217,6 +279,7 @@ class TableList extends PureComponent {
       total: data.totalCounts,
       current: page,
       onChange: this.changePage,
+      pageSize: 3,
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',

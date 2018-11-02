@@ -1,4 +1,5 @@
-import { initDataSource } from '@/services/dataSource/dataSource';
+import { initDataSource, deleteDataSource } from '@/services/dataSource/dataSource';
+import { message, notification } from 'antd';
 
 export default {
   namespace: 'dataSource',
@@ -22,6 +23,17 @@ export default {
         type: 'setPage',
         payload: payload,
       });
+    },
+    *deleteItem({ payload }, { call, put }) {
+      const response = yield call(deleteDataSource, payload.item);
+      let jsonRes = JSON.parse(response);
+      if (jsonRes && jsonRes.code < 300) {
+        message.success(jsonRes.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      }
     },
   },
 

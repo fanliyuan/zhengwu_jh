@@ -16,7 +16,7 @@ export async function addDataSource(params) {
 
 //删除数据源
 export async function deleteDataSource(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
     method: 'DELETE',
     body: params,
   });
