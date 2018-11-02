@@ -107,6 +107,7 @@ export default {
   'menu.data.audit': '数据审核',
   'menu.data.source': '数据源',
   'menu.data.sourceAdd': '新建数据源',
+  'menu.data.sourceUpdate': '修改数据源',
   'menu.data.management': '数据管理',
   'menu.subscribe': '数据订阅管理',
   'menu.subscribe.audit': '订阅审核',

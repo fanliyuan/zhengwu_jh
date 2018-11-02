@@ -136,6 +136,12 @@ export default [
             hideInMenu: true,
           },
           {
+            path: '/data/source/update/:id',
+            name: 'sourceUpdate',
+            component: './DataSource/AddDataSource',
+            hideInMenu: true,
+          },
+          {
             path: '/data/management',
             name: 'management',
             component: './Result/Error',
