@@ -32,8 +32,8 @@ import styles from './DataSource.less';
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const { Option, OptGroup } = Select;
-const resetParamsPage = { pageNum: 1, pageSize: 3 };
-let paramsPage = { pageNum: 1, pageSize: 3 };
+const resetParamsPage = { pageNum: 1, pageSize: 10 };
+let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
 
@@ -102,7 +102,7 @@ class TableList extends PureComponent {
     form.resetFields();
     formValues = {};
     formTime = {};
-    paramsPage = { pageNum: 1, pageSize: 3 };
+    paramsPage = { pageNum: 1, pageSize: 10 };
     dispatch({
       type: 'dataSource/fetch',
       payload: resetParamsPage,
@@ -111,7 +111,7 @@ class TableList extends PureComponent {
 
   handleSearch = e => {
     e.preventDefault();
-    paramsPage = { pageNum: 1, pageSize: 3 };
+    paramsPage = { pageNum: 1, pageSize: 10 };
     this.getFormValues();
   };
 
@@ -265,7 +265,7 @@ class TableList extends PureComponent {
       total: data.totalCounts,
       current: page,
       onChange: this.changePage,
-      pageSize: 3,
+      pageSize: 10,
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',
