@@ -210,7 +210,7 @@ class TableList extends PureComponent {
                   <OptGroup label="半结构文件类型">
                     <Option value="ftp">ftp</Option>
                     <Option value="sftp">sftp</Option>
-                    <Option value="file">文件</Option>
+                    <Option value="本地文件上传">文件</Option>
                   </OptGroup>
                 </Select>
               )}

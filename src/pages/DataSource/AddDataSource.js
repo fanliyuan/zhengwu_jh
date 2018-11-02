@@ -128,12 +128,17 @@ class StepForm extends PureComponent {
     message.info('连接测试中，请勿进行其他操作...', 0);
   };
 
-  submit = () => {
+  submit = (obj, type) => {
     const { dispatch } = this.props;
-    const { params } = this.props.opreateDataSource;
+    const { oldName } = this.props.opreateDataSource;
+    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
     dispatch({
-      type: 'opreateDataSource/submit',
-      payload: params,
+      type: 'opreateDataSource/testName',
+      payload: {
+        params: this.props.opreateDataSource.params,
+        subType: type,
+        oldName: oldName,
+      },
     });
   };
 
@@ -153,6 +158,7 @@ class StepForm extends PureComponent {
       setType: this.setType,
       handleAdd: this.handleAdd,
       connectTest: this.connectTest,
+      submit: this.submit,
     };
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>

@@ -61,7 +61,7 @@ export default {
           },
           {
             title: 'sftp',
-            type: 'sftp',
+            type: 'ftp',
           },
           {
             title: '本地文件上传',
@@ -141,16 +141,36 @@ export default {
       });
     },
     *testName({ payload }, { call, put }) {
-      const response = yield call(isSameNameSource, { name: payload.name });
-      if (response && response.result.data) {
-        return notification.error({
-          message: '数据源名称重复！',
+      if (payload.subType === 'file') {
+        if (payload.oldName !== '' && payload.oldName === payload.params.name) {
+          yield put({
+            type: 'submit',
+            payload: payload.params,
+          });
+        } else {
+          const response = yield call(isSameNameSource, { name: payload.params.name });
+          if (response && response.result.data) {
+            return notification.error({
+              message: '数据源名称重复！',
+            });
+          }
+          yield put({
+            type: 'submit',
+            payload: payload.params,
+          });
+        }
+      } else {
+        const response = yield call(isSameNameSource, { name: payload.name });
+        if (response && response.result.data) {
+          return notification.error({
+            message: '数据源名称重复！',
+          });
+        }
+        yield put({
+          type: 'submit',
+          payload: payload,
         });
       }
-      yield put({
-        type: 'submit',
-        payload: payload,
-      });
     },
   },
 

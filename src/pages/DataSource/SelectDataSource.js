@@ -38,7 +38,7 @@ const ftpData = [
   },
   {
     title: 'sftp',
-    type: 'sftp',
+    type: 'ftp',
     icon: 'icon-fuwuqi-shouye',
   },
   {
