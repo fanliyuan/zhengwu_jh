@@ -43,13 +43,6 @@ let formTime;
 }))
 @Form.create()
 class TableList extends PureComponent {
-  state = {
-    modalVisible: false,
-    updateModalVisible: false,
-    selectedRows: [],
-    stepFormValues: {},
-  };
-
   columns = [
     {
       title: 'ID',
@@ -149,13 +142,6 @@ class TableList extends PureComponent {
         type: 'dataSource/fetch',
         payload: values,
       });
-    });
-  };
-
-  handleUpdateModalVisible = (flag, record) => {
-    this.setState({
-      updateModalVisible: !!flag,
-      stepFormValues: record || {},
     });
   };
 
