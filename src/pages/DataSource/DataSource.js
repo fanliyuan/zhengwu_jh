@@ -53,7 +53,7 @@ class TableList extends PureComponent {
       dataIndex: 'name',
     },
     {
-      title: '数据类型1',
+      title: '数据类型',
       dataIndex: 'type',
     },
     {
