@@ -15,8 +15,8 @@ import {
 } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import SelectDataSource from './SelectDataSource';
-import ConfigDataSource from './ConfigDataSource';
+import AccessDataInfo from './AccessDataInfo';
+import SetSyncPlan from './SetSyncPlan';
 import AddSuccess from './AddSuccess';
 import styles from './AddDataSource.less';
 
@@ -51,10 +51,11 @@ const stepsFile = [
     title: '完成',
   },
 ];
+let steps = [];
 
-@connect(({ opreateDataSource, loading }) => ({
-  opreateDataSource,
-  submitting: loading.effects['opreateDataSource/submit'],
+@connect(({ accessData, loading }) => ({
+  accessData,
+  submitting: loading.effects['accessData/submit'],
 }))
 class AccessStepForm extends PureComponent {
   constructor(props) {
@@ -63,36 +64,75 @@ class AccessStepForm extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    const { name } = this.props.route;
-    if (name === 'sourceUpdate') {
-      dispatch({
-        type: 'opreateDataSource/next',
-      });
-      dispatch({
-        type: 'opreateDataSource/detail',
-        payload: {
-          id: this.props.match.params.id,
-        },
-      });
-    }
+    const { id } = this.props.match.params;
+    dispatch({
+      type: 'accessData/detail',
+      payload: {
+        id: id,
+      },
+    });
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'opreateDataSource/reset',
+      type: 'accessData/reset',
       payload: {
         current: 0,
         dataType: '',
+        type: '',
+        oldName: '',
+        tableList: [],
+        columnList: [],
+        syncModeList: [
+          {
+            key: '增量',
+            value: '增量',
+          },
+          {
+            key: '全量',
+            value: '全量',
+          },
+        ],
+        syncRateList: [
+          {
+            key: '定时',
+            value: '定时',
+          },
+          {
+            key: '实时',
+            value: '实时',
+          },
+        ],
+        timeList: [
+          {
+            key: '分钟',
+            value: '分钟',
+          },
+          {
+            key: '小时',
+            value: '小时',
+          },
+          {
+            key: '周',
+            value: '周',
+          },
+          {
+            key: '天',
+            value: '天',
+          },
+          {
+            key: '月',
+            value: '月',
+          },
+        ],
+        params: {},
       },
     });
   }
 
   next() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'opreateDataSource/next',
-    });
+    this.child.handleSubmit();
   }
 
   prev() {
@@ -104,7 +144,7 @@ class AccessStepForm extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         dispatch({
-          type: 'opreateDataSource/prev',
+          type: 'accessData/prev',
         });
       },
     });
@@ -117,7 +157,7 @@ class AccessStepForm extends PureComponent {
   setType = (val, type) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'opreateDataSource/setParams',
+      type: 'accessData/setDataType',
       payload: {
         dataType: type,
         oldName: '',
@@ -129,34 +169,18 @@ class AccessStepForm extends PureComponent {
   };
 
   handleAdd = () => {
-    this.child.handleSubmit('sub');
+    this.child.handleSubmit();
   };
 
-  connectTest = (obj, sub) => {
+  submit = () => {
+    console.log(this.props);
     const { dispatch } = this.props;
-    const { oldName } = this.props.opreateDataSource;
-    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
+    const { params } = this.props.accessData;
     dispatch({
-      type: 'opreateDataSource/connection',
+      type: 'accessData/submit',
       payload: {
-        params: this.props.opreateDataSource.params,
-        sub: sub,
-        oldName: oldName,
-      },
-    });
-    message.info('连接测试中，请勿进行其他操作...', 0);
-  };
-
-  submit = (obj, type) => {
-    const { dispatch } = this.props;
-    const { oldName } = this.props.opreateDataSource;
-    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
-    dispatch({
-      type: 'opreateDataSource/testName',
-      payload: {
-        params: this.props.opreateDataSource.params,
-        subType: type,
-        oldName: oldName,
+        id: this.props.match.params.id,
+        dbAddDto: params,
       },
     });
   };
@@ -168,22 +192,32 @@ class AccessStepForm extends PureComponent {
   render() {
     const {
       location,
-      opreateDataSource: { params },
+      accessData: { params },
     } = this.props;
     const { submitting } = this.props;
-    const { current, dataType } = this.props.opreateDataSource;
+    const { current, dataType, type } = this.props.accessData;
     const { name } = this.props.route;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
-      connectTest: this.connectTest,
       submit: this.submit,
     };
+    switch (dataType) {
+      case 'db':
+        steps = stepsDb;
+        break;
+      case 'ftp':
+        steps = stepsFtp;
+        break;
+      case 'file':
+        steps = stepsFile;
+        break;
+    }
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>
         <Card bordered={false}>
           <Fragment>
-            <Steps current={current} className={styles.steps}>
+            <Steps current={current}>
               {steps.map(item => (
                 <Step key={item.title} title={item.title} />
               ))}
@@ -192,29 +226,38 @@ class AccessStepForm extends PureComponent {
               {(() => {
                 switch (current) {
                   case 0:
-                    return <SelectDataSource {...parentMethods} type={params.type} />;
-                    break;
-                  case 1:
                     return (
-                      <ConfigDataSource
+                      <AccessDataInfo
                         onRef={this.onRef}
                         {...parentMethods}
                         dataType={dataType}
+                        type={type}
                         params={params}
                       />
                     );
+                    break;
+                  case 1:
+                    return <SetSyncPlan onRef={this.onRef} {...parentMethods} params={params} />;
                     break;
                   case 2:
                     return <AddSuccess />;
                     break;
                   default:
-                    return <SelectDataSource {...parentMethods} type={params.type} />;
+                    return (
+                      <AccessDataInfo
+                        onRef={this.onRef}
+                        {...parentMethods}
+                        dataType={dataType}
+                        type={type}
+                        params={params}
+                      />
+                    );
                 }
               })()}
             </div>
             <div className={styles.stepsAction}>
               {current < steps.length - 2 && (
-                <Button type="primary" disabled={params.type === ''} onClick={() => this.next()}>
+                <Button type="primary" htmlType="submit" onClick={() => this.next()}>
                   下一步
                 </Button>
               )}

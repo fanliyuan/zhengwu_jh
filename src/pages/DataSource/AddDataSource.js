@@ -164,7 +164,7 @@ class StepForm extends PureComponent {
       <PageHeaderWrapper tabActiveKey={location.pathname}>
         <Card bordered={false}>
           <Fragment>
-            <Steps current={current} className={styles.steps}>
+            <Steps current={current}>
               {steps.map(item => (
                 <Step key={item.title} title={item.title} />
               ))}

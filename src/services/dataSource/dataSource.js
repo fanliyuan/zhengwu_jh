@@ -105,7 +105,7 @@ export async function sftpDataTree(params) {
 
 //数据源（关系型数据库）数据接入
 export async function accessDataSource(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}/db`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/db`, {
     method: 'POST',
     body: params,
   });
