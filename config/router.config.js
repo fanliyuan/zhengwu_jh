@@ -18,7 +18,7 @@ export default [
     authority: ['admin', 'security', 'auditor', 'user', 'assessor'],
     routes: [
       // 系统概览
-      { path: '/', redirect: '/user/login' },
+      { path: '/', redirect: '/dashboard/analysis' },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -159,20 +159,34 @@ export default [
           {
             path: '/subscribe/sourceCatalog',
             name: 'sourceCatalog',
-            component: './Exception/404',
+            component: './Subscription/SourceCatalog',
             authority: ['user'],
           },
           {
             path: '/subscribe/management',
             name: 'management',
-            component: './Exception/500',
+            component: './Subscription/SubManagement',
             authority: ['user'],
           },
           {
             path: '/subscribe/dataManagement',
             name: 'dataManagement',
-            component: './Exception/TriggerException',
+            component: './Subscription/DataManagement',
             authority: ['user'],
+          },
+          {
+            path: 'subDetailFile',
+            name: 'subDetailFile',
+            component: './Subscription/SubDetailFile',
+            authority: 'user',
+            hideInMenu: true,
+          },
+          {
+            path: 'subDetailDataBase',
+            name: 'subDetailDataBase',
+            component: './Subscription/SubDetailDataBase',
+            authority: 'user',
+            hideInMenu: true,
           },
         ],
       },

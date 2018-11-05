@@ -32,6 +32,7 @@ functions/mock
 # umi
 .umi
 .umi-production
+/.temp
 
 # screenshot
 screenshot

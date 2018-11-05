@@ -181,3 +181,26 @@ export function formatWan(val) {
 export function isAntdPro() {
   return window.location.hostname === 'preview.pro.ant.design';
 }
+
+/**
+ * 根据表格列生成表格假数据
+ * @param {Array} columns 用来生成假数据的列的数组[{dataIndex: 'a'},{dataIndex: 'b'}]
+ * @param {Number} counts 生成数据的总数,默认为256
+ * @returns [{a:1,b:2},{a:3,b:4}...]
+ */
+export function getTableFakeData(columns, counts = 256) {
+  const res = [];
+  for (let index = 0; index < counts; index++) {
+    res.push(
+      columns.reduce((pre, cur) => {
+        pre[cur.dataIndex] = cur.title + index;
+        return pre;
+      }, {})
+    );
+  }
+  return res;
+  // return new Array(counts).map((item, index) => (columns.reduce((pre, cur) => {
+  // pre[cur.dataIndex] = cur.title+index
+  // return pre
+  // },{})))
+}
