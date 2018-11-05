@@ -16,7 +16,7 @@ export async function addDataSource(params) {
 
 //删除数据源
 export async function deleteDataSource(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
     method: 'DELETE',
     body: params,
   });
@@ -24,7 +24,7 @@ export async function deleteDataSource(params) {
 
 //修改数据源
 export async function updateDataSource(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
     method: 'PUT',
     body: params,
   });
@@ -32,7 +32,7 @@ export async function updateDataSource(params) {
 
 //查看数据源详情
 export async function viewDataSource(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}`);
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`);
 }
 
 //连接测试

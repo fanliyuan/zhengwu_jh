@@ -1,4 +1,5 @@
-import { initDataSource } from '@/services/dataSource/dataSource';
+import { initDataSource, deleteDataSource } from '@/services/dataSource/dataSource';
+import { message, notification } from 'antd';
 
 export default {
   namespace: 'dataSource',
@@ -8,6 +9,7 @@ export default {
       datas: [],
       totalCounts: 0,
     },
+    page: 1,
   },
 
   effects: {
@@ -17,6 +19,21 @@ export default {
         type: 'queryList',
         payload: response,
       });
+      yield put({
+        type: 'setPage',
+        payload: payload,
+      });
+    },
+    *deleteItem({ payload }, { call, put }) {
+      const response = yield call(deleteDataSource, payload.item);
+      let jsonRes = JSON.parse(response);
+      if (jsonRes && jsonRes.code < 300) {
+        message.success(jsonRes.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      }
     },
   },
 
@@ -37,6 +54,12 @@ export default {
           },
         };
       }
+    },
+    setPage(state, { payload }) {
+      return {
+        ...state,
+        page: payload.pageNum,
+      };
     },
   },
 };
