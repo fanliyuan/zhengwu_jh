@@ -16,6 +16,14 @@ export default class SubDetailDataBase extends Component {
       pubNodeName: '石家庄民政局',
       updateTime: '2018-01-01 15:12:13',
     };
+    const buttonList = [
+      {
+        text: '返回',
+        fn() {
+          window.history.back();
+        },
+      },
+    ];
     const pagination = {
       hideOnSinglePage: true,
       showQuickJumper: true,
@@ -60,7 +68,7 @@ export default class SubDetailDataBase extends Component {
     const dataSource1 = [{ index: 1 }];
     const dataSource2 = [{ index: 1 }];
     return (
-      <PageHeader>
+      <PageHeader buttonList={buttonList}>
         <div className="content_layout">
           <DataBaseInfo dataBaseInfo={dataBaseInfo} />
           <Divider style={{ marginTop: 10, marginBottom: 10 }} />
@@ -72,7 +80,14 @@ export default class SubDetailDataBase extends Component {
             rowKey="index"
             pagination={pagination}
           />
-          <Table className="mb16" columns={columns2} dataSource={dataSource2} bordered />
+          <Table
+            className="mb16"
+            columns={columns2}
+            dataSource={dataSource2}
+            bordered
+            rowKey=""
+            idnex
+          />
         </div>
       </PageHeader>
     );

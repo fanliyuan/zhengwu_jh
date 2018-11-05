@@ -321,6 +321,42 @@ function getFakeCaptcha(req, res) {
   return res.json('captcha-xxx');
 }
 
+function getDBList(req, res) {
+  return res.json({
+    code: 0,
+    result: {
+      datas: [
+        {
+          id: 0,
+          subName: '订阅1',
+        },
+        {
+          id: 1,
+          subName: '订阅2',
+        },
+      ],
+    },
+  });
+}
+
+function getFileList(req, res) {
+  return res.json({
+    code: 0,
+    result: {
+      datas: [
+        {
+          id: 10,
+          subName: '订阅10',
+        },
+        {
+          id: 11,
+          subName: '订阅11',
+        },
+      ],
+    },
+  });
+}
+
 export default {
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
@@ -333,4 +369,6 @@ export default {
   'GET /api/fake_list': getFakeList,
   'POST /api/fake_list': postFakeList,
   'GET /api/captcha': getFakeCaptcha,
+  'GET /api/getDBList': getDBList,
+  'GET /api/getFileList': getFileList,
 };
