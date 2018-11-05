@@ -142,7 +142,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/data/source/access/:id',
+            path: '/data/source/access/:id/:type',
             name: 'sourceAccess',
             component: './DataSource/AccessDataSource',
             hideInMenu: true,
