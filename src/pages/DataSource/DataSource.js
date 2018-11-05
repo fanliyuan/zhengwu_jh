@@ -68,7 +68,13 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id)}>删除</a>
           <Divider type="vertical" />
-          <a href="">接入数据</a>
+          <a
+            onClick={() =>
+              router.push(`${this.props.match.url}/access/${record.id}/${record.type}`)
+            }
+          >
+            接入数据
+          </a>
         </Fragment>
       ),
     },
