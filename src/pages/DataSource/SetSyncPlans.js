@@ -159,7 +159,7 @@ class SetSyncPlan extends PureComponent {
                   },
                 },
                 {
-                  max: 13,
+                  max: 3,
                   message: formatMessage({
                     id: 'validation.accessDataSource.syncAddDto.stopNum.max',
                   }),
