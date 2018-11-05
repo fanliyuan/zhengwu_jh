@@ -142,6 +142,12 @@ export default [
             hideInMenu: true,
           },
           {
+            path: '/data/source/access/:id',
+            name: 'sourceAccess',
+            component: './DataSource/AccessDataSource',
+            hideInMenu: true,
+          },
+          {
             path: '/data/management',
             name: 'management',
             component: './Result/Error',
