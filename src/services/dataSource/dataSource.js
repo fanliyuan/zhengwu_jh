@@ -115,7 +115,7 @@ export async function accessDataSource(params) {
 export async function accessFile(params) {
   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/file`, {
     method: 'POST',
-    body: params.addDto,
+    body: params.values,
   });
 }
 

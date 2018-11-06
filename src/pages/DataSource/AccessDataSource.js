@@ -56,6 +56,7 @@ let steps = [];
 @connect(({ accessData, loading }) => ({
   accessData,
   submitting: loading.effects['accessData/submit'],
+  testNameSubmitting: loading.effects['accessData/testName'],
 }))
 class AccessStepForm extends PureComponent {
   constructor(props) {
@@ -206,11 +207,11 @@ class AccessStepForm extends PureComponent {
   render() {
     const {
       location,
+      match,
       accessData: { params },
     } = this.props;
-    const { submitting } = this.props;
+    const { submitting, testNameSubmitting } = this.props;
     const { current, dataType, type } = this.props.accessData;
-    const { name } = this.props.route;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
@@ -245,13 +246,18 @@ class AccessStepForm extends PureComponent {
                         onRef={this.onRef}
                         {...parentMethods}
                         dataType={dataType}
+                        match={match}
                         type={type}
                         params={params}
                       />
                     );
                     break;
                   case 1:
-                    return <SetSyncPlan onRef={this.onRef} {...parentMethods} params={params} />;
+                    if (dataType !== 'file') {
+                      return <SetSyncPlan onRef={this.onRef} {...parentMethods} params={params} />;
+                    } else {
+                      return <AddSuccess />;
+                    }
                     break;
                   case 2:
                     return <AddSuccess />;
@@ -262,6 +268,7 @@ class AccessStepForm extends PureComponent {
                         onRef={this.onRef}
                         {...parentMethods}
                         dataType={dataType}
+                        match={match}
                         type={type}
                         params={params}
                       />
@@ -270,37 +277,69 @@ class AccessStepForm extends PureComponent {
               })()}
             </div>
             <div className={styles.stepsAction}>
-              {current < steps.length - 2 && (
-                <Button type="primary" htmlType="submit" onClick={() => this.next()}>
-                  下一步
-                </Button>
-              )}
-              {current === 1 && (
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={submitting}
-                  onClick={() => this.handleAdd()}
-                >
-                  提交
-                </Button>
-              )}
-              {name !== 'sourceUpdate' &&
+              {current < steps.length - 2 &&
+                dataType !== 'file' && (
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={testNameSubmitting}
+                    onClick={() => this.next()}
+                  >
+                    下一步
+                  </Button>
+                )}
+              {current === 1 &&
+                dataType !== 'file' && (
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                    onClick={() => this.handleAdd()}
+                  >
+                    提交
+                  </Button>
+                )}
+              {current === 0 &&
+                dataType === 'file' && (
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                    onClick={() => this.handleAdd()}
+                  >
+                    提交
+                  </Button>
+                )}
+              {dataType !== 'file' &&
                 current === 1 && (
                   <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
                     上一步
                   </Button>
                 )}
-              {current !== 2 && (
-                <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
-                  返回
-                </Button>
-              )}
-              {current === 2 && (
-                <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
-                  关闭
-                </Button>
-              )}
+              {current < 2 &&
+                dataType !== 'file' && (
+                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
+                    返回
+                  </Button>
+                )}
+              {current < 1 &&
+                dataType === 'file' && (
+                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
+                    返回
+                  </Button>
+                )}
+              {current === 2 &&
+                dataType !== 'file' && (
+                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
+                    关闭
+                  </Button>
+                )}
+              {current === 1 &&
+                dataType === 'file' && (
+                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
+                    关闭
+                  </Button>
+                )}
             </div>
           </Fragment>
         </Card>

@@ -19,30 +19,16 @@ import {
   Table,
   Row,
   Col,
+  Alert,
 } from 'antd';
 import styles from './AddDataSource.less';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
+const TextArea = Input.TextArea;
 const DirectoryTree = Tree.DirectoryTree;
 const TreeNode = Tree.TreeNode;
 const Dragger = Upload.Dragger;
-const props = {
-  name: 'file',
-  multiple: true,
-  action: '//jsonplaceholder.typicode.com/posts/',
-  onChange(info) {
-    const status = info.file.status;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error2') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -96,6 +82,7 @@ class AccessDataInfo extends PureComponent {
           datas: ['folder'],
         },
       ],
+      fileList: [],
     };
   }
 
@@ -150,26 +137,43 @@ class AccessDataInfo extends PureComponent {
   }
 
   handleSubmit = () => {
+    const id = this.props.match.params.id;
     const { form, dispatch } = this.props;
     const { params, dataType } = this.props.accessData;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if (dataType === 'db' && params.structAddDtoList.length < 1) {
+          message.destroy();
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.structAddDtoList.required' })
           );
         } else if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
+          message.destroy();
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.ftpfileAddDtoList.required' })
           );
-        } else if (dataType === 'file' && params.fileAddDtoList.length < 1) {
-          return message.error(
-            formatMessage({ id: 'validation.accessDataSource.fileAddDtoList.required' })
-          );
+        } else if (dataType === 'file') {
+          const { fileList } = this.state;
+          if (fileList.length < 1) {
+            message.destroy();
+            return message.error(
+              formatMessage({ id: 'validation.accessDataSource.fileAddDtoList.required' })
+            );
+          } else {
+            let params = [];
+            fileList.map(item => {
+              params.push(item.response.result.data);
+            });
+            values.fileAddDtoList = params;
+          }
         }
         dispatch({
           type: 'accessData/testName',
-          payload: values,
+          payload: {
+            values: values,
+            dataType: dataType,
+            id: id,
+          },
         });
       }
     });
@@ -177,6 +181,7 @@ class AccessDataInfo extends PureComponent {
 
   selectData = dbName => {
     if (dbName === '') {
+      message.destroy();
       return message.info('请先选择数据库！');
     }
     this.showModal(dbName);
@@ -324,7 +329,7 @@ class AccessDataInfo extends PureComponent {
   };
 
   onLoadTreeData = treeNode => {
-    const { dispatch } = this.props;
+    const { dispatch, type } = this.props;
     const { alias } = this.props.accessData;
     const { path, name } = treeNode.props.dataRef;
     return new Promise(resolve => {
@@ -339,6 +344,7 @@ class AccessDataInfo extends PureComponent {
               },
               type: 'update',
               treeNode: treeNode,
+              treeType: type,
             },
           })
         );
@@ -394,6 +400,31 @@ class AccessDataInfo extends PureComponent {
       type: 'accessData/addFtpfileAddDtoList',
       payload: params,
     });
+  };
+
+  uploadBefore = (file, fileList) => {
+    return new Promise((resolve, reject) => {
+      if (file.size > 52428800) {
+        message.destroy();
+        reject(message.error(`${file.name} 大于50M，停止上传！`));
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  addFileAddDtoList = info => {
+    const status = info.file.status;
+    if (status !== 'uploading') {
+      this.setState({
+        fileList: info.fileList,
+      });
+    }
+    if (status === 'done') {
+      message.success(`${info.file.name}上传成功！`);
+    } else if (status === 'error') {
+      message.error(`${info.file.name}上传失败！`);
+    }
   };
 
   renderDbForm() {
@@ -507,7 +538,7 @@ class AccessDataInfo extends PureComponent {
                 message: formatMessage({ id: 'validation.accessDataSource.describe.max' }),
               },
             ],
-          })(<Input />)}
+          })(<TextArea rows={4} />)}
         </FormItem>
         <FormItem
           {...formItemLayout}
@@ -619,15 +650,18 @@ class AccessDataInfo extends PureComponent {
       <Fragment>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="文件树">
-            <DirectoryTree
-              className={styles.tree}
-              checkable
-              showIcon
-              loadData={this.onLoadTreeData}
-              onCheck={this.checkTree}
-            >
-              {this.renderTreeNodes(treeList)}
-            </DirectoryTree>
+            {treeList.length < 1 && <Alert message="数据加载中" type="info" showIcon />}
+            {treeList.length > 0 && (
+              <DirectoryTree
+                className={styles.tree}
+                checkable
+                showIcon
+                loadData={this.onLoadTreeData}
+                onCheck={this.checkTree}
+              >
+                {this.renderTreeNodes(treeList)}
+              </DirectoryTree>
+            )}
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -679,7 +713,7 @@ class AccessDataInfo extends PureComponent {
                   message: formatMessage({ id: 'validation.accessDataSource.describe.max' }),
                 },
               ],
-            })(<Input type="password" autoComplete="new-password" />)}
+            })(<TextArea rows={4} />)}
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -748,17 +782,21 @@ class AccessDataInfo extends PureComponent {
         md: { span: 10 },
       },
     };
+    const fileProps = {
+      name: 'file',
+      multiple: true,
+      action: '/api/api/v2/zhengwu/swap/datasource/file/up',
+      beforeUpload: this.uploadBefore,
+      onChange: this.addFileAddDtoList,
+    };
     return (
       <Fragment>
-        <Dragger {...props}>
+        <Dragger {...fileProps}>
           <p className="ant-upload-drag-icon">
             <Icon type="inbox" />
           </p>
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">
-            Support for a single or bulk upload. Strictly prohibit from uploading company data or
-            other band files
-          </p>
+          <p className="ant-upload-text">单击或拖动文件到该区域上传</p>
+          <p className="ant-upload-hint">支持单个或批量上传</p>
         </Dragger>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem
@@ -811,7 +849,7 @@ class AccessDataInfo extends PureComponent {
                   message: formatMessage({ id: 'validation.accessDataSource.describe.max' }),
                 },
               ],
-            })(<Input type="password" autoComplete="new-password" />)}
+            })(<TextArea rows={4} />)}
           </FormItem>
           <FormItem
             {...formItemLayout}

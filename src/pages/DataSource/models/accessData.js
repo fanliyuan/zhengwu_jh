@@ -9,6 +9,7 @@ import {
   accessFtp,
   accessFile,
   ftpDataList,
+  sftpDataList,
 } from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
 function initDbParams() {
@@ -218,7 +219,13 @@ export default {
       }
     },
     *setTreeList({ payload }, { call, put }) {
-      const response = yield call(ftpDataList, payload.params);
+      let callbackApi;
+      if (payload.treeType === 'ftp') {
+        callbackApi = ftpDataList;
+      } else {
+        callbackApi = sftpDataList;
+      }
+      const response = yield call(callbackApi, payload.params);
       if (response && response.code < 300) {
         if (payload.treeNode) {
           yield put({
@@ -273,6 +280,7 @@ export default {
     *connection({ payload }, { call, put }) {
       const response = yield call(connectBase, payload.connectParams);
       const alias = response.result.data;
+      const treeType = payload.connectParams.type;
       if (response.code < 300) {
         if (payload.dataType === 'db') {
           yield put({
@@ -290,6 +298,7 @@ export default {
                 path: '/',
               },
               type: 'create',
+              treeType: treeType,
             },
           });
         }
@@ -315,7 +324,7 @@ export default {
       });
     },
     *testName({ payload }, { call, put }) {
-      const response = yield call(isSameNameData, { name: payload.name });
+      const response = yield call(isSameNameData, { name: payload.values.name });
       if (response && response.result.data) {
         return notification.error({
           message: '数据名称重复！',
@@ -323,12 +332,19 @@ export default {
       }
       yield put({
         type: 'updateParams',
-        payload: payload,
+        payload: payload.values,
       });
-      yield put({
-        type: 'next',
-        payload: payload,
-      });
+      if (payload.dataType !== 'file') {
+        yield put({
+          type: 'next',
+          payload: payload.values,
+        });
+      } else {
+        yield put({
+          type: 'submit',
+          payload: payload,
+        });
+      }
     },
   },
 
