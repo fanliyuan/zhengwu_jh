@@ -182,7 +182,7 @@ class AccessDataInfo extends PureComponent {
   selectData = dbName => {
     if (dbName === '') {
       message.destroy();
-      return message.info('请先选择数据库1！');
+      return message.info('请先选择数据库！');
     }
     this.showModal(dbName);
   };
