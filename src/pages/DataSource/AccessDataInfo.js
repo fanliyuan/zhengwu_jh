@@ -38,7 +38,7 @@ const props = {
     }
     if (status === 'done') {
       message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
+    } else if (status === 'error2') {
       message.error(`${info.file.name} file upload failed.`);
     }
   },
