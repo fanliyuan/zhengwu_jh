@@ -82,6 +82,8 @@ class AccessStepForm extends PureComponent {
         dataType: '',
         type: '',
         oldName: '',
+        dbList: [],
+        treeList: [],
         tableList: [],
         columnList: [],
         syncModeList: [
@@ -185,14 +187,14 @@ class AccessStepForm extends PureComponent {
   };
 
   submit = () => {
-    console.log(this.props);
     const { dispatch } = this.props;
-    const { params } = this.props.accessData;
+    const { params, dataType } = this.props.accessData;
     dispatch({
       type: 'accessData/submit',
       payload: {
         id: this.props.match.params.id,
-        dbAddDto: params,
+        addDto: params,
+        dataType: dataType,
       },
     });
   };

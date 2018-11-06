@@ -6,6 +6,9 @@ import {
   mysqlTableList,
   mysqlColumnList,
   accessDataSource,
+  accessFtp,
+  accessFile,
+  ftpDataList,
 } from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
 function initDbParams() {
@@ -67,6 +70,7 @@ export default {
     alias: '',
     oldName: '',
     dbList: [],
+    treeList: [],
     tableList: [],
     columnList: [],
     syncModeList: [
@@ -117,7 +121,7 @@ export default {
   effects: {
     *detail({ payload }, { call, put }) {
       const response = yield call(viewDataSource, payload);
-      if (response.code < 300) {
+      if (response && response.code < 300) {
         let dataType = '';
         let params = {};
         const { type, alias, ip, port, username, password } = response.result.data;
@@ -206,16 +210,39 @@ export default {
     },
     *setDbList({ payload }, { call, put }) {
       const response = yield call(mysqlDbList, payload);
-      if (response.code < 300) {
+      if (response && response.code < 300) {
         yield put({
           type: 'updateDbList',
           payload: response.result.datas,
         });
       }
     },
+    *setTreeList({ payload }, { call, put }) {
+      const response = yield call(ftpDataList, payload.params);
+      if (response && response.code < 300) {
+        if (payload.treeNode) {
+          yield put({
+            type: 'updateTreeList',
+            payload: {
+              data: response.result.datas,
+              type: payload.type,
+              treeNode: payload.treeNode,
+            },
+          });
+        } else {
+          yield put({
+            type: 'updateTreeList',
+            payload: {
+              data: response.result.datas,
+              type: payload.type,
+            },
+          });
+        }
+      }
+    },
     *setTableList({ payload }, { call, put }) {
       const response = yield call(mysqlTableList, payload);
-      if (response.code < 300) {
+      if (response && response.code < 300) {
         yield put({
           type: 'updateTableList',
           payload: response.result.datas,
@@ -224,7 +251,7 @@ export default {
     },
     *setColumnList({ payload }, { call, put }) {
       const response = yield call(mysqlColumnList, payload);
-      if (response.code < 300) {
+      if (response && response.code < 300) {
         yield put({
           type: 'updateColumnList',
           payload: response.result.datas,
@@ -254,11 +281,30 @@ export default {
               alias: alias,
             },
           });
+        } else if (payload.dataType === 'ftp') {
+          yield put({
+            type: 'setTreeList',
+            payload: {
+              params: {
+                alias: alias,
+                path: '/',
+              },
+              type: 'create',
+            },
+          });
         }
       }
     },
     *submit({ payload }, { call, put }) {
-      const response = yield call(accessDataSource, payload);
+      let callbackApi;
+      if (payload.dataType === 'db') {
+        callbackApi = accessDataSource;
+      } else if (payload.dataType === 'ftp') {
+        callbackApi = accessFtp;
+      } else {
+        callbackApi = accessFile;
+      }
+      const response = yield call(callbackApi, payload);
       if (response && response.code >= 300) {
         return notification.error({
           message: response.message,
@@ -319,6 +365,26 @@ export default {
         dbList: payload,
       };
     },
+    updateTreeList(state, { payload }) {
+      const { type } = payload;
+      let { treeList } = state;
+      if (type === 'create') {
+        payload.data.map((item, index) => {
+          item.key = index;
+        });
+        treeList = payload.data;
+      } else {
+        payload.data.map((item, index) => {
+          item.key = `${payload.treeNode.props.eventKey}-${index}`;
+        });
+        payload.treeNode.props.dataRef.children = payload.data;
+        treeList = [...treeList];
+      }
+      return {
+        ...state,
+        treeList: treeList,
+      };
+    },
     updateTableList(state, { payload }) {
       return {
         ...state,
@@ -343,6 +409,13 @@ export default {
     addStructAddDtoList(state, { payload }) {
       state.params.structAddDtoList.splice(0, state.params.structAddDtoList.length);
       state.params.structAddDtoList = [...state.params.structAddDtoList, ...payload];
+      return {
+        ...state,
+      };
+    },
+    addFtpfileAddDtoList(state, { payload }) {
+      state.params.ftpfileAddDtoList.splice(0, state.params.ftpfileAddDtoList.length);
+      state.params.ftpfileAddDtoList = [...state.params.ftpfileAddDtoList, ...payload];
       return {
         ...state,
       };

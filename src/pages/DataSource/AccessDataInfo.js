@@ -24,6 +24,7 @@ import styles from './AddDataSource.less';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
+const DirectoryTree = Tree.DirectoryTree;
 const TreeNode = Tree.TreeNode;
 const Dragger = Upload.Dragger;
 const props = {
@@ -42,49 +43,6 @@ const props = {
     }
   },
 };
-const treeData = [
-  {
-    title: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: '0-0-0',
-        key: '0-0-0',
-        children: [
-          { title: '0-0-0-0', key: '0-0-0-0' },
-          { title: '0-0-0-1', key: '0-0-0-1' },
-          { title: '0-0-0-2', key: '0-0-0-2' },
-        ],
-      },
-      {
-        title: '0-0-1',
-        key: '0-0-1',
-        children: [
-          { title: '0-0-1-0', key: '0-0-1-0' },
-          { title: '0-0-1-1', key: '0-0-1-1' },
-          { title: '0-0-1-2', key: '0-0-1-2' },
-        ],
-      },
-      {
-        title: '0-0-2',
-        key: '0-0-2',
-      },
-    ],
-  },
-  {
-    title: '0-1',
-    key: '0-1',
-    children: [
-      { title: '0-1-0-0', key: '0-1-0-0' },
-      { title: '0-1-0-1', key: '0-1-0-1' },
-      { title: '0-1-0-2', key: '0-1-0-2' },
-    ],
-  },
-  {
-    title: '0-2',
-    key: '0-2',
-  },
-];
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -104,6 +62,40 @@ class AccessDataInfo extends PureComponent {
       structAddDtoList: [],
       tableName: '',
       tableNote: '',
+      fileTypes: [
+        {
+          name: 'file-text',
+          datas: ['txt'],
+        },
+        {
+          name: 'file-pdf',
+          datas: ['pdf'],
+        },
+        {
+          name: 'file-word',
+          datas: ['doc', 'docx'],
+        },
+        {
+          name: 'file-excel',
+          datas: ['xls', 'xlsx'],
+        },
+        {
+          name: 'file-ppt',
+          datas: ['ppt', 'pptx'],
+        },
+        {
+          name: 'picture',
+          datas: ['jpg', 'png', 'bmp', 'gif', 'jpeg'],
+        },
+        {
+          name: 'code',
+          datas: ['html', 'css', 'js', 'java', 'php'],
+        },
+        {
+          name: 'folder',
+          datas: ['folder'],
+        },
+      ],
     };
   }
 
@@ -121,7 +113,6 @@ class AccessDataInfo extends PureComponent {
       dataIndex: 'comment',
     },
   ];
-
   colColumns = [
     {
       title: '序号',
@@ -160,19 +151,26 @@ class AccessDataInfo extends PureComponent {
 
   handleSubmit = () => {
     const { form, dispatch } = this.props;
-    const { params } = this.props.accessData;
+    const { params, dataType } = this.props.accessData;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (params.structAddDtoList.length < 1) {
+        if (dataType === 'db' && params.structAddDtoList.length < 1) {
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.structAddDtoList.required' })
+          );
+        } else if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
+          return message.error(
+            formatMessage({ id: 'validation.accessDataSource.ftpfileAddDtoList.required' })
+          );
+        } else if (dataType === 'file' && params.fileAddDtoList.length < 1) {
+          return message.error(
+            formatMessage({ id: 'validation.accessDataSource.fileAddDtoList.required' })
           );
         }
         dispatch({
           type: 'accessData/testName',
           payload: values,
         });
-        console.log(this.props);
       }
     });
   };
@@ -204,8 +202,6 @@ class AccessDataInfo extends PureComponent {
   handleOk = e => {
     const { dispatch } = this.props;
     const { structAddDtoList, tableName, tableNote } = this.state;
-    console.log(tableName);
-    console.log(tableNote);
     dispatch({
       type: 'accessData/addStructAddDtoList',
       payload: structAddDtoList,
@@ -327,10 +323,81 @@ class AccessDataInfo extends PureComponent {
     record.index = index + 1;
   };
 
-  renderDbForm() {
+  onLoadTreeData = treeNode => {
     const { dispatch } = this.props;
-    const { params } = this.props;
-    const { type, alias } = this.props;
+    const { alias } = this.props.accessData;
+    const { path, name } = treeNode.props.dataRef;
+    return new Promise(resolve => {
+      if (treeNode.props.dataRef.open) {
+        resolve(
+          dispatch({
+            type: 'accessData/setTreeList',
+            payload: {
+              params: {
+                alias: alias,
+                path: `${path}${name}/`,
+              },
+              type: 'update',
+              treeNode: treeNode,
+            },
+          })
+        );
+      }
+    });
+  };
+
+  checkTree = (checkedKeys, e) => {
+    let setNodes = [];
+    let addNodes = [];
+    const { treeList } = this.props.accessData;
+    for (let i = 0, len = treeList.length; i < len; i++) {
+      let k;
+      setNodes[i] = [];
+      checkedKeys.map((item, index) => {
+        if (parseInt(item.substr(0, 1)) === i) {
+          if (k === undefined) {
+            k = item.length;
+            setNodes[i].push(item);
+          } else {
+            if (item.length === k) {
+              setNodes[i].push(item);
+            } else if (item.length < k) {
+              setNodes[i].splice(0, setNodes[i].length);
+              setNodes[i].push(item);
+            }
+          }
+        }
+      });
+    }
+    for (let l = 0, len = setNodes.length; l < len; l++) {
+      if (setNodes[l].length > 0) {
+        addNodes = [...addNodes, ...setNodes[l]];
+      }
+    }
+    this.addFtpfileAddDtoList(addNodes, e.checkedNodes);
+  };
+
+  addFtpfileAddDtoList = (nodes, checkedNodes) => {
+    const { dispatch } = this.props;
+    let params = [];
+    checkedNodes.map(item => {
+      if (nodes.indexOf(item.key) !== -1) {
+        params.push({
+          name: item.props.dataRef.name,
+          open: item.props.dataRef.open,
+          path: item.props.dataRef.path,
+          type: item.props.dataRef.type,
+        });
+      }
+    });
+    dispatch({
+      type: 'accessData/addFtpfileAddDtoList',
+      payload: params,
+    });
+  };
+
+  renderDbForm() {
+    const { params, type } = this.props;
     const { dbList } = this.props.accessData;
     const {
       form: { getFieldDecorator, getFieldValue },
@@ -493,21 +560,47 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderTreeNodes = data => {
+    const { fileTypes } = this.state;
     return data.map(item => {
-      if (item.children) {
+      if (item.open) {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.key} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          );
+        }
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
+          <TreeNode
+            icon={<Icon type="folder" theme="outlined" />}
+            title={item.name}
+            key={item.key}
+            dataRef={item}
+          />
         );
       }
-      return <TreeNode {...item} />;
+      let type = 'file';
+      for (let i = 0, len = fileTypes.length; i < len; i++) {
+        if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+          type = fileTypes[i].name;
+          break;
+        }
+      }
+      return (
+        <TreeNode
+          isLeaf={true}
+          icon={<Icon type={type} theme="outlined" />}
+          title={item.name}
+          key={item.key}
+          dataRef={item}
+        />
+      );
     });
   };
 
   renderFtpForm() {
-    const { params } = this.props;
-    const { type } = this.props;
+    const { params, type } = this.props;
+    const { treeList } = this.props.accessData;
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -524,8 +617,18 @@ class AccessDataInfo extends PureComponent {
     };
     return (
       <Fragment>
-        <Tree>{this.renderTreeNodes(treeData)}</Tree>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
+          <FormItem {...formItemLayout} label="文件树">
+            <DirectoryTree
+              className={styles.tree}
+              checkable
+              showIcon
+              loadData={this.onLoadTreeData}
+              onCheck={this.checkTree}
+            >
+              {this.renderTreeNodes(treeList)}
+            </DirectoryTree>
+          </FormItem>
           <FormItem
             {...formItemLayout}
             label={<FormattedMessage id="form.accessDataSource.dataType.label" />}
@@ -630,8 +733,7 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderFileForm() {
-    const { params } = this.props;
-    const { type } = this.props;
+    const { params, type } = this.props;
     const {
       form: { getFieldDecorator },
     } = this.props;

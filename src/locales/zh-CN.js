@@ -17,6 +17,8 @@ export default {
   'validation.dataSource.password.max': '数据库密码长度不能大于50个字符！',
   'validation.accessDataSource.dbName.required': '请选择数据库！',
   'validation.accessDataSource.structAddDtoList.required': '请选择表和字段！',
+  'validation.accessDataSource.ftpfileAddDtoList.required': '请选择文件或文件夹！',
+  'validation.accessDataSource.fileAddDtoList.required': '请上传文件！',
   'validation.accessDataSource.name.required': '数据名称不能为空！',
   'validation.accessDataSource.name.max': '数据名称长度不能大于50个字符！',
   'validation.accessDataSource.createUnit.max': '建库单位长度不能大于50个字符！',

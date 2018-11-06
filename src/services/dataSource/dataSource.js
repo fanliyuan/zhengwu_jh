@@ -107,22 +107,22 @@ export async function sftpDataTree(params) {
 export async function accessDataSource(params) {
   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/db`, {
     method: 'POST',
-    body: params.dbAddDto,
+    body: params.addDto,
   });
 }
 
 //数据源（文件）数据接入
 export async function accessFile(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}/file`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/file`, {
     method: 'POST',
-    body: params,
+    body: params.addDto,
   });
 }
 
 //数据源（SFTP/FTP）数据接入
 export async function accessFtp(params) {
-  return request(`/api/api/v2/zhengwu/swap/datasource/${stringify(params)}/ftp`, {
+  return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/ftp`, {
     method: 'POST',
-    body: params,
+    body: params.addDto,
   });
 }
