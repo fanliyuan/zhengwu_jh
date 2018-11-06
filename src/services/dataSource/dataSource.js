@@ -107,7 +107,7 @@ export async function sftpDataTree(params) {
 export async function accessDataSource(params) {
   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}/db`, {
     method: 'POST',
-    body: params,
+    body: params.dbAddDto,
   });
 }
 

@@ -58,7 +58,7 @@ class SetSyncPlan extends PureComponent {
     const { syncModeList, syncRateList, timeList } = this.props.accessData;
     const { connecting } = this.props;
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const formItemLayout = {
       labelCol: {
@@ -127,13 +127,22 @@ class SetSyncPlan extends PureComponent {
                   }),
                 },
               ],
-            })(<Input style={{ width: 80, marginLeft: 5, marginRight: 5 }} />)}
+            })(
+              <Input
+                maxLength="3"
+                disabled={getFieldValue('syncAddDto.syncRate') === '实时'}
+                style={{ width: 80, marginLeft: 5, marginRight: 5 }}
+              />
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label="tips">
             {getFieldDecorator('timeRate', {
               initialValue: timeArr[1],
             })(
-              <Select style={{ width: 80 }}>
+              <Select
+                disabled={getFieldValue('syncAddDto.syncRate') === '实时'}
+                style={{ width: 80 }}
+              >
                 {timeList.map(d => (
                   <Option key={d.value}>{d.key}</Option>
                 ))}

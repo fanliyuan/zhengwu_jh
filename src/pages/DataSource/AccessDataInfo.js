@@ -169,11 +169,8 @@ class AccessDataInfo extends PureComponent {
           );
         }
         dispatch({
-          type: 'accessData/updateParams',
+          type: 'accessData/testName',
           payload: values,
-        });
-        dispatch({
-          type: 'accessData/next',
         });
         console.log(this.props);
       }
@@ -819,7 +816,7 @@ class AccessDataInfo extends PureComponent {
             </Col>
             <Col span={14}>
               {columnList.length < 1 && (
-                <Card title="" bordered={false}>
+                <Card title={columnLength} bordered={false}>
                   请选择数据表
                 </Card>
               )}

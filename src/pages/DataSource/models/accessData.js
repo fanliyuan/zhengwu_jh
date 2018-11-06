@@ -1,4 +1,5 @@
 import {
+  connectBase,
   isSameNameData,
   viewDataSource,
   mysqlDbList,
@@ -39,9 +40,9 @@ function initFtpParams() {
     name: '',
     syncAddDto: {
       stopNum: 0,
-      syncMode: '',
-      syncRate: '',
-      timeSet: '',
+      syncMode: '增量',
+      syncRate: '定时',
+      timeSet: '-分钟',
     },
   };
 }
@@ -183,9 +184,16 @@ export default {
           },
         });
         yield put({
-          type: 'setDbList',
+          type: 'connection',
           payload: {
-            alias: alias,
+            dataType: dataType,
+            connectParams: {
+              type: type,
+              addr: ip,
+              port: port,
+              username: username,
+              password: password,
+            },
           },
         });
       }
@@ -235,6 +243,20 @@ export default {
         payload: payload,
       });
     },
+    *connection({ payload }, { call, put }) {
+      const response = yield call(connectBase, payload.connectParams);
+      const alias = response.result.data;
+      if (response.code < 300) {
+        if (payload.dataType === 'db') {
+          yield put({
+            type: 'setDbList',
+            payload: {
+              alias: alias,
+            },
+          });
+        }
+      }
+    },
     *submit({ payload }, { call, put }) {
       const response = yield call(accessDataSource, payload);
       if (response && response.code >= 300) {
@@ -247,36 +269,20 @@ export default {
       });
     },
     *testName({ payload }, { call, put }) {
-      if (payload.subType === 'file') {
-        if (payload.oldName !== '' && payload.oldName === payload.params.name) {
-          yield put({
-            type: 'submit',
-            payload: payload.params,
-          });
-        } else {
-          const response = yield call(isSameNameData, { name: payload.params.name });
-          if (response && response.result.data) {
-            return notification.error({
-              message: '数据名称重复！',
-            });
-          }
-          yield put({
-            type: 'submit',
-            payload: payload.params,
-          });
-        }
-      } else {
-        const response = yield call(isSameNameData, { name: payload.name });
-        if (response && response.result.data) {
-          return notification.error({
-            message: '数据名称重复！',
-          });
-        }
-        yield put({
-          type: 'submit',
-          payload: payload,
+      const response = yield call(isSameNameData, { name: payload.name });
+      if (response && response.result.data) {
+        return notification.error({
+          message: '数据名称重复！',
         });
       }
+      yield put({
+        type: 'updateParams',
+        payload: payload,
+      });
+      yield put({
+        type: 'next',
+        payload: payload,
+      });
     },
   },
 
@@ -288,12 +294,15 @@ export default {
       };
     },
     prev(state) {
+      state.params.syncAddDto = {
+        stopNum: '0',
+        syncMode: '增量',
+        syncRate: '定时',
+        timeSet: '-分钟',
+      };
       return {
         ...state,
         current: state.current - 1,
-        params: {
-          ...initDbParams(),
-        },
       };
     },
     updateDataType(state, { payload }) {

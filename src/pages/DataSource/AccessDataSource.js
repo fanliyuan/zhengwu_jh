@@ -16,7 +16,7 @@ import {
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import AccessDataInfo from './AccessDataInfo';
-import SetSyncPlan from './SetSyncPlan';
+import SetSyncPlan from './SetSyncPlans';
 import AddSuccess from './AddSuccess';
 import styles from './AddDataSource.less';
 
@@ -151,6 +151,18 @@ class AccessStepForm extends PureComponent {
   }
 
   back() {
+    Modal.confirm({
+      title: '警告',
+      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        this.props.history.goBack();
+      },
+    });
+  }
+
+  close() {
     this.props.history.goBack();
   }
 
@@ -277,11 +289,16 @@ class AccessStepForm extends PureComponent {
                     上一步
                   </Button>
                 )}
-              {
+              {current !== 2 && (
                 <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                   返回
                 </Button>
-              }
+              )}
+              {current === 2 && (
+                <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
+                  关闭
+                </Button>
+              )}
             </div>
           </Fragment>
         </Card>
