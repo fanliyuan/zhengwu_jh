@@ -1,19 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import {
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Button,
-  Card,
-  InputNumber,
-  Radio,
-  Icon,
-  Tooltip,
-  message,
-} from 'antd';
+import { Form, Input, Select, Card, message } from 'antd';
 import styles from './AddDataSource.less';
 
 const Option = Select.Option;
@@ -21,7 +9,6 @@ const FormItem = Form.Item;
 
 @connect(({ accessData, loading }) => ({
   accessData,
-  loadingTable: loading.effects['accessData/setTableList'],
 }))
 @Form.create()
 class SetSyncPlan extends PureComponent {
@@ -56,7 +43,6 @@ class SetSyncPlan extends PureComponent {
     const { params } = this.props;
     const timeArr = params.syncAddDto.timeSet.split('-');
     const { syncModeList, syncRateList, timeList } = this.props.accessData;
-    const { connecting } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;

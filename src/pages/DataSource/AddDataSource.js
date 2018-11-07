@@ -1,18 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  List,
-  Card,
-  Steps,
-  Form,
-  Input,
-  Button,
-  Select,
-  Divider,
-  Icon,
-  message,
-  Modal,
-} from 'antd';
+import { Card, Steps, Button, message, Modal } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SelectDataSource from './SelectDataSource';

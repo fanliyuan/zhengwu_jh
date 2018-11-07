@@ -1,19 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import {
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Button,
-  Card,
-  InputNumber,
-  Radio,
-  Icon,
-  Tooltip,
-  message,
-} from 'antd';
+import { Form, Input, Button, Card, message } from 'antd';
 import styles from './AddDataSource.less';
 
 const FormItem = Form.Item;

@@ -8,23 +8,13 @@ import {
   Form,
   Input,
   Select,
-  Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
   DatePicker,
   Modal,
-  message,
-  Badge,
   Divider,
-  Steps,
-  Radio,
   Table,
-  tag,
 } from 'antd';
 import router from 'umi/router';
-import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from './DataSource.less';
@@ -184,7 +174,7 @@ class TableList extends PureComponent {
     });
   };
 
-  renderAdvancedForm() {
+  renderForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -238,10 +228,6 @@ class TableList extends PureComponent {
     );
   }
 
-  renderForm() {
-    return this.renderAdvancedForm();
-  }
-
   changePage = (current, pageSize) => {
     const { dispatch } = this.props;
     paramsPage = { pageNum: current, pageSize: pageSize };
@@ -266,6 +252,9 @@ class TableList extends PureComponent {
       current: page,
       onChange: this.changePage,
       pageSize: 10,
+      showTotal(total) {
+        return `共${Math.ceil(total / 10)}页 / ${total}条 数据`;
+      },
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',
