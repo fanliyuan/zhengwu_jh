@@ -58,7 +58,16 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => router.push(`${this.props.match.url}/update/${record.id}`)}>修改</a>
+          <a
+            onClick={() => {
+              if (!record.xg) {
+                return message.error('已接入数据，禁止修改！');
+              }
+              router.push(`${this.props.match.url}/update/${record.id}`);
+            }}
+          >
+            修改
+          </a>
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id, record.sc)}>删除</a>
           <Divider type="vertical" />
