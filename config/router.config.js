@@ -85,27 +85,69 @@ export default [
       },
       // 政务信息资源目录
       {
-        path: '/informationResources',
-        name: 'informationResources',
+        path: 'informationResource',
+        name: 'informationResource',
         icon: 'profile',
         authority: ['user', 'assessor'],
         routes: [
           {
-            path: '/informationResources/audit',
+            path: '/informationResource/audit',
             name: 'audit',
             component: './Profile/BasicProfile',
             authority: ['assessor'],
           },
           {
-            path: '/informationResources/subscriptionLicense',
+            path: '/informationResource/subscriptionLicense',
             name: 'subscriptionLicense',
             component: './Profile/AdvancedProfile',
             authority: ['assessor'],
           },
           {
-            path: '/informationResources/management',
+            path: 'management',
             name: 'management',
-            component: './Profile/AdvancedProfile',
+            component: './InformationResource/SourceManagement',
+            authority: ['user'],
+          },
+          {
+            path: 'addDirectory',
+            name: 'addDirectory',
+            hideInMenu: true,
+            component: './InformationResource/AddDirectory',
+            authority: ['user'],
+          },
+          {
+            path: 'inputDirectory',
+            name: 'inputDirectory',
+            hideInMenu: true,
+            component: './InformationResource/InputDirectory',
+            authority: ['user'],
+          },
+          {
+            path: 'viewDirectory',
+            name: 'viewDirectory',
+            hideInMenu: true,
+            component: './InformationResource/ViewDirectory',
+            authority: ['user'],
+          },
+          {
+            path: 'resourceConnectionData',
+            name: 'resourceConnectionData',
+            hideInMenu: true,
+            component: './InformationResource/ResourceConnectionData',
+            authority: ['user'],
+          },
+          {
+            path: 'openShare',
+            name: 'openShare',
+            hideInMenu: true,
+            component: './InformationResource/OpenShare',
+            authority: ['user'],
+          },
+          {
+            path: 'openShareFile',
+            name: 'openShareFile',
+            hideInMenu: true,
+            component: './InformationResource/OpenShareFile',
             authority: ['user'],
           },
         ],
@@ -323,7 +365,7 @@ export default [
           },
         ],
       },
-      //错误处理
+      // 错误处理
       {
         name: 'exception',
         icon: 'warning',
