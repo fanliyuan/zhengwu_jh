@@ -14,6 +14,9 @@ const FormItem = Form.Item;
 class SetSyncPlan extends PureComponent {
   constructor(props) {
     super(props);
+    this.state = {
+      timeRate: '分钟',
+    };
   }
 
   componentDidMount() {
@@ -23,11 +26,11 @@ class SetSyncPlan extends PureComponent {
   handleSubmit = () => {
     const { form, dispatch } = this.props;
     const { submit } = this.props;
+    const { timeRate } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.syncAddDto.timeSet = `${values.timeNum}-${values.timeRate}`;
+        values.syncAddDto.timeSet = `${values.timeNum}-${timeRate}`;
         delete values.timeNum;
-        delete values.timeRate;
         dispatch({
           type: 'accessData/updateParams',
           payload: values,
@@ -36,6 +39,12 @@ class SetSyncPlan extends PureComponent {
           submit();
         }, 500);
       }
+    });
+  };
+
+  changeTimeRate = value => {
+    this.setState({
+      timeRate: value,
     });
   };
 
@@ -92,6 +101,7 @@ class SetSyncPlan extends PureComponent {
             {...formItemLayout}
             label={<FormattedMessage id="form.accessDataSource.syncAddDto.timeNum.label" />}
           >
+            每
             {getFieldDecorator('timeNum', {
               initialValue: timeArr[0],
               rules: [
@@ -117,28 +127,27 @@ class SetSyncPlan extends PureComponent {
               <Input
                 maxLength="3"
                 disabled={getFieldValue('syncAddDto.syncRate') === '实时'}
-                style={{ width: 80, marginLeft: 5, marginRight: 5 }}
+                addonAfter={
+                  <Select
+                    onChange={this.changeTimeRate}
+                    defaultValue={timeArr[1]}
+                    disabled={getFieldValue('syncAddDto.syncRate') === '实时'}
+                    style={{ width: 80 }}
+                  >
+                    {timeList.map(d => (
+                      <Option key={d.value}>{d.key}</Option>
+                    ))}
+                  </Select>
+                }
+                style={{ width: 150, marginLeft: 5, marginRight: 5 }}
               />
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="tips">
-            {getFieldDecorator('timeRate', {
-              initialValue: timeArr[1],
-            })(
-              <Select
-                disabled={getFieldValue('syncAddDto.syncRate') === '实时'}
-                style={{ width: 80 }}
-              >
-                {timeList.map(d => (
-                  <Option key={d.value}>{d.key}</Option>
-                ))}
-              </Select>
             )}
           </FormItem>
           <FormItem
             {...formItemLayout}
             label={<FormattedMessage id="form.accessDataSource.syncAddDto.stopNum.label" />}
           >
+            报错
             {getFieldDecorator('syncAddDto.stopNum', {
               initialValue: params.syncAddDto.stopNum,
               rules: [
@@ -161,6 +170,7 @@ class SetSyncPlan extends PureComponent {
                 },
               ],
             })(<Input maxLength="3" style={{ width: 80, marginLeft: 5, marginRight: 5 }} />)}
+            次后自动停止服务
           </FormItem>
           <FormItem {...formItemLayout} label="tips">
             <h4>0次代表永不停止</h4>

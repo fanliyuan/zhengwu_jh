@@ -43,7 +43,7 @@ function initFtpParams() {
     ftpfileAddDtoList: [],
     name: '',
     syncAddDto: {
-      stopNum: 0,
+      stopNum: '0',
       syncMode: '增量',
       syncRate: '定时',
       timeSet: '-分钟',
