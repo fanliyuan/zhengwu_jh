@@ -103,7 +103,7 @@ class ConfigDataSource extends PureComponent {
                 message: formatMessage({ id: 'validation.dataSource.ip.required' }),
               },
               {
-                max: 50,
+                max: 500,
                 message: formatMessage({ id: 'validation.dataSource.ip.max' }),
               },
             ],
@@ -247,7 +247,7 @@ class ConfigDataSource extends PureComponent {
                 message: formatMessage({ id: 'validation.dataSource.ip.required' }),
               },
               {
-                max: 50,
+                max: 500,
                 message: formatMessage({ id: 'validation.dataSource.ip.max' }),
               },
             ],

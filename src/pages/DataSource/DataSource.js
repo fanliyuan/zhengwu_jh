@@ -13,6 +13,7 @@ import {
   Modal,
   Divider,
   Table,
+  message,
 } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -35,8 +36,11 @@ let formTime;
 class TableList extends PureComponent {
   columns = [
     {
-      title: 'ID',
+      title: '序号',
       dataIndex: 'id',
+      render: (text, record, index) => {
+        return `${index + 1 + (this.props.dataSource.page - 1) * 10}`;
+      },
     },
     {
       title: '数据源名称',
@@ -56,7 +60,7 @@ class TableList extends PureComponent {
         <Fragment>
           <a onClick={() => router.push(`${this.props.match.url}/update/${record.id}`)}>修改</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id)}>删除</a>
+          <a onClick={() => this.handleDelete(record.id, record.sc)}>删除</a>
           <Divider type="vertical" />
           <a onClick={() => router.push(`${this.props.match.url}/access/${record.id}`)}>接入数据</a>
         </Fragment>
@@ -135,7 +139,10 @@ class TableList extends PureComponent {
     });
   };
 
-  handleDelete = id => {
+  handleDelete = (id, sc) => {
+    if (!sc) {
+      return message.error('已接入数据，禁止删除！');
+    }
     const { dispatch, form } = this.props;
     Modal.confirm({
       title: '警告',
@@ -190,6 +197,7 @@ class TableList extends PureComponent {
             <FormItem label="数据类型">
               {getFieldDecorator('type')(
                 <Select style={{ width: '100%' }} placeholder="请选择数据类型">
+                  <Option value="">全部</Option>
                   <OptGroup label="数据库类型">
                     <Option value="mysql">mysql</Option>
                     <Option value="sqlserver">sqlserver</Option>
@@ -253,7 +261,7 @@ class TableList extends PureComponent {
       onChange: this.changePage,
       pageSize: 10,
       showTotal(total) {
-        return `共${Math.ceil(total / 10)}页 / ${total}条 数据`;
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
     };
     const locale = {

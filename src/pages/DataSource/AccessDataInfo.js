@@ -36,6 +36,7 @@ class AccessDataInfo extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      page: 1,
       modalTitle: '',
       dbName: '',
       selectedRowKeys: [],
@@ -85,6 +86,9 @@ class AccessDataInfo extends PureComponent {
     {
       title: '序号',
       dataIndex: 'index',
+      render: text => {
+        return `${text + (this.state.page - 1) * 10}`;
+      },
     },
     {
       title: '表名称',
@@ -218,6 +222,7 @@ class AccessDataInfo extends PureComponent {
     });
     this.setState({
       visible: false,
+      page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
       tableName: '',
@@ -231,6 +236,7 @@ class AccessDataInfo extends PureComponent {
     structAddDtoList.splice(0, structAddDtoList.length);
     this.setState({
       visible: false,
+      page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
       tableName: '',
@@ -644,7 +650,7 @@ class AccessDataInfo extends PureComponent {
     return (
       <Fragment>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="文件树">
+          <FormItem {...formItemLayout} label="结构树">
             {treeList.length < 1 && <Alert message="数据加载中" type="info" showIcon />}
             {treeList.length > 0 && (
               <DirectoryTree
@@ -897,10 +903,17 @@ class AccessDataInfo extends PureComponent {
     );
   }
 
+  changePage = (current, pageSize) => {
+    const { dispatch } = this.props;
+    this.setState({
+      page: current,
+    });
+  };
+
   render() {
     const { dataType, loadingTable, loadingColumn } = this.props;
     const { tableList, columnList } = this.props.accessData;
-    const { selectedRowKeys, selectedTableRowKeys } = this.state;
+    const { selectedRowKeys, selectedTableRowKeys, page } = this.state;
     const rowSelection = {
       type: 'radio',
       selectedTableRowKeys,
@@ -911,6 +924,11 @@ class AccessDataInfo extends PureComponent {
       onSelectAll: this.handleSelectAllColumn,
       selectedRowKeys,
       onChange: this.onSelectChange,
+    };
+    let paginationProps = {
+      current: page,
+      onChange: this.changePage,
+      pageSize: 10,
     };
     let tableLength = `数据表 共${tableList.length}张`;
     let columnLength = `数据项 共${columnList.length}项`;
@@ -946,6 +964,7 @@ class AccessDataInfo extends PureComponent {
                   size="small"
                   loading={loadingTable}
                   rowSelection={rowSelection}
+                  pagination={paginationProps}
                 />
               </Card>
             </Col>

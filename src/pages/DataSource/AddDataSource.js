@@ -80,7 +80,15 @@ class StepForm extends PureComponent {
   }
 
   back() {
-    this.props.history.goBack();
+    Modal.confirm({
+      title: '警告',
+      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        this.props.history.goBack();
+      },
+    });
   }
 
   setType = (val, type) => {

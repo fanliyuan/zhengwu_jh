@@ -16,6 +16,7 @@ class SetSyncPlan extends PureComponent {
     super(props);
     this.state = {
       timeRate: '分钟',
+      syncRate: '定时',
     };
   }
 
@@ -26,9 +27,12 @@ class SetSyncPlan extends PureComponent {
   handleSubmit = () => {
     const { form, dispatch } = this.props;
     const { submit } = this.props;
-    const { timeRate } = this.state;
+    const { timeRate, syncRate } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        if (syncRate === '定时' && values.timeNum === '') {
+          return message.error('请填写定时时间！');
+        }
         values.syncAddDto.timeSet = `${values.timeNum}-${timeRate}`;
         delete values.timeNum;
         dispatch({
@@ -48,10 +52,25 @@ class SetSyncPlan extends PureComponent {
     });
   };
 
+  changeSyncRate = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    if (value === '实时') {
+      setFieldsValue({
+        timeNum: '',
+      });
+    }
+    this.setState({
+      syncRate: value,
+    });
+  };
+
   render() {
     const { params } = this.props;
     const timeArr = params.syncAddDto.timeSet.split('-');
     const { syncModeList, syncRateList, timeList } = this.props.accessData;
+    const { syncRate } = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -90,7 +109,7 @@ class SetSyncPlan extends PureComponent {
             {getFieldDecorator('syncAddDto.syncRate', {
               initialValue: params.syncAddDto.syncRate,
             })(
-              <Select>
+              <Select onChange={this.changeSyncRate}>
                 {syncRateList.map(d => (
                   <Option key={d.value}>{d.key}</Option>
                 ))}
@@ -111,6 +130,13 @@ class SetSyncPlan extends PureComponent {
                     if (!/^[0-9]+$/.test(value) && value !== '') {
                       callback(
                         formatMessage({ id: 'validation.accessDataSource.syncAddDto.timeNum.type' })
+                      );
+                    }
+                    if (value !== '' && parseInt(value) === 0) {
+                      callback(
+                        formatMessage({
+                          id: 'validation.accessDataSource.syncAddDto.timeNum.isZero',
+                        })
                       );
                     }
                     callback(errors);
@@ -161,6 +187,12 @@ class SetSyncPlan extends PureComponent {
                     }
                     callback(errors);
                   },
+                },
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'validation.accessDataSource.syncAddDto.stopNum.required',
+                  }),
                 },
                 {
                   max: 3,
