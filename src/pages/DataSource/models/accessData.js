@@ -11,7 +11,8 @@ import {
   ftpDataList,
   sftpDataList,
 } from '@/services/dataSource/dataSource';
-import { message, notification } from 'antd';
+import { notification } from 'antd';
+
 function initDbParams() {
   return {
     appsysName: '',
@@ -175,6 +176,7 @@ export default {
                 break;
             }
           }
+          return params;
         });
         yield put({
           type: 'updateParams',

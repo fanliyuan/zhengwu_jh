@@ -42,9 +42,9 @@ export default {
       }
     },
 
-    //*getCaptcha({ payload }, { call }) {
-    //  yield call(getFakeCaptcha, payload);
-    //},
+    // *getCaptcha({ payload }, { call }) {
+    //   yield call(getFakeCaptcha, payload);
+    // },
 
     *logout(_, { put }) {
       yield put({
@@ -59,7 +59,7 @@ export default {
         routerRedux.push({
           pathname: '/user/login',
           search: stringify({
-            //redirect: window.location.href,
+            // redirect: window.location.href,
           }),
         })
       );
@@ -77,8 +77,8 @@ export default {
       setAuthority(auth);
       return {
         ...state,
-        //status: auth,
-        //type: payload.type,
+        // status: auth,
+        // type: payload.type,
       };
     },
   },

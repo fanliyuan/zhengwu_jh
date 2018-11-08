@@ -1,8 +1,11 @@
-import { initDataSource, deleteDataSource } from '@/services/dataSource/dataSource';
+import {
+  initDataSourceManagement,
+  deleteDataSourceManagement,
+} from '@/services/dataSource/dataSource';
 import { message } from 'antd';
 
 export default {
-  namespace: 'dataSource',
+  namespace: 'dataSourceManagement',
 
   state: {
     data: {
@@ -14,7 +17,7 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(initDataSource, payload);
+      const response = yield call(initDataSourceManagement, payload);
       yield put({
         type: 'queryList',
         payload: response,
@@ -25,8 +28,9 @@ export default {
       });
     },
     *deleteItem({ payload }, { call, put }) {
-      const response = yield call(deleteDataSource, payload.item);
+      const response = yield call(deleteDataSourceManagement, payload.item);
       const jsonRes = JSON.parse(response);
+      console.log(jsonRes);
       if (jsonRes && jsonRes.code < 300) {
         message.success(jsonRes.message);
         yield put({

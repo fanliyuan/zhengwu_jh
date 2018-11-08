@@ -62,7 +62,7 @@ export default {
   },
   proxy: {
     '/api': {
-      target: 'http://http://cdyoue.com.cn:19282/',
+      target: 'http://cdyoue.com.cn:19282',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
@@ -97,6 +97,6 @@ export default {
   manifest: {
     basePath: '/',
   },
-  history: 'hash',
+
   chainWebpack: webpackPlugin,
 };

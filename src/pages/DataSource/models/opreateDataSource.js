@@ -6,6 +6,7 @@ import {
   viewDataSource,
 } from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
+
 function initParams() {
   return {
     alias: '',
@@ -32,96 +33,68 @@ export default {
     *detail({ payload }, { call, put }) {
       const response = yield call(viewDataSource, payload);
       if (response.code < 300) {
-        let dataType = '';
         const { type, name } = response.result.data;
-        const typeData = [
-          {
-            title: 'mysql',
-            type: 'db',
-          },
-          {
-            title: 'sqlserver',
-            type: 'db',
-          },
-          {
-            title: 'oracle',
-            type: 'db',
-          },
-          {
-            title: 'dm',
-            type: 'db',
-          },
-          {
-            title: 'kingbase',
-            type: 'db',
-          },
-          {
-            title: 'ftp',
-            type: 'ftp',
-          },
-          {
-            title: 'sftp',
-            type: 'ftp',
-          },
-          {
-            title: '本地文件上传',
-            type: 'file',
-          },
-        ];
-        typeData.map(item => {
-          if (item.title === type) {
-            dataType = item.type;
-          }
-        });
+        const typeData = {
+          mysql: 'db',
+          sqlserver: 'db',
+          oracle: 'db',
+          dm: 'db',
+          kingbase: 'db',
+          ftp: 'ftp',
+          sftp: 'ftp',
+          本地文件上传: 'file',
+        };
+        const dataType = typeData[type];
         yield put({
           type: 'updateParams',
           payload: {
-            dataType: dataType,
+            dataType,
             oldName: name,
             params: response.result.data,
           },
         });
       }
     },
-    *setParams({ payload }, { call, put }) {
+    *setParams({ payload }, { put }) {
       yield put({
         type: 'updateParams',
-        payload: payload,
+        payload,
       });
     },
-    *reset({ payload }, { call, put }) {
+    *reset({ payload }, { put }) {
       yield put({
         type: 'resetParams',
-        payload: payload,
+        payload,
       });
     },
     *connection({ payload }, { call, put }) {
+      const payloads = payload;
       const response = yield call(connectBase, {
-        type: payload.params.type,
-        addr: payload.params.ip,
-        port: payload.params.port,
-        username: payload.params.username,
-        password: payload.params.password,
+        type: payloads.params.type,
+        addr: payloads.params.ip,
+        port: payloads.params.port,
+        username: payloads.params.username,
+        password: payloads.params.password,
       });
       message.destroy();
       if (response.code >= 300) {
         return message.error(response.message);
       }
-      message.success(response.message);
-      payload.params.alias = response.result.data;
-      if (payload.sub === 'sub') {
-        if (payload.oldName !== '' && payload.oldName === payload.params.name) {
+      payloads.params.alias = response.result.data;
+      if (payloads.sub === 'sub') {
+        if (payloads.oldName !== '' && payloads.oldName === payloads.params.name) {
           yield put({
             type: 'submit',
-            payload: payload.params,
+            payload: payloads.params,
           });
         } else {
           yield put({
             type: 'testName',
-            payload: payload.params,
+            payload: payloads.params,
           });
         }
       }
+      return message.success(response.message);
     },
     *submit({ payload }, { call, put }) {
       let callbackApi;
@@ -136,7 +109,7 @@ export default {
           message: response.message,
         });
       }
-      yield put({
+      return yield put({
         type: 'next',
       });
     },
@@ -168,7 +141,7 @@ export default {
         }
         yield put({
           type: 'submit',
-          payload: payload,
+          payload,
         });
       }
     },
