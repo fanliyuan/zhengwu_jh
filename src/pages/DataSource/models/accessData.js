@@ -25,7 +25,7 @@ function initDbParams() {
     name: '',
     structAddDtoList: [],
     syncAddDto: {
-      stopNum: '0',
+      stopNum: '5',
       syncMode: '增量',
       syncRate: '定时',
       timeSet: '-分钟',
@@ -44,7 +44,7 @@ function initFtpParams() {
     ftpfileAddDtoList: [],
     name: '',
     syncAddDto: {
-      stopNum: '0',
+      stopNum: '5',
       syncMode: '增量',
       syncRate: '定时',
       timeSet: '-分钟',
