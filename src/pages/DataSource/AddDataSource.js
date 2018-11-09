@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Steps, Button, message, Modal } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import Result from '@/components/Result';
 import SelectDataSource from './SelectDataSource';
 import ConfigDataSource from './ConfigDataSource';
 import AddSuccess from './AddSuccess';
@@ -160,6 +161,12 @@ class StepForm extends PureComponent {
       connectTest: this.connectTest,
       submit: this.submit,
     };
+    const actions = (
+      <Button type="danger" onClick={() => this.back()}>
+        立即跳转
+      </Button>
+    );
+    const title = <h3>数据源 {params.name} 创建成功</h3>;
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>
         <Card bordered={false}>
@@ -184,7 +191,15 @@ class StepForm extends PureComponent {
                       />
                     );
                   case 2:
-                    return <AddSuccess />;
+                    return (
+                      <Result
+                        type="success"
+                        title={title}
+                        description={`页面将在 10秒 中之后跳转到数据源页面`}
+                        actions={actions}
+                        className={styles.result}
+                      />
+                    );
                   default:
                     return <SelectDataSource {...parentMethods} type={params.type} />;
                 }
@@ -209,11 +224,11 @@ class StepForm extends PureComponent {
                   提交
                 </Button>
               )}
-              {
+              {current < 2 && (
                 <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                   返回
                 </Button>
-              }
+              )}
             </div>
           </Fragment>
         </Card>

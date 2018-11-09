@@ -37,7 +37,8 @@ class AccessDataInfo extends PureComponent {
       title: '序号',
       dataIndex: 'index',
       render: text => {
-        return `${text + (this.state.page - 1) * 10}`;
+        const { page } = this.state;
+        return `${text + (page - 1) * 10}`;
       },
     },
     {
@@ -72,9 +73,7 @@ class AccessDataInfo extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'type',
-      render: (text, record) => {
-        return `text(${record.length})`;
-      },
+      render: (text, record) => `text(${record.length})`,
     },
     {
       title: '中文标注',
@@ -663,7 +662,7 @@ class AccessDataInfo extends PureComponent {
       <Fragment>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="结构树">
-            {treeList.length < 1 && <Alert message="数据加载中" type="info" showIcon />}
+            {treeList.length < 1 && <Alert message="数据加载中..." type="info" showIcon />}
             {treeList.length > 0 && (
               <DirectoryTree
                 className={styles.tree}

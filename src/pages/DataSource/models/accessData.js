@@ -11,7 +11,7 @@ import {
   ftpDataList,
   sftpDataList,
 } from '@/services/dataSource/dataSource';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
 
 function initDbParams() {
   return {
@@ -247,6 +247,8 @@ export default {
             },
           });
         }
+      } else {
+        message.error(`${response.message}，结构树加载失败！`);
       }
     },
     *setTableList({ payload }, { call, put }) {
