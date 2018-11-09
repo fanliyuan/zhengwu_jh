@@ -1,8 +1,7 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Form, Input, Button, Card, message } from 'antd';
-import styles from './AddDataSource.less';
+import { Form, Input, Button, Card } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -19,17 +18,18 @@ class ConfigDataSource extends PureComponent {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
+    const { onRef } = this.props;
+    onRef(this);
   }
 
   handleSubmit = sub => {
-    const { form, dataType } = this.props;
+    const { form, dataType, connectTest, submit } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if (dataType !== 'file') {
-          this.props.connectTest(values, sub);
+          connectTest(values, sub);
         } else {
-          this.props.submit(values, 'file');
+          submit(values, 'file');
         }
       }
     });
@@ -37,9 +37,9 @@ class ConfigDataSource extends PureComponent {
 
   connectTest = () => {
     const connectName = '重新测试';
-    const { form } = this.props;
+    const { form, connectTest } = this.props;
     const connectParams = form.getFieldsValue();
-    this.props.connectTest(connectParams);
+    connectTest(connectParams);
     this.setState({ connectName });
   };
 
@@ -49,6 +49,7 @@ class ConfigDataSource extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const { connectName } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -114,8 +115,8 @@ class ConfigDataSource extends PureComponent {
             initialValue: params.port,
             rules: [
               {
-                validator(rule, value, callback, source, options) {
-                  var errors = [];
+                validator(rule, value, callback) {
+                  const errors = [];
                   if (!/^[0-9]+$/.test(value) && value !== '') {
                     callback(formatMessage({ id: 'validation.dataSource.port.type' }));
                   }
@@ -127,7 +128,7 @@ class ConfigDataSource extends PureComponent {
                 message: formatMessage({ id: 'validation.dataSource.port.required' }),
               },
               {
-                max: 4,
+                max: 10,
                 message: formatMessage({ id: 'validation.dataSource.port.max' }),
               },
             ],
@@ -180,7 +181,7 @@ class ConfigDataSource extends PureComponent {
             loading={connecting}
             onClick={() => this.connectTest()}
           >
-            {this.state.connectName}
+            {connectName}
           </Button>
         </FormItem>
       </Form>
@@ -193,6 +194,7 @@ class ConfigDataSource extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const { connectName } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -238,80 +240,132 @@ class ConfigDataSource extends PureComponent {
             ],
           })(<Input />)}
         </FormItem>
-        <FormItem {...formItemLayout} label={<FormattedMessage id="form.dataSource.ftpIp.label" />}>
+        <FormItem
+          {...formItemLayout}
+          label={
+            <FormattedMessage
+              id="form.dataSource.ftpIp.label"
+              values={{ name: <span>{params.type}</span> }}
+            />
+          }
+        >
           {getFieldDecorator('ip', {
             initialValue: params.ip,
             rules: [
               {
                 required: true,
-                message: formatMessage({ id: 'validation.dataSource.ip.required' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpIp.required' },
+                  { name: params.type }
+                ),
               },
               {
                 max: 500,
-                message: formatMessage({ id: 'validation.dataSource.ip.max' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpIp.max' },
+                  { name: params.type }
+                ),
               },
             ],
           })(<Input />)}
         </FormItem>
         <FormItem
           {...formItemLayout}
-          label={<FormattedMessage id="form.dataSource.ftpPort.label" />}
+          label={
+            <FormattedMessage
+              id="form.dataSource.ftpPort.label"
+              values={{ name: <span>{params.type}</span> }}
+            />
+          }
         >
           {getFieldDecorator('port', {
             initialValue: params.port,
             rules: [
               {
-                validator(rule, value, callback, source, options) {
-                  var errors = [];
+                validator(rule, value, callback) {
+                  const errors = [];
                   if (!/^[0-9]+$/.test(value) && value !== '') {
-                    callback(formatMessage({ id: 'validation.dataSource.port.type' }));
+                    callback(
+                      formatMessage(
+                        { id: 'validation.dataSource.ftpPort.type' },
+                        { name: params.type }
+                      )
+                    );
                   }
                   callback(errors);
                 },
               },
               {
                 required: true,
-                message: formatMessage({ id: 'validation.dataSource.port.required' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpPort.required' },
+                  { name: params.type }
+                ),
               },
               {
-                max: 4,
-                message: formatMessage({ id: 'validation.dataSource.port.max' }),
+                max: 10,
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpPort.max' },
+                  { name: params.type }
+                ),
               },
             ],
           })(<Input />)}
         </FormItem>
         <FormItem
           {...formItemLayout}
-          label={<FormattedMessage id="form.dataSource.ftpUsername.label" />}
+          label={
+            <FormattedMessage
+              id="form.dataSource.ftpUsername.label"
+              values={{ name: <span>{params.type}</span> }}
+            />
+          }
         >
           {getFieldDecorator('username', {
             initialValue: params.username,
             rules: [
               {
                 required: true,
-                message: formatMessage({ id: 'validation.dataSource.username.required' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpUsername.required' },
+                  { name: params.type }
+                ),
               },
               {
                 max: 50,
-                message: formatMessage({ id: 'validation.dataSource.username.max' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpUsername.max' },
+                  { name: params.type }
+                ),
               },
             ],
           })(<Input />)}
         </FormItem>
         <FormItem
           {...formItemLayout}
-          label={<FormattedMessage id="form.dataSource.ftpPassword.label" />}
+          label={
+            <FormattedMessage
+              id="form.dataSource.ftpPassword.label"
+              values={{ name: <span>{params.type}</span> }}
+            />
+          }
         >
           {getFieldDecorator('password', {
             initialValue: params.password,
             rules: [
               {
                 required: true,
-                message: formatMessage({ id: 'validation.dataSource.password.required' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpPassword.required' },
+                  { name: params.type }
+                ),
               },
               {
                 max: 50,
-                message: formatMessage({ id: 'validation.dataSource.password.max' }),
+                message: formatMessage(
+                  { id: 'validation.dataSource.ftpPassword.max' },
+                  { name: params.type }
+                ),
               },
             ],
           })(<Input type="password" autoComplete="new-password" />)}
@@ -327,7 +381,7 @@ class ConfigDataSource extends PureComponent {
             loading={connecting}
             onClick={() => this.connectTest()}
           >
-            {this.state.connectName}
+            {connectName}
           </Button>
         </FormItem>
       </Form>

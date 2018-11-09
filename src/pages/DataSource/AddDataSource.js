@@ -129,15 +129,22 @@ class StepForm extends PureComponent {
 
   back() {
     const { history } = this.props;
-    Modal.confirm({
-      title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () => {
-        history.goBack();
-      },
-    });
+    const {
+      opreateDataSource: { current },
+    } = this.props;
+    if (current === 1) {
+      Modal.confirm({
+        title: '警告',
+        content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () => {
+          history.goBack();
+        },
+      });
+    } else {
+      history.goBack();
+    }
   }
 
   render() {

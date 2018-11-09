@@ -18,12 +18,12 @@ import {
 } from 'antd';
 import styles from './AddDataSource.less';
 
-const Option = Select.Option;
+const { Option } = Select;
 const FormItem = Form.Item;
-const TextArea = Input.TextArea;
-const DirectoryTree = Tree.DirectoryTree;
-const TreeNode = Tree.TreeNode;
-const Dragger = Upload.Dragger;
+const { TextArea } = Input;
+const { DirectoryTree } = Tree;
+const { TreeNode } = Tree;
+const { Dragger } = Upload;
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -32,6 +32,56 @@ const Dragger = Upload.Dragger;
 }))
 @Form.create()
 class AccessDataInfo extends PureComponent {
+  columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      render: text => {
+        return `${text + (this.state.page - 1) * 10}`;
+      },
+    },
+    {
+      title: '表名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '中文标注',
+      dataIndex: 'comment',
+    },
+  ];
+
+  colColumns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+    },
+    {
+      title: '主键',
+      dataIndex: 'pri',
+      render: text => {
+        if (text === 'PRI') {
+          return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
+        }
+        return '';
+      },
+    },
+    {
+      title: '字段名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '数据类型',
+      dataIndex: 'type',
+      render: (text, record) => {
+        return `text(${record.length})`;
+      },
+    },
+    {
+      title: '中文标注',
+      dataIndex: 'comment',
+    },
+  ];
+
   constructor(props) {
     super(props);
     this.state = {
@@ -82,63 +132,18 @@ class AccessDataInfo extends PureComponent {
     };
   }
 
-  columns = [
-    {
-      title: '序号',
-      dataIndex: 'index',
-      render: text => {
-        return `${text + (this.state.page - 1) * 10}`;
-      },
-    },
-    {
-      title: '表名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '中文标注',
-      dataIndex: 'comment',
-    },
-  ];
-  colColumns = [
-    {
-      title: '序号',
-      dataIndex: 'index',
-    },
-    {
-      title: '主键',
-      dataIndex: 'pri',
-      render: (text, record, index) => {
-        if (text === 'PRI') {
-          return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
-        }
-        return '';
-      },
-    },
-    {
-      title: '字段名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '数据类型',
-      dataIndex: 'type',
-      render: (text, record, index) => {
-        return `text(${record.length})`;
-      },
-    },
-    {
-      title: '中文标注',
-      dataIndex: 'comment',
-    },
-  ];
-
   componentDidMount() {
-    this.props.onRef(this);
+    const { onRef } = this.props;
+    onRef(this);
   }
 
   handleSubmit = () => {
-    const id = this.props.match.params.id;
-    const { form, dispatch } = this.props;
-    const { params, dataType } = this.props.accessData;
+    const {
+      form,
+      dispatch,
+      match,
+      accessData: { params, dataType },
+    } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if (dataType === 'db' && params.structAddDtoList.length < 1) {
@@ -169,9 +174,9 @@ class AccessDataInfo extends PureComponent {
         dispatch({
           type: 'accessData/testName',
           payload: {
-            values: values,
-            dataType: dataType,
-            id: id,
+            values,
+            dataType,
+            id: match.params.id,
           },
         });
       }
@@ -183,27 +188,29 @@ class AccessDataInfo extends PureComponent {
       message.destroy();
       return message.info('请先选择数据库！');
     }
-    this.showModal(dbName);
+    return this.showModal(dbName);
   };
 
   showModal = dbName => {
-    const { dispatch } = this.props;
-    const { alias } = this.props.accessData;
+    const {
+      dispatch,
+      accessData: { alias },
+    } = this.props;
     this.setState({
       visible: true,
-      modalTitle: '数据库：' + dbName,
-      dbName: dbName,
+      modalTitle: `数据库：${dbName}`,
+      dbName,
     });
     dispatch({
       type: 'accessData/setTableList',
       payload: {
-        alias: alias,
+        alias,
         db: dbName,
       },
     });
   };
 
-  handleOk = e => {
+  handleOk = () => {
     const { dispatch } = this.props;
     const { structAddDtoList, tableName, tableNote } = this.state;
     dispatch({
@@ -216,8 +223,8 @@ class AccessDataInfo extends PureComponent {
     dispatch({
       type: 'accessData/updateParams',
       payload: {
-        tableName: tableName,
-        tableNote: tableNote,
+        tableName,
+        tableNote,
       },
     });
     this.setState({
@@ -230,7 +237,7 @@ class AccessDataInfo extends PureComponent {
     });
   };
 
-  handleCancel = e => {
+  handleCancel = () => {
     const { dispatch } = this.props;
     const { structAddDtoList } = this.state;
     structAddDtoList.splice(0, structAddDtoList.length);
@@ -248,9 +255,11 @@ class AccessDataInfo extends PureComponent {
   };
 
   handleSelectTable = (selectedRowKeys, selectedRows) => {
-    const { dispatch } = this.props;
-    const { alias } = this.props.accessData;
-    const { structAddDtoList } = this.state;
+    const {
+      dispatch,
+      accessData: { alias },
+    } = this.props;
+    const { structAddDtoList, dbName } = this.state;
     this.setState({
       selectedRowKeys: [],
       selectedTableRowKeys: selectedRowKeys,
@@ -260,8 +269,8 @@ class AccessDataInfo extends PureComponent {
     dispatch({
       type: 'accessData/setColumnList',
       payload: {
-        alias: alias,
-        db: this.state.dbName,
+        alias,
+        db: dbName,
         table: selectedRows[0].name,
       },
     });
@@ -272,7 +281,7 @@ class AccessDataInfo extends PureComponent {
     this.setState({ selectedRowKeys });
   };
 
-  handleSelectColumn = (record, selected, selectedRows, nativeEvent) => {
+  handleSelectColumn = (record, selected) => {
     const { structAddDtoList } = this.state;
     let pri;
     switch (record.pri) {
@@ -299,11 +308,11 @@ class AccessDataInfo extends PureComponent {
     }
   };
 
-  handleSelectAllColumn = (selected, selectedRows, changeRows) => {
+  handleSelectAllColumn = (selected, selectedRows) => {
     const { structAddDtoList } = this.state;
     if (selected) {
       structAddDtoList.splice(0, structAddDtoList.length);
-      selectedRows.map((item, index) => {
+      selectedRows.map(item => {
         let pri;
         switch (item.pri) {
           case 'PRI':
@@ -330,8 +339,11 @@ class AccessDataInfo extends PureComponent {
   };
 
   onLoadTreeData = treeNode => {
-    const { dispatch, type } = this.props;
-    const { alias } = this.props.accessData;
+    const {
+      dispatch,
+      type,
+      accessData: { alias },
+    } = this.props;
     const { path, name } = treeNode.props.dataRef;
     return new Promise(resolve => {
       if (treeNode.props.dataRef.open) {
@@ -340,11 +352,11 @@ class AccessDataInfo extends PureComponent {
             type: 'accessData/setTreeList',
             payload: {
               params: {
-                alias: alias,
+                alias,
                 path: `${path}${name}/`,
               },
               type: 'update',
-              treeNode: treeNode,
+              treeNode,
               treeType: type,
             },
           })
@@ -804,7 +816,7 @@ class AccessDataInfo extends PureComponent {
             {...formItemLayout}
             label={<FormattedMessage id="form.accessDataSource.dataType.label" />}
           >
-            <h4>{type}</h4>
+            <h4>本地文件上传</h4>
           </FormItem>
           <FormItem
             {...formItemLayout}
