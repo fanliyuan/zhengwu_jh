@@ -191,6 +191,12 @@ class StepForm extends PureComponent {
               })()}
             </div>
             <div className={styles.stepsAction}>
+              {name !== 'sourceUpdate' &&
+                current === 1 && (
+                  <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
+                    上一步
+                  </Button>
+                )}
               {current < steps.length - 2 && (
                 <Button type="primary" disabled={params.type === ''} onClick={() => this.next()}>
                   下一步
@@ -206,12 +212,6 @@ class StepForm extends PureComponent {
                   提交
                 </Button>
               )}
-              {name !== 'sourceUpdate' &&
-                current === 1 && (
-                  <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
-                    上一步
-                  </Button>
-                )}
               {
                 <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                   返回
