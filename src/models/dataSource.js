@@ -33,6 +33,8 @@ export default {
           type: 'fetch',
           payload: payload.values,
         });
+      } else {
+        message.error(jsonRes.message);
       }
     },
   },

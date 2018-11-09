@@ -157,7 +157,7 @@ export default {
             type: 'ftp',
           },
           {
-            title: '本地文件上传',
+            title: 'file',
             type: 'file',
           },
         ];

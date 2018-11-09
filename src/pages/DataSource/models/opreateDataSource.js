@@ -42,7 +42,7 @@ export default {
           kingbase: 'db',
           ftp: 'ftp',
           sftp: 'ftp',
-          本地文件上传: 'file',
+          file: 'file',
         };
         const dataType = typeData[type];
         yield put({
@@ -109,7 +109,7 @@ export default {
           message: response.message,
         });
       }
-      return yield put({
+      yield put({
         type: 'next',
       });
     },

@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Steps, Button, message, Modal } from 'antd';
-import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SelectDataSource from './SelectDataSource';
 import ConfigDataSource from './ConfigDataSource';
@@ -26,21 +25,17 @@ const steps = [
   submitting: loading.effects['opreateDataSource/submit'],
 }))
 class StepForm extends PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     const { dispatch } = this.props;
-    const { name } = this.props.route;
-    if (name === 'sourceUpdate') {
+    const { route, match } = this.props;
+    if (route.name === 'sourceUpdate') {
       dispatch({
         type: 'opreateDataSource/next',
       });
       dispatch({
         type: 'opreateDataSource/detail',
         payload: {
-          id: this.props.match.params.id,
+          id: match.params.id,
         },
       });
     }
@@ -56,6 +51,59 @@ class StepForm extends PureComponent {
       },
     });
   }
+
+  onRef = ref => {
+    this.child = ref;
+  };
+
+  setType = (val, type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'opreateDataSource/setParams',
+      payload: {
+        dataType: type,
+        oldName: '',
+        params: {
+          type: val,
+        },
+      },
+    });
+  };
+
+  handleAdd = () => {
+    this.child.handleSubmit('sub');
+  };
+
+  connectTest = (obj, sub) => {
+    const { dispatch } = this.props;
+    const {
+      opreateDataSource: { oldName, params },
+    } = this.props;
+    dispatch({
+      type: 'opreateDataSource/connection',
+      payload: {
+        params: { ...params, ...obj },
+        sub,
+        oldName,
+      },
+    });
+    message.info('连接测试中，请勿进行其他操作...', 0);
+  };
+
+  submit = (obj, type) => {
+    const { dispatch } = this.props;
+    const {
+      opreateDataSource: { oldName, params },
+    } = this.props;
+    dispatch({
+      type: 'opreateDataSource/testName',
+      payload: {
+        params: { ...params, ...obj },
+        subType: type,
+        oldName,
+      },
+    });
+  };
 
   next() {
     const { dispatch } = this.props;
@@ -80,76 +128,25 @@ class StepForm extends PureComponent {
   }
 
   back() {
+    const { history } = this.props;
     Modal.confirm({
       title: '警告',
       content: '返回数据源页面，当前信息将不会被保存，是否返回？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        this.props.history.goBack();
+        history.goBack();
       },
     });
   }
 
-  setType = (val, type) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'opreateDataSource/setParams',
-      payload: {
-        dataType: type,
-        oldName: '',
-        params: {
-          type: val,
-        },
-      },
-    });
-  };
-
-  handleAdd = () => {
-    this.child.handleSubmit('sub');
-  };
-
-  connectTest = (obj, sub) => {
-    const { dispatch } = this.props;
-    const { oldName } = this.props.opreateDataSource;
-    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
-    dispatch({
-      type: 'opreateDataSource/connection',
-      payload: {
-        params: this.props.opreateDataSource.params,
-        sub: sub,
-        oldName: oldName,
-      },
-    });
-    message.info('连接测试中，请勿进行其他操作...', 0);
-  };
-
-  submit = (obj, type) => {
-    const { dispatch } = this.props;
-    const { oldName } = this.props.opreateDataSource;
-    this.props.opreateDataSource.params = { ...this.props.opreateDataSource.params, ...obj };
-    dispatch({
-      type: 'opreateDataSource/testName',
-      payload: {
-        params: this.props.opreateDataSource.params,
-        subType: type,
-        oldName: oldName,
-      },
-    });
-  };
-
-  onRef = ref => {
-    this.child = ref;
-  };
-
   render() {
     const {
       location,
-      opreateDataSource: { params },
+      submitting,
+      route: { name },
+      opreateDataSource: { params, current, dataType },
     } = this.props;
-    const { submitting } = this.props;
-    const { current, dataType } = this.props.opreateDataSource;
-    const { name } = this.props.route;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
@@ -170,7 +167,6 @@ class StepForm extends PureComponent {
                 switch (current) {
                   case 0:
                     return <SelectDataSource {...parentMethods} type={params.type} />;
-                    break;
                   case 1:
                     return (
                       <ConfigDataSource
@@ -180,10 +176,8 @@ class StepForm extends PureComponent {
                         params={params}
                       />
                     );
-                    break;
                   case 2:
                     return <AddSuccess />;
-                    break;
                   default:
                     return <SelectDataSource {...parentMethods} type={params.type} />;
                 }

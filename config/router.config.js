@@ -18,7 +18,7 @@ export default [
     authority: ['admin', 'security', 'auditor', 'user', 'assessor'],
     routes: [
       // 系统概览
-      { path: '/', redirect: '/dashboard/analysis' },
+      { path: '/', redirect: '/user/login' },
       {
         path: '/dashboard',
         name: 'dashboard',

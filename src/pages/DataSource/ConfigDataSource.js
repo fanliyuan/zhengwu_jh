@@ -356,7 +356,7 @@ class ConfigDataSource extends PureComponent {
           {...formItemLayout}
           label={<FormattedMessage id="form.dataSource.dataType.label" />}
         >
-          <h4>{params.type}</h4>
+          <h4>本地文件上传</h4>
         </FormItem>
         <FormItem {...formItemLayout} label={<FormattedMessage id="form.dataSource.name.label" />}>
           {getFieldDecorator('name', {

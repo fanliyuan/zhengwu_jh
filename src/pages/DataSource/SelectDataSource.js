@@ -42,7 +42,7 @@ const ftpData = [
     icon: 'icon-fuwuqi-shouye',
   },
   {
-    title: '本地文件上传',
+    title: 'file',
     type: 'file',
     icon: 'icon-wenjian',
   },
@@ -52,10 +52,6 @@ const IconFont = Icon.createFromIconfontCN({
 });
 
 class SelectDataSource extends PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { setType, type } = this.props;
     return (
@@ -93,7 +89,8 @@ class SelectDataSource extends PureComponent {
                 hoverable
                 cover={<IconFont className={styles.cardIcon} type={item.icon} />}
               >
-                <Meta className={styles.cardName} title={item.title} />
+                {item.title === 'file' && <Meta className={styles.cardName} title="本地文件上传" />}
+                {item.title !== 'file' && <Meta className={styles.cardName} title={item.title} />}
               </Card>
             </List.Item>
           )}

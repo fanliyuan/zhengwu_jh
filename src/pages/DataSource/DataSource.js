@@ -31,6 +31,7 @@ let formTime;
 @connect(({ dataSource, loading }) => ({
   dataSource,
   loading: loading.effects['dataSource/fetch'],
+  loadingDelete: loading.effects['dataSource/deleteItem'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -49,6 +50,12 @@ class TableList extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'type',
+      render: text => {
+        if (text === 'file') {
+          return '文件';
+        }
+        return text;
+      },
     },
     {
       title: '创建时间',
@@ -152,12 +159,15 @@ class TableList extends PureComponent {
     if (!sc) {
       return message.error('已接入数据，禁止删除！');
     }
-    const { dispatch, form } = this.props;
+    const { dispatch, form, loadingDelete } = this.props;
     Modal.confirm({
       title: '警告',
       content: '是否删除数据源？',
       okText: '确认',
       cancelText: '取消',
+      okButtonProps: {
+        loading: loadingDelete,
+      },
       onOk: () => {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
@@ -217,7 +227,7 @@ class TableList extends PureComponent {
                   <OptGroup label="半结构文件类型">
                     <Option value="ftp">ftp</Option>
                     <Option value="sftp">sftp</Option>
-                    <Option value="本地文件上传">文件</Option>
+                    <Option value="file">文件</Option>
                   </OptGroup>
                 </Select>
               )}

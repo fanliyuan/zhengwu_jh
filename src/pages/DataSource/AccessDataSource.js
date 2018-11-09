@@ -1,19 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  List,
-  Card,
-  Steps,
-  Form,
-  Input,
-  Button,
-  Select,
-  Divider,
-  Icon,
-  message,
-  Modal,
-} from 'antd';
-import router from 'umi/router';
+import { Card, Steps, Button, Modal } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import AccessDataInfo from './AccessDataInfo';
 import SetSyncPlan from './SetSyncPlans';
@@ -59,17 +46,12 @@ let steps = [];
   testNameSubmitting: loading.effects['accessData/testName'],
 }))
 class AccessStepForm extends PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
-    const { dispatch } = this.props;
-    const { id } = this.props.match.params;
+    const { dispatch, match } = this.props;
     dispatch({
       type: 'accessData/detail',
       payload: {
-        id: id,
+        id: match.params.id,
       },
     });
   }
@@ -134,40 +116,9 @@ class AccessStepForm extends PureComponent {
     });
   }
 
-  next() {
-    this.child.handleSubmit();
-  }
-
-  prev() {
-    const { dispatch } = this.props;
-    Modal.confirm({
-      title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () => {
-        dispatch({
-          type: 'accessData/prev',
-        });
-      },
-    });
-  }
-
-  back() {
-    Modal.confirm({
-      title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () => {
-        this.props.history.goBack();
-      },
-    });
-  }
-
-  close() {
-    this.props.history.goBack();
-  }
+  onRef = ref => {
+    this.child = ref;
+  };
 
   setType = (val, type) => {
     const { dispatch } = this.props;
@@ -188,30 +139,66 @@ class AccessStepForm extends PureComponent {
   };
 
   submit = () => {
-    const { dispatch } = this.props;
-    const { params, dataType } = this.props.accessData;
+    const {
+      dispatch,
+      match,
+      accessData: { params, dataType },
+    } = this.props;
     dispatch({
       type: 'accessData/submit',
       payload: {
-        id: this.props.match.params.id,
+        id: match.params.id,
         addDto: params,
-        dataType: dataType,
+        dataType,
       },
     });
   };
 
-  onRef = ref => {
-    this.child = ref;
-  };
+  next() {
+    this.child.handleSubmit();
+  }
+
+  prev() {
+    const { dispatch } = this.props;
+    Modal.confirm({
+      title: '警告',
+      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        dispatch({
+          type: 'accessData/prev',
+        });
+      },
+    });
+  }
+
+  back() {
+    const { history } = this.props;
+    Modal.confirm({
+      title: '警告',
+      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        history.goBack();
+      },
+    });
+  }
+
+  close() {
+    const { history } = this.props;
+    history.goBack();
+  }
 
   render() {
     const {
       location,
       match,
-      accessData: { params },
+      submitting,
+      testNameSubmitting,
+      accessData: { params, current, dataType, type },
     } = this.props;
-    const { submitting, testNameSubmitting } = this.props;
-    const { current, dataType, type } = this.props.accessData;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
@@ -226,6 +213,9 @@ class AccessStepForm extends PureComponent {
         break;
       case 'file':
         steps = stepsFile;
+        break;
+      default:
+        steps = [];
         break;
     }
     return (
@@ -251,17 +241,13 @@ class AccessStepForm extends PureComponent {
                         params={params}
                       />
                     );
-                    break;
                   case 1:
                     if (dataType !== 'file') {
                       return <SetSyncPlan onRef={this.onRef} {...parentMethods} params={params} />;
-                    } else {
-                      return <AddSuccess />;
                     }
-                    break;
+                    return <AddSuccess />;
                   case 2:
                     return <AddSuccess />;
-                    break;
                   default:
                     return (
                       <AccessDataInfo
