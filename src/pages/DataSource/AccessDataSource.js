@@ -263,6 +263,8 @@ class AccessStepForm extends PureComponent {
               })()}
             </div>
             <div className={styles.stepsAction}>
+              {dataType !== 'file' &&
+                current === 1 && <Button onClick={() => this.prev()}>上一步</Button>}
               {current < steps.length - 2 &&
                 dataType !== 'file' && (
                   <Button
@@ -277,6 +279,7 @@ class AccessStepForm extends PureComponent {
               {current === 1 &&
                 dataType !== 'file' && (
                   <Button
+                    style={{ marginLeft: 8 }}
                     type="primary"
                     htmlType="submit"
                     loading={submitting}
@@ -294,12 +297,6 @@ class AccessStepForm extends PureComponent {
                     onClick={() => this.handleAdd()}
                   >
                     提交
-                  </Button>
-                )}
-              {dataType !== 'file' &&
-                current === 1 && (
-                  <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
-                    上一步
                   </Button>
                 )}
               {current < 2 &&
