@@ -26,6 +26,13 @@ const steps = [
   submitting: loading.effects['opreateDataSource/submit'],
 }))
 class StepForm extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      submitName: '',
+    };
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     const { route, match } = this.props;
@@ -80,6 +87,9 @@ class StepForm extends PureComponent {
     const {
       opreateDataSource: { oldName, params },
     } = this.props;
+    this.setState({
+      submitName: obj.name,
+    });
     dispatch({
       type: 'opreateDataSource/connection',
       payload: {
@@ -96,6 +106,9 @@ class StepForm extends PureComponent {
     const {
       opreateDataSource: { oldName, params },
     } = this.props;
+    this.setState({
+      submitName: obj.name,
+    });
     dispatch({
       type: 'opreateDataSource/testName',
       payload: {
@@ -152,21 +165,17 @@ class StepForm extends PureComponent {
     const {
       location,
       submitting,
+      history,
       route: { name },
       opreateDataSource: { params, current, dataType },
     } = this.props;
+    const { submitName } = this.state;
     const parentMethods = {
       setType: this.setType,
       handleAdd: this.handleAdd,
       connectTest: this.connectTest,
       submit: this.submit,
     };
-    const actions = (
-      <Button type="danger" onClick={() => this.back()}>
-        立即跳转
-      </Button>
-    );
-    const title = <h3>数据源 {params.name} 创建成功</h3>;
     return (
       <PageHeaderWrapper tabActiveKey={location.pathname}>
         <Card bordered={false}>
@@ -192,12 +201,10 @@ class StepForm extends PureComponent {
                     );
                   case 2:
                     return (
-                      <Result
-                        type="success"
-                        title={title}
-                        description={`页面将在 10秒 中之后跳转到数据源页面`}
-                        actions={actions}
-                        className={styles.result}
+                      <AddSuccess
+                        title={`数据源 ${submitName} 创建成功`}
+                        pageName="数据源"
+                        history={history}
                       />
                     );
                   default:
