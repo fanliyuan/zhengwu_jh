@@ -343,9 +343,9 @@ class AccessDataInfo extends PureComponent {
       type,
       accessData: { alias },
     } = this.props;
-    const { path, name } = treeNode.props.dataRef;
+    const { path, name, open, children } = treeNode.props.dataRef;
     return new Promise(resolve => {
-      if (treeNode.props.dataRef.open) {
+      if (open && !children) {
         resolve(
           dispatch({
             type: 'accessData/setTreeList',
@@ -360,38 +360,27 @@ class AccessDataInfo extends PureComponent {
             },
           })
         );
+      } else {
+        resolve();
       }
     });
   };
 
   checkTree = (checkedKeys, e) => {
-    let setNodes = [];
-    let addNodes = [];
-    const { treeList } = this.props.accessData;
-    for (let i = 0, len = treeList.length; i < len; i++) {
-      let k;
-      setNodes[i] = [];
-      checkedKeys.map((item, index) => {
-        if (parseInt(item.substr(0, 1)) === i) {
-          if (k === undefined) {
-            k = item.length;
-            setNodes[i].push(item);
-          } else {
-            if (item.length === k) {
-              setNodes[i].push(item);
-            } else if (item.length < k) {
-              setNodes[i].splice(0, setNodes[i].length);
-              setNodes[i].push(item);
-            }
-          }
+    const { halfCheckedKeys } = e;
+    const addNodes = [];
+    e.checkedNodes.map(item => {
+      const { dataRef } = item.props;
+      const { path } = dataRef;
+      if (path === '/') {
+        addNodes.push(dataRef.key);
+      } else {
+        const newPath = path.substr(0, path.length - 1);
+        if (halfCheckedKeys.indexOf(newPath) !== -1) {
+          addNodes.push(dataRef.key);
         }
-      });
-    }
-    for (let l = 0, len = setNodes.length; l < len; l++) {
-      if (setNodes[l].length > 0) {
-        addNodes = [...addNodes, ...setNodes[l]];
       }
-    }
+    });
     this.addFtpfileAddDtoList(addNodes, e.checkedNodes);
   };
 
@@ -411,6 +400,10 @@ class AccessDataInfo extends PureComponent {
     dispatch({
       type: 'accessData/addFtpfileAddDtoList',
       payload: params,
+    });
+    dispatch({
+      type: 'accessData/addDefaultCheckedKeys',
+      payload: nodes,
     });
   };
 
@@ -643,7 +636,7 @@ class AccessDataInfo extends PureComponent {
 
   renderFtpForm() {
     const { params, type } = this.props;
-    const { treeList } = this.props.accessData;
+    const { treeList, checkedKeys } = this.props.accessData;
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -670,6 +663,8 @@ class AccessDataInfo extends PureComponent {
                 showIcon
                 loadData={this.onLoadTreeData}
                 onCheck={this.checkTree}
+                defaultCheckedKeys={checkedKeys}
+                defaultExpandedKeys={checkedKeys}
               >
                 {this.renderTreeNodes(treeList)}
               </DirectoryTree>

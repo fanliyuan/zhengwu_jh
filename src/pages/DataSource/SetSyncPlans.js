@@ -21,6 +21,7 @@ class SetSyncPlan extends PureComponent {
   }
 
   componentDidMount() {
+    console.log(this.props);
     this.props.onRef(this);
   }
 

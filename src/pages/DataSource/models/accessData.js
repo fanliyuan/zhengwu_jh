@@ -75,6 +75,7 @@ export default {
     treeList: [],
     tableList: [],
     columnList: [],
+    checkedKeys: [],
     syncModeList: [
       {
         key: '增量',
@@ -390,12 +391,14 @@ export default {
       let { treeList } = state;
       if (type === 'create') {
         payload.data.map((item, index) => {
-          item.key = index;
+          //item.key = index;
+          item.key = `${item.path}${item.name}`;
         });
         treeList = payload.data;
       } else {
         payload.data.map((item, index) => {
-          item.key = `${payload.treeNode.props.eventKey}-${index}`;
+          item.key = `${item.path}${item.name}`;
+          //item.key = `${payload.treeNode.props.eventKey}-${index}`;
         });
         payload.treeNode.props.dataRef.children = payload.data;
         treeList = [...treeList];
@@ -438,6 +441,12 @@ export default {
       state.params.ftpfileAddDtoList = [...state.params.ftpfileAddDtoList, ...payload];
       return {
         ...state,
+      };
+    },
+    addDefaultCheckedKeys(state, { payload }) {
+      return {
+        ...state,
+        checkedKeys: [...payload],
       };
     },
     resetTableColumnList(state, { payload }) {
