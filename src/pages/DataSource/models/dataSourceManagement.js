@@ -30,13 +30,14 @@ export default {
     *deleteItem({ payload }, { call, put }) {
       const response = yield call(deleteDataSourceManagement, payload.item);
       const jsonRes = JSON.parse(response);
-      console.log(jsonRes);
       if (jsonRes && jsonRes.code < 300) {
         message.success(jsonRes.message);
         yield put({
           type: 'fetch',
           payload: payload.values,
         });
+      } else {
+        message.error(jsonRes.message);
       }
     },
   },

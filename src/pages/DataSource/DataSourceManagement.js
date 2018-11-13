@@ -118,7 +118,7 @@ class TableList extends PureComponent {
             修改
           </a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id, record.type, record.sc)}>删除</a>
+          <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>删除</a>
         </Fragment>
       ),
     },
@@ -215,17 +215,23 @@ class TableList extends PureComponent {
     });
   };
 
-  handleDelete = (id, type, sc) => {
-    if (!sc) {
-      return message.error('已挂接数据，禁止删除！');
-    }
-    const item = [
-      {
-        id,
-        type,
-      },
-    ];
+  handleDelete = (multi, id, type, sc) => {
     const { dispatch, form, loadingDelete } = this.props;
+    const { selectedIds } = this.state;
+    let item = [];
+    if (multi) {
+      item = selectedIds;
+    } else {
+      if (!sc) {
+        return message.error('已挂接数据，禁止删除！');
+      }
+      item = [
+        {
+          id,
+          type,
+        },
+      ];
+    }
     return Modal.confirm({
       title: '警告',
       content: '是否删除数据？',
@@ -265,10 +271,6 @@ class TableList extends PureComponent {
         });
       },
     });
-  };
-
-  handleDeleteMultiple = () => {
-    console.log(this.state);
   };
 
   changePage = (pageNum, pageSize) => {
@@ -369,7 +371,6 @@ class TableList extends PureComponent {
     const {
       dataSourceManagement: { data, page },
       loading,
-      match,
     } = this.props;
     const paginationProps = {
       showQuickJumper: true,
@@ -384,6 +385,9 @@ class TableList extends PureComponent {
     const { selectedIds } = this.state;
     const columnRowSelection = {
       onChange: this.onSelectChange,
+      getCheckboxProps: record => ({
+        disabled: record.sc === false,
+      }),
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
@@ -397,7 +401,9 @@ class TableList extends PureComponent {
               <Button
                 icon="delete"
                 type="danger"
-                onClick={this.handleDeleteMultiple}
+                onClick={() => {
+                  this.handleDelete(true);
+                }}
                 disabled={selectedIds.length < 1}
               >
                 删除
