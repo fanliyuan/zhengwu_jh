@@ -51,6 +51,12 @@ class TableList extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'dataType',
+      render: text => {
+        if (text === 'file') {
+          return '文件';
+        }
+        return text;
+      },
     },
     {
       title: '最近更新时间',
@@ -114,7 +120,7 @@ class TableList extends PureComponent {
                 message.destroy();
                 return message.error('已挂接数据，禁止修改！');
               }
-              return router.push(`${match.url}/update/${record.id}`);
+              return router.push(`${match.url}/update/${record.type}/${record.id}`);
             }}
           >
             修改
@@ -330,7 +336,7 @@ class TableList extends PureComponent {
                   <OptGroup label="半结构文件类型">
                     <Option value="ftp">ftp</Option>
                     <Option value="sftp">sftp</Option>
-                    <Option value="本地文件上传">文件</Option>
+                    <Option value="file">文件</Option>
                   </OptGroup>
                 </Select>
               )}

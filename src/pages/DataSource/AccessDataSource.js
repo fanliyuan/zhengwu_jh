@@ -47,14 +47,23 @@ let steps = [];
 }))
 class AccessStepForm extends PureComponent {
   componentDidMount() {
-    console.log(1);
-    const { dispatch, match } = this.props;
-    dispatch({
-      type: 'accessData/detail',
-      payload: {
-        id: match.params.id,
-      },
-    });
+    const { dispatch, match, route } = this.props;
+    if (route.name === 'managementUpdate') {
+      dispatch({
+        type: 'accessData/updateDetail',
+        payload: {
+          id: match.params.id,
+          dataType: match.params.type,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'accessData/detail',
+        payload: {
+          id: match.params.id,
+        },
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -70,6 +79,7 @@ class AccessStepForm extends PureComponent {
         treeList: [],
         tableList: [],
         columnList: [],
+        checkedKeys: [],
         syncModeList: [
           {
             key: '增量',
@@ -119,20 +129,6 @@ class AccessStepForm extends PureComponent {
 
   onRef = ref => {
     this.child = ref;
-  };
-
-  setType = (val, type) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'accessData/setDataType',
-      payload: {
-        dataType: type,
-        oldName: '',
-        params: {
-          type: val,
-        },
-      },
-    });
   };
 
   handleAdd = () => {
@@ -202,7 +198,6 @@ class AccessStepForm extends PureComponent {
       accessData: { params, current, dataType, type },
     } = this.props;
     const parentMethods = {
-      setType: this.setType,
       handleAdd: this.handleAdd,
       submit: this.submit,
     };
@@ -323,18 +318,6 @@ class AccessStepForm extends PureComponent {
                 dataType === 'file' && (
                   <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                     返回
-                  </Button>
-                )}
-              {current === 2 &&
-                dataType !== 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
-                    关闭
-                  </Button>
-                )}
-              {current === 1 &&
-                dataType === 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
-                    关闭
                   </Button>
                 )}
             </div>

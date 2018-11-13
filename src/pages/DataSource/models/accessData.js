@@ -10,6 +10,9 @@ import {
   accessFile,
   ftpDataList,
   sftpDataList,
+  viewDbDetail,
+  viewFileDetail,
+  viewFtpDetail,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
@@ -189,6 +192,7 @@ export default {
             dataType: dataType,
             type: type,
             alias: alias,
+            oldName: '',
           },
         });
         yield put({
@@ -205,12 +209,6 @@ export default {
           },
         });
       }
-    },
-    *setDataType({ payload }, { call, put }) {
-      yield put({
-        type: 'updateDataType',
-        payload: payload,
-      });
     },
     *setDbList({ payload }, { call, put }) {
       const response = yield call(mysqlDbList, payload);
@@ -269,12 +267,6 @@ export default {
           payload: response.result.datas,
         });
       }
-    },
-    *setParams({ payload }, { call, put }) {
-      yield put({
-        type: 'updateDataType',
-        payload: payload,
-      });
     },
     *reset({ payload }, { call, put }) {
       yield put({
@@ -351,6 +343,69 @@ export default {
         });
       }
     },
+    *updateDetail({ payload }, { call, put }) {
+      let callbackApi;
+      const { dataType } = payload;
+      if (dataType === 'db') {
+        callbackApi = viewDbDetail;
+      } else if (dataType === 'ftp') {
+        callbackApi = viewFtpDetail;
+      } else {
+        callbackApi = viewFileDetail;
+      }
+      const response = yield call(callbackApi, payload.id);
+      if (response && response.code < 300) {
+        let params = {};
+        switch (dataType) {
+          case 'db':
+            params = initDbParams();
+            break;
+          case 'ftp':
+            params = initFtpParams();
+            break;
+          case 'file': {
+            const {
+              name,
+              createUnit,
+              describe,
+              dutyName,
+              dutyPhone,
+              dutyPosition,
+            } = response.result.data;
+            params = initFileParams();
+            params = { ...params, name, createUnit, describe, dutyName, dutyPhone, dutyPosition };
+            console.log(params);
+            break;
+          }
+        }
+        yield put({
+          type: 'updateParams',
+          payload: params,
+        });
+        yield put({
+          type: 'updateDataType',
+          payload: {
+            dataType,
+            type: 'file',
+            alias: '',
+            oldName: response.result.data.name,
+          },
+        });
+        //yield put({
+        //  type: 'connection',
+        //  payload: {
+        //    dataType: dataType,
+        //    connectParams: {
+        //      type: type,
+        //      addr: ip,
+        //      port: port,
+        //      username: username,
+        //      password: password,
+        //    },
+        //  },
+        //});
+      }
+    },
   },
 
   reducers: {
@@ -378,6 +433,7 @@ export default {
         dataType: payload.dataType,
         type: payload.type,
         alias: payload.alias,
+        oldName: payload.oldName,
       };
     },
     updateDbList(state, { payload }) {

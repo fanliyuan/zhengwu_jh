@@ -199,7 +199,7 @@ export default [
             authority: ['user'],
           },
           {
-            path: '/data/management/update/:id',
+            path: '/data/management/update/:type/:id',
             name: 'managementUpdate',
             component: './DataSource/AccessDataSource',
             authority: ['user'],

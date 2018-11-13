@@ -142,7 +142,7 @@ export async function deleteDataSourceManagement(params) {
 
 // 数据（关系数据库）详情
 export async function viewDbDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/db/${params}`);
 }
 
 // 修改数据（关系数据库）
@@ -165,7 +165,7 @@ export async function downloads(params) {
 
 // 数据（文件）详情
 export async function viewFileDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/file/${params}`);
 }
 
 // 修改数据（文件）及其文件项
@@ -183,7 +183,7 @@ export async function initFileList(params) {
 
 // 数据（ftp）详情
 export async function viewFtpDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/ftp/${params}`);
 }
 
 // 修改数据（FTP）及其文件（夹）
