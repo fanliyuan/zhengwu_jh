@@ -132,18 +132,25 @@ class TableList extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, form } = this.props;
-    if (formTime !== undefined && formValues !== undefined) {
-      if (formTime.beginTime) {
-        formValues.date = [
-          moment(formTime.beginTime, 'YYYY-MM-DD'),
-          moment(formTime.endTime, 'YYYY-MM-DD'),
-        ];
-        form.setFieldsValue(formValues);
-        delete formValues.date;
+    const routeName = sessionStorage.getItem('currentList');
+    const { dispatch, form, route } = this.props;
+    if (routeName && routeName !== route.name) {
+      paramsPage = { pageNum: 1, pageSize: 10 };
+      formValues = {};
+      formTime = {};
+    } else {
+      if (formTime !== undefined && formValues !== undefined) {
+        if (formTime.beginTime) {
+          formValues.date = [
+            moment(formTime.beginTime, 'YYYY-MM-DD'),
+            moment(formTime.endTime, 'YYYY-MM-DD'),
+          ];
+          form.setFieldsValue(formValues);
+          delete formValues.date;
+        }
       }
+      form.setFieldsValue(formValues);
     }
-    form.setFieldsValue(formValues);
     dispatch({
       type: 'dataSourceManagement/fetch',
       payload: {
@@ -152,6 +159,11 @@ class TableList extends PureComponent {
         ...formTime,
       },
     });
+  }
+
+  componentWillUnmount() {
+    const { route } = this.props;
+    sessionStorage.setItem('currentList', route.name);
   }
 
   handleFormReset = () => {
