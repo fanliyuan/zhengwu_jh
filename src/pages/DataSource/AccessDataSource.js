@@ -196,6 +196,7 @@ class AccessStepForm extends PureComponent {
       location,
       match,
       submitting,
+      history,
       testNameSubmitting,
       accessData: { params, current, dataType, type },
     } = this.props;
@@ -245,9 +246,21 @@ class AccessStepForm extends PureComponent {
                     if (dataType !== 'file') {
                       return <SetSyncPlan onRef={this.onRef} {...parentMethods} params={params} />;
                     }
-                    return <AddSuccess />;
+                    return (
+                      <AddSuccess
+                        title="数据接入配置成功，请等待审核结果！"
+                        pageName="数据源"
+                        history={history}
+                      />
+                    );
                   case 2:
-                    return <AddSuccess />;
+                    return (
+                      <AddSuccess
+                        title="数据接入配置成功，请等待审核结果！"
+                        pageName="数据源"
+                        history={history}
+                      />
+                    );
                   default:
                     return (
                       <AccessDataInfo
