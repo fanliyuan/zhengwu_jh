@@ -80,6 +80,7 @@ class TableList extends PureComponent {
             onClick={() => {
               const { match } = this.props;
               if (!record.zy) {
+                message.destroy();
                 return message.error('无对应的目录！');
               }
               return router.push(`${match.url}/update/${record.id}`);
@@ -110,6 +111,7 @@ class TableList extends PureComponent {
             onClick={() => {
               const { match } = this.props;
               if (!record.xg) {
+                message.destroy();
                 return message.error('已挂接数据，禁止修改！');
               }
               return router.push(`${match.url}/update/${record.id}`);
@@ -223,6 +225,7 @@ class TableList extends PureComponent {
       item = selectedIds;
     } else {
       if (!sc) {
+        message.destroy();
         return message.error('已挂接数据，禁止删除！');
       }
       item = [

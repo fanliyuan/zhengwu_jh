@@ -47,6 +47,7 @@ let steps = [];
 }))
 class AccessStepForm extends PureComponent {
   componentDidMount() {
+    console.log(1);
     const { dispatch, match } = this.props;
     dispatch({
       type: 'accessData/detail',

@@ -419,6 +419,7 @@ class AccessDataInfo extends PureComponent {
   };
 
   addFileAddDtoList = info => {
+    console.log(info);
     const status = info.file.status;
     if (status !== 'uploading') {
       this.setState({
