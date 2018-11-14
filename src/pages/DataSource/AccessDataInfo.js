@@ -150,26 +150,30 @@ class AccessDataInfo extends PureComponent {
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.structAddDtoList.required' })
           );
-        } else if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
+        }
+
+        if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
           message.destroy();
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.ftpfileAddDtoList.required' })
           );
-        } else if (dataType === 'file') {
+        }
+
+        if (dataType === 'file') {
           const { fileList } = this.state;
           if (fileList.length < 1) {
             message.destroy();
             return message.error(
               formatMessage({ id: 'validation.accessDataSource.fileAddDtoList.required' })
             );
-          } else {
-            let params = [];
-            fileList.map(item => {
-              params.push(item.response.result.data);
-            });
-            values.fileAddDtoList = params;
           }
+          const paramsFile = [];
+          fileList.map(item => {
+            return paramsFile.push(item.response.result.data);
+          });
+          values.fileAddDtoList = paramsFile;
         }
+
         dispatch({
           type: 'accessData/testName',
           payload: {

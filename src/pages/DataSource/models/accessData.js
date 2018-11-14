@@ -13,6 +13,7 @@ import {
   viewDbDetail,
   viewFileDetail,
   viewFtpDetail,
+  initFileList,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
