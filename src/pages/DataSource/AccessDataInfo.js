@@ -780,6 +780,8 @@ class AccessDataInfo extends PureComponent {
 
   renderFileForm() {
     const { params, type } = this.props;
+    const { fileList } = this.state;
+    console.log(this.props);
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -800,6 +802,7 @@ class AccessDataInfo extends PureComponent {
       action: '/api/api/v2/zhengwu/swap/datasource/file/up',
       beforeUpload: this.uploadBefore,
       onChange: this.addFileAddDtoList,
+      fileList: fileList,
     };
     return (
       <Fragment>

@@ -11,6 +11,7 @@ export default {
   state: {
     status: undefined,
     currentAuthority: 'guest',
+    currentUser: {},
   },
 
   effects: {
@@ -18,6 +19,10 @@ export default {
       const response = yield call(fakeAccountLogin, payload);
       // Login successfully
       if (response && response.code === 200) {
+        yield put({
+          type: 'saveCurrentUser',
+          payload: response.result.data,
+        });
         yield put({
           type: 'changeLoginStatus',
           payload: response,
@@ -79,6 +84,12 @@ export default {
         ...state,
         // status: auth,
         // type: payload.type,
+      };
+    },
+    saveCurrentUser(state, action) {
+      return {
+        ...state,
+        currentUser: action.payload || {},
       };
     },
   },

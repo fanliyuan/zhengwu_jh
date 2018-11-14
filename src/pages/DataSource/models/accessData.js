@@ -80,6 +80,7 @@ export default {
     tableList: [],
     columnList: [],
     checkedKeys: [],
+    fileList: [],
     syncModeList: [
       {
         key: '增量',
@@ -365,24 +366,28 @@ export default {
             params = initFtpParams();
             break;
           case 'file': {
-            const {
-              name,
-              createUnit,
-              describe,
-              dutyName,
-              dutyPhone,
-              dutyPosition,
-            } = response.result.data;
-            params = initFileParams();
-            params = { ...params, name, createUnit, describe, dutyName, dutyPhone, dutyPosition };
-            console.log(params);
+            yield put({
+              type: 'getFilelist',
+              payload: response.result.data,
+            });
+            //const {
+            //  name,
+            //  createUnit,
+            //  describe,
+            //  dutyName,
+            //  dutyPhone,
+            //  dutyPosition,
+            //} = response.result.data;
+            //params = initFileParams();
+            //params = { ...params, name, createUnit, describe, dutyName, dutyPhone, dutyPosition };
+            //console.log(params);
             break;
           }
         }
-        yield put({
-          type: 'updateParams',
-          payload: params,
-        });
+        //yield put({
+        //  type: 'updateParams',
+        //  payload: params,
+        //});
         yield put({
           type: 'updateDataType',
           payload: {
@@ -391,6 +396,53 @@ export default {
             alias: '',
             oldName: response.result.data.name,
           },
+        });
+        //yield put({
+        //  type: 'connection',
+        //  payload: {
+        //    dataType: dataType,
+        //    connectParams: {
+        //      type: type,
+        //      addr: ip,
+        //      port: port,
+        //      username: username,
+        //      password: password,
+        //    },
+        //  },
+        //});
+      }
+    },
+    *getFilelist({ payload }, { call, put }) {
+      const response = yield call(initFileList, payload);
+      if (response && response.code < 300) {
+        let params = {};
+        const fileAddDtoList = [];
+        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload;
+        response.result.datas.map(item => {
+          return fileAddDtoList.push({
+            uid: item.id,
+            name: item.name,
+            size: item.size,
+            type: item.type,
+            uploadTime: item.uploadTimeStr,
+            url: item.path,
+          });
+        });
+        params = initFileParams();
+        params = {
+          ...params,
+          name,
+          createUnit,
+          describe,
+          dutyName,
+          dutyPhone,
+          dutyPosition,
+          fileAddDtoList,
+        };
+        console.log(params);
+        yield put({
+          type: 'updateParams',
+          payload: params,
         });
         //yield put({
         //  type: 'connection',
@@ -478,6 +530,7 @@ export default {
       };
     },
     updateParams(state, { payload }) {
+      console.log(state);
       return {
         ...state,
         params: {
