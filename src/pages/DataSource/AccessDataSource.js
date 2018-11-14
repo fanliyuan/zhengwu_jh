@@ -195,6 +195,7 @@ class AccessStepForm extends PureComponent {
       submitting,
       history,
       testNameSubmitting,
+      route,
       accessData: { params, current, dataType, type },
     } = this.props;
     const parentMethods = {
@@ -236,6 +237,7 @@ class AccessStepForm extends PureComponent {
                         match={match}
                         type={type}
                         params={params}
+                        route={route}
                       />
                     );
                   case 1:

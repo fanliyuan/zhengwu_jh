@@ -149,7 +149,7 @@ export async function viewDbDetail(params) {
 export async function updateDb(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.values,
   });
 }
 
@@ -172,7 +172,7 @@ export async function viewFileDetail(params) {
 export async function updateFile(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.values,
   });
 }
 
@@ -190,7 +190,7 @@ export async function viewFtpDetail(params) {
 export async function updateFtp(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.values,
   });
 }
 

@@ -14,6 +14,9 @@ import {
   viewFileDetail,
   viewFtpDetail,
   initFileList,
+  updateDb,
+  updateFile,
+  updateFtp,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
@@ -80,7 +83,6 @@ export default {
     tableList: [],
     columnList: [],
     checkedKeys: [],
-    fileList: [],
     syncModeList: [
       {
         key: '增量',
@@ -304,13 +306,24 @@ export default {
       }
     },
     *submit({ payload }, { call, put }) {
+      console.log(payload);
       let callbackApi;
-      if (payload.dataType === 'db') {
-        callbackApi = accessDataSource;
-      } else if (payload.dataType === 'ftp') {
-        callbackApi = accessFtp;
+      if (payload.routeName && payload.routeName !== 'managementUpdate') {
+        if (payload.dataType === 'db') {
+          callbackApi = accessDataSource;
+        } else if (payload.dataType === 'ftp') {
+          callbackApi = accessFtp;
+        } else {
+          callbackApi = accessFile;
+        }
       } else {
-        callbackApi = accessFile;
+        if (payload.dataType === 'db') {
+          callbackApi = updateDb;
+        } else if (payload.dataType === 'ftp') {
+          callbackApi = updateFtp;
+        } else {
+          callbackApi = updateFile;
+        }
       }
       const response = yield call(callbackApi, payload);
       if (response && response.code >= 300) {
@@ -323,26 +336,41 @@ export default {
       });
     },
     *testName({ payload }, { call, put }) {
-      const response = yield call(isSameNameData, { name: payload.values.name });
-      if (response && response.result.data) {
-        return notification.error({
-          message: '数据名称重复！',
-        });
-      }
-      yield put({
-        type: 'updateParams',
-        payload: payload.values,
-      });
-      if (payload.dataType !== 'file') {
+      console.log(payload);
+      if (payload.oldName && payload.oldName !== '' && payload.oldName === payload.values.name) {
+        if (payload.dataType !== 'file') {
+          yield put({
+            type: 'next',
+            payload: payload.values,
+          });
+        } else {
+          yield put({
+            type: 'submit',
+            payload: payload,
+          });
+        }
+      } else {
+        const response = yield call(isSameNameData, { name: payload.values.name });
+        if (response && response.result.data) {
+          return notification.error({
+            message: '数据名称重复！',
+          });
+        }
         yield put({
-          type: 'next',
+          type: 'updateParams',
           payload: payload.values,
         });
-      } else {
-        yield put({
-          type: 'submit',
-          payload: payload,
-        });
+        if (payload.dataType !== 'file') {
+          yield put({
+            type: 'next',
+            payload: payload.values,
+          });
+        } else {
+          yield put({
+            type: 'submit',
+            payload: payload,
+          });
+        }
       }
     },
     *updateDetail({ payload }, { call, put }) {
@@ -368,7 +396,13 @@ export default {
           case 'file': {
             yield put({
               type: 'getFilelist',
-              payload: response.result.data,
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: 'file',
+                alias: '',
+                oldName: response.result.data.name,
+              },
             });
             //const {
             //  name,
@@ -388,15 +422,15 @@ export default {
         //  type: 'updateParams',
         //  payload: params,
         //});
-        yield put({
-          type: 'updateDataType',
-          payload: {
-            dataType,
-            type: 'file',
-            alias: '',
-            oldName: response.result.data.name,
-          },
-        });
+        //yield put({
+        //  type: 'updateDataType',
+        //  payload: {
+        //    dataType,
+        //    type: 'file',
+        //    alias: '',
+        //    oldName: response.result.data.name,
+        //  },
+        //});
         //yield put({
         //  type: 'connection',
         //  payload: {
@@ -413,19 +447,20 @@ export default {
       }
     },
     *getFilelist({ payload }, { call, put }) {
-      const response = yield call(initFileList, payload);
+      const response = yield call(initFileList, payload.params);
       if (response && response.code < 300) {
         let params = {};
         const fileAddDtoList = [];
-        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload;
+        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload.params;
         response.result.datas.map(item => {
           return fileAddDtoList.push({
+            id: item.id,
             uid: item.id,
             name: item.name,
             size: item.size,
             type: item.type,
-            uploadTime: item.uploadTimeStr,
-            url: item.path,
+            uploadTime: item.uploadTime,
+            path: item.path,
           });
         });
         params = initFileParams();
@@ -444,19 +479,15 @@ export default {
           type: 'updateParams',
           payload: params,
         });
-        //yield put({
-        //  type: 'connection',
-        //  payload: {
-        //    dataType: dataType,
-        //    connectParams: {
-        //      type: type,
-        //      addr: ip,
-        //      port: port,
-        //      username: username,
-        //      password: password,
-        //    },
-        //  },
-        //});
+        yield put({
+          type: 'updateDataType',
+          payload: {
+            dataType: payload.dataType,
+            type: payload.type,
+            alias: payload.alias,
+            oldName: payload.oldName,
+          },
+        });
       }
     },
   },

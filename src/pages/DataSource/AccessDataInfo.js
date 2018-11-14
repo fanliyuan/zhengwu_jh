@@ -136,12 +136,24 @@ class AccessDataInfo extends PureComponent {
     onRef(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { route } = this.props;
+    const { fileList } = this.state;
+    if (route.name === 'managementUpdate' && fileList.length < 1) {
+      const { fileAddDtoList } = nextProps.params;
+      this.setState({
+        fileList: fileAddDtoList,
+      });
+    }
+  }
+
   handleSubmit = () => {
     const {
       form,
       dispatch,
       match,
-      accessData: { params, dataType },
+      route,
+      accessData: { params, dataType, oldName },
     } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -169,7 +181,17 @@ class AccessDataInfo extends PureComponent {
           }
           const paramsFile = [];
           fileList.map(item => {
-            return paramsFile.push(item.response.result.data);
+            if (item.response) {
+              return paramsFile.push(item.response.result.data);
+            }
+            return paramsFile.push({
+              id: item.id,
+              name: item.name,
+              size: item.size,
+              type: item.type,
+              uploadTime: item.uploadTime,
+              path: item.path,
+            });
           });
           values.fileAddDtoList = paramsFile;
         }
@@ -179,6 +201,8 @@ class AccessDataInfo extends PureComponent {
           payload: {
             values,
             dataType,
+            oldName,
+            routeName: route.name,
             id: match.params.id,
           },
         });
@@ -423,7 +447,6 @@ class AccessDataInfo extends PureComponent {
   };
 
   addFileAddDtoList = info => {
-    console.log(info);
     const status = info.file.status;
     if (status !== 'uploading') {
       this.setState({
@@ -780,8 +803,6 @@ class AccessDataInfo extends PureComponent {
 
   renderFileForm() {
     const { params, type } = this.props;
-    const { fileList } = this.state;
-    console.log(this.props);
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -802,7 +823,7 @@ class AccessDataInfo extends PureComponent {
       action: '/api/api/v2/zhengwu/swap/datasource/file/up',
       beforeUpload: this.uploadBefore,
       onChange: this.addFileAddDtoList,
-      fileList: fileList,
+      defaultFileList: params.fileAddDtoList,
     };
     return (
       <Fragment>
