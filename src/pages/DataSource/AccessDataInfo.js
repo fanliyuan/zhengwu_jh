@@ -24,6 +24,7 @@ const { TextArea } = Input;
 const { DirectoryTree } = Tree;
 const { TreeNode } = Tree;
 const { Dragger } = Upload;
+let initTreeList = [];
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -85,6 +86,8 @@ class AccessDataInfo extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      hasReceiveFiles: false,
+      hasCheckFtp: false,
       page: 1,
       modalTitle: '',
       dbName: '',
@@ -138,14 +141,50 @@ class AccessDataInfo extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const { route } = this.props;
-    const { fileList } = this.state;
-    if (route.name === 'managementUpdate' && fileList.length < 1) {
+    const { hasReceiveFiles, hasCheckFtp } = this.state;
+    if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
-      this.setState({
-        fileList: fileAddDtoList,
-      });
+      if (fileAddDtoList && fileAddDtoList.length > 0) {
+        this.setState({
+          fileList: fileAddDtoList,
+          hasReceiveFiles: true,
+        });
+      }
+    }
+
+    if (route.name === 'managementUpdate' && !hasCheckFtp) {
+      const { checkedKeys, treeList } = nextProps.accessData;
+      if (checkedKeys && checkedKeys.length > 0) {
+        console.log(treeList);
+        this.setState({
+          hasCheckFtp: true,
+        });
+        this.deepTree(treeList, checkedKeys);
+      }
     }
   }
+
+  deepTree = (treeList, checkedKeys) => {
+    checkedKeys.map(item => {
+      const pathArr = item.split('/');
+      if (pathArr.length > 2) {
+        pathArr.map((itemPath, index) => {
+          if (index === 1) {
+            this.ergodicTree(treeList, pathArr, index);
+          }
+        });
+      }
+    });
+  };
+
+  ergodicTree = (treeList, pathArr, index) => {
+    for (let i = 0, len = treeList.length; i < len; i += 1) {
+      if (pathArr[index] === treeList[i].name) {
+        this.onLoadTreeData(treeList[i], pathArr, index);
+        break;
+      }
+    }
+  };
 
   handleSubmit = () => {
     const {
@@ -365,29 +404,66 @@ class AccessDataInfo extends PureComponent {
     record.index = index + 1;
   };
 
-  onLoadTreeData = treeNode => {
+  onLoadTreeData = (treeNode, pathArr, index) => {
+    console.log(treeNode);
+    let pathP, nameP, openP, childrenP;
     const {
       dispatch,
       type,
       accessData: { alias },
     } = this.props;
-    const { path, name, open, children } = treeNode.props.dataRef;
+    if (treeNode.props) {
+      const { path, name, open, children } = treeNode.props.dataRef;
+      pathP = path;
+      nameP = name;
+      openP = open;
+      childrenP = children;
+    } else {
+      const { path, name, open, children } = treeNode;
+      pathP = path;
+      nameP = name;
+      openP = open;
+      childrenP = children;
+    }
     return new Promise(resolve => {
-      if (open && !children) {
-        resolve(
-          dispatch({
-            type: 'accessData/setTreeList',
-            payload: {
-              params: {
-                alias,
-                path: `${path}${name}/`,
+      if (openP && !childrenP) {
+        if (pathArr) {
+          resolve(
+            dispatch({
+              type: 'accessData/setTreeList',
+              payload: {
+                params: {
+                  alias,
+                  path: `${pathP}${nameP}/`,
+                },
+                type: 'update',
+                treeNode,
+                treeType: type,
               },
-              type: 'update',
-              treeNode,
-              treeType: type,
-            },
-          })
-        );
+              callback: res => {
+                if (res) {
+                  initTreeList = res.result.datas;
+                  this.ergodicTree(initTreeList, pathArr, index + 1);
+                }
+              },
+            })
+          );
+        } else {
+          resolve(
+            dispatch({
+              type: 'accessData/setTreeList',
+              payload: {
+                params: {
+                  alias,
+                  path: `${pathP}${nameP}/`,
+                },
+                type: 'update',
+                treeNode,
+                treeType: type,
+              },
+            })
+          );
+        }
       } else {
         resolve();
       }
@@ -652,7 +728,7 @@ class AccessDataInfo extends PureComponent {
       }
       return (
         <TreeNode
-          isLeaf={true}
+          isLeaf
           icon={<Icon type={type} theme="outlined" />}
           title={item.name}
           key={item.key}
@@ -679,6 +755,7 @@ class AccessDataInfo extends PureComponent {
         md: { span: 10 },
       },
     };
+    console.log(12);
     return (
       <Fragment>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
@@ -689,10 +766,13 @@ class AccessDataInfo extends PureComponent {
                 className={styles.tree}
                 checkable
                 showIcon
+                autoExpandParent
                 loadData={this.onLoadTreeData}
                 onCheck={this.checkTree}
                 defaultCheckedKeys={checkedKeys}
                 defaultExpandedKeys={checkedKeys}
+                expandedKeys={[...checkedKeys]}
+                checkedKeys={[...checkedKeys]}
               >
                 {this.renderTreeNodes(treeList)}
               </DirectoryTree>

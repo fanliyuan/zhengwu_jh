@@ -190,7 +190,7 @@ export async function viewFtpDetail(params) {
 export async function updateFtp(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`, {
     method: 'PUT',
-    body: params.values,
+    body: params.addDto,
   });
 }
 
@@ -214,7 +214,9 @@ export async function auditData(params) {
 
 // 查询同步计划
 export async function searchTask(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/basicInfo`);
+  return request(
+    `/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/task/basicInfo`
+  );
 }
 
 // 查看运行日志

@@ -14,9 +14,11 @@ import {
   viewFileDetail,
   viewFtpDetail,
   initFileList,
+  initFtpList,
   updateDb,
   updateFile,
   updateFtp,
+  searchTask,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
@@ -223,7 +225,7 @@ export default {
         });
       }
     },
-    *setTreeList({ payload }, { call, put }) {
+    *setTreeList({ payload, callback }, { call, put }) {
       let callbackApi;
       if (payload.treeType === 'ftp') {
         callbackApi = ftpDataList;
@@ -232,6 +234,9 @@ export default {
       }
       const response = yield call(callbackApi, payload.params);
       if (response && response.code < 300) {
+        if (callback && typeof callback === 'function') {
+          callback(response); // 返回结果
+        }
         if (payload.treeNode) {
           yield put({
             type: 'updateTreeList',
@@ -287,7 +292,7 @@ export default {
           yield put({
             type: 'setDbList',
             payload: {
-              alias: alias,
+              alias,
             },
           });
         } else if (payload.dataType === 'ftp') {
@@ -295,18 +300,17 @@ export default {
             type: 'setTreeList',
             payload: {
               params: {
-                alias: alias,
+                alias,
                 path: '/',
               },
               type: 'create',
-              treeType: treeType,
+              treeType,
             },
           });
         }
       }
     },
     *submit({ payload }, { call, put }) {
-      console.log(payload);
       let callbackApi;
       if (payload.routeName && payload.routeName !== 'managementUpdate') {
         if (payload.dataType === 'db') {
@@ -336,7 +340,6 @@ export default {
       });
     },
     *testName({ payload }, { call, put }) {
-      console.log(payload);
       if (payload.oldName && payload.oldName !== '' && payload.oldName === payload.values.name) {
         if (payload.dataType !== 'file') {
           yield put({
@@ -390,9 +393,19 @@ export default {
           case 'db':
             params = initDbParams();
             break;
-          case 'ftp':
-            params = initFtpParams();
+          case 'ftp': {
+            yield put({
+              type: 'getCheckedKeys',
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: response.result.data.datasourceDetailDto.type,
+                alias: response.result.data.datasourceDetailDto.alias,
+                oldName: response.result.data.name,
+              },
+            });
             break;
+          }
           case 'file': {
             yield put({
               type: 'getFilelist',
@@ -404,17 +417,6 @@ export default {
                 oldName: response.result.data.name,
               },
             });
-            //const {
-            //  name,
-            //  createUnit,
-            //  describe,
-            //  dutyName,
-            //  dutyPhone,
-            //  dutyPosition,
-            //} = response.result.data;
-            //params = initFileParams();
-            //params = { ...params, name, createUnit, describe, dutyName, dutyPhone, dutyPosition };
-            //console.log(params);
             break;
           }
         }
@@ -429,19 +431,6 @@ export default {
         //    type: 'file',
         //    alias: '',
         //    oldName: response.result.data.name,
-        //  },
-        //});
-        //yield put({
-        //  type: 'connection',
-        //  payload: {
-        //    dataType: dataType,
-        //    connectParams: {
-        //      type: type,
-        //      addr: ip,
-        //      port: port,
-        //      username: username,
-        //      password: password,
-        //    },
         //  },
         //});
       }
@@ -474,7 +463,87 @@ export default {
           dutyPosition,
           fileAddDtoList,
         };
-        console.log(params);
+        yield put({
+          type: 'updateParams',
+          payload: params,
+        });
+        yield put({
+          type: 'updateDataType',
+          payload: {
+            dataType: payload.dataType,
+            type: payload.type,
+            alias: payload.alias,
+            oldName: payload.oldName,
+          },
+        });
+      }
+    },
+    *getCheckedKeys({ payload }, { call, put }) {
+      const response = yield call(initFtpList, payload.params);
+      if (response && response.code < 300) {
+        const payloadParams = {
+          checkedKeys: [],
+          ftpfileAddDtoList: [],
+        };
+        response.result.datas.map(item => {
+          const pathName = `${item.path}${item.name}`;
+          payloadParams.checkedKeys.push(pathName);
+          payloadParams.ftpfileAddDtoList.push({
+            id: item.id,
+            name: item.name,
+            open: item.open,
+            path: item.path,
+            type: item.type,
+          });
+          return payloadParams;
+        });
+        yield put({
+          type: 'connection',
+          payload: {
+            dataType: payload.dataType,
+            connectParams: {
+              type: payload.params.datasourceDetailDto.type,
+              addr: payload.params.datasourceDetailDto.ip,
+              port: payload.params.datasourceDetailDto.port,
+              username: payload.params.datasourceDetailDto.username,
+              password: payload.params.datasourceDetailDto.password,
+            },
+          },
+        });
+        yield put({
+          type: 'addDefaultCheckedKeys',
+          payload: payloadParams.checkedKeys,
+        });
+        yield put({
+          type: 'setSyncPlans',
+          payload: {
+            ...payload,
+            ftpfileAddDtoList: payloadParams.ftpfileAddDtoList,
+          },
+        });
+      }
+    },
+    *setSyncPlans({ payload }, { call, put }) {
+      const response = yield call(searchTask, payload);
+      if (response && response.code < 300) {
+        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload.params;
+        const { stopNum, syncMode, syncRate, timeSet } = response.result.data;
+        const params = {
+          ...initFtpParams(),
+          name,
+          createUnit,
+          describe,
+          dutyName,
+          dutyPhone,
+          dutyPosition,
+          ftpfileAddDtoList: payload.ftpfileAddDtoList,
+          syncAddDto: {
+            stopNum: JSON.stringify(stopNum),
+            syncMode,
+            syncRate,
+            timeSet,
+          },
+        };
         yield put({
           type: 'updateParams',
           payload: params,
@@ -501,7 +570,7 @@ export default {
     },
     prev(state) {
       state.params.syncAddDto = {
-        stopNum: '0',
+        stopNum: '5',
         syncMode: '增量',
         syncRate: '定时',
         timeSet: '-分钟',
@@ -530,19 +599,22 @@ export default {
       const { type } = payload;
       let { treeList } = state;
       if (type === 'create') {
-        payload.data.map((item, index) => {
-          //item.key = index;
+        payload.data.map(item => {
           item.key = `${item.path}${item.name}`;
         });
         treeList = payload.data;
       } else {
-        payload.data.map((item, index) => {
+        payload.data.map(item => {
           item.key = `${item.path}${item.name}`;
-          //item.key = `${payload.treeNode.props.eventKey}-${index}`;
         });
-        payload.treeNode.props.dataRef.children = payload.data;
+        if (payload.treeNode.props) {
+          payload.treeNode.props.dataRef.children = payload.data;
+        } else {
+          payload.treeNode.children = payload.data;
+        }
         treeList = [...treeList];
       }
+      console.log(treeList);
       return {
         ...state,
         treeList: treeList,
@@ -561,7 +633,6 @@ export default {
       };
     },
     updateParams(state, { payload }) {
-      console.log(state);
       return {
         ...state,
         params: {

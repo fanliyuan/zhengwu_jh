@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Steps, Button, Modal } from 'antd';
+import { Card, Steps, Button, Modal, Alert } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import AccessDataInfo from './AccessDataInfo';
 import SetSyncPlan from './SetSyncPlans';
@@ -65,6 +65,8 @@ class AccessStepForm extends PureComponent {
       });
     }
   }
+
+  componentWillReceiveProps(nextProps, nextState) {}
 
   componentWillUnmount() {
     const { dispatch } = this.props;
@@ -139,6 +141,7 @@ class AccessStepForm extends PureComponent {
     const {
       dispatch,
       match,
+      route,
       accessData: { params, dataType },
     } = this.props;
     dispatch({
@@ -146,6 +149,7 @@ class AccessStepForm extends PureComponent {
       payload: {
         id: match.params.id,
         addDto: params,
+        routeName: route.name,
         dataType,
       },
     });
@@ -229,6 +233,16 @@ class AccessStepForm extends PureComponent {
               {(() => {
                 switch (current) {
                   case 0:
+                    if (dataType === '') {
+                      return (
+                        <Alert
+                          message="页面正努力加载中......"
+                          style={{ marginBottom: 20 }}
+                          type="info"
+                          showIcon
+                        />
+                      );
+                    }
                     return (
                       <AccessDataInfo
                         onRef={this.onRef}
@@ -261,13 +275,11 @@ class AccessStepForm extends PureComponent {
                     );
                   default:
                     return (
-                      <AccessDataInfo
-                        onRef={this.onRef}
-                        {...parentMethods}
-                        dataType={dataType}
-                        match={match}
-                        type={type}
-                        params={params}
+                      <Alert
+                        message="页面加载中..."
+                        description="请耐心等待!"
+                        type="info"
+                        showIcon
                       />
                     );
                 }
