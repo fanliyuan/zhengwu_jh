@@ -146,7 +146,7 @@ class StepForm extends PureComponent {
     const {
       opreateDataSource: { current },
     } = this.props;
-    if (current === 1) {
+    if (current !== 0) {
       Modal.confirm({
         title: '警告',
         content: '返回数据源页面，当前信息将不会被保存，是否返回？',

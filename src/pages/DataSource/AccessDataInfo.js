@@ -24,7 +24,6 @@ const { TextArea } = Input;
 const { DirectoryTree } = Tree;
 const { TreeNode } = Tree;
 const { Dragger } = Upload;
-let initTreeList = [];
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -87,7 +86,6 @@ class AccessDataInfo extends PureComponent {
     this.state = {
       visible: false,
       hasReceiveFiles: false,
-      hasCheckFtp: false,
       page: 1,
       modalTitle: '',
       dbName: '',
@@ -141,7 +139,7 @@ class AccessDataInfo extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const { route } = this.props;
-    const { hasReceiveFiles, hasCheckFtp } = this.state;
+    const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
       if (fileAddDtoList && fileAddDtoList.length > 0) {
@@ -151,40 +149,7 @@ class AccessDataInfo extends PureComponent {
         });
       }
     }
-
-    if (route.name === 'managementUpdate' && !hasCheckFtp) {
-      const { checkedKeys, treeList } = nextProps.accessData;
-      if (checkedKeys && checkedKeys.length > 0) {
-        console.log(treeList);
-        this.setState({
-          hasCheckFtp: true,
-        });
-        this.deepTree(treeList, checkedKeys);
-      }
-    }
   }
-
-  deepTree = (treeList, checkedKeys) => {
-    checkedKeys.map(item => {
-      const pathArr = item.split('/');
-      if (pathArr.length > 2) {
-        pathArr.map((itemPath, index) => {
-          if (index === 1) {
-            this.ergodicTree(treeList, pathArr, index);
-          }
-        });
-      }
-    });
-  };
-
-  ergodicTree = (treeList, pathArr, index) => {
-    for (let i = 0, len = treeList.length; i < len; i += 1) {
-      if (pathArr[index] === treeList[i].name) {
-        this.onLoadTreeData(treeList[i], pathArr, index);
-        break;
-      }
-    }
-  };
 
   handleSubmit = () => {
     const {
@@ -195,6 +160,7 @@ class AccessDataInfo extends PureComponent {
       accessData: { params, dataType, oldName },
     } = this.props;
     form.validateFieldsAndScroll((err, values) => {
+      const paramsValues = values;
       if (!err) {
         if (dataType === 'db' && params.structAddDtoList.length < 1) {
           message.destroy();
@@ -232,13 +198,13 @@ class AccessDataInfo extends PureComponent {
               path: item.path,
             });
           });
-          values.fileAddDtoList = paramsFile;
+          paramsValues.fileAddDtoList = paramsFile;
         }
 
         dispatch({
           type: 'accessData/testName',
           payload: {
-            values,
+            values: paramsValues,
             dataType,
             oldName,
             routeName: route.name,
@@ -246,6 +212,7 @@ class AccessDataInfo extends PureComponent {
           },
         });
       }
+      return false;
     });
   };
 
@@ -368,8 +335,9 @@ class AccessDataInfo extends PureComponent {
     } else {
       structAddDtoList.map((item, index) => {
         if (item.columnName === record.name) {
-          structAddDtoList.splice(index, 1);
+          return structAddDtoList.splice(index, 1);
         }
+        return false;
       });
     }
   };
@@ -388,7 +356,7 @@ class AccessDataInfo extends PureComponent {
             pri = false;
             break;
         }
-        structAddDtoList.push({
+        return structAddDtoList.push({
           columnName: item.name,
           columnType: item.type,
           note: item.comment,
@@ -404,66 +372,29 @@ class AccessDataInfo extends PureComponent {
     record.index = index + 1;
   };
 
-  onLoadTreeData = (treeNode, pathArr, index) => {
-    console.log(treeNode);
-    let pathP, nameP, openP, childrenP;
+  onLoadTreeData = treeNode => {
     const {
       dispatch,
       type,
       accessData: { alias },
     } = this.props;
-    if (treeNode.props) {
-      const { path, name, open, children } = treeNode.props.dataRef;
-      pathP = path;
-      nameP = name;
-      openP = open;
-      childrenP = children;
-    } else {
-      const { path, name, open, children } = treeNode;
-      pathP = path;
-      nameP = name;
-      openP = open;
-      childrenP = children;
-    }
+    const { path, name, open, children } = treeNode.props.dataRef;
     return new Promise(resolve => {
-      if (openP && !childrenP) {
-        if (pathArr) {
-          resolve(
-            dispatch({
-              type: 'accessData/setTreeList',
-              payload: {
-                params: {
-                  alias,
-                  path: `${pathP}${nameP}/`,
-                },
-                type: 'update',
-                treeNode,
-                treeType: type,
+      if (open && !children) {
+        resolve(
+          dispatch({
+            type: 'accessData/setTreeList',
+            payload: {
+              params: {
+                alias,
+                path: `${path}${name}/`,
               },
-              callback: res => {
-                if (res) {
-                  initTreeList = res.result.datas;
-                  this.ergodicTree(initTreeList, pathArr, index + 1);
-                }
-              },
-            })
-          );
-        } else {
-          resolve(
-            dispatch({
-              type: 'accessData/setTreeList',
-              payload: {
-                params: {
-                  alias,
-                  path: `${pathP}${nameP}/`,
-                },
-                type: 'update',
-                treeNode,
-                treeType: type,
-              },
-            })
-          );
-        }
+              type: 'update',
+              treeNode,
+              treeType: type,
+            },
+          })
+        );
       } else {
         resolve();
       }
@@ -477,29 +408,30 @@ class AccessDataInfo extends PureComponent {
       const { dataRef } = item.props;
       const { path } = dataRef;
       if (path === '/') {
-        addNodes.push(dataRef.key);
-      } else {
-        const newPath = path.substr(0, path.length - 1);
-        if (halfCheckedKeys.indexOf(newPath) !== -1) {
-          addNodes.push(dataRef.key);
-        }
+        return addNodes.push(`${dataRef.path}${dataRef.name}`);
       }
+      const newPath = path.substr(0, path.length - 1);
+      if (halfCheckedKeys.indexOf(newPath) !== -1) {
+        return addNodes.push(`${dataRef.path}${dataRef.name}`);
+      }
+      return false;
     });
     this.addFtpfileAddDtoList(addNodes, e.checkedNodes);
   };
 
   addFtpfileAddDtoList = (nodes, checkedNodes) => {
     const { dispatch } = this.props;
-    let params = [];
+    const params = [];
     checkedNodes.map(item => {
       if (nodes.indexOf(item.key) !== -1) {
-        params.push({
+        return params.push({
           name: item.props.dataRef.name,
           open: item.props.dataRef.open,
           path: item.props.dataRef.path,
           type: item.props.dataRef.type,
         });
       }
+      return false;
     });
     dispatch({
       type: 'accessData/addFtpfileAddDtoList',
@@ -511,8 +443,8 @@ class AccessDataInfo extends PureComponent {
     });
   };
 
-  uploadBefore = (file, fileList) => {
-    return new Promise((resolve, reject) => {
+  uploadBefore = file =>
+    new Promise((resolve, reject) => {
       if (file.size > 52428800) {
         message.destroy();
         reject(message.error(`${file.name} 大于50M，停止上传！`));
@@ -520,10 +452,9 @@ class AccessDataInfo extends PureComponent {
         resolve();
       }
     });
-  };
 
   addFileAddDtoList = info => {
-    const status = info.file.status;
+    const { status } = info.file;
     if (status !== 'uploading') {
       this.setState({
         fileList: info.fileList,
@@ -536,10 +467,17 @@ class AccessDataInfo extends PureComponent {
     }
   };
 
+  changePage = current => {
+    this.setState({
+      page: current,
+    });
+  };
+
   renderDbForm() {
-    const { params, type } = this.props;
-    const { dbList } = this.props.accessData;
     const {
+      params,
+      type,
+      accessData: { dbList },
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const formItemLayout = {
@@ -705,7 +643,7 @@ class AccessDataInfo extends PureComponent {
       if (item.open) {
         if (item.children) {
           return (
-            <TreeNode title={item.name} key={item.key} dataRef={item}>
+            <TreeNode title={item.name} key={`${item.path}${item.name}`} dataRef={item}>
               {this.renderTreeNodes(item.children)}
             </TreeNode>
           );
@@ -714,13 +652,13 @@ class AccessDataInfo extends PureComponent {
           <TreeNode
             icon={<Icon type="folder" theme="outlined" />}
             title={item.name}
-            key={item.key}
+            key={`${item.path}${item.name}`}
             dataRef={item}
           />
         );
       }
       let type = 'file';
-      for (let i = 0, len = fileTypes.length; i < len; i++) {
+      for (let i = 0, len = fileTypes.length; i < len; i += 1) {
         if (fileTypes[i].datas.indexOf(item.type) !== -1) {
           type = fileTypes[i].name;
           break;
@@ -731,17 +669,97 @@ class AccessDataInfo extends PureComponent {
           isLeaf
           icon={<Icon type={type} theme="outlined" />}
           title={item.name}
-          key={item.key}
+          key={`${item.path}${item.name}`}
           dataRef={item}
         />
       );
     });
   };
 
-  renderFtpForm() {
-    const { params, type } = this.props;
-    const { treeList, checkedKeys } = this.props.accessData;
+  renderAllTreeNodes = data => {
+    const { fileTypes } = this.state;
+    return data.map(item => {
+      if (item.open) {
+        if (item.ftpFileList.length > 0) {
+          return (
+            <TreeNode title={item.name} key={`${item.path}${item.name}`} dataRef={item}>
+              {this.renderAllTreeNodes(item.ftpFileList)}
+            </TreeNode>
+          );
+        }
+        return (
+          <TreeNode
+            icon={<Icon type="folder" theme="outlined" />}
+            title={item.name}
+            key={`${item.path}${item.name}`}
+            dataRef={item}
+          />
+        );
+      }
+      let type = 'file';
+      for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+        if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+          type = fileTypes[i].name;
+          break;
+        }
+      }
+      return (
+        <TreeNode
+          isLeaf
+          icon={<Icon type={type} theme="outlined" />}
+          title={item.name}
+          key={`${item.path}${item.name}`}
+          dataRef={item}
+        />
+      );
+    });
+  };
+
+  renderAsyncTree = treeList => {
     const {
+      accessData: { checkedKeys },
+    } = this.props;
+    return (
+      <DirectoryTree
+        className={styles.tree}
+        checkable
+        showIcon
+        autoExpandParent
+        loadData={this.onLoadTreeData}
+        onCheck={this.checkTree}
+        defaultCheckedKeys={checkedKeys}
+        defaultExpandedKeys={checkedKeys}
+      >
+        {this.renderTreeNodes(treeList)}
+      </DirectoryTree>
+    );
+  };
+
+  renderSyncTree = treeList => {
+    const {
+      accessData: { checkedKeys },
+    } = this.props;
+    return (
+      <DirectoryTree
+        className={styles.tree}
+        checkable
+        showIcon
+        autoExpandParent
+        onCheck={this.checkTree}
+        defaultCheckedKeys={checkedKeys}
+        defaultExpandedKeys={checkedKeys}
+      >
+        {this.renderAllTreeNodes(treeList)}
+      </DirectoryTree>
+    );
+  };
+
+  renderFtpForm() {
+    const {
+      params,
+      type,
+      route,
+      accessData: { treeList },
       form: { getFieldDecorator },
     } = this.props;
     const formItemLayout = {
@@ -755,28 +773,18 @@ class AccessDataInfo extends PureComponent {
         md: { span: 10 },
       },
     };
-    console.log(12);
     return (
       <Fragment>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="结构树">
             {treeList.length < 1 && <Alert message="数据加载中..." type="info" showIcon />}
-            {treeList.length > 0 && (
-              <DirectoryTree
-                className={styles.tree}
-                checkable
-                showIcon
-                autoExpandParent
-                loadData={this.onLoadTreeData}
-                onCheck={this.checkTree}
-                defaultCheckedKeys={checkedKeys}
-                defaultExpandedKeys={checkedKeys}
-                expandedKeys={[...checkedKeys]}
-                checkedKeys={[...checkedKeys]}
-              >
-                {this.renderTreeNodes(treeList)}
-              </DirectoryTree>
-            )}
+            {treeList.length > 0 &&
+              (() => {
+                if (route.name === 'managementUpdate') {
+                  return this.renderSyncTree(treeList);
+                }
+                return this.renderAsyncTree(treeList);
+              })()}
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -882,8 +890,8 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderFileForm() {
-    const { params, type } = this.props;
     const {
+      params,
       form: { getFieldDecorator },
     } = this.props;
     const formItemLayout = {
@@ -1018,17 +1026,14 @@ class AccessDataInfo extends PureComponent {
     );
   }
 
-  changePage = (current, pageSize) => {
-    const { dispatch } = this.props;
-    this.setState({
-      page: current,
-    });
-  };
-
   render() {
-    const { dataType, loadingTable, loadingColumn } = this.props;
-    const { tableList, columnList } = this.props.accessData;
-    const { selectedRowKeys, selectedTableRowKeys, page } = this.state;
+    const {
+      dataType,
+      loadingTable,
+      loadingColumn,
+      accessData: { tableList, columnList },
+    } = this.props;
+    const { selectedRowKeys, selectedTableRowKeys, page, modalTitle, visible } = this.state;
     const rowSelection = {
       type: 'radio',
       selectedTableRowKeys,
@@ -1040,13 +1045,13 @@ class AccessDataInfo extends PureComponent {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    let paginationProps = {
+    const paginationProps = {
       current: page,
       onChange: this.changePage,
       pageSize: 10,
     };
-    let tableLength = `数据表 共${tableList.length}张`;
-    let columnLength = `数据项 共${columnList.length}项`;
+    const tableLength = `数据表 共${tableList.length}张`;
+    const columnLength = `数据项 共${columnList.length}项`;
     return (
       <Card bordered={false}>
         {(() => {
@@ -1057,11 +1062,13 @@ class AccessDataInfo extends PureComponent {
               return this.renderFtpForm();
             case 'file':
               return this.renderFileForm();
+            default:
+              return '';
           }
         })()}
         <Modal
-          title={this.state.modalTitle}
-          visible={this.state.visible}
+          title={modalTitle}
+          visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
           width={1200}

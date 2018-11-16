@@ -9,7 +9,9 @@ import {
   accessFtp,
   accessFile,
   ftpDataList,
+  ftpDataTree,
   sftpDataList,
+  sftpDataTree,
   viewDbDetail,
   viewFileDetail,
   viewFtpDetail,
@@ -225,7 +227,7 @@ export default {
         });
       }
     },
-    *setTreeList({ payload, callback }, { call, put }) {
+    *setTreeList({ payload }, { call, put }) {
       let callbackApi;
       if (payload.treeType === 'ftp') {
         callbackApi = ftpDataList;
@@ -234,9 +236,6 @@ export default {
       }
       const response = yield call(callbackApi, payload.params);
       if (response && response.code < 300) {
-        if (callback && typeof callback === 'function') {
-          callback(response); // 返回结果
-        }
         if (payload.treeNode) {
           yield put({
             type: 'updateTreeList',
@@ -255,6 +254,26 @@ export default {
             },
           });
         }
+      } else {
+        message.error(`${response.message}，结构树加载失败！`);
+      }
+    },
+    *setTreeData({ payload }, { call, put }) {
+      let callbackApi;
+      if (payload.treeType === 'ftp') {
+        callbackApi = ftpDataTree;
+      } else {
+        callbackApi = sftpDataTree;
+      }
+      const response = yield call(callbackApi, payload.params);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateTreeList',
+          payload: {
+            data: response.result.datas,
+            type: payload.type,
+          },
+        });
       } else {
         message.error(`${response.message}，结构树加载失败！`);
       }
@@ -296,17 +315,30 @@ export default {
             },
           });
         } else if (payload.dataType === 'ftp') {
-          yield put({
-            type: 'setTreeList',
-            payload: {
-              params: {
-                alias,
-                path: '/',
+          if (payload.getAllTree) {
+            yield put({
+              type: 'setTreeData',
+              payload: {
+                params: {
+                  alias,
+                },
+                type: 'create',
+                treeType,
               },
-              type: 'create',
-              treeType,
-            },
-          });
+            });
+          } else {
+            yield put({
+              type: 'setTreeList',
+              payload: {
+                params: {
+                  alias,
+                  path: '/',
+                },
+                type: 'create',
+                treeType,
+              },
+            });
+          }
         }
       }
     },
@@ -342,6 +374,10 @@ export default {
     *testName({ payload }, { call, put }) {
       if (payload.oldName && payload.oldName !== '' && payload.oldName === payload.values.name) {
         if (payload.dataType !== 'file') {
+          yield put({
+            type: 'updateParams',
+            payload: payload.values,
+          });
           yield put({
             type: 'next',
             payload: payload.values,
@@ -508,6 +544,7 @@ export default {
               username: payload.params.datasourceDetailDto.username,
               password: payload.params.datasourceDetailDto.password,
             },
+            getAllTree: true,
           },
         });
         yield put({
@@ -599,22 +636,14 @@ export default {
       const { type } = payload;
       let { treeList } = state;
       if (type === 'create') {
-        payload.data.map(item => {
-          item.key = `${item.path}${item.name}`;
-        });
         treeList = payload.data;
       } else {
         payload.data.map(item => {
           item.key = `${item.path}${item.name}`;
         });
-        if (payload.treeNode.props) {
-          payload.treeNode.props.dataRef.children = payload.data;
-        } else {
-          payload.treeNode.children = payload.data;
-        }
+        payload.treeNode.props.dataRef.children = payload.data;
         treeList = [...treeList];
       }
-      console.log(treeList);
       return {
         ...state,
         treeList: treeList,
