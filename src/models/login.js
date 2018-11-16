@@ -75,7 +75,7 @@ export default {
     changeLoginStatus(state, { payload }) {
       let auth;
       if (payload.result && payload.result !== '') {
-        auth = payload.result.data.roleEnNames[1];
+        auth = payload.result.data.roleEnNames[0];
       } else {
         auth = payload.currentAuthority;
       }
