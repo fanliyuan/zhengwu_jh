@@ -17,6 +17,7 @@ import {
   viewFtpDetail,
   initFileList,
   initFtpList,
+  viewDbStruct,
   updateDb,
   updateFile,
   updateFtp,
@@ -186,6 +187,8 @@ export default {
               case 'file':
                 params = initFileParams();
                 break;
+              default:
+                break;
             }
           }
           return params;
@@ -197,22 +200,22 @@ export default {
         yield put({
           type: 'updateDataType',
           payload: {
-            dataType: dataType,
-            type: type,
-            alias: alias,
+            dataType,
+            type,
+            alias,
             oldName: '',
           },
         });
         yield put({
           type: 'connection',
           payload: {
-            dataType: dataType,
+            dataType,
             connectParams: {
-              type: type,
+              type,
               addr: ip,
-              port: port,
-              username: username,
-              password: password,
+              port,
+              username,
+              password,
             },
           },
         });
@@ -296,17 +299,17 @@ export default {
         });
       }
     },
-    *reset({ payload }, { call, put }) {
+    *reset({ payload }, { put }) {
       yield put({
         type: 'resetParams',
-        payload: payload,
+        payload,
       });
     },
     *connection({ payload }, { call, put }) {
       const response = yield call(connectBase, payload.connectParams);
-      const alias = response.result.data;
       const treeType = payload.connectParams.type;
-      if (response.code < 300) {
+      if (response && response.code < 300) {
+        const alias = response.result.data;
         if (payload.dataType === 'db') {
           yield put({
             type: 'setDbList',
@@ -352,7 +355,7 @@ export default {
         } else {
           callbackApi = accessFile;
         }
-      } else {
+      } else if (payload.routeName && payload.routeName === 'managementUpdate') {
         if (payload.dataType === 'db') {
           callbackApi = updateDb;
         } else if (payload.dataType === 'ftp') {
@@ -370,6 +373,7 @@ export default {
       yield put({
         type: 'next',
       });
+      return false;
     },
     *testName({ payload }, { call, put }) {
       if (payload.oldName && payload.oldName !== '' && payload.oldName === payload.values.name) {
@@ -385,7 +389,7 @@ export default {
         } else {
           yield put({
             type: 'submit',
-            payload: payload,
+            payload,
           });
         }
       } else {
@@ -407,10 +411,11 @@ export default {
         } else {
           yield put({
             type: 'submit',
-            payload: payload,
+            payload,
           });
         }
       }
+      return false;
     },
     *updateDetail({ payload }, { call, put }) {
       let callbackApi;
@@ -424,10 +429,31 @@ export default {
       }
       const response = yield call(callbackApi, payload.id);
       if (response && response.code < 300) {
-        let params = {};
         switch (dataType) {
           case 'db':
-            params = initDbParams();
+            yield put({
+              type: 'connection',
+              payload: {
+                dataType,
+                connectParams: {
+                  type: response.result.data.datasourceDetailDto.type,
+                  addr: response.result.data.datasourceDetailDto.ip,
+                  port: response.result.data.datasourceDetailDto.port,
+                  username: response.result.data.datasourceDetailDto.username,
+                  password: response.result.data.datasourceDetailDto.password,
+                },
+              },
+            });
+            yield put({
+              type: 'getStructs',
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: response.result.data.datasourceDetailDto.type,
+                alias: response.result.data.datasourceDetailDto.alias,
+                oldName: response.result.data.name,
+              },
+            });
             break;
           case 'ftp': {
             yield put({
@@ -455,20 +481,9 @@ export default {
             });
             break;
           }
+          default:
+            break;
         }
-        //yield put({
-        //  type: 'updateParams',
-        //  payload: params,
-        //});
-        //yield put({
-        //  type: 'updateDataType',
-        //  payload: {
-        //    dataType,
-        //    type: 'file',
-        //    alias: '',
-        //    oldName: response.result.data.name,
-        //  },
-        //});
       }
     },
     *getFilelist({ payload }, { call, put }) {
@@ -477,8 +492,8 @@ export default {
         let params = {};
         const fileAddDtoList = [];
         const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload.params;
-        response.result.datas.map(item => {
-          return fileAddDtoList.push({
+        response.result.datas.map(item =>
+          fileAddDtoList.push({
             id: item.id,
             uid: item.id,
             name: item.name,
@@ -486,8 +501,8 @@ export default {
             type: item.type,
             uploadTime: item.uploadTime,
             path: item.path,
-          });
-        });
+          })
+        );
         params = initFileParams();
         params = {
           ...params,
@@ -560,27 +575,76 @@ export default {
         });
       }
     },
+    *getStructs({ payload }, { call, put }) {
+      const response = yield call(viewDbStruct, payload.params);
+      if (response && response.code < 300) {
+        const payloadParams = {
+          structAddDtoList: [],
+        };
+        response.result.datas.map(item => {
+          payloadParams.structAddDtoList.push({
+            id: item.id,
+            columnName: item.columnName,
+            columnType: item.columnType,
+            note: item.note,
+            primaryKey: item.primaryKey,
+          });
+          return payloadParams;
+        });
+        yield put({
+          type: 'setSyncPlans',
+          payload: {
+            ...payload,
+            structAddDtoList: payloadParams.structAddDtoList,
+          },
+        });
+      }
+    },
     *setSyncPlans({ payload }, { call, put }) {
+      const { dataType } = payload;
       const response = yield call(searchTask, payload);
       if (response && response.code < 300) {
-        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload.params;
+        let params;
         const { stopNum, syncMode, syncRate, timeSet } = response.result.data;
-        const params = {
-          ...initFtpParams(),
-          name,
-          createUnit,
-          describe,
-          dutyName,
-          dutyPhone,
-          dutyPosition,
-          ftpfileAddDtoList: payload.ftpfileAddDtoList,
-          syncAddDto: {
-            stopNum: JSON.stringify(stopNum),
-            syncMode,
-            syncRate,
-            timeSet,
-          },
-        };
+        if (dataType === 'ftp') {
+          params = {
+            ...initFtpParams(),
+            name: payload.params.name,
+            createUnit: payload.params.createUnit,
+            describe: payload.params.describe,
+            dutyName: payload.params.dutyName,
+            dutyPhone: payload.params.dutyPhone,
+            dutyPosition: payload.params.dutyPosition,
+            ftpfileAddDtoList: payload.ftpfileAddDtoList,
+            syncAddDto: {
+              stopNum: JSON.stringify(stopNum),
+              syncMode,
+              syncRate,
+              timeSet,
+            },
+          };
+        } else {
+          params = {
+            ...initDbParams(),
+            name: payload.params.name,
+            createUnit: payload.params.createUnit,
+            describe: payload.params.describe,
+            dutyName: payload.params.dutyName,
+            dutyPhone: payload.params.dutyPhone,
+            dutyPosition: payload.params.dutyPosition,
+            structAddDtoList: payload.structAddDtoList,
+            appsysName: payload.params.appsysName,
+            dbName: payload.params.dbName,
+            tableName: payload.params.tableName,
+            tableNote: payload.params.tableNote,
+            syncAddDto: {
+              stopNum: JSON.stringify(stopNum),
+              syncMode,
+              syncRate,
+              timeSet,
+            },
+          };
+        }
         yield put({
           type: 'updateParams',
           payload: params,
@@ -606,7 +670,7 @@ export default {
       };
     },
     prev(state) {
-      state.params.syncAddDto = {
+      const syncAddDto = {
         stopNum: '5',
         syncMode: '增量',
         syncRate: '定时',
@@ -614,6 +678,10 @@ export default {
       };
       return {
         ...state,
+        params: {
+          ...state.params,
+          syncAddDto,
+        },
         current: state.current - 1,
       };
     },
@@ -638,15 +706,13 @@ export default {
       if (type === 'create') {
         treeList = payload.data;
       } else {
-        payload.data.map(item => {
-          item.key = `${item.path}${item.name}`;
-        });
-        payload.treeNode.props.dataRef.children = payload.data;
+        const treeNodes = payload.treeNode;
+        treeNodes.props.dataRef.children = payload.data;
         treeList = [...treeList];
       }
       return {
         ...state,
-        treeList: treeList,
+        treeList,
       };
     },
     updateTableList(state, { payload }) {
@@ -671,17 +737,21 @@ export default {
       };
     },
     addStructAddDtoList(state, { payload }) {
-      state.params.structAddDtoList.splice(0, state.params.structAddDtoList.length);
-      state.params.structAddDtoList = [...state.params.structAddDtoList, ...payload];
       return {
         ...state,
+        params: {
+          ...state.params,
+          structAddDtoList: payload,
+        },
       };
     },
     addFtpfileAddDtoList(state, { payload }) {
-      state.params.ftpfileAddDtoList.splice(0, state.params.ftpfileAddDtoList.length);
-      state.params.ftpfileAddDtoList = [...state.params.ftpfileAddDtoList, ...payload];
       return {
         ...state,
+        params: {
+          ...state.params,
+          ftpfileAddDtoList: payload,
+        },
       };
     },
     addDefaultCheckedKeys(state, { payload }) {
@@ -690,17 +760,20 @@ export default {
         checkedKeys: [...payload],
       };
     },
-    resetTableColumnList(state, { payload }) {
-      state.tableList.splice(0, state.tableList.length);
-      state.columnList.splice(0, state.columnList.length);
+    resetTableColumnList(state) {
       return {
         ...state,
+        tableList: [],
+        columnList: [],
       };
     },
-    resetStructAddDtoList(state, { payload }) {
-      state.params.structAddDtoList.splice(0, state.params.structAddDtoList.length);
+    resetStructAddDtoList(state) {
       return {
         ...state,
+        params: {
+          ...state.params,
+          structAddDtoList: [],
+        },
       };
     },
     resetParams(state, { payload }) {

@@ -149,7 +149,7 @@ export async function viewDbDetail(params) {
 export async function updateDb(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`, {
     method: 'PUT',
-    body: params.values,
+    body: params.addDto,
   });
 }
 
