@@ -24,6 +24,12 @@ export default class DataBaseInfo extends PureComponent {
         dataName = '',
         pubNodeName = '',
         updateTime = '',
+        createUnit = '',
+        appsysName = '',
+        dutyName = '',
+        dutyPhone = '',
+        dutyPosition = '',
+        describe = '',
       } = {},
     } = this.props;
     return (
@@ -35,7 +41,7 @@ export default class DataBaseInfo extends PureComponent {
           <span className="mr40">
             <span className={styles.name}>数据库</span>
             <span className={styles.value1}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {dataBaseName}
               </Ellipsis>
             </span>
@@ -43,7 +49,7 @@ export default class DataBaseInfo extends PureComponent {
           <span className="mr40">
             <span className={styles.label}>数据类型</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {dataBaseType}
               </Ellipsis>
             </span>
@@ -51,7 +57,7 @@ export default class DataBaseInfo extends PureComponent {
           <span className="mr40">
             <span className={styles.label}>数据名称</span>
             <span className={styles.value3}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {dataName}
               </Ellipsis>
             </span>
@@ -59,7 +65,7 @@ export default class DataBaseInfo extends PureComponent {
           <span className="mr40">
             <span className={styles.label}>发布节点</span>
             <span className={styles.value4}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {pubNodeName}
               </Ellipsis>
             </span>
@@ -67,7 +73,7 @@ export default class DataBaseInfo extends PureComponent {
           <span className="mr40">
             <span className={styles.label}>数据更新时间</span>
             <span className={styles.value5}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {updateTime}
               </Ellipsis>
             </span>
@@ -75,42 +81,50 @@ export default class DataBaseInfo extends PureComponent {
         </div>
         <div>
           <span className="mr40">
-            <span className={styles.label}>数据类型</span>
+            <span className={styles.label}>建库单位</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
-                {dataBaseType}
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {createUnit}
               </Ellipsis>
             </span>
           </span>
           <span className="mr40">
-            <span className={styles.label}>数据类型</span>
+            <span className={styles.label}>应用系统名称</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
-                {dataBaseType}
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {appsysName}
               </Ellipsis>
             </span>
           </span>
           <span className="mr40">
-            <span className={styles.label}>数据类型</span>
+            <span className={styles.label}>负责人姓名</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
-                {dataBaseType}
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {dutyName}
               </Ellipsis>
             </span>
           </span>
           <span className="mr40">
-            <span className={styles.label}>数据类型</span>
+            <span className={styles.label}>负责人手机号</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
-                {dataBaseType}
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {dutyPhone}
               </Ellipsis>
             </span>
           </span>
           <span className="mr40">
-            <span className={styles.label}>数据类型</span>
+            <span className={styles.label}>负责人职位</span>
             <span className={styles.value2}>
-              <Ellipsis lines={1} fullWidthRecognition={true} tooltip={true}>
-                {dataBaseType}
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {dutyPosition}
+              </Ellipsis>
+            </span>
+          </span>
+          <span className="mr40">
+            <span className={styles.label}>数据描述</span>
+            <span className={styles.value2}>
+              <Ellipsis lines={1} fullWidthRecognition tooltip>
+                {describe}
               </Ellipsis>
             </span>
           </span>
