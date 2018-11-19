@@ -5,7 +5,7 @@ import { getSourceList, getDBInfo } from '@/services/subscription';
 
 // const { getSourceList, getDBInfo } = apis
 export default {
-  namespace: 'sourceManagement',
+  namespace: 'sourceManagementC',
 
   state: {
     queryData: {},

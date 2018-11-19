@@ -103,8 +103,8 @@ export default [
             authority: ['assessor'],
           },
           {
-            path: 'management',
-            name: 'management',
+            path: 'sourceManagement',
+            name: 'sourceManagement',
             component: './InformationResource/SourceManagement',
             authority: ['user'],
           },
@@ -113,6 +113,27 @@ export default [
             name: 'addDirectory',
             hideInMenu: true,
             component: './InformationResource/AddDirectory',
+            authority: ['user'],
+          },
+          {
+            path: 'newMenu',
+            name: 'newMenu',
+            hideInMenu: true,
+            component: './InformationResource/NewMenu',
+            authority: ['user'],
+          },
+          {
+            path: 'newMenu/one',
+            name: 'newMenuOne',
+            hideInMenu: true,
+            component: './InformationResource/NewMenu/Step1',
+            authority: ['user'],
+          },
+          {
+            path: 'newMenu/two',
+            name: 'newMenuTwo',
+            hideInMenu: true,
+            component: './InformationResource/NewMenu/Step2',
             authority: ['user'],
           },
           {
