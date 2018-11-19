@@ -85,6 +85,7 @@ class AccessDataInfo extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      hasReceiveFiles: false,
       page: 1,
       modalTitle: '',
       dbName: '',
@@ -136,65 +137,114 @@ class AccessDataInfo extends PureComponent {
     onRef(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { route } = this.props;
+    const { hasReceiveFiles } = this.state;
+    if (route.name === 'managementUpdate' && !hasReceiveFiles) {
+      const { fileAddDtoList } = nextProps.params;
+      if (fileAddDtoList && fileAddDtoList.length > 0) {
+        this.setState({
+          fileList: fileAddDtoList,
+          hasReceiveFiles: true,
+        });
+      }
+    }
+  }
+
   handleSubmit = () => {
     const {
       form,
       dispatch,
       match,
-      accessData: { params, dataType },
+      route,
+      accessData: { params, dataType, oldName },
     } = this.props;
     form.validateFieldsAndScroll((err, values) => {
+      const paramsValues = values;
       if (!err) {
         if (dataType === 'db' && params.structAddDtoList.length < 1) {
           message.destroy();
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.structAddDtoList.required' })
           );
-        } else if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
+        }
+
+        if (dataType === 'ftp' && params.ftpfileAddDtoList.length < 1) {
           message.destroy();
           return message.error(
             formatMessage({ id: 'validation.accessDataSource.ftpfileAddDtoList.required' })
           );
-        } else if (dataType === 'file') {
+        }
+
+        if (dataType === 'file') {
           const { fileList } = this.state;
           if (fileList.length < 1) {
             message.destroy();
             return message.error(
               formatMessage({ id: 'validation.accessDataSource.fileAddDtoList.required' })
             );
-          } else {
-            let params = [];
-            fileList.map(item => {
-              params.push(item.response.result.data);
-            });
-            values.fileAddDtoList = params;
           }
+          const paramsFile = [];
+          fileList.map(item => {
+            if (item.response) {
+              return paramsFile.push(item.response.result.data);
+            }
+            return paramsFile.push({
+              id: item.id,
+              name: item.name,
+              size: item.size,
+              type: item.type,
+              uploadTime: item.uploadTime,
+              path: item.path,
+            });
+          });
+          paramsValues.fileAddDtoList = paramsFile;
         }
+
         dispatch({
           type: 'accessData/testName',
           payload: {
-            values,
+            values: paramsValues,
             dataType,
+            oldName,
+            routeName: route.name,
             id: match.params.id,
           },
         });
       }
+      return false;
+    });
+  };
+
+  changeDbName = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'accessData/updateParams',
+      payload: {
+        tableName: '',
+        tableNote: '',
+        structAddDtoList: [],
+      },
     });
   };
 
   selectData = dbName => {
+    const {
+      accessData: { params },
+    } = this.props;
     if (dbName === '') {
       message.destroy();
       return message.info('请先选择数据库！');
     }
-    return this.showModal(dbName);
+    return this.showModal(dbName, params);
   };
 
-  showModal = dbName => {
+  showModal = (dbName, params) => {
     const {
       dispatch,
       accessData: { alias },
     } = this.props;
+    const { tableName, tableNote, structAddDtoList } = params;
     this.setState({
       visible: true,
       modalTitle: `数据库：${dbName}`,
@@ -207,15 +257,26 @@ class AccessDataInfo extends PureComponent {
         db: dbName,
       },
     });
+    if (tableName !== '') {
+      this.setState({
+        tableName,
+        tableNote,
+        structAddDtoList: [...structAddDtoList],
+      });
+      dispatch({
+        type: 'accessData/setColumnList',
+        payload: {
+          alias,
+          db: dbName,
+          table: tableName,
+        },
+      });
+    }
   };
 
   handleOk = () => {
     const { dispatch } = this.props;
     const { structAddDtoList, tableName, tableNote } = this.state;
-    dispatch({
-      type: 'accessData/addStructAddDtoList',
-      payload: structAddDtoList,
-    });
     dispatch({
       type: 'accessData/resetTableColumnList',
     });
@@ -224,6 +285,7 @@ class AccessDataInfo extends PureComponent {
       payload: {
         tableName,
         tableNote,
+        structAddDtoList,
       },
     });
     this.setState({
@@ -231,6 +293,7 @@ class AccessDataInfo extends PureComponent {
       page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
+      structAddDtoList: [],
       tableName: '',
       tableNote: '',
     });
@@ -238,13 +301,12 @@ class AccessDataInfo extends PureComponent {
 
   handleCancel = () => {
     const { dispatch } = this.props;
-    const { structAddDtoList } = this.state;
-    structAddDtoList.splice(0, structAddDtoList.length);
     this.setState({
       visible: false,
       page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
+      structAddDtoList: [],
       tableName: '',
       tableNote: '',
     });
@@ -258,12 +320,14 @@ class AccessDataInfo extends PureComponent {
       dispatch,
       accessData: { alias },
     } = this.props;
-    const { structAddDtoList, dbName } = this.state;
-    this.setState({
-      selectedRowKeys: [],
-      selectedTableRowKeys: selectedRowKeys,
-      tableName: selectedRows[0].name,
-      tableNote: selectedRows[0].comment,
+    const { dbName } = this.state;
+    dispatch({
+      type: 'accessData/updateParams',
+      payload: {
+        tableName: '',
+        tableNote: '',
+        structAddDtoList: [],
+      },
     });
     dispatch({
       type: 'accessData/setColumnList',
@@ -273,7 +337,13 @@ class AccessDataInfo extends PureComponent {
         table: selectedRows[0].name,
       },
     });
-    structAddDtoList.splice(0, structAddDtoList.length);
+    this.setState({
+      selectedRowKeys: [],
+      selectedTableRowKeys: selectedRowKeys,
+      structAddDtoList: [],
+      tableName: selectedRows[0].name,
+      tableNote: selectedRows[0].comment,
+    });
   };
 
   onSelectChange = selectedRowKeys => {
@@ -301,10 +371,14 @@ class AccessDataInfo extends PureComponent {
     } else {
       structAddDtoList.map((item, index) => {
         if (item.columnName === record.name) {
-          structAddDtoList.splice(index, 1);
+          return structAddDtoList.splice(index, 1);
         }
+        return false;
       });
     }
+    this.setState({
+      structAddDtoList,
+    });
   };
 
   handleSelectAllColumn = (selected, selectedRows) => {
@@ -321,7 +395,7 @@ class AccessDataInfo extends PureComponent {
             pri = false;
             break;
         }
-        structAddDtoList.push({
+        return structAddDtoList.push({
           columnName: item.name,
           columnType: item.type,
           note: item.comment,
@@ -331,6 +405,9 @@ class AccessDataInfo extends PureComponent {
     } else {
       structAddDtoList.splice(0, structAddDtoList.length);
     }
+    this.setState({
+      structAddDtoList,
+    });
   };
 
   setRowNum = (record, index) => {
@@ -373,29 +450,30 @@ class AccessDataInfo extends PureComponent {
       const { dataRef } = item.props;
       const { path } = dataRef;
       if (path === '/') {
-        addNodes.push(dataRef.key);
-      } else {
-        const newPath = path.substr(0, path.length - 1);
-        if (halfCheckedKeys.indexOf(newPath) !== -1) {
-          addNodes.push(dataRef.key);
-        }
+        return addNodes.push(`${dataRef.path}${dataRef.name}`);
       }
+      const newPath = path.substr(0, path.length - 1);
+      if (halfCheckedKeys.indexOf(newPath) !== -1) {
+        return addNodes.push(`${dataRef.path}${dataRef.name}`);
+      }
+      return false;
     });
     this.addFtpfileAddDtoList(addNodes, e.checkedNodes);
   };
 
   addFtpfileAddDtoList = (nodes, checkedNodes) => {
     const { dispatch } = this.props;
-    let params = [];
+    const params = [];
     checkedNodes.map(item => {
       if (nodes.indexOf(item.key) !== -1) {
-        params.push({
+        return params.push({
           name: item.props.dataRef.name,
           open: item.props.dataRef.open,
           path: item.props.dataRef.path,
           type: item.props.dataRef.type,
         });
       }
+      return false;
     });
     dispatch({
       type: 'accessData/addFtpfileAddDtoList',
@@ -407,8 +485,8 @@ class AccessDataInfo extends PureComponent {
     });
   };
 
-  uploadBefore = (file, fileList) => {
-    return new Promise((resolve, reject) => {
+  uploadBefore = file =>
+    new Promise((resolve, reject) => {
       if (file.size > 52428800) {
         message.destroy();
         reject(message.error(`${file.name} 大于50M，停止上传！`));
@@ -416,10 +494,9 @@ class AccessDataInfo extends PureComponent {
         resolve();
       }
     });
-  };
 
   addFileAddDtoList = info => {
-    const status = info.file.status;
+    const { status } = info.file;
     if (status !== 'uploading') {
       this.setState({
         fileList: info.fileList,
@@ -432,10 +509,17 @@ class AccessDataInfo extends PureComponent {
     }
   };
 
+  changePage = current => {
+    this.setState({
+      page: current,
+    });
+  };
+
   renderDbForm() {
-    const { params, type } = this.props;
-    const { dbList } = this.props.accessData;
     const {
+      params,
+      type,
+      accessData: { dbList },
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const formItemLayout = {
@@ -470,7 +554,7 @@ class AccessDataInfo extends PureComponent {
               },
             ],
           })(
-            <Select>
+            <Select onChange={this.changeDbName}>
               {dbList.map(d => (
                 <Option key={d.name}>{d.name}</Option>
               ))}
@@ -483,7 +567,25 @@ class AccessDataInfo extends PureComponent {
         >
           {getFieldDecorator('structAddDtoList', {
             initialValue: params.structAddDtoList,
-          })(<a onClick={() => this.selectData(getFieldValue('dbName'))}>选择数据</a>)}
+          })(
+            <Fragment>
+              <a onClick={() => this.selectData(getFieldValue('dbName'))}>选择数据</a>
+              {params.structAddDtoList.length < 1 && (
+                <Icon
+                  style={{ color: '#F04458', marginLeft: 5 }}
+                  type="close-circle"
+                  theme="filled"
+                />
+              )}
+              {params.structAddDtoList.length > 0 && (
+                <Icon
+                  style={{ color: '#19BB8F', marginLeft: 5 }}
+                  type="check-circle"
+                  theme="filled"
+                />
+              )}
+            </Fragment>
+          )}
         </FormItem>
         <FormItem
           {...formItemLayout}
@@ -601,7 +703,7 @@ class AccessDataInfo extends PureComponent {
       if (item.open) {
         if (item.children) {
           return (
-            <TreeNode title={item.name} key={item.key} dataRef={item}>
+            <TreeNode title={item.name} key={`${item.path}${item.name}`} dataRef={item}>
               {this.renderTreeNodes(item.children)}
             </TreeNode>
           );
@@ -610,13 +712,13 @@ class AccessDataInfo extends PureComponent {
           <TreeNode
             icon={<Icon type="folder" theme="outlined" />}
             title={item.name}
-            key={item.key}
+            key={`${item.path}${item.name}`}
             dataRef={item}
           />
         );
       }
       let type = 'file';
-      for (let i = 0, len = fileTypes.length; i < len; i++) {
+      for (let i = 0, len = fileTypes.length; i < len; i += 1) {
         if (fileTypes[i].datas.indexOf(item.type) !== -1) {
           type = fileTypes[i].name;
           break;
@@ -624,20 +726,100 @@ class AccessDataInfo extends PureComponent {
       }
       return (
         <TreeNode
-          isLeaf={true}
+          isLeaf
           icon={<Icon type={type} theme="outlined" />}
           title={item.name}
-          key={item.key}
+          key={`${item.path}${item.name}`}
           dataRef={item}
         />
       );
     });
   };
 
-  renderFtpForm() {
-    const { params, type } = this.props;
-    const { treeList, checkedKeys } = this.props.accessData;
+  renderAllTreeNodes = data => {
+    const { fileTypes } = this.state;
+    return data.map(item => {
+      if (item.open) {
+        if (item.ftpFileList.length > 0) {
+          return (
+            <TreeNode title={item.name} key={`${item.path}${item.name}`} dataRef={item}>
+              {this.renderAllTreeNodes(item.ftpFileList)}
+            </TreeNode>
+          );
+        }
+        return (
+          <TreeNode
+            icon={<Icon type="folder" theme="outlined" />}
+            title={item.name}
+            key={`${item.path}${item.name}`}
+            dataRef={item}
+          />
+        );
+      }
+      let type = 'file';
+      for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+        if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+          type = fileTypes[i].name;
+          break;
+        }
+      }
+      return (
+        <TreeNode
+          isLeaf
+          icon={<Icon type={type} theme="outlined" />}
+          title={item.name}
+          key={`${item.path}${item.name}`}
+          dataRef={item}
+        />
+      );
+    });
+  };
+
+  renderAsyncTree = treeList => {
     const {
+      accessData: { checkedKeys },
+    } = this.props;
+    return (
+      <DirectoryTree
+        className={styles.tree}
+        checkable
+        showIcon
+        autoExpandParent
+        loadData={this.onLoadTreeData}
+        onCheck={this.checkTree}
+        defaultCheckedKeys={checkedKeys}
+        defaultExpandedKeys={checkedKeys}
+      >
+        {this.renderTreeNodes(treeList)}
+      </DirectoryTree>
+    );
+  };
+
+  renderSyncTree = treeList => {
+    const {
+      accessData: { checkedKeys },
+    } = this.props;
+    return (
+      <DirectoryTree
+        className={styles.tree}
+        checkable
+        showIcon
+        autoExpandParent
+        onCheck={this.checkTree}
+        defaultCheckedKeys={checkedKeys}
+        defaultExpandedKeys={checkedKeys}
+      >
+        {this.renderAllTreeNodes(treeList)}
+      </DirectoryTree>
+    );
+  };
+
+  renderFtpForm() {
+    const {
+      params,
+      type,
+      route,
+      accessData: { treeList },
       form: { getFieldDecorator },
     } = this.props;
     const formItemLayout = {
@@ -656,19 +838,13 @@ class AccessDataInfo extends PureComponent {
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="结构树">
             {treeList.length < 1 && <Alert message="数据加载中..." type="info" showIcon />}
-            {treeList.length > 0 && (
-              <DirectoryTree
-                className={styles.tree}
-                checkable
-                showIcon
-                loadData={this.onLoadTreeData}
-                onCheck={this.checkTree}
-                defaultCheckedKeys={checkedKeys}
-                defaultExpandedKeys={checkedKeys}
-              >
-                {this.renderTreeNodes(treeList)}
-              </DirectoryTree>
-            )}
+            {treeList.length > 0 &&
+              (() => {
+                if (route.name === 'managementUpdate') {
+                  return this.renderSyncTree(treeList);
+                }
+                return this.renderAsyncTree(treeList);
+              })()}
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -774,8 +950,8 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderFileForm() {
-    const { params, type } = this.props;
     const {
+      params,
       form: { getFieldDecorator },
     } = this.props;
     const formItemLayout = {
@@ -795,6 +971,7 @@ class AccessDataInfo extends PureComponent {
       action: '/api/api/v2/zhengwu/swap/datasource/file/up',
       beforeUpload: this.uploadBefore,
       onChange: this.addFileAddDtoList,
+      defaultFileList: params.fileAddDtoList,
     };
     return (
       <Fragment>
@@ -909,20 +1086,17 @@ class AccessDataInfo extends PureComponent {
     );
   }
 
-  changePage = (current, pageSize) => {
-    const { dispatch } = this.props;
-    this.setState({
-      page: current,
-    });
-  };
-
   render() {
-    const { dataType, loadingTable, loadingColumn } = this.props;
-    const { tableList, columnList } = this.props.accessData;
-    const { selectedRowKeys, selectedTableRowKeys, page } = this.state;
+    const {
+      dataType,
+      loadingTable,
+      loadingColumn,
+      accessData: { tableList, columnList, params },
+    } = this.props;
+    const { selectedRowKeys, selectedTableRowKeys, page, modalTitle, visible } = this.state;
     const rowSelection = {
       type: 'radio',
-      selectedTableRowKeys,
+      selectedRowKeys: selectedTableRowKeys,
       onChange: this.handleSelectTable,
     };
     const columnRowSelection = {
@@ -931,13 +1105,23 @@ class AccessDataInfo extends PureComponent {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    let paginationProps = {
+    const paginationProps = {
       current: page,
       onChange: this.changePage,
       pageSize: 10,
     };
-    let tableLength = `数据表 共${tableList.length}张`;
-    let columnLength = `数据项 共${columnList.length}项`;
+    const disabled = selectedRowKeys.length > 0 ? 0 : 1;
+    const okButtonProps = { disabled };
+    const tableLength = `数据表 共${tableList.length}张`;
+    const columnLength = `数据项 共${columnList.length}项`;
+    if (dataType === 'db') {
+      if (selectedTableRowKeys.length < 1 && params.tableName !== '' && visible) {
+        selectedTableRowKeys.push(params.tableName);
+      }
+      if (selectedRowKeys.length < 1 && params.structAddDtoList.length > 0 && visible) {
+        params.structAddDtoList.map(item => selectedRowKeys.push(item.columnName));
+      }
+    }
     return (
       <Card bordered={false}>
         {(() => {
@@ -948,15 +1132,18 @@ class AccessDataInfo extends PureComponent {
               return this.renderFtpForm();
             case 'file':
               return this.renderFileForm();
+            default:
+              return '';
           }
         })()}
         <Modal
-          title={this.state.modalTitle}
-          visible={this.state.visible}
+          title={modalTitle}
+          visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
           width={1200}
           maskClosable={false}
+          okButtonProps={okButtonProps}
         >
           <Row gutter={16}>
             <Col span={10}>

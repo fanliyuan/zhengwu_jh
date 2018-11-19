@@ -98,6 +98,6 @@ export default {
   manifest: {
     basePath: '/',
   },
-
+  history: 'hash',
   chainWebpack: webpackPlugin,
 };

@@ -9,7 +9,19 @@ import {
   accessFtp,
   accessFile,
   ftpDataList,
+  ftpDataTree,
   sftpDataList,
+  sftpDataTree,
+  viewDbDetail,
+  viewFileDetail,
+  viewFtpDetail,
+  initFileList,
+  initFtpList,
+  viewDbStruct,
+  updateDb,
+  updateFile,
+  updateFtp,
+  searchTask,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
@@ -175,6 +187,8 @@ export default {
               case 'file':
                 params = initFileParams();
                 break;
+              default:
+                break;
             }
           }
           return params;
@@ -186,31 +200,26 @@ export default {
         yield put({
           type: 'updateDataType',
           payload: {
-            dataType: dataType,
-            type: type,
-            alias: alias,
+            dataType,
+            type,
+            alias,
+            oldName: '',
           },
         });
         yield put({
           type: 'connection',
           payload: {
-            dataType: dataType,
+            dataType,
             connectParams: {
-              type: type,
+              type,
               addr: ip,
-              port: port,
-              username: username,
-              password: password,
+              port,
+              username,
+              password,
             },
           },
         });
       }
-    },
-    *setDataType({ payload }, { call, put }) {
-      yield put({
-        type: 'updateDataType',
-        payload: payload,
-      });
     },
     *setDbList({ payload }, { call, put }) {
       const response = yield call(mysqlDbList, payload);
@@ -252,6 +261,26 @@ export default {
         message.error(`${response.message}，结构树加载失败！`);
       }
     },
+    *setTreeData({ payload }, { call, put }) {
+      let callbackApi;
+      if (payload.treeType === 'ftp') {
+        callbackApi = ftpDataTree;
+      } else {
+        callbackApi = sftpDataTree;
+      }
+      const response = yield call(callbackApi, payload.params);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateTreeList',
+          payload: {
+            data: response.result.datas,
+            type: payload.type,
+          },
+        });
+      } else {
+        message.error(`${response.message}，结构树加载失败！`);
+      }
+    },
     *setTableList({ payload }, { call, put }) {
       const response = yield call(mysqlTableList, payload);
       if (response && response.code < 300) {
@@ -270,53 +299,70 @@ export default {
         });
       }
     },
-    *setParams({ payload }, { call, put }) {
-      yield put({
-        type: 'updateDataType',
-        payload: payload,
-      });
-    },
-    *reset({ payload }, { call, put }) {
+    *reset({ payload }, { put }) {
       yield put({
         type: 'resetParams',
-        payload: payload,
+        payload,
       });
     },
     *connection({ payload }, { call, put }) {
       const response = yield call(connectBase, payload.connectParams);
-      const alias = response.result.data;
       const treeType = payload.connectParams.type;
-      if (response.code < 300) {
+      if (response && response.code < 300) {
+        const alias = response.result.data;
         if (payload.dataType === 'db') {
           yield put({
             type: 'setDbList',
             payload: {
-              alias: alias,
+              alias,
             },
           });
         } else if (payload.dataType === 'ftp') {
-          yield put({
-            type: 'setTreeList',
-            payload: {
-              params: {
-                alias: alias,
-                path: '/',
+          if (payload.getAllTree) {
+            yield put({
+              type: 'setTreeData',
+              payload: {
+                params: {
+                  alias,
+                },
+                type: 'create',
+                treeType,
               },
-              type: 'create',
-              treeType: treeType,
-            },
-          });
+            });
+          } else {
+            yield put({
+              type: 'setTreeList',
+              payload: {
+                params: {
+                  alias,
+                  path: '/',
+                },
+                type: 'create',
+                treeType,
+              },
+            });
+          }
         }
       }
     },
     *submit({ payload }, { call, put }) {
       let callbackApi;
-      if (payload.dataType === 'db') {
-        callbackApi = accessDataSource;
-      } else if (payload.dataType === 'ftp') {
-        callbackApi = accessFtp;
-      } else {
-        callbackApi = accessFile;
+      if (payload.routeName && payload.routeName !== 'managementUpdate') {
+        if (payload.dataType === 'db') {
+          callbackApi = accessDataSource;
+        } else if (payload.dataType === 'ftp') {
+          callbackApi = accessFtp;
+        } else {
+          callbackApi = accessFile;
+        }
+      } else if (payload.routeName && payload.routeName === 'managementUpdate') {
+        if (payload.dataType === 'db') {
+          callbackApi = updateDb;
+        } else if (payload.dataType === 'ftp') {
+          callbackApi = updateFtp;
+        } else {
+          callbackApi = updateFile;
+        }
       }
       const response = yield call(callbackApi, payload);
       if (response && response.code >= 300) {
@@ -327,27 +373,290 @@ export default {
       yield put({
         type: 'next',
       });
+      return false;
     },
     *testName({ payload }, { call, put }) {
-      const response = yield call(isSameNameData, { name: payload.values.name });
-      if (response && response.result.data) {
-        return notification.error({
-          message: '数据名称重复！',
-        });
-      }
-      yield put({
-        type: 'updateParams',
-        payload: payload.values,
-      });
-      if (payload.dataType !== 'file') {
+      if (payload.oldName && payload.oldName !== '' && payload.oldName === payload.values.name) {
+        if (payload.dataType !== 'file') {
+          yield put({
+            type: 'updateParams',
+            payload: payload.values,
+          });
+          yield put({
+            type: 'next',
+            payload: payload.values,
+          });
+        } else {
+          yield put({
+            type: 'submit',
+            payload,
+          });
+        }
+      } else {
+        const response = yield call(isSameNameData, { name: payload.values.name });
+        if (response && response.result.data) {
+          return notification.error({
+            message: '数据名称重复！',
+          });
+        }
         yield put({
-          type: 'next',
+          type: 'updateParams',
           payload: payload.values,
         });
+        if (payload.dataType !== 'file') {
+          yield put({
+            type: 'next',
+            payload: payload.values,
+          });
+        } else {
+          yield put({
+            type: 'submit',
+            payload,
+          });
+        }
+      }
+      return false;
+    },
+    *updateDetail({ payload }, { call, put }) {
+      let callbackApi;
+      const { dataType } = payload;
+      if (dataType === 'db') {
+        callbackApi = viewDbDetail;
+      } else if (dataType === 'ftp') {
+        callbackApi = viewFtpDetail;
       } else {
+        callbackApi = viewFileDetail;
+      }
+      const response = yield call(callbackApi, payload.id);
+      if (response && response.code < 300) {
+        switch (dataType) {
+          case 'db':
+            yield put({
+              type: 'connection',
+              payload: {
+                dataType,
+                connectParams: {
+                  type: response.result.data.datasourceDetailDto.type,
+                  addr: response.result.data.datasourceDetailDto.ip,
+                  port: response.result.data.datasourceDetailDto.port,
+                  username: response.result.data.datasourceDetailDto.username,
+                  password: response.result.data.datasourceDetailDto.password,
+                },
+              },
+            });
+            yield put({
+              type: 'getStructs',
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: response.result.data.datasourceDetailDto.type,
+                alias: response.result.data.datasourceDetailDto.alias,
+                oldName: response.result.data.name,
+              },
+            });
+            break;
+          case 'ftp': {
+            yield put({
+              type: 'getCheckedKeys',
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: response.result.data.datasourceDetailDto.type,
+                alias: response.result.data.datasourceDetailDto.alias,
+                oldName: response.result.data.name,
+              },
+            });
+            break;
+          }
+          case 'file': {
+            yield put({
+              type: 'getFilelist',
+              payload: {
+                params: response.result.data,
+                dataType,
+                type: 'file',
+                alias: '',
+                oldName: response.result.data.name,
+              },
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    },
+    *getFilelist({ payload }, { call, put }) {
+      const response = yield call(initFileList, payload.params);
+      if (response && response.code < 300) {
+        let params = {};
+        const fileAddDtoList = [];
+        const { name, createUnit, describe, dutyName, dutyPhone, dutyPosition } = payload.params;
+        response.result.datas.map(item =>
+          fileAddDtoList.push({
+            id: item.id,
+            uid: item.id,
+            name: item.name,
+            size: item.size,
+            type: item.type,
+            uploadTime: item.uploadTime,
+            path: item.path,
+          })
+        );
+        params = initFileParams();
+        params = {
+          ...params,
+          name,
+          createUnit,
+          describe,
+          dutyName,
+          dutyPhone,
+          dutyPosition,
+          fileAddDtoList,
+        };
         yield put({
-          type: 'submit',
-          payload: payload,
+          type: 'updateParams',
+          payload: params,
+        });
+        yield put({
+          type: 'updateDataType',
+          payload: {
+            dataType: payload.dataType,
+            type: payload.type,
+            alias: payload.alias,
+            oldName: payload.oldName,
+          },
+        });
+      }
+    },
+    *getCheckedKeys({ payload }, { call, put }) {
+      const response = yield call(initFtpList, payload.params);
+      if (response && response.code < 300) {
+        const payloadParams = {
+          checkedKeys: [],
+          ftpfileAddDtoList: [],
+        };
+        response.result.datas.map(item => {
+          const pathName = `${item.path}${item.name}`;
+          payloadParams.checkedKeys.push(pathName);
+          payloadParams.ftpfileAddDtoList.push({
+            id: item.id,
+            name: item.name,
+            open: item.open,
+            path: item.path,
+            type: item.type,
+          });
+          return payloadParams;
+        });
+        yield put({
+          type: 'connection',
+          payload: {
+            dataType: payload.dataType,
+            connectParams: {
+              type: payload.params.datasourceDetailDto.type,
+              addr: payload.params.datasourceDetailDto.ip,
+              port: payload.params.datasourceDetailDto.port,
+              username: payload.params.datasourceDetailDto.username,
+              password: payload.params.datasourceDetailDto.password,
+            },
+            getAllTree: true,
+          },
+        });
+        yield put({
+          type: 'addDefaultCheckedKeys',
+          payload: payloadParams.checkedKeys,
+        });
+        yield put({
+          type: 'setSyncPlans',
+          payload: {
+            ...payload,
+            ftpfileAddDtoList: payloadParams.ftpfileAddDtoList,
+          },
+        });
+      }
+    },
+    *getStructs({ payload }, { call, put }) {
+      const response = yield call(viewDbStruct, payload.params);
+      if (response && response.code < 300) {
+        const payloadParams = {
+          structAddDtoList: [],
+        };
+        response.result.datas.map(item => {
+          payloadParams.structAddDtoList.push({
+            id: item.id,
+            columnName: item.columnName,
+            columnType: item.columnType,
+            note: item.note,
+            primaryKey: item.primaryKey,
+          });
+          return payloadParams;
+        });
+        yield put({
+          type: 'setSyncPlans',
+          payload: {
+            ...payload,
+            structAddDtoList: payloadParams.structAddDtoList,
+          },
+        });
+      }
+    },
+    *setSyncPlans({ payload }, { call, put }) {
+      const { dataType } = payload;
+      const response = yield call(searchTask, payload);
+      if (response && response.code < 300) {
+        let params;
+        const { stopNum, syncMode, syncRate, timeSet } = response.result.data;
+        if (dataType === 'ftp') {
+          params = {
+            ...initFtpParams(),
+            name: payload.params.name,
+            createUnit: payload.params.createUnit,
+            describe: payload.params.describe,
+            dutyName: payload.params.dutyName,
+            dutyPhone: payload.params.dutyPhone,
+            dutyPosition: payload.params.dutyPosition,
+            ftpfileAddDtoList: payload.ftpfileAddDtoList,
+            syncAddDto: {
+              stopNum: JSON.stringify(stopNum),
+              syncMode,
+              syncRate,
+              timeSet,
+            },
+          };
+        } else {
+          params = {
+            ...initDbParams(),
+            name: payload.params.name,
+            createUnit: payload.params.createUnit,
+            describe: payload.params.describe,
+            dutyName: payload.params.dutyName,
+            dutyPhone: payload.params.dutyPhone,
+            dutyPosition: payload.params.dutyPosition,
+            structAddDtoList: payload.structAddDtoList,
+            appsysName: payload.params.appsysName,
+            dbName: payload.params.dbName,
+            tableName: payload.params.tableName,
+            tableNote: payload.params.tableNote,
+            syncAddDto: {
+              stopNum: JSON.stringify(stopNum),
+              syncMode,
+              syncRate,
+              timeSet,
+            },
+          };
+        }
+        yield put({
+          type: 'updateParams',
+          payload: params,
+        });
+        yield put({
+          type: 'updateDataType',
+          payload: {
+            dataType: payload.dataType,
+            type: payload.type,
+            alias: payload.alias,
+            oldName: payload.oldName,
+          },
         });
       }
     },
@@ -361,14 +670,18 @@ export default {
       };
     },
     prev(state) {
-      state.params.syncAddDto = {
-        stopNum: '0',
+      const syncAddDto = {
+        stopNum: '5',
         syncMode: '增量',
         syncRate: '定时',
         timeSet: '-分钟',
       };
       return {
         ...state,
+        params: {
+          ...state.params,
+          syncAddDto,
+        },
         current: state.current - 1,
       };
     },
@@ -378,6 +691,7 @@ export default {
         dataType: payload.dataType,
         type: payload.type,
         alias: payload.alias,
+        oldName: payload.oldName,
       };
     },
     updateDbList(state, { payload }) {
@@ -390,22 +704,15 @@ export default {
       const { type } = payload;
       let { treeList } = state;
       if (type === 'create') {
-        payload.data.map((item, index) => {
-          //item.key = index;
-          item.key = `${item.path}${item.name}`;
-        });
         treeList = payload.data;
       } else {
-        payload.data.map((item, index) => {
-          item.key = `${item.path}${item.name}`;
-          //item.key = `${payload.treeNode.props.eventKey}-${index}`;
-        });
-        payload.treeNode.props.dataRef.children = payload.data;
+        const treeNodes = payload.treeNode;
+        treeNodes.props.dataRef.children = payload.data;
         treeList = [...treeList];
       }
       return {
         ...state,
-        treeList: treeList,
+        treeList,
       };
     },
     updateTableList(state, { payload }) {
@@ -430,17 +737,21 @@ export default {
       };
     },
     addStructAddDtoList(state, { payload }) {
-      state.params.structAddDtoList.splice(0, state.params.structAddDtoList.length);
-      state.params.structAddDtoList = [...state.params.structAddDtoList, ...payload];
       return {
         ...state,
+        params: {
+          ...state.params,
+          structAddDtoList: payload,
+        },
       };
     },
     addFtpfileAddDtoList(state, { payload }) {
-      state.params.ftpfileAddDtoList.splice(0, state.params.ftpfileAddDtoList.length);
-      state.params.ftpfileAddDtoList = [...state.params.ftpfileAddDtoList, ...payload];
       return {
         ...state,
+        params: {
+          ...state.params,
+          ftpfileAddDtoList: payload,
+        },
       };
     },
     addDefaultCheckedKeys(state, { payload }) {
@@ -449,17 +760,20 @@ export default {
         checkedKeys: [...payload],
       };
     },
-    resetTableColumnList(state, { payload }) {
-      state.tableList.splice(0, state.tableList.length);
-      state.columnList.splice(0, state.columnList.length);
+    resetTableColumnList(state) {
       return {
         ...state,
+        tableList: [],
+        columnList: [],
       };
     },
-    resetStructAddDtoList(state, { payload }) {
-      state.params.structAddDtoList.splice(0, state.params.structAddDtoList.length);
+    resetStructAddDtoList(state) {
       return {
         ...state,
+        params: {
+          ...state.params,
+          structAddDtoList: [],
+        },
       };
     },
     resetParams(state, { payload }) {

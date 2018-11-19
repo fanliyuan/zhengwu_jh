@@ -142,14 +142,14 @@ export async function deleteDataSourceManagement(params) {
 
 // 数据（关系数据库）详情
 export async function viewDbDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/db/${params}`);
 }
 
 // 修改数据（关系数据库）
 export async function updateDb(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.addDto,
   });
 }
 
@@ -165,14 +165,14 @@ export async function downloads(params) {
 
 // 数据（文件）详情
 export async function viewFileDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/file/${params}`);
 }
 
 // 修改数据（文件）及其文件项
 export async function updateFile(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.values,
   });
 }
 
@@ -183,14 +183,14 @@ export async function initFileList(params) {
 
 // 数据（ftp）详情
 export async function viewFtpDetail(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`);
+  return request(`/api/api/v2/zhengwu/swap/data/ftp/${params}`);
 }
 
 // 修改数据（FTP）及其文件（夹）
 export async function updateFtp(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`, {
     method: 'PUT',
-    body: params,
+    body: params.addDto,
   });
 }
 
@@ -214,7 +214,9 @@ export async function auditData(params) {
 
 // 查询同步计划
 export async function searchTask(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/basicInfo`);
+  return request(
+    `/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/task/basicInfo`
+  );
 }
 
 // 查看运行日志

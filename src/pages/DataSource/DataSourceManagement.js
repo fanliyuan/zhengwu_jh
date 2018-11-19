@@ -51,6 +51,12 @@ class TableList extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'dataType',
+      render: text => {
+        if (text === 'file') {
+          return '文件';
+        }
+        return text;
+      },
     },
     {
       title: '最近更新时间',
@@ -80,6 +86,7 @@ class TableList extends PureComponent {
             onClick={() => {
               const { match } = this.props;
               if (!record.zy) {
+                message.destroy();
                 return message.error('无对应的目录！');
               }
               return router.push(`${match.url}/update/${record.id}`);
@@ -110,15 +117,16 @@ class TableList extends PureComponent {
             onClick={() => {
               const { match } = this.props;
               if (!record.xg) {
+                message.destroy();
                 return message.error('已挂接数据，禁止修改！');
               }
-              return router.push(`${match.url}/update/${record.id}`);
+              return router.push(`${match.url}/update/${record.type}/${record.id}`);
             }}
           >
             修改
           </a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id, record.type, record.sc)}>删除</a>
+          <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>删除</a>
         </Fragment>
       ),
     },
@@ -132,18 +140,25 @@ class TableList extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, form } = this.props;
-    if (formTime !== undefined && formValues !== undefined) {
-      if (formTime.beginTime) {
-        formValues.date = [
-          moment(formTime.beginTime, 'YYYY-MM-DD'),
-          moment(formTime.endTime, 'YYYY-MM-DD'),
-        ];
-        form.setFieldsValue(formValues);
-        delete formValues.date;
+    const routeName = sessionStorage.getItem('currentList');
+    const { dispatch, form, route } = this.props;
+    if (routeName && routeName !== route.name) {
+      paramsPage = { pageNum: 1, pageSize: 10 };
+      formValues = {};
+      formTime = {};
+    } else {
+      if (formTime !== undefined && formValues !== undefined) {
+        if (formTime.beginTime) {
+          formValues.date = [
+            moment(formTime.beginTime, 'YYYY-MM-DD'),
+            moment(formTime.endTime, 'YYYY-MM-DD'),
+          ];
+          form.setFieldsValue(formValues);
+          delete formValues.date;
+        }
       }
+      form.setFieldsValue(formValues);
     }
-    form.setFieldsValue(formValues);
     dispatch({
       type: 'dataSourceManagement/fetch',
       payload: {
@@ -152,6 +167,11 @@ class TableList extends PureComponent {
         ...formTime,
       },
     });
+  }
+
+  componentWillUnmount() {
+    const { route } = this.props;
+    sessionStorage.setItem('currentList', route.name);
   }
 
   handleFormReset = () => {
@@ -203,17 +223,24 @@ class TableList extends PureComponent {
     });
   };
 
-  handleDelete = (id, type, sc) => {
-    if (!sc) {
-      return message.error('已挂接数据，禁止删除！');
-    }
-    const item = [
-      {
-        id,
-        type,
-      },
-    ];
+  handleDelete = (multi, id, type, sc) => {
     const { dispatch, form, loadingDelete } = this.props;
+    const { selectedIds } = this.state;
+    let item = [];
+    if (multi) {
+      item = selectedIds;
+    } else {
+      if (!sc) {
+        message.destroy();
+        return message.error('已挂接数据，禁止删除！');
+      }
+      item = [
+        {
+          id,
+          type,
+        },
+      ];
+    }
     return Modal.confirm({
       title: '警告',
       content: '是否删除数据？',
@@ -253,10 +280,6 @@ class TableList extends PureComponent {
         });
       },
     });
-  };
-
-  handleDeleteMultiple = () => {
-    console.log(this.state);
   };
 
   changePage = (pageNum, pageSize) => {
@@ -313,7 +336,7 @@ class TableList extends PureComponent {
                   <OptGroup label="半结构文件类型">
                     <Option value="ftp">ftp</Option>
                     <Option value="sftp">sftp</Option>
-                    <Option value="本地文件上传">文件</Option>
+                    <Option value="file">文件</Option>
                   </OptGroup>
                 </Select>
               )}
@@ -357,7 +380,6 @@ class TableList extends PureComponent {
     const {
       dataSourceManagement: { data, page },
       loading,
-      match,
     } = this.props;
     const paginationProps = {
       showQuickJumper: true,
@@ -372,6 +394,9 @@ class TableList extends PureComponent {
     const { selectedIds } = this.state;
     const columnRowSelection = {
       onChange: this.onSelectChange,
+      getCheckboxProps: record => ({
+        disabled: record.sc === false,
+      }),
     };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
@@ -385,7 +410,9 @@ class TableList extends PureComponent {
               <Button
                 icon="delete"
                 type="danger"
-                onClick={this.handleDeleteMultiple}
+                onClick={() => {
+                  this.handleDelete(true);
+                }}
                 disabled={selectedIds.length < 1}
               >
                 删除

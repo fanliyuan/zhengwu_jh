@@ -219,6 +219,13 @@ export default [
             component: './DataSource/DataSourceManagement',
             authority: ['user'],
           },
+          {
+            path: '/data/management/update/:type/:id',
+            name: 'managementUpdate',
+            component: './DataSource/AccessDataSource',
+            authority: ['user'],
+            hideInMenu: true,
+          },
         ],
       },
       // 数据订阅管理

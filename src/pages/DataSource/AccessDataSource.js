@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Steps, Button, Modal } from 'antd';
+import { Card, Steps, Button, Modal, Alert } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import AccessDataInfo from './AccessDataInfo';
 import SetSyncPlan from './SetSyncPlans';
@@ -47,14 +47,26 @@ let steps = [];
 }))
 class AccessStepForm extends PureComponent {
   componentDidMount() {
-    const { dispatch, match } = this.props;
-    dispatch({
-      type: 'accessData/detail',
-      payload: {
-        id: match.params.id,
-      },
-    });
+    const { dispatch, match, route } = this.props;
+    if (route.name === 'managementUpdate') {
+      dispatch({
+        type: 'accessData/updateDetail',
+        payload: {
+          id: match.params.id,
+          dataType: match.params.type,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'accessData/detail',
+        payload: {
+          id: match.params.id,
+        },
+      });
+    }
   }
+
+  componentWillReceiveProps(nextProps, nextState) {}
 
   componentWillUnmount() {
     const { dispatch } = this.props;
@@ -69,6 +81,7 @@ class AccessStepForm extends PureComponent {
         treeList: [],
         tableList: [],
         columnList: [],
+        checkedKeys: [],
         syncModeList: [
           {
             key: '增量',
@@ -120,20 +133,6 @@ class AccessStepForm extends PureComponent {
     this.child = ref;
   };
 
-  setType = (val, type) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'accessData/setDataType',
-      payload: {
-        dataType: type,
-        oldName: '',
-        params: {
-          type: val,
-        },
-      },
-    });
-  };
-
   handleAdd = () => {
     this.child.handleSubmit();
   };
@@ -142,6 +141,7 @@ class AccessStepForm extends PureComponent {
     const {
       dispatch,
       match,
+      route,
       accessData: { params, dataType },
     } = this.props;
     dispatch({
@@ -149,6 +149,7 @@ class AccessStepForm extends PureComponent {
       payload: {
         id: match.params.id,
         addDto: params,
+        routeName: route.name,
         dataType,
       },
     });
@@ -198,10 +199,10 @@ class AccessStepForm extends PureComponent {
       submitting,
       history,
       testNameSubmitting,
+      route,
       accessData: { params, current, dataType, type },
     } = this.props;
     const parentMethods = {
-      setType: this.setType,
       handleAdd: this.handleAdd,
       submit: this.submit,
     };
@@ -232,6 +233,16 @@ class AccessStepForm extends PureComponent {
               {(() => {
                 switch (current) {
                   case 0:
+                    if (dataType === '') {
+                      return (
+                        <Alert
+                          message="页面正努力加载中......"
+                          style={{ marginBottom: 20 }}
+                          type="info"
+                          showIcon
+                        />
+                      );
+                    }
                     return (
                       <AccessDataInfo
                         onRef={this.onRef}
@@ -240,6 +251,7 @@ class AccessStepForm extends PureComponent {
                         match={match}
                         type={type}
                         params={params}
+                        route={route}
                       />
                     );
                   case 1:
@@ -263,13 +275,11 @@ class AccessStepForm extends PureComponent {
                     );
                   default:
                     return (
-                      <AccessDataInfo
-                        onRef={this.onRef}
-                        {...parentMethods}
-                        dataType={dataType}
-                        match={match}
-                        type={type}
-                        params={params}
+                      <Alert
+                        message="页面加载中..."
+                        description="请耐心等待!"
+                        type="info"
+                        showIcon
                       />
                     );
                 }
@@ -322,18 +332,6 @@ class AccessStepForm extends PureComponent {
                 dataType === 'file' && (
                   <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
                     返回
-                  </Button>
-                )}
-              {current === 2 &&
-                dataType !== 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
-                    关闭
-                  </Button>
-                )}
-              {current === 1 &&
-                dataType === 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.close()}>
-                    关闭
                   </Button>
                 )}
             </div>
