@@ -216,19 +216,35 @@ class AccessDataInfo extends PureComponent {
     });
   };
 
+  changeDbName = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'accessData/updateParams',
+      payload: {
+        tableName: '',
+        tableNote: '',
+        structAddDtoList: [],
+      },
+    });
+  };
+
   selectData = dbName => {
+    const {
+      accessData: { params },
+    } = this.props;
     if (dbName === '') {
       message.destroy();
       return message.info('请先选择数据库！');
     }
-    return this.showModal(dbName);
+    return this.showModal(dbName, params);
   };
 
-  showModal = dbName => {
+  showModal = (dbName, params) => {
     const {
       dispatch,
       accessData: { alias },
     } = this.props;
+    const { tableName, tableNote, structAddDtoList } = params;
     this.setState({
       visible: true,
       modalTitle: `数据库：${dbName}`,
@@ -241,15 +257,26 @@ class AccessDataInfo extends PureComponent {
         db: dbName,
       },
     });
+    if (tableName !== '') {
+      this.setState({
+        tableName,
+        tableNote,
+        structAddDtoList: [...structAddDtoList],
+      });
+      dispatch({
+        type: 'accessData/setColumnList',
+        payload: {
+          alias,
+          db: dbName,
+          table: tableName,
+        },
+      });
+    }
   };
 
   handleOk = () => {
     const { dispatch } = this.props;
     const { structAddDtoList, tableName, tableNote } = this.state;
-    dispatch({
-      type: 'accessData/addStructAddDtoList',
-      payload: structAddDtoList,
-    });
     dispatch({
       type: 'accessData/resetTableColumnList',
     });
@@ -258,6 +285,7 @@ class AccessDataInfo extends PureComponent {
       payload: {
         tableName,
         tableNote,
+        structAddDtoList,
       },
     });
     this.setState({
@@ -265,6 +293,7 @@ class AccessDataInfo extends PureComponent {
       page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
+      structAddDtoList: [],
       tableName: '',
       tableNote: '',
     });
@@ -272,13 +301,12 @@ class AccessDataInfo extends PureComponent {
 
   handleCancel = () => {
     const { dispatch } = this.props;
-    const { structAddDtoList } = this.state;
-    structAddDtoList.splice(0, structAddDtoList.length);
     this.setState({
       visible: false,
       page: 1,
       selectedRowKeys: [],
       selectedTableRowKeys: [],
+      structAddDtoList: [],
       tableName: '',
       tableNote: '',
     });
@@ -292,12 +320,14 @@ class AccessDataInfo extends PureComponent {
       dispatch,
       accessData: { alias },
     } = this.props;
-    const { structAddDtoList, dbName } = this.state;
-    this.setState({
-      selectedRowKeys: [],
-      selectedTableRowKeys: selectedRowKeys,
-      tableName: selectedRows[0].name,
-      tableNote: selectedRows[0].comment,
+    const { dbName } = this.state;
+    dispatch({
+      type: 'accessData/updateParams',
+      payload: {
+        tableName: '',
+        tableNote: '',
+        structAddDtoList: [],
+      },
     });
     dispatch({
       type: 'accessData/setColumnList',
@@ -307,7 +337,13 @@ class AccessDataInfo extends PureComponent {
         table: selectedRows[0].name,
       },
     });
-    structAddDtoList.splice(0, structAddDtoList.length);
+    this.setState({
+      selectedRowKeys: [],
+      selectedTableRowKeys: selectedRowKeys,
+      structAddDtoList: [],
+      tableName: selectedRows[0].name,
+      tableNote: selectedRows[0].comment,
+    });
   };
 
   onSelectChange = selectedRowKeys => {
@@ -340,6 +376,9 @@ class AccessDataInfo extends PureComponent {
         return false;
       });
     }
+    this.setState({
+      structAddDtoList,
+    });
   };
 
   handleSelectAllColumn = (selected, selectedRows) => {
@@ -366,6 +405,9 @@ class AccessDataInfo extends PureComponent {
     } else {
       structAddDtoList.splice(0, structAddDtoList.length);
     }
+    this.setState({
+      structAddDtoList,
+    });
   };
 
   setRowNum = (record, index) => {
@@ -512,7 +554,7 @@ class AccessDataInfo extends PureComponent {
               },
             ],
           })(
-            <Select>
+            <Select onChange={this.changeDbName}>
               {dbList.map(d => (
                 <Option key={d.name}>{d.name}</Option>
               ))}
@@ -525,7 +567,25 @@ class AccessDataInfo extends PureComponent {
         >
           {getFieldDecorator('structAddDtoList', {
             initialValue: params.structAddDtoList,
-          })(<a onClick={() => this.selectData(getFieldValue('dbName'))}>选择数据</a>)}
+          })(
+            <Fragment>
+              <a onClick={() => this.selectData(getFieldValue('dbName'))}>选择数据</a>
+              {params.structAddDtoList.length < 1 && (
+                <Icon
+                  style={{ color: '#F04458', marginLeft: 5 }}
+                  type="close-circle"
+                  theme="filled"
+                />
+              )}
+              {params.structAddDtoList.length > 0 && (
+                <Icon
+                  style={{ color: '#19BB8F', marginLeft: 5 }}
+                  type="check-circle"
+                  theme="filled"
+                />
+              )}
+            </Fragment>
+          )}
         </FormItem>
         <FormItem
           {...formItemLayout}
@@ -1031,12 +1091,12 @@ class AccessDataInfo extends PureComponent {
       dataType,
       loadingTable,
       loadingColumn,
-      accessData: { tableList, columnList },
+      accessData: { tableList, columnList, params },
     } = this.props;
     const { selectedRowKeys, selectedTableRowKeys, page, modalTitle, visible } = this.state;
     const rowSelection = {
       type: 'radio',
-      selectedTableRowKeys,
+      selectedRowKeys: selectedTableRowKeys,
       onChange: this.handleSelectTable,
     };
     const columnRowSelection = {
@@ -1050,8 +1110,18 @@ class AccessDataInfo extends PureComponent {
       onChange: this.changePage,
       pageSize: 10,
     };
+    const disabled = selectedRowKeys.length > 0 ? 0 : 1;
+    const okButtonProps = { disabled };
     const tableLength = `数据表 共${tableList.length}张`;
     const columnLength = `数据项 共${columnList.length}项`;
+    if (dataType === 'db') {
+      if (selectedTableRowKeys.length < 1 && params.tableName !== '' && visible) {
+        selectedTableRowKeys.push(params.tableName);
+      }
+      if (selectedRowKeys.length < 1 && params.structAddDtoList.length > 0 && visible) {
+        params.structAddDtoList.map(item => selectedRowKeys.push(item.columnName));
+      }
+    }
     return (
       <Card bordered={false}>
         {(() => {
@@ -1073,6 +1143,7 @@ class AccessDataInfo extends PureComponent {
           onCancel={this.handleCancel}
           width={1200}
           maskClosable={false}
+          okButtonProps={okButtonProps}
         >
           <Row gutter={16}>
             <Col span={10}>
