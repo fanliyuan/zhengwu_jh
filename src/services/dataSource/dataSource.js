@@ -228,3 +228,10 @@ export async function viewRunlog(params) {
 export async function viewSynclog(params) {
   return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/synclog`);
 }
+
+// 查看数据库数据表的结构
+export async function getDBTableStruct(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/data/db/${params.path}/struct?${stringify(params.query)}`
+  );
+}

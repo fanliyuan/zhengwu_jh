@@ -205,6 +205,13 @@ export default [
             authority: ['user'],
             hideInMenu: true,
           },
+          {
+            path: '/data/management/dbview/:id',
+            name: 'dbview',
+            component: './DataSource/DBView',
+            auditor: 'user',
+            hideInMenu: true,
+          },
         ],
       },
       // 数据订阅管理

@@ -165,6 +165,7 @@ export default {
   'menu.data.sourceAccess': '接入数据',
   'menu.data.management': '数据管理',
   'menu.data.managementUpdate': '修改接入数据',
+  'menu.data.dbview': '数据库数据查看',
   'menu.subscribe': '数据订阅管理',
   'menu.subscribe.audit': '订阅审核',
   'menu.subscribe.sourceCatalog': '资源目录',
@@ -374,4 +375,5 @@ export default {
     '配置栏只在开发环境用于预览，生产环境不会展现，请拷贝后手动修改配置文件',
   'menu.subscribe.subDetailFile': '数据(文件)',
   'menu.subscribe.subDetailDataBase': '数据(表)',
+  'menu.subscribe.dbview': '数据(表)',
 };
