@@ -98,6 +98,10 @@ class TableList extends PureComponent {
           <a
             onClick={() => {
               const { match } = this.props;
+              if (!record.sj) {
+                message.destroy();
+                return message.error('数据暂未通过审核，无法查看数据！');
+              }
               switch (record.type) {
                 case 'db':
                   return router.push(`${match.url}/dbview/${record.id}`);
