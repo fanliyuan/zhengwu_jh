@@ -145,6 +145,11 @@ export async function viewDbDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params}`);
 }
 
+// 数据（关系数据库）详情 （当前配置）
+export async function viewDbDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params}`);
+}
+
 // 修改数据（关系数据库）
 export async function updateDb(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`, {
@@ -153,9 +158,26 @@ export async function updateDb(params) {
   });
 }
 
+// 数据（关系数据库）表数据list
+export async function viewDbDataList(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params.id}/data?${stringify(params.query)}`);
+}
+
 // 数据（关系数据库）表结构list
 export async function viewDbStruct(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}/struct`);
+}
+
+// 数据（关系数据库）表结构list（当前配置）
+export async function viewDbStructCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params.id}/struct`);
+}
+
+// 数据（关系数据库）表数据导出
+export async function exportDb(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/db/${params.id}/export?${stringify(params.query)}`
+  );
 }
 
 // 批量下载数据（文件）文件项
@@ -214,6 +236,12 @@ export async function auditData(params) {
 
 // 查询同步计划
 export async function searchTask(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/sync`);
+}
+
+// 查询同步基本信息(任务)
+
+export async function getSyncBasic(params) {
   return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.id}/task/basicInfo`);
 }
 

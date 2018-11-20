@@ -99,7 +99,21 @@ class TableList extends PureComponent {
           <a
             onClick={() => {
               const { match } = this.props;
-              return router.push(`/data/management/dbview/${record.id}`);
+              if (!record.sj) {
+                message.destroy();
+                return message.error('数据暂未通过审核，无法查看数据！');
+              }
+              switch (record.type) {
+                case 'db':
+                  return router.push(`${match.url}/dbview/${record.id}`);
+                case 'ftp':
+                  return router.push(`${match.url}/dbview/${record.id}`);
+                case 'file':
+                  return router.push(`${match.url}/dbview/${record.id}`);
+                default:
+                  message.destroy();
+                  return message.error('无法查看数据，缺少数据类型！');
+              }
             }}
           >
             数据

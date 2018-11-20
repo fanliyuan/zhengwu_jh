@@ -5,7 +5,7 @@ import {
   viewDbDetail,
   viewFileDetail,
   viewFtpDetail,
-  searchTask,
+  getSyncBasic,
 } from '@/services/dataSource/dataSource';
 
 export default {
