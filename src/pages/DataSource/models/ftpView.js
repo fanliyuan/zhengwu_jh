@@ -1,7 +1,7 @@
-import { viewFileDetailCurrent, initFileListCurrent } from '@/services/dataSource/dataSource';
+import { viewFtpDetailCurrent, initFtpListCurrent } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'fileView',
+  namescpace: 'ftpView',
 
   state: {
     dataList: {},
@@ -10,17 +10,17 @@ export default {
   },
 
   effects: {
-    *getFileDetail({ payload }, { call, put }) {
-      const response = yield call(viewFileDetailCurrent, payload);
+    *getFtpDetail({ payload }, { call, put }) {
+      const response = yield call(viewFtpDetailCurrent, payload);
       if (response && response.code < 300) {
         yield put({
-          type: 'saveFileInfo',
+          type: 'saveFtpInfo',
           payload: response.result.data,
         });
       }
     },
-    *getFileList({ payload }, { call, put }) {
-      const response = yield call(initFileListCurrent, payload);
+    *getFtpList({ payload }, { call, put }) {
+      const response = yield call(initFtpListCurrent, payload);
       if (response && response.code < 300) {
         yield put({
           type: 'saveDataList',
@@ -37,7 +37,7 @@ export default {
   },
 
   reducers: {
-    saveFileInfo(state, { payload }) {
+    saveFtpInfo(state, { payload }) {
       return {
         ...state,
         fileInfo: payload,

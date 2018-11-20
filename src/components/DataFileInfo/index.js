@@ -19,6 +19,7 @@ export default class DataFileInfo extends PureComponent {
     const { flag } = this.state;
     const {
       dataBaseInfo: {
+        dataType = '',
         name = '',
         pubNodeName = '',
         createUnit = '',
@@ -38,7 +39,7 @@ export default class DataFileInfo extends PureComponent {
             <span className={styles.label}>数据类型</span>
             <span className={styles.value2}>
               <Ellipsis lines={1} fullWidthRecognition tooltip>
-                文件
+                {dataType}
               </Ellipsis>
             </span>
           </span>

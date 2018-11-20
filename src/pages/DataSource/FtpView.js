@@ -1,23 +1,20 @@
 import React, { Component } from 'react';
-import { Row, Col, Table, Button, Form, Input, DatePicker } from 'antd';
+import { Row, Col, Table, Button, Form, Input } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataBaseInfo from '@/components/DataFileInfo';
 import styles from './DataSourceManagement.less';
 
-const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 let formValues;
-let formTime;
 
-@connect(({ fileView, loading }) => ({
-  fileView,
-  loadingList: loading.effects['fileView/getFileList'],
+@connect(({ ftpView, loading }) => ({
+  ftpView,
+  loadingList: loading.effects['ftpView/getFtpList'],
 }))
 @Form.create()
-class FileView extends Component {
+class FtpView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,11 +25,11 @@ class FileView extends Component {
   componentDidMount() {
     const { dispatch, match } = this.props;
     dispatch({
-      type: 'fileView/getFileDetail',
+      type: 'ftpView/getFtpDetail',
       payload: match.params.id,
     });
     dispatch({
-      type: 'fileView/getFileList',
+      type: 'ftpView/getFtpList',
       payload: {
         id: match.params.id,
         query: {
@@ -46,7 +43,7 @@ class FileView extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'fileView/reset',
+      type: 'ftpView/reset',
       payload: {
         dataList: {},
         fileInfo: {},
@@ -77,19 +74,18 @@ class FileView extends Component {
     const { selectedIds } = this.state;
     const { id } = match.params;
     const query = selectedIds.join('%2C');
-    window.location.href = `/api/api/v2/zhengwu/swap/dataR/file/${id}/down?ids=${query}`;
+    window.location.href = `/api/api/v2/zhengwu/swap/dataR/ftp/${id}/down?ids=${query}`;
   };
 
   changePage = (pageNum, pageSize) => {
     const { dispatch, match } = this.props;
     const paramsPage = { pageNum, pageSize };
     dispatch({
-      type: 'fileView/getFileList',
+      type: 'ftpView/getFtpList',
       payload: {
         id: match.params.id,
         query: {
           ...paramsPage,
-          ...formTime,
           ...formValues,
         },
         page: pageNum,
@@ -105,26 +101,15 @@ class FileView extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const fieldsForm = fieldsValue;
-      let paramsTime = {};
-      if (fieldsForm.date) {
-        paramsTime = {
-          beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-          endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
-        };
-        formTime = paramsTime;
-        delete fieldsForm.date;
-      }
-
       formValues = fieldsForm;
 
       const values = {
         ...fieldsForm,
         ...paramsPage,
-        ...paramsTime,
       };
 
       dispatch({
-        type: 'fileView/getFileList',
+        type: 'ftpView/getFtpList',
         payload: {
           id: match.params.id,
           query: {
@@ -141,10 +126,9 @@ class FileView extends Component {
     const { form, dispatch, match } = this.props;
     form.resetFields();
     formValues = {};
-    formTime = {};
     const paramsPage = { pageNum: 1, pageSize: 10 };
     dispatch({
-      type: 'fileView/getFileList',
+      type: 'ftpView/getFtpList',
       payload: {
         id: match.params.id,
         query: {
@@ -168,13 +152,6 @@ class FileView extends Component {
               {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入文件名称" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="更新时间">
-              {getFieldDecorator('date')(
-                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
-              )}
-            </FormItem>
-          </Col>
         </Row>
         <div style={{ overflow: 'hidden' }}>
           <div style={{ float: 'right', marginBottom: 24 }}>
@@ -191,6 +168,7 @@ class FileView extends Component {
   }
 
   render() {
+    let ftpType;
     const dataColumn = [
       {
         title: '文件名称',
@@ -201,20 +179,27 @@ class FileView extends Component {
         dataIndex: 'type',
       },
       {
-        title: '文件大小',
-        dataIndex: 'size',
-      },
-      {
-        title: '最近更新时间',
-        dataIndex: 'uploadTimeStr',
+        title: '文件相对路径',
+        dataIndex: 'path',
       },
     ];
     const {
-      fileView: { dataList, fileInfo },
+      ftpView: { dataList, fileInfo },
       loadingList,
     } = this.props;
     const { selectedIds } = this.state;
-    const { name, createUnit, dutyName, dutyPhone, dutyPosition, describe } = fileInfo;
+    const {
+      name,
+      createUnit,
+      dutyName,
+      dutyPhone,
+      dutyPosition,
+      describe,
+      datasourceDetailDto,
+    } = fileInfo;
+    if (datasourceDetailDto) {
+      ftpType = datasourceDetailDto.type;
+    }
     const paginationProps = {
       showQuickJumper: true,
       total: dataList.totalCounts,
@@ -225,7 +210,7 @@ class FileView extends Component {
       },
     };
     const dataBaseInfo = {
-      dataType: '文件',
+      dataType: ftpType,
       name,
       pubNodeName: '石家庄民政局',
       createUnit,
@@ -283,4 +268,4 @@ class FileView extends Component {
     );
   }
 }
-export default FileView;
+export default FtpView;

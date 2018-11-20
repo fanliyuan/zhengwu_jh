@@ -214,8 +214,15 @@ export default [
           },
           {
             path: '/data/management/fileview/:id',
-            name: 'dbview',
+            name: 'fileview',
             component: './DataSource/FileView',
+            auditor: 'user',
+            hideInMenu: true,
+          },
+          {
+            path: '/data/management/ftpview/:id',
+            name: 'ftpview',
+            component: './DataSource/FtpView',
             auditor: 'user',
             hideInMenu: true,
           },

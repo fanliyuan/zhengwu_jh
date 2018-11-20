@@ -108,7 +108,7 @@ class TableList extends PureComponent {
                     case 'db':
                       return router.push(`${match.url}/dbview/${record.id}`);
                     case 'ftp':
-                      return router.push(`${match.url}/dbview/${record.id}`);
+                      return router.push(`${match.url}/ftpview/${record.id}`);
                     case 'file':
                       return router.push(`${match.url}/fileview/${record.id}`);
                     default:

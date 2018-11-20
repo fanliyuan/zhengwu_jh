@@ -220,6 +220,11 @@ export async function viewFtpDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params}`);
 }
 
+// 数据（ftp）详情
+export async function viewFtpDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/ftp/${params}`);
+}
+
 // 修改数据（FTP）及其文件（夹）
 export async function updateFtp(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}`, {
@@ -231,6 +236,13 @@ export async function updateFtp(params) {
 // 搜索数据（ftp）文件（夹）list
 export async function initFtpList(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}/ftpfile`);
+}
+
+// 搜索数据（ftp）文件（夹）list
+export async function initFtpListCurrent(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/ftp/${params.id}/ftpfile?${stringify(params.query)}`
+  );
 }
 
 // 查询审核日志

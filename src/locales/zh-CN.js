@@ -171,6 +171,8 @@ export default {
   'menu.data.management': '数据管理',
   'menu.data.managementUpdate': '修改接入数据',
   'menu.data.dbview': '数据库数据查看',
+  'menu.data.fileview': '文件数据查看',
+  'menu.data.ftpview': 'FTP库数据查看',
   'menu.subscribe': '数据订阅管理',
   'menu.subscribe.audit': '订阅审核',
   'menu.subscribe.sourceCatalog': '资源目录',
