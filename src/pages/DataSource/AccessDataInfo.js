@@ -58,7 +58,7 @@ class AccessDataInfo extends PureComponent {
     },
     {
       title: '主键',
-      dataIndex: 'pri',
+      dataIndex: 'indices',
       render: text => {
         if (text === 'PRI') {
           return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;

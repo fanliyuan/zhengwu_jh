@@ -93,7 +93,11 @@ class DBView extends Component {
   };
 
   handleSubmit = () => {
-    const { form, match } = this.props;
+    const {
+      form,
+      match,
+      dbView: { dbInfo },
+    } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const { id } = match.params;
@@ -106,6 +110,11 @@ class DBView extends Component {
         )}`;
         this.setState({
           visible: false,
+        });
+        form.setFieldsValue({
+          fileFormat: 'EXCEL/XLSX',
+          codeFormat: 'UTF-8',
+          exportFileName: dbInfo.tableName,
         });
       }
     });
