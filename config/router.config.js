@@ -212,6 +212,13 @@ export default [
             auditor: 'user',
             hideInMenu: true,
           },
+          {
+            path: '/data/management/infoSource/:id',
+            name: 'infoSource',
+            component: './DataSource/InfoSource',
+            audit: 'user',
+            hideInMenu: true,
+          },
         ],
       },
       // 数据订阅管理
@@ -257,6 +264,13 @@ export default [
             name: 'subDetailDataBase',
             component: './Subscription/SubDetailDataBase',
             authority: 'user',
+            hideInMenu: true,
+          },
+          {
+            path: '/data/management/infoSource/:id',
+            name: 'infoSource',
+            component: './DataSource/InfoSource',
+            audit: 'user',
             hideInMenu: true,
           },
         ],

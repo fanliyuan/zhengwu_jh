@@ -214,9 +214,7 @@ export async function auditData(params) {
 
 // 查询同步计划
 export async function searchTask(params) {
-  return request(
-    `/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/task/basicInfo`
-  );
+  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.id}/task/basicInfo`);
 }
 
 // 查看运行日志
@@ -234,4 +232,9 @@ export async function getDBTableStruct(params) {
   return request(
     `/api/api/v2/zhengwu/swap/data/db/${params.path}/struct?${stringify(params.query)}`
   );
+}
+
+// 查看资源详情
+export async function getInfoSrcDetail(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.path}`);
 }

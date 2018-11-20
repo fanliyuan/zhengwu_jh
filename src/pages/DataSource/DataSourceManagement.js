@@ -85,11 +85,12 @@ class TableList extends PureComponent {
           <a
             onClick={() => {
               const { match } = this.props;
-              if (!record.zy) {
-                message.destroy();
-                return message.error('无对应的目录！');
-              }
-              return router.push(`${match.url}/update/${record.id}`);
+              // if (!record.zy) {
+              //   message.destroy();
+              //   return message.error('无对应的目录！');
+              // }
+              // const dataType = record.dataType === 'file'?'file':record.dataType === 'ftp'?'ftp':'db'
+              return router.push(`/data/management/infoSource/${record.id}`);
             }}
           >
             信息资源
