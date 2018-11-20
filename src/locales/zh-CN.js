@@ -154,6 +154,7 @@ export default {
   'menu.informationResource.addDirectory': '新建资源',
   'menu.informationResource.newMenuOne': '新建资源-第一步',
   'menu.informationResource.newMenuTwo': '新建资源-第二步',
+  // 'menu.informationResource.newMenuThree': '新建资源-第三步',
   'menu.informationResource.newMenu': '测试',
   'menu.informationResource.inputDirectory': '导入资源',
   'menu.informationResource.viewDirectory': '信息项',

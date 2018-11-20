@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-17 17:33:58
+ * @Last Modified time: 2018-11-20 14:23:02
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -22,6 +22,8 @@ import {
   Icon,
   Card,
   Steps,
+  message,
+  InputNumber,
 } from 'antd';
 
 import TableForm from './TableForm';
@@ -31,6 +33,7 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 const { Item } = Form;
 const { Step } = Steps;
 const { Option } = Select;
+let keyId = 1;
 const modalList = [
   {
     id: 3,
@@ -52,26 +55,16 @@ const modalList = [
   },
 ];
 
-@connect()
+@connect(({ informationResource }) => ({
+  informationResource,
+}))
 @Form.create()
 export default class Step2 extends PureComponent {
   state = {
     data: {
       method: 3,
     },
-    tableData: [
-      {
-        key: '2',
-        dataLength: '7',
-        dataType: 'N|数值型',
-        name: '22',
-        openCondition: '999',
-        openType: 'classify2',
-        shareCondition: '88',
-        shareMode: '2|邮件',
-        shareType: '2|无条件共享',
-      },
-    ],
+    tableData: [],
     modalData: {
       name: '',
       organization: [],
@@ -83,17 +76,24 @@ export default class Step2 extends PureComponent {
     selectKeys: [],
     disabled: true,
     addVisible: false,
+    routeData: {},
   };
 
   componentDidMount() {
     // if (this.props.location.pathname === '/dataSourceManagement/newMenu/two') {
+    // console.log("ceshi",this.props.location.state)
+    if (!this.props.location.state || !this.props.location.state.routeData) {
+      this.props.dispatch(routerRedux.push('/informationResource/newMenu/one'));
+    }
     this.setState({
       disabled: false,
+      routeData: this.props.location.state ? this.props.location.state.routeData : '',
     });
     // }
   }
 
   onChange = val => {
+    console.log(val);
     this.setState({
       tableData: val,
     });
@@ -116,20 +116,25 @@ export default class Step2 extends PureComponent {
   };
 
   goBack = () => {
-    if (!this.state.disabled) {
-      this.props.dispatch(routerRedux.push('/dataSourceManagement/newMenu/one'));
-    } else {
-      this.props.dispatch(routerRedux.push('/dataSourceManagement/checkMenu/one'));
-    }
+    // if (!this.state.disabled) {
+    //   this.props.dispatch(routerRedux.push('/dataSourceManagement/newMenu/one'));
+    // } else {
+    //   this.props.dispatch(routerRedux.push('/dataSourceManagement/checkMenu/one'));
+    // }
+    this.props.dispatch(routerRedux.push('/informationResource/newMenu/one'));
   };
 
   goForward = () => {
-    const {
-      data: { method },
-    } = this.state;
-    this.props.dispatch(
-      routerRedux.push('/dataSourceManagement/newMenu/three', { show: method === 1 })
-    );
+    const { dispatch } = this.props;
+    const { routeData, tableData } = this.state;
+    if (!routeData.infoAddDtoList || tableData.length <= 0) {
+      message.error('信息项必填');
+    } else {
+      dispatch({
+        type: 'informationResource/addResources',
+        payload: { ...routeData, infoAddDtoList: tableData },
+      });
+    }
   };
 
   // handleSubmit = (e) => {
@@ -146,18 +151,27 @@ export default class Step2 extends PureComponent {
 
   handleModalOk = () => {
     const {
-      form: { validateFields },
+      form: { validateFields, resetFields },
     } = this.props;
     validateFields((errors, values) => {
-      // console.log(values)
-      const { tableData } = this.state;
+      const { tableData, routeData } = this.state;
+      values.key = keyId;
       let arr = tableData;
       arr.push(values);
-      console.log('4', arr);
       this.setState({
         tableData: arr,
         addVisible: false,
+        routeData: { ...routeData, infoAddDtoList: arr },
       });
+      resetFields();
+      keyId++;
+    });
+  };
+
+  handleDataChange = val => {
+    const { routeData } = this.state;
+    this.setState({
+      routeData: { ...routeData, infoAddDtoList: val ? val : [] },
     });
   };
 
@@ -176,7 +190,7 @@ export default class Step2 extends PureComponent {
       selectKeys,
       disabled,
     } = this.state;
-    console.log('erer', tableData);
+    // console.log('ceshi', tableData);
     const columns = [
       {
         title: 'ID',
@@ -280,22 +294,22 @@ export default class Step2 extends PureComponent {
     ];
 
     const dataType = [
-      { id: 1, label: '字符型', value: 'C' },
-      { id: 2, label: '数值型', value: 'N' },
-      { id: 3, label: '货币型', value: 'Y' },
-      { id: 4, label: '日期型', value: 'D' },
-      { id: 5, label: '日期时间型', value: 'T' },
-      { id: 6, label: '逻辑型', value: 'L' },
-      { id: 7, label: '备注型', value: 'M' },
-      { id: 8, label: '通用型', value: 'G' },
-      { id: 9, label: '双精度型', value: 'B' },
-      { id: 10, label: '整型', value: 'I' },
-      { id: 11, label: '浮点型', value: 'F' },
+      { id: 1, label: '字符型C', value: 'C' },
+      { id: 2, label: '数值型N', value: 'N' },
+      { id: 3, label: '货币型Y', value: 'Y' },
+      { id: 4, label: '日期型D', value: 'D' },
+      { id: 5, label: '日期时间型T', value: 'T' },
+      { id: 6, label: '逻辑型L', value: 'L' },
+      { id: 7, label: '备注型M', value: 'M' },
+      { id: 8, label: '通用型G', value: 'G' },
+      { id: 9, label: '双精度型B', value: 'B' },
+      { id: 10, label: '整型I', value: 'I' },
+      { id: 11, label: '浮点型F', value: 'F' },
       { id: 12, label: '自定义' },
     ];
     const dataTypeOption = dataType.map(item => {
       return (
-        <Option value={`${item.value}|${item.label}`} key={item.id}>
+        <Option value={item.label} key={item.id}>
           {item.label}
         </Option>
       );
@@ -311,7 +325,7 @@ export default class Step2 extends PureComponent {
     ];
     const shareTypeOption = shareType.map(item => {
       return (
-        <Option value={`${item.id}|${item.label}`} key={item.id}>
+        <Option value={item.label} key={item.id}>
           {item.label}
         </Option>
       );
@@ -337,11 +351,12 @@ export default class Step2 extends PureComponent {
                 value={tableData}
                 onChange={val => this.onChange(val)}
                 disabled={disabled}
+                handleChange={this.handleDataChange}
               />
             </Item>
           </Form>
           <div style={{ textAlign: 'center' }}>
-            <Button className="mr64" onClick={this.goBack}>
+            <Button className="mr64" onClick={this.goBack} style={{ marginRight: 20 }}>
               上一步
             </Button>
             {!disabled && (
@@ -380,7 +395,7 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('dataLength', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入数据长度' }],
-                })(<Input placeholder="请输入数据长度" disabled={disabled} />)}
+                })(<InputNumber disabled={disabled} min={1} />)}
               </Item>
               <Item label="共享类型" {...formItemLayout}>
                 {getFieldDecorator('shareType', {
@@ -388,9 +403,9 @@ export default class Step2 extends PureComponent {
                   rules: [{ required: true, message: '请选择共享类型' }],
                 })(
                   <Select disabled={disabled}>
-                    <Option value="1|有条件共享">有条件共享</Option>
-                    <Option value="2|无条件共享">无条件共享</Option>
-                    <Option value="3|不予共享">不予共享</Option>
+                    <Option value="有条件共享">有条件共享</Option>
+                    <Option value="无条件共享">无条件共享</Option>
+                    <Option value="不予共享">不予共享</Option>
                   </Select>
                 )}
               </Item>
@@ -419,8 +434,8 @@ export default class Step2 extends PureComponent {
                   rules: [{ required: true, message: '请选择共享类型' }],
                 })(
                   <Select disabled={disabled}>
-                    <Option value="classify1">是</Option>
-                    <Option value="classify2">否</Option>
+                    <Option value="是">是</Option>
+                    <Option value="否">否</Option>
                     {/* <Option value="classify21">不予共享</Option> */}
                   </Select>
                 )}

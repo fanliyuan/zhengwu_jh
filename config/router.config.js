@@ -136,6 +136,13 @@ export default [
             component: './InformationResource/NewMenu/Step2',
             authority: ['user'],
           },
+          // {
+          //   path: 'newMenu/three',
+          //   name: 'newMenuThree',
+          //   hideInMenu: true,
+          //   component: './InformationResource/NewMenu/Step3',
+          //   authority: ['user'],
+          // },
           {
             path: 'inputDirectory',
             name: 'inputDirectory',

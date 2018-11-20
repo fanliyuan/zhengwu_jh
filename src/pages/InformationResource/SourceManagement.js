@@ -21,10 +21,8 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-@connect(({ sourceManagement, nodeManagement, loading }) => ({
-  sourceManagement,
-  nodeManagement,
-  loading: loading.models.sourceManagement || loading.models.nodeManagement,
+@connect(({ informationResource }) => ({
+  informationResource,
 }))
 export default class SourceManagement extends Component {
   state = {
@@ -38,9 +36,10 @@ export default class SourceManagement extends Component {
     //   isNodeOperator: Cookies.get(['antd-pro-authority']) === 'operator-n',
     // })
     this.props.dispatch({
-      type: 'nodeManagement/getParentNodes',
+      type: 'informationResource/getResourceList',
+      payload: { pageNum: 1, pageSize: 10, mount: false },
     });
-    this.searchHandle({});
+    // this.searchHandle({});
   }
 
   nameChange = e => {
@@ -205,10 +204,12 @@ export default class SourceManagement extends Component {
   render() {
     const that = this;
     // const { isNodeOperator } = this.state
-    // const { nodeManagement: { parentNodeList }, sourceManagement: {dataList,pagination}, loading } = this.props
+    const {
+      informationResource: { resourceList, pagination },
+    } = this.props;
     const parentNodeList = [];
     const dataList = [];
-    const pagination = false;
+    // const pagination = false;
     // const options = [
     //   {
     //     value: '0-0',
@@ -287,15 +288,15 @@ export default class SourceManagement extends Component {
       // },
       {
         title: '信息资源代码',
-        dataIndex: 'resoureCode',
+        dataIndex: 'code',
       },
       {
         title: '信息资源名称',
-        dataIndex: 'rsName',
+        dataIndex: 'name',
       },
       {
         title: '资源属性分类',
-        dataIndex: 'resourceClassfiy',
+        dataIndex: 'typeName',
       },
       // {
       //   title: '数据类型',
@@ -318,18 +319,21 @@ export default class SourceManagement extends Component {
       // },
       {
         title: '发布日期',
-        dataIndex: 'updataTime',
-        render(text) {
-          return moment(text).format('lll');
-        },
+        dataIndex: 'publishTime',
+        // render(text) {
+        //   return moment(text).format('lll');
+        // },
       },
       {
         title: '数据已关联',
-        dataIndex: 'isDataConnected',
+        dataIndex: 'havaGL',
+        render: text => {
+          return text ? '是' : '否';
+        },
       },
       {
         title: '信息项',
-        dataIndex: 'dataItem',
+        dataIndex: 'xxx',
       },
       {
         title: '订阅数',
@@ -348,9 +352,9 @@ export default class SourceManagement extends Component {
       // },
       {
         title: '审核状态',
-        dataIndex: 'checkStatus',
+        dataIndex: 'status',
         render(text) {
-          switch (text) {
+          switch (+text) {
             case '-1':
               return '待审核';
             case '0':
@@ -386,44 +390,44 @@ export default class SourceManagement extends Component {
     columns.forEach(item => {
       item.align = 'center';
     });
-    const list = [
-      {
-        id: 0,
-        name: '城市低保标准表(各市第1季度)',
-        dataType: 'Mysql',
-        node: '石家庄民政部',
-        institution: '石家庄民政部',
-        applicationSystemName: '统计系统',
-        createTime: 233435354,
-        lastUpdataTime: 343435354,
-        subscription: 2,
-        status: '0',
-      },
-      {
-        id: 1,
-        name: '农村低保标准表(各市第1季度)',
-        dataType: 'Mysql',
-        node: '石家庄民政部',
-        institution: '石家庄民政部',
-        applicationSystemName: '统计系统',
-        createTime: 233435354,
-        lastUpdataTime: 343435354,
-        subscription: 1,
-        status: '1',
-      },
-      {
-        id: 2,
-        name: '人口普查数据',
-        dataType: '文件',
-        node: '石家庄民政部',
-        institution: '石家庄民政部',
-        applicationSystemName: '统计系统',
-        createTime: 233435354,
-        lastUpdataTime: 343435354,
-        subscription: 5,
-        status: '2',
-      },
-    ];
+    // const list = [
+    //   {
+    //     id: 0,
+    //     name: '城市低保标准表(各市第1季度)',
+    //     dataType: 'Mysql',
+    //     node: '石家庄民政部',
+    //     institution: '石家庄民政部',
+    //     applicationSystemName: '统计系统',
+    //     createTime: 233435354,
+    //     lastUpdataTime: 343435354,
+    //     subscription: 2,
+    //     status: '0',
+    //   },
+    //   {
+    //     id: 1,
+    //     name: '农村低保标准表(各市第1季度)',
+    //     dataType: 'Mysql',
+    //     node: '石家庄民政部',
+    //     institution: '石家庄民政部',
+    //     applicationSystemName: '统计系统',
+    //     createTime: 233435354,
+    //     lastUpdataTime: 343435354,
+    //     subscription: 1,
+    //     status: '1',
+    //   },
+    //   {
+    //     id: 2,
+    //     name: '人口普查数据',
+    //     dataType: '文件',
+    //     node: '石家庄民政部',
+    //     institution: '石家庄民政部',
+    //     applicationSystemName: '统计系统',
+    //     createTime: 233435354,
+    //     lastUpdataTime: 343435354,
+    //     subscription: 5,
+    //     status: '2',
+    //   },
+    // ];
     const rowSelection = {
       // onChange: selectedRows => {
       // },
@@ -510,7 +514,7 @@ export default class SourceManagement extends Component {
             <Table
               // loading={loading}
               columns={columns}
-              dataSource={list}
+              dataSource={resourceList}
               pagination={
                 pagination && {
                   ...pagination,

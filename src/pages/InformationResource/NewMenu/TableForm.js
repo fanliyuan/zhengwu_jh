@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 17:20:24
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-17 17:28:26
+ * @Last Modified time: 2018-11-20 11:53:27
 */
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Input, message, Popconfirm, Divider, Tooltip } from 'antd';
@@ -16,20 +16,20 @@ export default class TableForm extends PureComponent {
     this.state = {
       data: props.value,
       loading: false,
+      target: {},
     };
     // 原始数据的的缓存 -- 其实是每行点击编辑的时候,会把当前行的数据记录下来
     this.cacheOriginData = {};
     this.index = 0;
   }
 
-  // 暂时不知道啥用
-  // componentWillReceiveProps(nextProps) {
-  //   if ('value' in nextProps) {
-  //     this.setState({
-  //       data: nextProps.value,
-  //     });
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    if ('value' in nextProps) {
+      this.setState({
+        data: nextProps.value,
+      });
+    }
+  }
 
   getRowByKey(key, newData) {
     return (newData || this.state.data).filter(item => item.key === key)[0];
@@ -47,23 +47,12 @@ export default class TableForm extends PureComponent {
     }
   };
 
-  addNew = () => {
-    // eslint-disable-next-line
-    const newData = this.state.data.map(item => ({ ...item }));
-    newData.push({
-      key: `NEW_TEMP_ID_${this.index}`,
-      infoCode: '',
-      editable: true,
-      isNew: true,
-    });
-    this.index += 1;
-    this.setState({ data: newData });
-  };
-
   toggleEditable = (e, key) => {
     e.preventDefault();
     const newData = JSON.parse(JSON.stringify(this.state.data));
+    // console.log(newData)
     const target = this.getRowByKey(key, newData);
+    // console.log("target",target)
     if (target) {
       // 进入编辑状态时保存原始数据
       if (!target.editable) {
@@ -85,14 +74,14 @@ export default class TableForm extends PureComponent {
         return;
       }
       const row = this.getRowByKey(key) || {};
-      if (!row.infoCode) {
-        message.error('信息项代码必填');
-        e.target.focus();
-        this.setState({
-          loading: false,
-        });
-        return false;
-      }
+      // if (!row.infoCode) {
+      //   message.error('信息项代码必填');
+      //   e.target.focus();
+      //   this.setState({
+      //     loading: false,
+      //   });
+      //   return false;
+      // }
       delete row.isNew;
       this.toggleEditable(e, key);
       this.props.onChange(this.state.data);
@@ -100,6 +89,7 @@ export default class TableForm extends PureComponent {
         loading: false,
       });
     }, 200);
+    // this.props.handleChange(this.state.data)
   };
 
   cancel(e, key) {
@@ -309,17 +299,6 @@ export default class TableForm extends PureComponent {
     return (
       <Fragment>
         <Table columns={columns} dataSource={data} loading={loading} bordered pagination={false} />
-        {/* {!disabled && (
-          // <Button
-          //   style={{ width: '100%', marginTop: 8, marginBottom: 16 }}
-          //   type="dashed"
-          //   onClick={this.addNew}
-          //   icon="plus"
-          //   >
-          //   新增数据
-          // </Button>
-          <Button type="primary" style={{background:'transparent',color:'#1890FF',marginTop:10}}>添加信息项</Button>
-        )} */}
       </Fragment>
     );
   }

@@ -14,6 +14,16 @@ export async function addResource(params) {
   });
 }
 
+// 查询资源列表
+export async function getResourceLists(params) {
+  return request(`/api/api/v2/zhengwu/swap/resources?${stringify(params)}`);
+}
+
+// 查询资源名称重名
+export async function checkIsSameName(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/name?${stringify(params)}`);
+}
+
 // // 删除数据源
 // export async function deleteDataSource(params) {
 //   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {

@@ -1,12 +1,12 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:38
- * @Last Modified by: ChouEric
- * @Last Modified time: 2018-07-24 16:59:04
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-11-19 16:35:09
 */
 import React, { PureComponent, Fragment } from 'react';
 // import { routerRedux } from 'dva/router'
-import Result from 'components/Result';
+import Result from '@/components/Result';
 
 // import styles from './index.less'
 
@@ -14,12 +14,13 @@ import Result from 'components/Result';
 
 export default class Step3 extends PureComponent {
   state = {
-    show: false,
+    show: true,
   };
 
   componentDidMount = () => {
     this.setState({
-      show: this.props.location.state.show,
+      // show: this.props.location.state.show,
+      show: '',
     });
   };
 
@@ -27,7 +28,7 @@ export default class Step3 extends PureComponent {
     const { show } = this.state;
     return (
       <Fragment>
-        <Result type="success" title="提交成功" />
+        <Result type="success" title="新增成功" />
         {show && (
           <div style={{ textAlign: 'center' }}>
             <p>目录建立成功！“目录信息项与城市低保表”资源数据项映射成功!</p>

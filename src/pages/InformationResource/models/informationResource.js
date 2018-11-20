@@ -1,9 +1,12 @@
-// import { message } from 'antd';
+import { message } from 'antd';
+import { routerRedux } from 'dva/router';
 
 // import apis from '../../../api'
 import {
   getSourceClassfiyList,
   addResource,
+  getResourceLists,
+  checkIsSameName,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -12,6 +15,9 @@ export default {
 
   state: {
     classfiyList: [],
+    resourceList: [],
+    pagination: {},
+    sameMsg: false,
   },
 
   effects: {
@@ -28,10 +34,48 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *getDBInfo({ payload }, { call }) {
+    *addResources({ payload }, { call, put }) {
       const response = yield call(addResource, payload);
       try {
-        console.log(response);
+        if (+response.code === 201) {
+          message.success(response.message);
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *getResourceList({ payload }, { call, put }) {
+      const response = yield call(getResourceLists, payload);
+      try {
+        if (+response.code === 200) {
+          const pagination =
+            response.result.totalCounts > 9
+              ? { current: 1, pageSize: 10, total: response.result.totalCounts }
+              : false;
+          yield put({
+            type: 'queryList',
+            payload: { list: response.result.datas, pagination },
+          });
+        }
+      } catch (err) {
+        console.log(err); // eslint-disable-line
+      }
+    },
+    *isNameSame({ payload }, { call, put }) {
+      const response = yield call(checkIsSameName, payload);
+      try {
+        if (+response.code === 200) {
+          console.log(response.message); // eslint-disable-line
+          yield put({
+            type: 'isSame',
+            payload: response.result.data,
+          });
+        } else {
+          message.error(response.message);
+        }
       } catch (error) {
         console.log(error); //eslint-disable-line
       }
@@ -45,27 +89,22 @@ export default {
         classfiyList: payload,
       };
     },
-    savaDataList(
+    queryList(
       state,
       {
-        payload: { dataList, pagination },
+        payload: { list, pagination },
       }
     ) {
       return {
         ...state,
-        dataList,
+        resourceList: list,
         pagination,
       };
     },
-    saveDBInfo(
-      state,
-      {
-        payload: { DBInfo },
-      }
-    ) {
+    isSame(state, { payload }) {
       return {
         ...state,
-        DBInfo,
+        sameMsg: payload,
       };
     },
   },
