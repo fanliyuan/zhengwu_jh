@@ -1,41 +1,26 @@
-import {
-  viewDbDetailCurrent,
-  viewDbDataList,
-  viewDbStructCurrent,
-} from '@/services/dataSource/dataSource';
+import { viewFileDetailCurrent, initFileListCurrent } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'dbView',
+  namescpace: 'fileView',
 
   state: {
-    tableList: [],
     dataList: {},
-    tableStruct: [],
-    dbInfo: {},
+    fileInfo: {},
     page: 1,
   },
 
   effects: {
-    *getDbDetail({ payload }, { call, put }) {
-      const response = yield call(viewDbDetailCurrent, payload);
+    *getFileDetail({ payload }, { call, put }) {
+      const response = yield call(viewFileDetailCurrent, payload);
       if (response && response.code < 300) {
         yield put({
-          type: 'saveTableInfo',
+          type: 'saveFileInfo',
           payload: response.result.data,
         });
       }
     },
-    *getDBTableStruct({ payload }, { call, put }) {
-      const response = yield call(viewDbStructCurrent, payload);
-      if (response && response.code < 300) {
-        yield put({
-          type: 'saveTabelStruct',
-          payload: response.result.datas,
-        });
-      }
-    },
-    *getDbTableList({ payload }, { call, put }) {
-      const response = yield call(viewDbDataList, payload);
+    *getFileList({ payload }, { call, put }) {
+      const response = yield call(initFileListCurrent, payload);
       if (response && response.code < 300) {
         yield put({
           type: 'saveDataList',
@@ -52,11 +37,10 @@ export default {
   },
 
   reducers: {
-    saveTableInfo(state, { payload }) {
+    saveFileInfo(state, { payload }) {
       return {
         ...state,
-        tableList: [payload],
-        dbInfo: payload,
+        fileInfo: payload,
       };
     },
     saveTabelStruct(state, { payload }) {

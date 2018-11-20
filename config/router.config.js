@@ -213,6 +213,13 @@ export default [
             hideInMenu: true,
           },
           {
+            path: '/data/management/fileview/:id',
+            name: 'dbview',
+            component: './DataSource/FileView',
+            auditor: 'user',
+            hideInMenu: true,
+          },
+          {
             path: '/data/management/infoSource/:id',
             name: 'infoSource',
             component: './DataSource/InfoSource',
