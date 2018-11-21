@@ -8,8 +8,6 @@ export default {
   namescpace: 'dbView',
 
   state: {
-    tablePagination: {},
-    dataPagination: {},
     tableList: [],
     dataList: {},
     tableStruct: [],
@@ -25,10 +23,6 @@ export default {
           type: 'saveTableInfo',
           payload: response.result.data,
         });
-        yield put({
-          type: 'getDBTableStruct',
-          payload: response.result.data,
-        });
       }
     },
     *getDBTableStruct({ payload }, { call, put }) {
@@ -37,16 +31,6 @@ export default {
         yield put({
           type: 'saveTabelStruct',
           payload: response.result.datas,
-        });
-        yield put({
-          type: 'getDbTableList',
-          payload: {
-            id: payload.id,
-            query: {
-              pageNum: 1,
-              pageSize: 10,
-            },
-          },
         });
       }
     },
@@ -91,6 +75,12 @@ export default {
       return {
         ...state,
         page: payload,
+      };
+    },
+    reset(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
       };
     },
   },

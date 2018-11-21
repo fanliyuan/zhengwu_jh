@@ -17,6 +17,7 @@ const FormItem = Form.Item;
   dbView,
   loading: loading.effects['dbView/getDbTableList'],
   loadingStruct: loading.effects['dbView/getDBTableStruct'],
+  loadingInfo: loading.effects['dbView/getDbDetail'],
 }))
 @Form.create()
 class DBView extends Component {
@@ -41,6 +42,36 @@ class DBView extends Component {
       type: 'dbView/getDbDetail',
       payload: match.params.id,
     });
+    dispatch({
+      type: 'dbView/getDbTableList',
+      payload: {
+        id: match.params.id,
+        query: {
+          pageNum: 1,
+          pageSize: 10,
+        },
+      },
+    });
+    dispatch({
+      type: 'dbView/getDBTableStruct',
+      payload: {
+        id: match.params.id,
+      },
+    });
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'dbView/reset',
+      payload: {
+        tableList: [],
+        dataList: {},
+        tableStruct: [],
+        dbInfo: {},
+        page: 1,
+      },
+    });
   }
 
   viewTableData = () => {
@@ -62,7 +93,11 @@ class DBView extends Component {
   };
 
   handleSubmit = () => {
-    const { form, match } = this.props;
+    const {
+      form,
+      match,
+      dbView: { dbInfo },
+    } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const { id } = match.params;
@@ -75,6 +110,11 @@ class DBView extends Component {
         )}`;
         this.setState({
           visible: false,
+        });
+        form.setFieldsValue({
+          fileFormat: 'EXCEL/XLSX',
+          codeFormat: 'UTF-8',
+          exportFileName: dbInfo.tableName,
         });
       }
     });
@@ -121,6 +161,7 @@ class DBView extends Component {
       dbView: { tableList, dbInfo, dataList, tableStruct, page },
       loading,
       loadingStruct,
+      loadingInfo,
       form: { getFieldDecorator },
     } = this.props;
     const { modelName, visible, modalTitle } = this.state;
@@ -279,6 +320,7 @@ class DBView extends Component {
             className="mt16"
             columns={tableColumn}
             rowKey="id"
+            loading={loadingInfo}
           />
           <Table
             bordered

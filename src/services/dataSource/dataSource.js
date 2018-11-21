@@ -182,12 +182,17 @@ export async function exportDb(params) {
 
 // 批量下载数据（文件）文件项
 export async function downloads(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/file/down`);
+  return request(`/api/api/v2/zhengwu/swap/dataR/file/${params.id}/down`);
 }
 
 // 数据（文件）详情
 export async function viewFileDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params}`);
+}
+
+// 数据（文件）详情
+export async function viewFileDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/file/${params}`);
 }
 
 // 修改数据（文件）及其文件项
@@ -203,9 +208,21 @@ export async function initFileList(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}/file`);
 }
 
+// 搜索数据（文件）文件项list
+export async function initFileListCurrent(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/file/${params.id}/file?${stringify(params.query)}`
+  );
+}
+
 // 数据（ftp）详情
 export async function viewFtpDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params}`);
+}
+
+// 数据（ftp）详情
+export async function viewFtpDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/ftp/${params}`);
 }
 
 // 修改数据（FTP）及其文件（夹）
@@ -219,6 +236,13 @@ export async function updateFtp(params) {
 // 搜索数据（ftp）文件（夹）list
 export async function initFtpList(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}/ftpfile`);
+}
+
+// 搜索数据（ftp）文件（夹）list
+export async function initFtpListCurrent(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/ftp/${params.id}/ftpfile?${stringify(params.query)}`
+  );
 }
 
 // 查询审核日志

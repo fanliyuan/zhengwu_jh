@@ -78,7 +78,9 @@ export default {
       });
       message.destroy();
       if (response.code >= 300) {
-        return message.error('连通性测试失败！');
+        return notification.error({
+          message: '连通性测试失败！',
+        });
       }
       payloads.params.alias = response.result.data;
       if (payloads.sub === 'sub') {
@@ -94,7 +96,9 @@ export default {
           });
         }
       }
-      return message.success('连通性测试成功！');
+      return notification.success({
+        message: '连通性测试成功！',
+      });
     },
     *submit({ payload }, { call, put }) {
       let callbackApi;

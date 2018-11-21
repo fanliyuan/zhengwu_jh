@@ -82,69 +82,85 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          {record.resourceId && (
-            <a
-              onClick={() => {
-                const { match } = this.props;
-                // if (!record.resourceId) {
-                //   message.destroy();
-                //   return message.error('无对应的目录！');
-                // }
-                return router.push(
-                  `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
-                );
-              }}
-            >
-              信息资源
-            </a>
+          {record.zy && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId === '') {
+                    message.destroy();
+                    return message.error('无对应的目录！');
+                  }
+                  return router.push(
+                    `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
+                  );
+                }}
+              >
+                信息资源
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
           )}
-          {record.resourceId && <Divider type="vertical" />}
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              if (!record.sj) {
-                message.destroy();
-                return message.error('数据暂未通过审核，无法查看数据！');
-              }
-              switch (record.type) {
-                case 'db':
-                  return router.push(`${match.url}/dbview/${record.id}`);
-                case 'ftp':
-                  return router.push(`${match.url}/dbview/${record.id}`);
-                case 'file':
-                  return router.push(`${match.url}/dbview/${record.id}`);
-                default:
-                  message.destroy();
-                  return message.error('无法查看数据，缺少数据类型！');
-              }
-            }}
-          >
-            数据
-          </a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              return router.push(`${match.url}/update/${record.id}`);
-            }}
-          >
-            任务
-          </a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              if (!record.xg) {
-                message.destroy();
-                return message.error('已挂接数据，禁止修改！');
-              }
-              return router.push(`${match.url}/update/${record.type}/${record.id}`);
-            }}
-          >
-            修改
-          </a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>删除</a>
+          {record.sj && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  switch (record.type) {
+                    case 'db':
+                      return router.push(`${match.url}/dbview/${record.id}`);
+                    case 'ftp':
+                      return router.push(`${match.url}/ftpview/${record.id}`);
+                    case 'file':
+                      return router.push(`${match.url}/fileview/${record.id}`);
+                    default:
+                      message.destroy();
+                      return message.error('无法查看数据，缺少数据类型！');
+                  }
+                }}
+              >
+                数据
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.rw && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  return router.push(`${match.url}/update/${record.id}`);
+                }}
+              >
+                任务
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.xg && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                修改
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.sc && (
+            <Fragment>
+              <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>
+                删除
+              </a>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },
@@ -410,12 +426,6 @@ class TableList extends PureComponent {
       },
     };
     const { selectedIds } = this.state;
-    const columnRowSelection = {
-      onChange: this.onSelectChange,
-      getCheckboxProps: record => ({
-        disabled: record.sc === false,
-      }),
-    };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
     };
@@ -424,18 +434,6 @@ class TableList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button
-                icon="delete"
-                type="danger"
-                onClick={() => {
-                  this.handleDelete(true);
-                }}
-                disabled={selectedIds.length < 1}
-              >
-                删除
-              </Button>
-            </div>
             <Table
               rowKey={record => record.id + record.dataType}
               bordered
@@ -444,7 +442,6 @@ class TableList extends PureComponent {
               pagination={paginationProps}
               locale={locale}
               loading={loading}
-              rowSelection={columnRowSelection}
             />
           </div>
         </Card>

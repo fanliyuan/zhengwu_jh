@@ -5,7 +5,6 @@ import {
   Input,
   Select,
   Card,
-  Checkbox,
   DatePicker,
   Popconfirm,
   message,
@@ -13,33 +12,35 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
-import { routerRedux, Link } from 'dva/router';
+import { routerRedux } from 'dva/router';
+import Cookies from 'js-cookie';
 
-import styles from './SourceManagement.less';
+import styles from './DataManager.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
-// import { format0, format24 } from '../../utils/utils'
+import { format0, format24 } from '../../utils/utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-@connect(({ informationResource }) => ({
-  informationResource,
+@connect(({ sourceManagement, nodeManagement, loading }) => ({
+  sourceManagement,
+  nodeManagement,
+  loading: loading.models.sourceManagement || loading.models.nodeManagement,
 }))
 export default class SourceManagement extends Component {
   state = {
-    // isNodeOperator: false,
+    isNodeOperator: false,
     queryData: {},
     isChanged: false,
   };
 
   componentDidMount() {
-    // this.setState({
-    //   isNodeOperator: Cookies.get(['antd-pro-authority']) === 'operator-n',
-    // })
-    this.props.dispatch({
-      type: 'informationResource/getResourceList',
-      payload: { pageNum: 1, pageSize: 10, mount: false },
+    this.setState({
+      isNodeOperator: Cookies.get(['antd-pro-authority']) === 'operator-n',
     });
-    // this.searchHandle({});
+    this.props.dispatch({
+      type: 'nodeManagement/getParentNodes',
+    });
+    this.searchHandle({});
   }
 
   nameChange = e => {
@@ -51,12 +52,6 @@ export default class SourceManagement extends Component {
       },
       isChanged: true,
     });
-  };
-
-  codeChange = () => {};
-
-  handleIsRelated = e => {
-    console.log(e.target.checked); // eslint-disable-line
   };
 
   dataTypeChange = val => {
@@ -145,14 +140,15 @@ export default class SourceManagement extends Component {
     });
   };
 
-  handleSource = () => {
+  handleSource = row => {
     const { dispatch } = this.props;
-    // if (row.dataType === 'file') {
-    //   dispatch(routerRedux.push('/dataSourceManagement/fileSource', { mountResourceId: row.id }))
-    // } else {
-    //   dispatch(routerRedux.push('/dataSourceManagement/dataBaseSource', { mountResourceId: row.id }))
-    // }
-    dispatch(routerRedux.push('/informationResource/viewDirectory'));
+    if (row.dataType === 'file') {
+      dispatch(routerRedux.push('/dataSourceManagement/fileSource', { mountResourceId: row.id }));
+    } else {
+      dispatch(
+        routerRedux.push('/dataSourceManagement/dataBaseSource', { mountResourceId: row.id })
+      );
+    }
   };
 
   // handleSource1 = () => {
@@ -167,49 +163,39 @@ export default class SourceManagement extends Component {
 
   handleEdit = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/addDirectory'));
+    dispatch(routerRedux.push('/dataSourceManagement/inputDataInfo'));
   };
+
+  // handleCheck = () => {
+  //   const { dispatch } = this.props
+  //   dispatch(routerRedux.push('/dataSourceManagement/checkDataInfo'))
+  // }
 
   handleCatalog = row => {
     const { dispatch } = this.props;
     // dispatch(routerRedux.push('/dataSourceManagement/catalog'))
-    // dispatch(routerRedux.push('/dataSourceManagement/viewDirectory', { resourceId: row.resourceId }))
+    dispatch(
+      routerRedux.push('/dataSourceManagement/viewDirectory', { resourceId: row.resourceId })
+    );
   };
+
+  // handleCatalog1 = () => {
+  //   const { dispatch } = this.props
+  //   dispatch(routerRedux.push('/dataSourceManagement/viewDirectory'))
+  // }
 
   tableChange = pagination => {
     this.searchHandle(pagination);
   };
 
-  handlerelatedData = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/resourceConnectionData'));
-  };
-
-  handleAdd = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/newMenu/one'));
-  };
-
-  handleOpen = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/openShare'));
-    // dispatch(routerRedux.push('/informationResource/openShareFile'))
-  };
-
-  handleInput = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/inputDirectory'));
-  };
-
   render() {
     const that = this;
-    // const { isNodeOperator } = this.state
+    const { isNodeOperator } = this.state;
     const {
-      informationResource: { resourceList, pagination },
+      nodeManagement: { parentNodeList },
+      sourceManagement: { dataList, pagination },
+      loading,
     } = this.props;
-    const parentNodeList = [];
-    const dataList = [];
-    // const pagination = false;
     // const options = [
     //   {
     //     value: '0-0',
@@ -241,16 +227,18 @@ export default class SourceManagement extends Component {
     //   },
     // ]
     const data = [
-      { value: '', id: -1, label: '资源属性分类' },
+      { value: '', id: -1, label: '全部数据' },
       { value: '数据库', id: 0, label: '数据库' },
       { value: '文件', id: 1, label: '文件' },
       { value: 'FTP', id: 2, label: 'FTP' },
     ];
-    const selectData = data.map(item => (
-      <Option value={item.value} key={item.id} title={item.label}>
-        {item.label}
-      </Option>
-    ));
+    const selectData = data.map(item => {
+      return (
+        <Option value={item.value} key={item.id} title={item.label}>
+          {item.label}
+        </Option>
+      );
+    });
     // const data1 = [{ value: '0', id: 0, label: '节点' }, { value: '1', id: 1, label: '节点1' }]
     // const selectData1 = data1.map(item => {
     //   return (
@@ -276,35 +264,29 @@ export default class SourceManagement extends Component {
       { value: '1', label: '已通过' },
       { value: '-1', label: '待审核' },
     ];
-    const selectData4 = data4.map(item => (
-      <Option value={item.value} key={item.value} title={item.label}>
-        {item.label}
-      </Option>
-    ));
+    const selectData4 = data4.map(item => {
+      return (
+        <Option value={item.value} key={item.value} title={item.label}>
+          {item.label}
+        </Option>
+      );
+    });
     const columns = [
-      // {
-      //   title: 'ID',
-      //   dataIndex: 'id',
-      // },
       {
-        title: '信息资源代码',
-        dataIndex: 'code',
+        title: 'ID',
+        dataIndex: 'rsId',
       },
       {
-        title: '信息资源名称',
-        dataIndex: 'name',
+        title: '数据名称',
+        dataIndex: 'rsName',
       },
       {
-        title: '资源属性分类',
-        dataIndex: 'typeName',
+        title: '数据类型',
+        dataIndex: 'dataType',
+        // render(text) {
+        //   return text === 'db' ? '数据库' : text
+        // },
       },
-      // {
-      //   title: '数据类型',
-      //   dataIndex: 'dataType',
-      //   // render(text) {
-      //   //   return text === 'db' ? '数据库' : text
-      //   // },
-      // },
       // {
       //   title: '所属节点',
       //   dataIndex: 'node',
@@ -318,26 +300,11 @@ export default class SourceManagement extends Component {
       //   dataIndex: 'applicationSystemName',
       // },
       {
-        title: '发布日期',
-        dataIndex: 'publishTime',
-        // render(text) {
-        //   return moment(text).format('lll');
-        // },
-      },
-      {
-        title: '数据已关联',
-        dataIndex: 'havaGL',
-        render: text => {
-          return text ? '是' : '否';
+        title: '最近更新时间',
+        dataIndex: 'updataTime',
+        render(text) {
+          return moment(text).format('lll');
         },
-      },
-      {
-        title: '信息项',
-        dataIndex: 'xxx',
-      },
-      {
-        title: '订阅数',
-        dataIndex: 'subscription',
       },
       // {
       //   title: '数据最后更新时间',
@@ -352,9 +319,9 @@ export default class SourceManagement extends Component {
       // },
       {
         title: '审核状态',
-        dataIndex: 'status',
+        dataIndex: 'checkStatus',
         render(text) {
-          switch (+text) {
+          switch (text) {
             case '-1':
               return '待审核';
             case '0':
@@ -366,25 +333,42 @@ export default class SourceManagement extends Component {
       },
       {
         title: '操作',
-        render: (text, row) => (
-          <div>
-            <span className={styles.clickBtn} onClick={() => that.handleSource(row)}>
-              查看
-            </span>
-            <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row)}>
-              关联数据
-            </span>
-            <span className={styles.clickBtn} onClick={that.handleOpen}>
-              共享开放
-            </span>
-            <span className={styles.clickBtn} onClick={that.handleEdit}>
-              修改
-            </span>
-            <Popconfirm title={`确认删除${row.name}?`} onConfirm={() => message.info('删除成功')}>
-              <a>删除</a>
-            </Popconfirm>
-          </div>
-        ),
+        render: (text, row) => {
+          return (
+            <div>
+              {/* <span className={styles.clickBtn} onClick={() => that.handleCatalog(row)}>
+                目录
+              </span> */}
+              {/* <span className={styles.clickBtn} onClick={() => that.handleSource(row)}>
+                查看
+              </span> */}
+              {/* <span className={styles.clickBtn} onClick={that.handleTask}>
+                任务
+              </span> */}
+              <span className={styles.clickBtn}>信息资源</span>
+              <span className={styles.clickBtn}>资源</span>
+              <span className={styles.clickBtn}>任务</span>
+              {isNodeOperator && (
+                <span className={styles.clickBtn} onClick={that.handleEdit}>
+                  修改
+                </span>
+              )}
+              {/* {!isNodeOperator && (
+                <span className={styles.clickBtn} onClick={that.handleCheck}>
+                  查看
+                </span>
+              )} */}
+              {isNodeOperator && (
+                <Popconfirm
+                  title={`确认删除${row.name}?`}
+                  onConfirm={() => message.info('删除成功')}
+                >
+                  <a>删除</a>
+                </Popconfirm>
+              )}
+            </div>
+          );
+        },
       },
     ];
     columns.forEach(item => {
@@ -427,8 +411,8 @@ export default class SourceManagement extends Component {
     //     subscription: 5,
     //     status: '2',
     //   },
-    // ];
-    const rowSelection = {
+    // ]
+    let rowSelection = {
       // onChange: selectedRows => {
       // },
       // getCheckboxProps: record => ({
@@ -436,28 +420,24 @@ export default class SourceManagement extends Component {
       //   name: record.name,
       // }),
     };
-    // if (!isNodeOperator) {
-    //   rowSelection = null
-    //   columns.splice(2,0,{
-    //     title: '节点名称',
-    //     dataIndex: 'nodeName',
-    //     align: 'center',
-    //   })
-    // }
+    if (!isNodeOperator) {
+      rowSelection = null;
+      columns.splice(3, 0, {
+        title: '所属节点',
+        dataIndex: 'nodeName',
+        align: 'center',
+      });
+    }
     return (
       <PageHeaderLayout>
         <Card>
           <div className={styles.form}>
             <Input
-              placeholder="信息资源代码"
-              style={{ width: 150, marginRight: 20 }}
-              onChange={this.codeChange}
-            />
-            <Input
-              placeholder="信息资源名称"
+              placeholder="数据名称"
               style={{ width: 150, marginRight: 20 }}
               onChange={this.nameChange}
             />
+            {/* <Input placeholder="应用系统名称" style={{ width: 150, marginRight: 20 }} /> */}
             <Select
               style={{ marginRight: 20, width: 120 }}
               defaultValue=""
@@ -465,13 +445,23 @@ export default class SourceManagement extends Component {
             >
               {selectData}
             </Select>
-            <Select
+            {/* <Select
               style={{ marginRight: 20, width: 120 }}
-              defaultValue=""
-              onChange={this.dataTypeChange}
+              value={nodeName}
+              onChange={this.nodeNameChange}
             >
-              {selectData}
-            </Select>
+              {selectData1}
+            </Select> */}
+            {!isNodeOperator && (
+              <Cascader
+                options={parentNodeList}
+                changeOnSelect
+                displayRender={label => [...label].pop()}
+                onChange={this.nodeChange}
+                placeholder="所属节点"
+                style={{ marginRight: 16, width: 120 }}
+              />
+            )}
             {/* <Select
               style={{ marginRight: 20, width: 120 }}
               value={owingJg}
@@ -487,34 +477,15 @@ export default class SourceManagement extends Component {
               {selectData4}
             </Select>
             <RangePicker style={{ marginRight: 20, width: 210 }} onChange={this.timeChange} />
-            <Checkbox onChange={this.handleIsRelated}>数据已关联</Checkbox>
             <Button type="primary" onClick={() => this.searchHandle({}, true)}>
               搜索
             </Button>
-            <Button type="primary" style={{ marginLeft: 20 }}>
-              重置
-            </Button>
-          </div>
-          <div className={styles.createBtn}>
-            <Link to="/informationResource/newMenu/one" style={{ color: 'white' }}>
-              <Button
-                icon="plus"
-                type="primary"
-                // onClick={this.handleAdd}
-                style={{ marginRight: '20px' }}
-              >
-                新建
-              </Button>
-              <Button type="primary" onClick={this.handleInput}>
-                导入
-              </Button>
-            </Link>
           </div>
           <div>
             <Table
-              // loading={loading}
+              loading={loading}
               columns={columns}
-              dataSource={resourceList}
+              dataSource={dataList}
               pagination={
                 pagination && {
                   ...pagination,
@@ -523,15 +494,13 @@ export default class SourceManagement extends Component {
                     `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
                 }
               }
-              // rowKey="rsId"
-              // rowSelection={rowSelection}
+              rowKey="rsId"
+              rowSelection={rowSelection}
               bordered
               onChange={this.tableChange}
             />
           </div>
-          {/* <div className={styles.allDeleteBtn}>
-            <Button type="primary">删除</Button>
-          </div> */}
+          <div>{isNodeOperator && <Button type="primary">删除</Button>}</div>
         </Card>
       </PageHeaderLayout>
     );
