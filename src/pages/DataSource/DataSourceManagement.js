@@ -424,12 +424,6 @@ class TableList extends PureComponent {
       },
     };
     const { selectedIds } = this.state;
-    const columnRowSelection = {
-      onChange: this.onSelectChange,
-      getCheckboxProps: record => ({
-        disabled: record.sc === false,
-      }),
-    };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
     };
@@ -438,18 +432,6 @@ class TableList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button
-                icon="delete"
-                type="danger"
-                onClick={() => {
-                  this.handleDelete(true);
-                }}
-                disabled={selectedIds.length < 1}
-              >
-                删除
-              </Button>
-            </div>
             <Table
               rowKey={record => record.id + record.dataType}
               bordered
@@ -458,7 +440,6 @@ class TableList extends PureComponent {
               pagination={paginationProps}
               locale={locale}
               loading={loading}
-              rowSelection={columnRowSelection}
             />
           </div>
         </Card>
