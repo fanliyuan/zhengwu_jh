@@ -2,7 +2,6 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Steps, Button, message, Modal } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import Result from '@/components/Result';
 import SelectDataSource from './SelectDataSource';
 import ConfigDataSource from './ConfigDataSource';
 import AddSuccess from './AddSuccess';
@@ -176,8 +175,15 @@ class StepForm extends PureComponent {
       connectTest: this.connectTest,
       submit: this.submit,
     };
+    const buttonList = (
+      <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Button className="pageHeaderBtn" type="primary" onClick={() => this.back()}>
+          取消
+        </Button>
+      </div>
+    );
     return (
-      <PageHeaderWrapper tabActiveKey={location.pathname}>
+      <PageHeaderWrapper tabActiveKey={location.pathname} action={buttonList}>
         <Card bordered={false}>
           <Fragment>
             <Steps current={current}>
