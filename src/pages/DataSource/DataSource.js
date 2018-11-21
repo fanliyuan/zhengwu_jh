@@ -40,7 +40,8 @@ class TableList extends PureComponent {
       title: '序号',
       dataIndex: 'id',
       render: (text, record, index) => {
-        return `${index + 1 + (this.props.dataSource.page - 1) * 10}`;
+        const { dataSource } = this.props;
+        return `${index + 1 + (dataSource.page - 1) * 10}`;
       },
     },
     {
@@ -58,6 +59,10 @@ class TableList extends PureComponent {
       },
     },
     {
+      title: '创建人',
+      dataIndex: 'createUserName',
+    },
+    {
       title: '创建时间',
       dataIndex: 'createTime',
     },
@@ -70,7 +75,8 @@ class TableList extends PureComponent {
               if (!record.xg) {
                 return message.error('已接入数据，禁止修改！');
               }
-              router.push(`${this.props.match.url}/update/${record.id}`);
+              const { match } = this.props;
+              return router.push(`${match.url}/update/${record.id}`);
             }}
           >
             修改
@@ -78,7 +84,14 @@ class TableList extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id, record.sc)}>删除</a>
           <Divider type="vertical" />
-          <a onClick={() => router.push(`${this.props.match.url}/access/${record.id}`)}>接入数据</a>
+          <a
+            onClick={() => {
+              const { match } = this.props;
+              router.push(`${match.url}/access/${record.id}`);
+            }}
+          >
+            接入数据
+          </a>
         </Fragment>
       ),
     },
@@ -142,20 +155,21 @@ class TableList extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      const fieldsForm = fieldsValue;
       let paramsTime = {};
-      if (fieldsValue.date) {
+      if (fieldsForm.date) {
         paramsTime = {
-          beginTime: moment(fieldsValue.date[0]).format('YYYY-MM-DD'),
-          endTime: moment(fieldsValue.date[1]).format('YYYY-MM-DD'),
+          beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+          endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
         };
         formTime = paramsTime;
-        delete fieldsValue.date;
+        delete fieldsForm.date;
       }
 
-      formValues = fieldsValue;
+      formValues = fieldsForm;
 
       const values = {
-        ...fieldsValue,
+        ...fieldsForm,
         ...paramsPage,
         ...paramsTime,
       };
@@ -172,7 +186,7 @@ class TableList extends PureComponent {
       return message.error('已接入数据，禁止删除！');
     }
     const { dispatch, form, loadingDelete } = this.props;
-    Modal.confirm({
+    return Modal.confirm({
       title: '警告',
       content: '是否删除数据源？',
       okText: '确认',
@@ -183,17 +197,18 @@ class TableList extends PureComponent {
       onOk: () => {
         form.validateFields((err, fieldsValue) => {
           if (err) return;
+          const fieldsForm = fieldsValue;
           let paramsTime = {};
-          if (fieldsValue.date) {
+          if (fieldsForm.date) {
             paramsTime = {
-              beginTime: moment(fieldsValue.date[0]).format('YYYY-MM-DD'),
-              endTime: moment(fieldsValue.date[1]).format('YYYY-MM-DD'),
+              beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+              endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
             };
-            delete fieldsValue.date;
+            delete fieldsForm.date;
           }
 
           const values = {
-            ...fieldsValue,
+            ...fieldsForm,
             ...resetParamsPage,
             ...paramsTime,
           };
@@ -201,13 +216,26 @@ class TableList extends PureComponent {
           dispatch({
             type: 'dataSource/deleteItem',
             payload: {
-              values: values,
+              values,
               item: {
-                id: id,
+                id,
               },
             },
           });
         });
+      },
+    });
+  };
+
+  changePage = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    paramsPage = { pageNum, pageSize };
+    dispatch({
+      type: 'dataSource/fetch',
+      payload: {
+        ...paramsPage,
+        ...formValues,
+        ...formTime,
       },
     });
   };
@@ -219,12 +247,19 @@ class TableList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="数据源名称">
               {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据源名称" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
+            <FormItem label="创建人">
+              {getFieldDecorator('createUserName')(
+                <Input maxLength="50" placeholder="请输入创建人" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
             <FormItem label="数据类型">
               {getFieldDecorator('type')(
                 <Select style={{ width: '100%' }} placeholder="请选择数据类型">
@@ -245,7 +280,7 @@ class TableList extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="创建时间">
               {getFieldDecorator('date')(
                 <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
@@ -267,25 +302,13 @@ class TableList extends PureComponent {
     );
   }
 
-  changePage = (current, pageSize) => {
-    const { dispatch } = this.props;
-    paramsPage = { pageNum: current, pageSize: pageSize };
-    dispatch({
-      type: 'dataSource/fetch',
-      payload: {
-        ...paramsPage,
-        ...formValues,
-        ...formTime,
-      },
-    });
-  };
-
   render() {
     const {
       dataSource: { data, page },
       loading,
+      match,
     } = this.props;
-    let paginationProps = {
+    const paginationProps = {
       showQuickJumper: true,
       total: data.totalCounts,
       current: page,
@@ -304,11 +327,7 @@ class TableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => router.push(`${this.props.match.url}/add`)}
-              >
+              <Button icon="plus" type="primary" onClick={() => router.push(`${match.url}/add`)}>
                 新建
               </Button>
             </div>
