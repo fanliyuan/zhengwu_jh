@@ -134,7 +134,7 @@ export async function initDataSourceManagement(params) {
 
 // 删除数据
 export async function deleteDataSourceManagement(params) {
-  return request(`/api/api/v2/zhengwu/swap/data`, {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}`, {
     method: 'DELETE',
     body: params,
   });

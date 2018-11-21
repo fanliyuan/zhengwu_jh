@@ -73,8 +73,16 @@ class TableList extends PureComponent {
         switch (text) {
           case -1:
             return <span style={{ color: '#5cadff' }}>待审核</span>;
+          case -11:
+            return <span style={{ color: '#5cadff' }}>修改待审核</span>;
+          case -21:
+            return <span style={{ color: '#5cadff' }}>删除待审核</span>;
           case 0:
             return <span style={{ color: '#ed4014' }}>已拒绝</span>;
+          case 10:
+            return <span style={{ color: '#ed4014' }}>修改已拒绝</span>;
+          case 20:
+            return <span style={{ color: '#ed4014' }}>删除已拒绝</span>;
           case 1:
             return <span style={{ color: '#19be6b' }}>已通过</span>;
           default:
@@ -154,10 +162,55 @@ class TableList extends PureComponent {
               <Divider type="vertical" />
             </Fragment>
           )}
+          {record.cxxg && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                重新修改
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.cxjr && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                重新接入
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
           {record.sc && (
             <Fragment>
+              <a onClick={() => this.handleDelete(record.id, record.type)}>删除</a>
+            </Fragment>
+          )}
+          {record.cxsc && (
+            <Fragment>
+              <a onClick={() => this.handleDelete(record.id, record.type)}>重新删除</a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.qx && (
+            <Fragment>
               <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>
-                删除
+                取消
               </a>
             </Fragment>
           )}
@@ -165,13 +218,6 @@ class TableList extends PureComponent {
       ),
     },
   ];
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedIds: [],
-    };
-  }
 
   componentDidMount() {
     const routeName = sessionStorage.getItem('currentList');
@@ -257,24 +303,12 @@ class TableList extends PureComponent {
     });
   };
 
-  handleDelete = (multi, id, type, sc) => {
+  handleDelete = (id, type) => {
     const { dispatch, form, loadingDelete } = this.props;
-    const { selectedIds } = this.state;
-    let item = [];
-    if (multi) {
-      item = selectedIds;
-    } else {
-      if (!sc) {
-        message.destroy();
-        return message.error('已挂接数据，禁止删除！');
-      }
-      item = [
-        {
-          id,
-          type,
-        },
-      ];
-    }
+    const item = {
+      id,
+      type,
+    };
     return Modal.confirm({
       title: '警告',
       content: '是否删除数据？',
