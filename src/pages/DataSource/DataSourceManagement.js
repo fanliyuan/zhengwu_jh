@@ -63,6 +63,10 @@ class TableList extends PureComponent {
       dataIndex: 'updateTime',
     },
     {
+      title: '操作人',
+      dataIndex: 'createUserName',
+    },
+    {
       title: '审核状态',
       dataIndex: 'status',
       render: text => {
@@ -82,25 +86,25 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          {record.zy && (
-            <Fragment>
-              <a
-                onClick={() => {
-                  const { match } = this.props;
-                  if (record.resourceId === '') {
-                    message.destroy();
-                    return message.error('无对应的目录！');
-                  }
-                  return router.push(
-                    `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
-                  );
-                }}
-              >
-                信息资源
-              </a>
-              <Divider type="vertical" />
-            </Fragment>
-          )}
+          {record.zy &&
+            record.status === 1 && (
+              <Fragment>
+                <a
+                  onClick={() => {
+                    if (record.resourceId === '') {
+                      message.destroy();
+                      return message.error('无对应的目录！');
+                    }
+                    return router.push(
+                      `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
+                    );
+                  }}
+                >
+                  信息资源
+                </a>
+                <Divider type="vertical" />
+              </Fragment>
+            )}
           {record.sj && (
             <Fragment>
               <a
@@ -350,12 +354,28 @@ class TableList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="数据名称">
               {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据源名称" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
+            <FormItem label="操作人">
+              {getFieldDecorator('createUserName')(
+                <Input maxLength="50" placeholder="请输入操作人" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="更新时间">
+              {getFieldDecorator('date')(
+                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
             <FormItem label="数据类型">
               {getFieldDecorator('dataType')(
                 <Select style={{ width: '100%' }} placeholder="请选择数据类型">
@@ -376,7 +396,7 @@ class TableList extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select style={{ width: '100%' }} placeholder="请选择审核状态">
@@ -385,13 +405,6 @@ class TableList extends PureComponent {
                   <Option value="0">已拒绝</Option>
                   <Option value="1">已通过</Option>
                 </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="更新时间">
-              {getFieldDecorator('date')(
-                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
               )}
             </FormItem>
           </Col>
@@ -425,7 +438,6 @@ class TableList extends PureComponent {
         return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
     };
-    const { selectedIds } = this.state;
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
     };
