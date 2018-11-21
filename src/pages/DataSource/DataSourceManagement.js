@@ -87,18 +87,14 @@ class TableList extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {record.zy &&
-            record.status === 1 && (
+            record.resourceId !== '' && (
               <Fragment>
                 <a
-                  onClick={() => {
-                    if (record.resourceId === '') {
-                      message.destroy();
-                      return message.error('无对应的目录！');
-                    }
-                    return router.push(
+                  onClick={() =>
+                    router.push(
                       `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
-                    );
-                  }}
+                    )
+                  }
                 >
                   信息资源
                 </a>
@@ -402,7 +398,11 @@ class TableList extends PureComponent {
                 <Select style={{ width: '100%' }} placeholder="请选择审核状态">
                   <Option value="">全部</Option>
                   <Option value="-1">待审核</Option>
+                  <Option value="-11">修改待审核</Option>
+                  <Option value="-21">删除待审核</Option>
                   <Option value="0">已拒绝</Option>
+                  <Option value="10">修改已拒绝</Option>
+                  <Option value="20">删除已拒绝</Option>
                   <Option value="1">已通过</Option>
                 </Select>
               )}
