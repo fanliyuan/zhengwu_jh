@@ -66,8 +66,6 @@ class AccessStepForm extends PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps, nextState) {}
-
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
@@ -77,6 +75,7 @@ class AccessStepForm extends PureComponent {
         dataType: '',
         type: '',
         oldName: '',
+        status: '',
         dbList: [],
         treeList: [],
         tableList: [],
@@ -155,6 +154,8 @@ class AccessStepForm extends PureComponent {
     });
   };
 
+  showCurrentConfig = () => {};
+
   next() {
     this.child.handleSubmit();
   }
@@ -193,6 +194,7 @@ class AccessStepForm extends PureComponent {
   }
 
   render() {
+    const currentConfig = [1, -11, 10];
     const {
       location,
       match,
@@ -200,7 +202,7 @@ class AccessStepForm extends PureComponent {
       history,
       testNameSubmitting,
       route,
-      accessData: { params, current, dataType, type },
+      accessData: { params, current, dataType, type, status },
     } = this.props;
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -220,8 +222,37 @@ class AccessStepForm extends PureComponent {
         steps = [];
         break;
     }
+    const buttonList = (
+      <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        {currentConfig.indexOf(status) !== -1 && (
+          <Button type="primary" style={{ float: 'left' }} onClick={() => this.showCurrentConfig()}>
+            当前配置
+          </Button>
+        )}
+        {dataType !== 'file' && (
+          <Button
+            className={current !== 2 ? styles.show : styles.hidden}
+            style={{ float: 'left' }}
+            type="primary"
+            onClick={() => this.back()}
+          >
+            取消
+          </Button>
+        )}
+        {dataType === 'file' && (
+          <Button
+            className={current !== 1 ? styles.show : styles.hidden}
+            style={{ float: 'left' }}
+            type="primary"
+            onClick={() => this.back()}
+          >
+            取消
+          </Button>
+        )}
+      </div>
+    );
     return (
-      <PageHeaderWrapper tabActiveKey={location.pathname}>
+      <PageHeaderWrapper tabActiveKey={location.pathname} action={buttonList}>
         <Card bordered={false}>
           <Fragment>
             <Steps current={current}>
@@ -320,18 +351,6 @@ class AccessStepForm extends PureComponent {
                     onClick={() => this.handleAdd()}
                   >
                     提交
-                  </Button>
-                )}
-              {current < 2 &&
-                dataType !== 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
-                    返回
-                  </Button>
-                )}
-              {current < 1 &&
-                dataType === 'file' && (
-                  <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
-                    返回
                   </Button>
                 )}
             </div>

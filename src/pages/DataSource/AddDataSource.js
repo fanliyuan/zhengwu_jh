@@ -180,7 +180,7 @@ class StepForm extends PureComponent {
         className={current !== 2 ? styles.show : styles.hidden}
         style={{ position: 'absolute', top: 0, right: 0 }}
       >
-        <Button className="pageHeaderBtn" type="primary" onClick={() => this.back()}>
+        <Button type="primary" onClick={() => this.back()}>
           取消
         </Button>
       </div>

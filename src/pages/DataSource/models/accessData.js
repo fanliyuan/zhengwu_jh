@@ -83,6 +83,7 @@ export default {
     type: '',
     alias: '',
     oldName: '',
+    status: '',
     dbList: [],
     treeList: [],
     tableList: [],
@@ -429,6 +430,10 @@ export default {
       }
       const response = yield call(callbackApi, payload.id);
       if (response && response.code < 300) {
+        yield put({
+          type: 'updateStatus',
+          payload: response.result.data.status,
+        });
         switch (dataType) {
           case 'db':
             yield put({
@@ -683,6 +688,12 @@ export default {
           syncAddDto,
         },
         current: state.current - 1,
+      };
+    },
+    updateStatus(state, { payload }) {
+      return {
+        ...state,
+        status: payload,
       };
     },
     updateDataType(state, { payload }) {

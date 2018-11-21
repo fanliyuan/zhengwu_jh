@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   Alert,
+  Collapse,
 } from 'antd';
 import styles from './AddDataSource.less';
 
@@ -24,6 +25,7 @@ const { TextArea } = Input;
 const { DirectoryTree } = Tree;
 const { TreeNode } = Tree;
 const { Dragger } = Upload;
+const { Panel } = Collapse;
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -85,6 +87,7 @@ class AccessDataInfo extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      visibleConfig: false,
       hasReceiveFiles: false,
       page: 1,
       modalTitle: '',
@@ -133,7 +136,22 @@ class AccessDataInfo extends PureComponent {
   }
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const {
+      onRef,
+      route,
+      accessData: {
+        params: { fileAddDtoList },
+      },
+    } = this.props;
+    const { hasReceiveFiles } = this.state;
+    if (route.name === 'managementUpdate' && !hasReceiveFiles) {
+      if (fileAddDtoList && fileAddDtoList.length > 0) {
+        this.setState({
+          fileList: fileAddDtoList,
+          hasReceiveFiles: true,
+        });
+      }
+    }
     onRef(this);
   }
 
@@ -312,6 +330,12 @@ class AccessDataInfo extends PureComponent {
     });
     dispatch({
       type: 'accessData/resetTableColumnList',
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      visibleConfig: false,
     });
   };
 
@@ -1086,6 +1110,12 @@ class AccessDataInfo extends PureComponent {
     );
   }
 
+  renderDbInfo = () => {};
+
+  renderFtpInfo = () => {};
+
+  renderFileInfo = () => {};
+
   render() {
     const {
       dataType,
@@ -1093,7 +1123,14 @@ class AccessDataInfo extends PureComponent {
       loadingColumn,
       accessData: { tableList, columnList, params },
     } = this.props;
-    const { selectedRowKeys, selectedTableRowKeys, page, modalTitle, visible } = this.state;
+    const {
+      selectedRowKeys,
+      selectedTableRowKeys,
+      page,
+      modalTitle,
+      visible,
+      visibleConfig,
+    } = this.state;
     const rowSelection = {
       type: 'radio',
       selectedRowKeys: selectedTableRowKeys,
@@ -1184,6 +1221,27 @@ class AccessDataInfo extends PureComponent {
               )}
             </Col>
           </Row>
+        </Modal>
+        <Modal
+          title="当前配置"
+          visible={visibleConfig}
+          onCancel={this.handleClose}
+          cancelText="关闭"
+          width={1200}
+          maskClosable={false}
+        >
+          {(() => {
+            switch (dataType) {
+              case 'db':
+                return this.renderDbInfo();
+              case 'ftp':
+                return this.renderFtpInfo();
+              case 'file':
+                return this.renderFileInfo();
+              default:
+                return '';
+            }
+          })()}
         </Modal>
       </Card>
     );
