@@ -82,20 +82,23 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              // if (!record.zy) {
-              //   message.destroy();
-              //   return message.error('无对应的目录！');
-              // }
-              // const dataType = record.dataType === 'file'?'file':record.dataType === 'ftp'?'ftp':'db'
-              return router.push(`/data/management/infoSource/${record.id}`);
-            }}
-          >
-            信息资源
-          </a>
-          <Divider type="vertical" />
+          {record.resourceId && (
+            <a
+              onClick={() => {
+                const { match } = this.props;
+                // if (!record.resourceId) {
+                //   message.destroy();
+                //   return message.error('无对应的目录！');
+                // }
+                return router.push(
+                  `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
+                );
+              }}
+            >
+              信息资源
+            </a>
+          )}
+          {record.resourceId && <Divider type="vertical" />}
           <a
             onClick={() => {
               const { match } = this.props;

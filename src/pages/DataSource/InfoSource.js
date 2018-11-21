@@ -18,21 +18,22 @@ export default class InfoSource extends Component {
     },
   ];
   infoSourceData = window.location.hash.split('?')[0].split('/');
-  dataId = this.infoSourceData.pop() || 0;
+  resourceId = this.infoSourceData.pop() || 0;
+  id = this.infoSourceData.pop() || 0;
+  type = this.infoSourceData.pop() || 'db';
   entry = window.location.hash.startsWith('#/data/management/infoSource') ? 'pub' : 'sub';
-  // dataType = this.infoSourceData.pop() || 'db'
   componentDidMount() {
     this.props.dispatch({
       type: 'infoSource/getInfoSrcDetail',
       payload: {
-        path: this.dataId,
+        path: this.resourceId,
       },
     });
     this.props.dispatch({
       type: 'infoSource/getRefDetail',
       payload: {
-        // dataType: this.dataType,
-        id: this.dataId,
+        type: this.type,
+        id: this.id,
       },
     });
   }

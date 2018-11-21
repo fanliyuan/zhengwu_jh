@@ -267,7 +267,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/data/management/infoSource/:id',
+            path: '/data/management/infoSource/:type/:id/:resourceId',
             name: 'infoSource',
             component: './DataSource/InfoSource',
             audit: 'user',
