@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-20 14:23:02
+ * @Last Modified time: 2018-11-21 11:52:48
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -77,6 +77,7 @@ export default class Step2 extends PureComponent {
     disabled: true,
     addVisible: false,
     routeData: {},
+    isEnable: false,
   };
 
   componentDidMount() {
@@ -154,17 +155,24 @@ export default class Step2 extends PureComponent {
       form: { validateFields, resetFields },
     } = this.props;
     validateFields((errors, values) => {
-      const { tableData, routeData } = this.state;
-      values.key = keyId;
-      let arr = tableData;
-      arr.push(values);
-      this.setState({
-        tableData: arr,
-        addVisible: false,
-        routeData: { ...routeData, infoAddDtoList: arr },
-      });
-      resetFields();
-      keyId++;
+      if (!errors) {
+        const { tableData, routeData } = this.state;
+        values.key = keyId;
+        let arr = tableData;
+        arr.push(values);
+        this.setState({
+          tableData: arr,
+          addVisible: false,
+          routeData: { ...routeData, infoAddDtoList: arr },
+        });
+        resetFields();
+        keyId++;
+      }
+      // console.log(values.values())
+      // if(values.values()){
+      //   message.error("输入框不能为空")
+      //   return
+      // }
     });
   };
 
@@ -173,6 +181,39 @@ export default class Step2 extends PureComponent {
     this.setState({
       routeData: { ...routeData, infoAddDtoList: val ? val : [] },
     });
+  };
+
+  checkLength = (value, i) => {
+    // const { form:{ getFieldValue, setFieldsValue } } = this.props
+    if (value.length > i) {
+      // setFieldsValue({
+      //   name:getFieldValue('name').slice(0,i-1), //value.slice(0,i-1)
+      // })
+      message.error(`输入长度不能超过${i}个字符`);
+      this.setState({
+        isEnable: true,
+      });
+    } else {
+      this.setState({
+        isEnable: false,
+      });
+    }
+  };
+
+  handleOpenConditionChange = e => {
+    this.checkLength(e.target.value, 500);
+  };
+
+  handleShareChange = e => {
+    this.checkLength(e.target.value, 50);
+  };
+
+  handleLengthChange = val => {
+    this.checkLength(val + '', 50);
+  };
+
+  handleNameChange = e => {
+    this.checkLength(e.target.value, 5);
   };
 
   render() {
@@ -189,6 +230,7 @@ export default class Step2 extends PureComponent {
       visible2,
       selectKeys,
       disabled,
+      isEnable,
     } = this.state;
     // console.log('ceshi', tableData);
     const columns = [
@@ -376,6 +418,7 @@ export default class Step2 extends PureComponent {
             title="添加信息项"
             visible={addVisible}
             onOk={this.handleModalOk}
+            okButtonProps={{ disabled: isEnable }}
             onCancel={() => this.setState({ addVisible: false })}
           >
             <Form className={styles.stepForm}>
@@ -383,7 +426,13 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: data.menuName,
                   rules: [{ required: true, message: '请输入信息项名称' }],
-                })(<Input placeholder="信息项名称" disabled={disabled} />)}
+                })(
+                  <Input
+                    placeholder="信息项名称"
+                    disabled={disabled}
+                    onChange={this.handleNameChange}
+                  />
+                )}
               </Item>
               <Item label="数据类型" {...formItemLayout}>
                 {getFieldDecorator('dataType', {
@@ -395,7 +444,7 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('dataLength', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入数据长度' }],
-                })(<InputNumber disabled={disabled} min={1} />)}
+                })(<InputNumber disabled={disabled} min={1} onChange={this.handleLengthChange} />)}
               </Item>
               <Item label="共享类型" {...formItemLayout}>
                 {getFieldDecorator('shareType', {
@@ -413,7 +462,14 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('shareCondition', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入共享条件' }],
-                })(<Input.TextArea placeholder="请输入共享条件" rows={4} readOnly={disabled} />)}
+                })(
+                  <Input.TextArea
+                    placeholder="请输入共享条件"
+                    rows={4}
+                    readOnly={disabled}
+                    onChange={this.handleShareChange}
+                  />
+                )}
               </Item>
               <Item label="共享方式" {...formItemLayout}>
                 {getFieldDecorator('shareMode', {
@@ -444,7 +500,14 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('openCondition', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入开放条件' }],
-                })(<Input.TextArea placeholder="请输入开放条件" rows={4} readOnly={disabled} />)}
+                })(
+                  <Input.TextArea
+                    placeholder="请输入开放条件"
+                    rows={4}
+                    readOnly={disabled}
+                    onChange={this.handleOpenConditionChange}
+                  />
+                )}
               </Item>
             </Form>
           </Modal>

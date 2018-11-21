@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-20 19:16:20
+ * @Last Modified time: 2018-11-21 11:23:39
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -58,6 +58,8 @@ export default class Step1 extends PureComponent {
     selectId: '',
     isNext: false,
     xmId: -1,
+    startValue: null,
+    endValue: new Date(),
   };
 
   componentDidMount() {
@@ -91,6 +93,36 @@ export default class Step1 extends PureComponent {
     const { dispatch } = this.props;
     // dispatch(routerRedux.push('/dataSourceManagement/catalog'))
     // dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'))
+  };
+
+  checkLength = (value, i) => {
+    // const { form:{ getFieldValue, setFieldsValue } } = this.props
+    if (value.length > i) {
+      // setFieldsValue({
+      //   name:getFieldValue('name').slice(0,i-1), //value.slice(0,i-1)
+      // })
+      message.error(`输入长度不能超过${i}个字符`);
+      this.setState({
+        isNext: true,
+      });
+    } else {
+      this.setState({
+        isNext: false,
+      });
+    }
+  };
+
+  handleSummaryChange = e => {
+    this.checkLength(e.target.value, 50);
+  };
+
+  handlePrividerChange = e => {
+    this.checkLength(e.target.value, 50);
+  };
+
+  handleNumChange = e => {
+    console.log(e);
+    this.checkLength(e + '', 500);
   };
 
   handleCheckName = async () => {
@@ -146,6 +178,24 @@ export default class Step1 extends PureComponent {
         );
       }
     });
+  };
+
+  onChange = (field, value) => {
+    this.setState({
+      [field]: value,
+    });
+  };
+
+  onStartChange = value => {
+    this.onChange('startValue', value);
+  };
+
+  disabledStartDate = startValue => {
+    const endValue = this.state.endValue;
+    if (!startValue || !endValue) {
+      return false;
+    }
+    return startValue.valueOf() >= endValue.valueOf();
   };
 
   handleClassfiy = async (val, selectedOptions) => {
@@ -215,9 +265,8 @@ export default class Step1 extends PureComponent {
       informationResource: { classfiyList, sameMsg },
     } = this.props;
     isSameMsg = sameMsg;
-    console.log(sameMsg, 'sghls');
     // console.log(classfiyList)
-    const { data, disabled, isNext } = this.state;
+    const { data, disabled, isNext, startValue } = this.state;
 
     const onValidateForm = () => {
       validateFields(err => {
@@ -288,6 +337,88 @@ export default class Step1 extends PureComponent {
           },
         ],
       },
+      {
+        value: '2',
+        label: '数据库',
+        children: [
+          {
+            value: '2-0',
+            label: 'Dm',
+          },
+          {
+            value: '2-1',
+            label: 'KingbaseES',
+          },
+          {
+            value: '2-2',
+            label: 'access',
+          },
+          {
+            value: '2-3',
+            label: 'dbf',
+          },
+          {
+            value: '2-4',
+            label: 'dbase',
+          },
+          {
+            value: '2-5',
+            label: 'sysbase',
+          },
+          {
+            value: '2-6',
+            label: 'oracle',
+          },
+          {
+            value: '2-7',
+            label: 'sql server',
+          },
+          {
+            value: '2-8',
+            label: 'db2',
+          },
+        ],
+      },
+      {
+        value: '3',
+        label: '图形图表',
+        children: [
+          {
+            value: '3-0',
+            label: 'jpg',
+          },
+          {
+            value: '3-1',
+            label: 'gif',
+          },
+          {
+            value: '3-2',
+            label: 'bmp',
+          },
+        ],
+      },
+      {
+        value: '4',
+        label: '媒体',
+        children: [
+          {
+            value: '4-0',
+            label: 'swf',
+          },
+          {
+            value: '4-1',
+            label: 'rm',
+          },
+          {
+            value: '4-2',
+            label: 'mpg',
+          },
+        ],
+      },
+      {
+        value: '5',
+        label: '自定义',
+      },
     ];
 
     const updateTime = [
@@ -336,7 +467,14 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('summary', {
                 initialValue: data.desc,
                 rules: [{ required: true, message: '请输入描述' }],
-              })(<Input.TextArea placeholder="请输入描述" rows={4} readOnly={disabled} />)}
+              })(
+                <Input.TextArea
+                  placeholder="请输入描述"
+                  rows={4}
+                  readOnly={disabled}
+                  onChange={this.handleSummaryChange}
+                />
+              )}
             </Item>
             <Item label="信息资源分类" {...formItemLayout}>
               {getFieldDecorator('typeName', {
@@ -365,13 +503,19 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('providerNo', {
                 initialValue: data.innerDepartmentName,
                 rules: [{ required: true, message: '请输入提供方代码' }],
-              })(<InputNumber disabled={disabled} min={1} />)}
+              })(<InputNumber disabled={disabled} min={1} onChange={this.handleNumChange} />)}
             </Item>
             <Item label="提供方内部部门" {...formItemLayout}>
               {getFieldDecorator('providerDept', {
                 initialValue: data.providerCode,
                 rules: [{ required: true, message: '请输入名称' }],
-              })(<Input placeholder="请输入部门" disabled={disabled} />)}
+              })(
+                <Input
+                  placeholder="请输入部门"
+                  disabled={disabled}
+                  onChange={this.handlePrividerChange}
+                />
+              )}
             </Item>
             <Item label="信息资源格式" {...formItemLayout}>
               {getFieldDecorator('format', {
@@ -395,9 +539,11 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="发布日期" {...formItemLayout}>
               {getFieldDecorator('publishTime', {
-                initialValue: data.providerCode,
+                initialValue: startValue,
                 rules: [{ required: true, message: '请输入名称' }],
-              })(<DatePicker />)}
+              })(
+                <DatePicker disabledDate={this.disabledStartDate} onChange={this.onStartChange} />
+              )}
             </Item>
             <Item label="关联资源代码" {...formItemLayout}>
               {getFieldDecorator('relateCode', {
