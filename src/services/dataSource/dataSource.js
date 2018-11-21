@@ -145,6 +145,11 @@ export async function viewDbDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params}`);
 }
 
+// 数据（关系数据库）详情 （当前配置）
+export async function viewDbDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params}`);
+}
+
 // 修改数据（关系数据库）
 export async function updateDb(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}`, {
@@ -153,19 +158,41 @@ export async function updateDb(params) {
   });
 }
 
+// 数据（关系数据库）表数据list
+export async function viewDbDataList(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params.id}/data?${stringify(params.query)}`);
+}
+
 // 数据（关系数据库）表结构list
 export async function viewDbStruct(params) {
   return request(`/api/api/v2/zhengwu/swap/data/db/${params.id}/struct`);
 }
 
+// 数据（关系数据库）表结构list（当前配置）
+export async function viewDbStructCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/db/${params.id}/struct`);
+}
+
+// 数据（关系数据库）表数据导出
+export async function exportDb(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/db/${params.id}/export?${stringify(params.query)}`
+  );
+}
+
 // 批量下载数据（文件）文件项
 export async function downloads(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/file/down`);
+  return request(`/api/api/v2/zhengwu/swap/dataR/file/${params.id}/down`);
 }
 
 // 数据（文件）详情
 export async function viewFileDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params}`);
+}
+
+// 数据（文件）详情
+export async function viewFileDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/file/${params}`);
 }
 
 // 修改数据（文件）及其文件项
@@ -181,9 +208,21 @@ export async function initFileList(params) {
   return request(`/api/api/v2/zhengwu/swap/data/file/${params.id}/file`);
 }
 
+// 搜索数据（文件）文件项list
+export async function initFileListCurrent(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/file/${params.id}/file?${stringify(params.query)}`
+  );
+}
+
 // 数据（ftp）详情
 export async function viewFtpDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params}`);
+}
+
+// 数据（ftp）详情
+export async function viewFtpDetailCurrent(params) {
+  return request(`/api/api/v2/zhengwu/swap/dataR/ftp/${params}`);
 }
 
 // 修改数据（FTP）及其文件（夹）
@@ -197,6 +236,13 @@ export async function updateFtp(params) {
 // 搜索数据（ftp）文件（夹）list
 export async function initFtpList(params) {
   return request(`/api/api/v2/zhengwu/swap/data/ftp/${params.id}/ftpfile`);
+}
+
+// 搜索数据（ftp）文件（夹）list
+export async function initFtpListCurrent(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/ftp/${params.id}/ftpfile?${stringify(params.query)}`
+  );
 }
 
 // 查询审核日志
@@ -214,9 +260,13 @@ export async function auditData(params) {
 
 // 查询同步计划
 export async function searchTask(params) {
-  return request(
-    `/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/task/basicInfo`
-  );
+  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.params.id}/sync`);
+}
+
+// 查询同步基本信息(任务)
+
+export async function getSyncBasic(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.id}/task/basicInfo`);
 }
 
 // 查看运行日志
@@ -227,4 +277,16 @@ export async function viewRunlog(params) {
 // 查看同步日志
 export async function viewSynclog(params) {
   return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/synclog`);
+}
+
+// 查看数据库数据表的结构
+export async function getDBTableStruct(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/data/db/${params.path}/struct?${stringify(params.query)}`
+  );
+}
+
+// 查看资源详情
+export async function getInfoSrcDetail(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.path}`);
 }

@@ -82,51 +82,83 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              if (!record.zy) {
-                message.destroy();
-                return message.error('无对应的目录！');
-              }
-              return router.push(`${match.url}/update/${record.id}`);
-            }}
-          >
-            信息资源
-          </a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              return router.push(`${match.url}/update/${record.id}`);
-            }}
-          >
-            数据
-          </a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              return router.push(`${match.url}/update/${record.id}`);
-            }}
-          >
-            任务
-          </a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              if (!record.xg) {
-                message.destroy();
-                return message.error('已挂接数据，禁止修改！');
-              }
-              return router.push(`${match.url}/update/${record.type}/${record.id}`);
-            }}
-          >
-            修改
-          </a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>删除</a>
+          {record.zy && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId === '') {
+                    message.destroy();
+                    return message.error('无对应的目录！');
+                  }
+                  return router.push(`${match.url}/update/${record.id}`);
+                }}
+              >
+                信息资源
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.sj && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  switch (record.type) {
+                    case 'db':
+                      return router.push(`${match.url}/dbview/${record.id}`);
+                    case 'ftp':
+                      return router.push(`${match.url}/ftpview/${record.id}`);
+                    case 'file':
+                      return router.push(`${match.url}/fileview/${record.id}`);
+                    default:
+                      message.destroy();
+                      return message.error('无法查看数据，缺少数据类型！');
+                  }
+                }}
+              >
+                数据
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.rw && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  return router.push(`${match.url}/update/${record.id}`);
+                }}
+              >
+                任务
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.xg && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                修改
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.sc && (
+            <Fragment>
+              <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>
+                删除
+              </a>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },
