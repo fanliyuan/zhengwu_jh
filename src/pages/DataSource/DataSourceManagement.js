@@ -31,8 +31,6 @@ let formTime;
 @connect(({ dataSourceManagement, loading }) => ({
   dataSourceManagement,
   loading: loading.effects['dataSourceManagement/fetch'],
-  loadingDelete: loading.effects['dataSourceManagement/deleteItem'],
-  loadingCancel: loading.effects['dataSourceManagement/cancel'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -303,7 +301,7 @@ class TableList extends PureComponent {
   };
 
   handleDelete = (id, type) => {
-    const { dispatch, form, loadingDelete } = this.props;
+    const { dispatch, form } = this.props;
     const item = {
       id,
       type,
@@ -356,7 +354,7 @@ class TableList extends PureComponent {
 
   handleCancel = (id, type, status) => {
     let content;
-    const { dispatch, form, loadingCancel } = this.props;
+    const { dispatch, form } = this.props;
     const item = {
       id,
       type,

@@ -31,7 +31,6 @@ let formTime;
 @connect(({ dataSource, loading }) => ({
   dataSource,
   loading: loading.effects['dataSource/fetch'],
-  loadingDelete: loading.effects['dataSource/deleteItem'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -185,45 +184,50 @@ class TableList extends PureComponent {
     if (!sc) {
       return message.error('已接入数据，禁止删除！');
     }
-    const { dispatch, form, loadingDelete } = this.props;
+    const { dispatch, form } = this.props;
     return Modal.confirm({
       title: '警告',
       content: '是否删除数据源？',
       okText: '确认',
       cancelText: '取消',
-      okButtonProps: {
-        loading: loadingDelete,
-      },
-      onOk: () => {
-        form.validateFields((err, fieldsValue) => {
-          if (err) return;
-          const fieldsForm = fieldsValue;
-          let paramsTime = {};
-          if (fieldsForm.date) {
-            paramsTime = {
-              beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-              endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            const fieldsForm = fieldsValue;
+            let paramsTime = {};
+            if (fieldsForm.date) {
+              paramsTime = {
+                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+              };
+              delete fieldsForm.date;
+            }
+
+            const values = {
+              ...fieldsForm,
+              ...resetParamsPage,
+              ...paramsTime,
             };
-            delete fieldsForm.date;
-          }
 
-          const values = {
-            ...fieldsForm,
-            ...resetParamsPage,
-            ...paramsTime,
-          };
-
-          dispatch({
-            type: 'dataSource/deleteItem',
-            payload: {
-              values,
-              item: {
-                id,
+            dispatch({
+              type: 'dataSource/deleteItem',
+              payload: {
+                values,
+                item: {
+                  id,
+                },
               },
-            },
+              callback: res => {
+                if (res.code < 300) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+            });
           });
-        });
-      },
+        }),
     });
   };
 
