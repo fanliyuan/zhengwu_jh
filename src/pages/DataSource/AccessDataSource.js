@@ -242,7 +242,7 @@ class AccessStepForm extends PureComponent {
     const { dispatch } = this.props;
     Modal.confirm({
       title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      content: '返回数据信息页面，当前信息将不会被保存，是否返回？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
@@ -457,7 +457,7 @@ class AccessStepForm extends PureComponent {
       history,
       testNameSubmitting,
       route,
-      accessData: { params, current, dataType, type, status },
+      accessData: { params, current, dataType, type, status, currentList },
     } = this.props;
     const { currentConfig } = this.state;
     const parentMethods = {
@@ -480,11 +480,30 @@ class AccessStepForm extends PureComponent {
     }
     const buttonList = (
       <div style={{ position: 'absolute', top: 0, right: 0 }}>
-        {currentConfig.indexOf(status) !== -1 && (
-          <Button type="primary" style={{ float: 'left' }} onClick={() => this.showCurrentConfig()}>
-            当前配置
-          </Button>
-        )}
+        {currentConfig.indexOf(status) !== -1 &&
+          dataType !== 'file' && (
+            <Button
+              className={current !== 2 ? styles.show : styles.hidden}
+              disabled={currentList.length < 1}
+              type="primary"
+              style={{ float: 'left' }}
+              onClick={() => this.showCurrentConfig()}
+            >
+              当前配置
+            </Button>
+          )}
+        {currentConfig.indexOf(status) !== -1 &&
+          dataType === 'file' && (
+            <Button
+              className={current !== 1 ? styles.show : styles.hidden}
+              disabled={currentList.length < 1}
+              type="primary"
+              style={{ float: 'left' }}
+              onClick={() => this.showCurrentConfig()}
+            >
+              当前配置
+            </Button>
+          )}
         {dataType !== 'file' && (
           <Button
             className={current !== 2 ? styles.show : styles.hidden}

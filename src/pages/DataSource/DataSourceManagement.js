@@ -32,6 +32,7 @@ let formTime;
   dataSourceManagement,
   loading: loading.effects['dataSourceManagement/fetch'],
   loadingDelete: loading.effects['dataSourceManagement/deleteItem'],
+  loadingCancel: loading.effects['dataSourceManagement/cancel'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -209,9 +210,7 @@ class TableList extends PureComponent {
           )}
           {record.qx && (
             <Fragment>
-              <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>
-                取消
-              </a>
+              <a onClick={() => this.handleCancel(record.id, record.type, record.status)}>取消</a>
             </Fragment>
           )}
         </Fragment>
@@ -314,39 +313,104 @@ class TableList extends PureComponent {
       content: '是否删除数据？',
       okText: '确认',
       cancelText: '取消',
-      okButtonProps: {
-        loading: loadingDelete,
-      },
-      onOk: () => {
-        form.validateFields((err, fieldsValue) => {
-          if (err) return;
-          const fieldsForm = fieldsValue;
-          let paramsTime = {};
-          if (fieldsForm.date) {
-            paramsTime = {
-              beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-              endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            const fieldsForm = fieldsValue;
+            let paramsTime = {};
+            if (fieldsForm.date) {
+              paramsTime = {
+                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+              };
+              delete fieldsForm.date;
+            }
+
+            const values = {
+              ...fieldsForm,
+              ...resetParamsPage,
+              ...paramsTime,
             };
-            delete fieldsForm.date;
-          }
 
-          const values = {
-            ...fieldsForm,
-            ...resetParamsPage,
-            ...paramsTime,
-          };
-
-          dispatch({
-            type: 'dataSourceManagement/deleteItem',
-            payload: {
-              values: {
-                ...values,
+            dispatch({
+              type: 'dataSourceManagement/deleteItem',
+              payload: {
+                values: {
+                  ...values,
+                },
+                item,
               },
-              item,
-            },
+              callback: res => {
+                if (res.code < 300) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+            });
           });
-        });
-      },
+        }),
+    });
+  };
+
+  handleCancel = (id, type, status) => {
+    let content;
+    const { dispatch, form, loadingCancel } = this.props;
+    const item = {
+      id,
+      type,
+    };
+
+    if (status === 10) {
+      content = '是否取消修改？';
+    } else {
+      content = '是否取消删除？';
+    }
+
+    return Modal.confirm({
+      title: '警告',
+      content,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            const fieldsForm = fieldsValue;
+            let paramsTime = {};
+            if (fieldsForm.date) {
+              paramsTime = {
+                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+              };
+              delete fieldsForm.date;
+            }
+
+            const values = {
+              ...fieldsForm,
+              ...paramsPage,
+              ...paramsTime,
+            };
+
+            dispatch({
+              type: 'dataSourceManagement/cancel',
+              payload: {
+                values: {
+                  ...values,
+                },
+                item,
+              },
+              callback: res => {
+                if (res.code < 300) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+            });
+          });
+        }),
     });
   };
 

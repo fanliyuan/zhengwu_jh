@@ -73,7 +73,7 @@ class AccessDataInfo extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'type',
-      render: (text, record) => `text(${record.length})`,
+      render: (text, record) => `${text}(${record.length})`,
     },
     {
       title: '中文标注',

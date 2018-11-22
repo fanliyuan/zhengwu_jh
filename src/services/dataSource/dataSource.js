@@ -290,3 +290,11 @@ export async function getDBTableStruct(params) {
 export async function getInfoSrcDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.path}`);
 }
+
+// 取消数据
+export async function cancelData(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/cancel`, {
+    method: 'POST',
+    body: params,
+  });
+}
