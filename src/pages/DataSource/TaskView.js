@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Icon, Button, Tabs, List } from 'antd';
 import { connect } from 'dva';
+import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataBaseInfo from '@/components/DataBaseInfo';
@@ -16,8 +17,24 @@ const { TabPane } = Tabs;
   loadingSyncLog: loading.effects['taskView/getSyncInfo'],
 }))
 class TaskView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewType: '',
+    };
+  }
+
   componentDidMount() {
     const { dispatch, match } = this.props;
+    if (match.params.type === 'db') {
+      this.setState({
+        viewType: 'dbview',
+      });
+    } else {
+      this.setState({
+        viewType: 'ftpview',
+      });
+    }
     dispatch({
       type: 'taskView/getDetail',
       payload: {
@@ -114,6 +131,7 @@ class TaskView extends Component {
       loadingRunLog,
       loadingSyncLog,
     } = this.props;
+    const { viewType } = this.state;
     const runLogColumn = [
       {
         title: '序号',
@@ -166,7 +184,7 @@ class TaskView extends Component {
       },
       {
         title: '删除记录数',
-        dataIndex: 'daleteNum',
+        dataIndex: 'deleteNum',
       },
       {
         title: '忽略记录数',
@@ -249,11 +267,11 @@ class TaskView extends Component {
       },
       {
         title: '数据库文件大小',
-        value: syncInfo.dataFileSzie,
+        value: syncInfo.dataFileSize,
       },
       {
         title: '查看数据',
-        value: syncInfo,
+        value: '查看',
       },
     ];
     const buttonList = (
@@ -278,9 +296,29 @@ class TaskView extends Component {
                 loading={loadingSyncInfo}
                 itemLayout="horizontal"
                 dataSource={syncDatas}
-                renderItem={item => (
-                  <List.Item key={item.title}>{`${item.title}：${item.value}`}</List.Item>
-                )}
+                renderItem={item => {
+                  if (item.title !== '查看数据') {
+                    return (
+                      <List.Item style={{ borderBottom: 'none' }} key={item.title}>
+                        {item.title}：{item.value}
+                      </List.Item>
+                    );
+                  }
+                  return (
+                    <List.Item style={{ borderBottom: 'none' }} key={item.title}>
+                      {item.title}：
+                      {
+                        <a
+                          onClick={() =>
+                            router.push(`/data/management/${viewType}/${match.params.id}`)
+                          }
+                        >
+                          {item.value}
+                        </a>
+                      }
+                    </List.Item>
+                  );
+                }}
               />
             </TabPane>
             <TabPane tab="运行日志" key="2">
