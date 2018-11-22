@@ -269,7 +269,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/data/management/taskview/:id',
+            path: '/data/management/taskview/:type/:id',
             name: 'taskview',
             component: './DataSource/Taskview',
             auditor: 'user',

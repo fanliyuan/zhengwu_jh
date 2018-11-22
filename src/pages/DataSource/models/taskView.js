@@ -1,44 +1,54 @@
 import {
   viewDbDetailCurrent,
-  viewDbDataList,
-  viewDbStructCurrent,
+  viewFtpDetailCurrent,
+  getSyncBasic,
+  viewRunlog,
+  viewSynclog,
 } from '@/services/dataSource/dataSource';
 
 export default {
   namescpace: 'taskView',
 
   state: {
-    tableList: [],
-    dataList: {},
-    tableStruct: [],
-    dbInfo: {},
-    page: 1,
+    runLogList: {},
+    syncLogList: {},
+    basicInfo: {},
+    syncInfo: {},
+    pageRun: 1,
+    pageSync: 1,
   },
 
   effects: {
-    *getDbDetail({ payload }, { call, put }) {
-      const response = yield call(viewDbDetailCurrent, payload);
+    *getDetail({ payload }, { call, put }) {
+      const { dataType } = payload;
+      let callbackApi;
+      if (dataType === 'db') {
+        callbackApi = viewDbDetailCurrent;
+      } else {
+        callbackApi = viewFtpDetailCurrent;
+      }
+      const response = yield call(callbackApi, payload.id);
       if (response && response.code < 300) {
         yield put({
-          type: 'saveTableInfo',
+          type: 'saveBasicInfo',
           payload: response.result.data,
         });
       }
     },
-    *getDBTableStruct({ payload }, { call, put }) {
-      const response = yield call(viewDbStructCurrent, payload.id);
+    *getSyncInfo({ payload }, { call, put }) {
+      const response = yield call(getSyncBasic, payload);
       if (response && response.code < 300) {
         yield put({
-          type: 'saveTabelStruct',
-          payload: response.result.datas,
+          type: 'saveSyncInfo',
+          payload: response.result.data,
         });
       }
     },
-    *getDbTableList({ payload }, { call, put }) {
-      const response = yield call(viewDbDataList, payload);
+    *getRunlog({ payload }, { call, put }) {
+      const response = yield call(viewRunlog, payload);
       if (response && response.code < 300) {
         yield put({
-          type: 'saveDataList',
+          type: 'saveRunlog',
           payload: response.result,
         });
         if (payload.page) {
@@ -49,32 +59,58 @@ export default {
         }
       }
     },
+    *getSynclog({ payload }, { call, put }) {
+      const response = yield call(viewSynclog, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveSynclog',
+          payload: response.result,
+        });
+        if (payload.page) {
+          yield put({
+            type: 'saveSyncPage',
+            payload: payload.page,
+          });
+        }
+      }
+    },
   },
 
   reducers: {
-    saveTableInfo(state, { payload }) {
+    saveBasicInfo(state, { payload }) {
       return {
         ...state,
-        tableList: [payload],
-        dbInfo: payload,
+        basicInfo: payload,
       };
     },
-    saveTabelStruct(state, { payload }) {
+    saveSyncInfo(state, { payload }) {
       return {
         ...state,
-        tableStruct: payload,
+        syncInfo: payload,
       };
     },
-    saveDataList(state, { payload }) {
+    saveRunlog(state, { payload }) {
       return {
         ...state,
-        dataList: payload,
+        runLogList: payload,
+      };
+    },
+    saveSynclog(state, { payload }) {
+      return {
+        ...state,
+        syncLogList: payload,
       };
     },
     savePage(state, { payload }) {
       return {
         ...state,
-        page: payload,
+        pageRun: payload,
+      };
+    },
+    saveSyncPage(state, { payload }) {
+      return {
+        ...state,
+        pageSync: payload,
       };
     },
     reset(state, { payload }) {

@@ -280,7 +280,6 @@ class DBView extends Component {
       dataBaseName: dbName,
       dataBaseType: dbType,
       dataName: name,
-      pubNodeName: '石家庄民政局',
       updateTime,
       createUnit,
       appsysName,

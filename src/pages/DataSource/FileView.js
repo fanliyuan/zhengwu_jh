@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import DataBaseInfo from '@/components/DataFileInfo';
+import DataFileInfo from '@/components/DataFileInfo';
 import styles from './DataSourceManagement.less';
 
 const { RangePicker } = DatePicker;
@@ -227,7 +227,6 @@ class FileView extends Component {
     const dataBaseInfo = {
       dataType: '文件',
       name,
-      pubNodeName: '石家庄民政局',
       createUnit,
       dutyName,
       dutyPhone,
@@ -253,7 +252,7 @@ class FileView extends Component {
     return (
       <PageHeaderWrapper buttonList={buttonList}>
         <div className="content_layout">
-          <DataBaseInfo dataBaseInfo={dataBaseInfo} />
+          <DataFileInfo dataBaseInfo={dataBaseInfo} />
           <div className={`${styles.tableListForm} mt16`}>{this.renderForm()}</div>
           <div className={styles.tableListOperator}>
             <Button

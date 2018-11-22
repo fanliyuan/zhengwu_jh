@@ -137,7 +137,7 @@ class TableList extends PureComponent {
                 <a
                   onClick={() => {
                     const { match } = this.props;
-                    return router.push(`${match.url}/update/${record.id}`);
+                    return router.push(`${match.url}/taskview/${record.type}/${record.id}`);
                   }}
                 >
                   任务
