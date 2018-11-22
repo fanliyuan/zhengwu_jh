@@ -990,7 +990,7 @@ class AccessDataInfo extends PureComponent {
     };
     return (
       <Fragment>
-        <Dragger {...fileProps}>
+        <Dragger {...fileProps} className={styles.hiddenFiles}>
           <p className="ant-upload-drag-icon">
             <Icon type="inbox" />
           </p>
