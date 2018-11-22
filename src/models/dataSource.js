@@ -24,9 +24,10 @@ export default {
         payload,
       });
     },
-    *deleteItem({ payload }, { call, put }) {
+    *deleteItem({ payload, callback }, { call, put }) {
       const response = yield call(deleteDataSource, payload.item);
       const jsonRes = JSON.parse(response);
+      callback(jsonRes);
       if (jsonRes && jsonRes.code < 300) {
         message.success(jsonRes.message);
         yield put({

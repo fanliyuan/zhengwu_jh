@@ -33,7 +33,7 @@ let formTime;
   loading: loading.effects['dataSource/fetch'],
 }))
 @Form.create()
-class TableList extends PureComponent {
+class TaskView extends PureComponent {
   columns = [
     {
       title: '序号',
@@ -351,4 +351,4 @@ class TableList extends PureComponent {
   }
 }
 
-export default TableList;
+export default TaskView;

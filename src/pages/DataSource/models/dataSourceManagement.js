@@ -1,6 +1,7 @@
 import {
   initDataSourceManagement,
   deleteDataSourceManagement,
+  cancelData,
 } from '@/services/dataSource/dataSource';
 import { message } from 'antd';
 
@@ -27,9 +28,10 @@ export default {
         payload,
       });
     },
-    *deleteItem({ payload }, { call, put }) {
+    *deleteItem({ payload, callback }, { call, put }) {
       const response = yield call(deleteDataSourceManagement, payload.item);
       const jsonRes = JSON.parse(response);
+      callback(jsonRes);
       if (jsonRes && jsonRes.code < 300) {
         message.success(jsonRes.message);
         yield put({
@@ -38,6 +40,19 @@ export default {
         });
       } else {
         message.error(jsonRes.message);
+      }
+    },
+    *cancel({ payload, callback }, { call, put }) {
+      const response = yield call(cancelData, payload.item);
+      callback(response);
+      if (response && response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
       }
     },
   },

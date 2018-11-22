@@ -5,7 +5,7 @@ import {
 } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'dbView',
+  namescpace: 'taskView',
 
   state: {
     tableList: [],

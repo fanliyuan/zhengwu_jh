@@ -25,7 +25,7 @@ export default {
           } = res;
           const infoSourceDetail = {
             infoSrcCode: data.code,
-            infoSrcName: code.name,
+            infoSrcName: data.name,
             infoSrcClassify: data.typeName,
             infoSrcProvider: data.providerName,
             infoSrcProviderCode: data.providerNo,
@@ -39,7 +39,7 @@ export default {
             infoSrcSummary: data.summary,
           };
           yield put({
-            type: 'savaInfoSourceDetail',
+            type: 'saveInfoSourceDetail',
             payload: {
               infoSourceDetail,
             },
@@ -62,7 +62,7 @@ export default {
     *getRefDetail({ payload }, { call, put }) {
       try {
         let res;
-        if (payload.dataType === 'db') {
+        if (payload.type === 'db') {
           res = yield call(viewDbDetail, payload.id);
         } else if (payload.dataType === 'file') {
           res = yield call(viewFileDetail, payload.id);
@@ -79,7 +79,7 @@ export default {
             } = {},
           } = {},
         } = res;
-        const taskDetail = yield call(searchTask, { dataType: type, id: payload.id });
+        const taskDetail = yield call(getSyncBasic, { dataType: type, id: payload.id });
         const {
           result: {
             data: {

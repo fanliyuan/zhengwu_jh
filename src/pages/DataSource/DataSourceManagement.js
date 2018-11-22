@@ -31,7 +31,6 @@ let formTime;
 @connect(({ dataSourceManagement, loading }) => ({
   dataSourceManagement,
   loading: loading.effects['dataSourceManagement/fetch'],
-  loadingDelete: loading.effects['dataSourceManagement/deleteItem'],
 }))
 @Form.create()
 class TableList extends PureComponent {
@@ -63,14 +62,26 @@ class TableList extends PureComponent {
       dataIndex: 'updateTime',
     },
     {
+      title: '操作人',
+      dataIndex: 'createUserName',
+    },
+    {
       title: '审核状态',
       dataIndex: 'status',
       render: text => {
         switch (text) {
           case -1:
             return <span style={{ color: '#5cadff' }}>待审核</span>;
+          case -11:
+            return <span style={{ color: '#5cadff' }}>修改待审核</span>;
+          case -21:
+            return <span style={{ color: '#5cadff' }}>删除待审核</span>;
           case 0:
             return <span style={{ color: '#ed4014' }}>已拒绝</span>;
+          case 10:
+            return <span style={{ color: '#ed4014' }}>修改已拒绝</span>;
+          case 20:
+            return <span style={{ color: '#ed4014' }}>删除已拒绝</span>;
           case 1:
             return <span style={{ color: '#19be6b' }}>已通过</span>;
           default:
@@ -82,23 +93,21 @@ class TableList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          {record.zy && (
-            <Fragment>
-              <a
-                onClick={() => {
-                  const { match } = this.props;
-                  if (record.resourceId === '') {
-                    message.destroy();
-                    return message.error('无对应的目录！');
+          {record.zy &&
+            record.resourceId !== '' && (
+              <Fragment>
+                <a
+                  onClick={() =>
+                    router.push(
+                      `/data/management/infoSource${record.type}/${record.id}/${record.resourceId}`
+                    )
                   }
-                  return router.push(`${match.url}/update/${record.id}`);
-                }}
-              >
-                信息资源
-              </a>
-              <Divider type="vertical" />
-            </Fragment>
-          )}
+                >
+                  信息资源
+                </a>
+                <Divider type="vertical" />
+              </Fragment>
+            )}
           {record.sj && (
             <Fragment>
               <a
@@ -122,19 +131,20 @@ class TableList extends PureComponent {
               <Divider type="vertical" />
             </Fragment>
           )}
-          {record.rw && (
-            <Fragment>
-              <a
-                onClick={() => {
-                  const { match } = this.props;
-                  return router.push(`${match.url}/update/${record.id}`);
-                }}
-              >
-                任务
-              </a>
-              <Divider type="vertical" />
-            </Fragment>
-          )}
+          {record.rw &&
+            record.type !== 'file' && (
+              <Fragment>
+                <a
+                  onClick={() => {
+                    const { match } = this.props;
+                    return router.push(`${match.url}/update/${record.id}`);
+                  }}
+                >
+                  任务
+                </a>
+                <Divider type="vertical" />
+              </Fragment>
+            )}
           {record.xg && (
             <Fragment>
               <a
@@ -152,24 +162,60 @@ class TableList extends PureComponent {
               <Divider type="vertical" />
             </Fragment>
           )}
+          {record.cxxg && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                重新修改
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.cxjr && (
+            <Fragment>
+              <a
+                onClick={() => {
+                  const { match } = this.props;
+                  if (record.resourceId !== '') {
+                    message.destroy();
+                    return message.error('已关联数据，禁止修改！');
+                  }
+                  return router.push(`${match.url}/update/${record.type}/${record.id}`);
+                }}
+              >
+                重新接入
+              </a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
           {record.sc && (
             <Fragment>
-              <a onClick={() => this.handleDelete(false, record.id, record.type, record.sc)}>
-                删除
-              </a>
+              <a onClick={() => this.handleDelete(record.id, record.type)}>删除</a>
+            </Fragment>
+          )}
+          {record.cxsc && (
+            <Fragment>
+              <a onClick={() => this.handleDelete(record.id, record.type)}>重新删除</a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.qx && (
+            <Fragment>
+              <a onClick={() => this.handleCancel(record.id, record.type, record.status)}>取消</a>
             </Fragment>
           )}
         </Fragment>
       ),
     },
   ];
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedIds: [],
-    };
-  }
 
   componentDidMount() {
     const routeName = sessionStorage.getItem('currentList');
@@ -255,62 +301,115 @@ class TableList extends PureComponent {
     });
   };
 
-  handleDelete = (multi, id, type, sc) => {
-    const { dispatch, form, loadingDelete } = this.props;
-    const { selectedIds } = this.state;
-    let item = [];
-    if (multi) {
-      item = selectedIds;
-    } else {
-      if (!sc) {
-        message.destroy();
-        return message.error('已挂接数据，禁止删除！');
-      }
-      item = [
-        {
-          id,
-          type,
-        },
-      ];
-    }
+  handleDelete = (id, type) => {
+    const { dispatch, form } = this.props;
+    const item = {
+      id,
+      type,
+    };
     return Modal.confirm({
       title: '警告',
       content: '是否删除数据？',
       okText: '确认',
       cancelText: '取消',
-      okButtonProps: {
-        loading: loadingDelete,
-      },
-      onOk: () => {
-        form.validateFields((err, fieldsValue) => {
-          if (err) return;
-          const fieldsForm = fieldsValue;
-          let paramsTime = {};
-          if (fieldsForm.date) {
-            paramsTime = {
-              beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-              endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            const fieldsForm = fieldsValue;
+            let paramsTime = {};
+            if (fieldsForm.date) {
+              paramsTime = {
+                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+              };
+              delete fieldsForm.date;
+            }
+
+            const values = {
+              ...fieldsForm,
+              ...resetParamsPage,
+              ...paramsTime,
             };
-            delete fieldsForm.date;
-          }
 
-          const values = {
-            ...fieldsForm,
-            ...resetParamsPage,
-            ...paramsTime,
-          };
-
-          dispatch({
-            type: 'dataSourceManagement/deleteItem',
-            payload: {
-              values: {
-                ...values,
+            dispatch({
+              type: 'dataSourceManagement/deleteItem',
+              payload: {
+                values: {
+                  ...values,
+                },
+                item,
               },
-              item,
-            },
+              callback: res => {
+                if (res.code < 300) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+            });
           });
-        });
-      },
+        }),
+    });
+  };
+
+  handleCancel = (id, type, status) => {
+    let content;
+    const { dispatch, form } = this.props;
+    const item = {
+      id,
+      type,
+    };
+
+    if (status === 10) {
+      content = '是否取消修改？';
+    } else {
+      content = '是否取消删除？';
+    }
+
+    return Modal.confirm({
+      title: '警告',
+      content,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            const fieldsForm = fieldsValue;
+            let paramsTime = {};
+            if (fieldsForm.date) {
+              paramsTime = {
+                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+              };
+              delete fieldsForm.date;
+            }
+
+            const values = {
+              ...fieldsForm,
+              ...paramsPage,
+              ...paramsTime,
+            };
+
+            dispatch({
+              type: 'dataSourceManagement/cancel',
+              payload: {
+                values: {
+                  ...values,
+                },
+                item,
+              },
+              callback: res => {
+                if (res.code < 300) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              },
+            });
+          });
+        }),
     });
   };
 
@@ -348,12 +447,28 @@ class TableList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="数据名称">
               {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据源名称" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
+            <FormItem label="操作人">
+              {getFieldDecorator('createUserName')(
+                <Input maxLength="50" placeholder="请输入操作人" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="更新时间">
+              {getFieldDecorator('date')(
+                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
             <FormItem label="数据类型">
               {getFieldDecorator('dataType')(
                 <Select style={{ width: '100%' }} placeholder="请选择数据类型">
@@ -374,22 +489,19 @@ class TableList extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select style={{ width: '100%' }} placeholder="请选择审核状态">
                   <Option value="">全部</Option>
                   <Option value="-1">待审核</Option>
+                  <Option value="-11">修改待审核</Option>
+                  <Option value="-21">删除待审核</Option>
                   <Option value="0">已拒绝</Option>
+                  <Option value="10">修改已拒绝</Option>
+                  <Option value="20">删除已拒绝</Option>
                   <Option value="1">已通过</Option>
                 </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="更新时间">
-              {getFieldDecorator('date')(
-                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
               )}
             </FormItem>
           </Col>
@@ -423,13 +535,6 @@ class TableList extends PureComponent {
         return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
     };
-    const { selectedIds } = this.state;
-    const columnRowSelection = {
-      onChange: this.onSelectChange,
-      getCheckboxProps: record => ({
-        disabled: record.sc === false,
-      }),
-    };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据',
     };
@@ -438,18 +543,6 @@ class TableList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button
-                icon="delete"
-                type="danger"
-                onClick={() => {
-                  this.handleDelete(true);
-                }}
-                disabled={selectedIds.length < 1}
-              >
-                删除
-              </Button>
-            </div>
             <Table
               rowKey={record => record.id + record.dataType}
               bordered
@@ -458,7 +551,6 @@ class TableList extends PureComponent {
               pagination={paginationProps}
               locale={locale}
               loading={loading}
-              rowSelection={columnRowSelection}
             />
           </div>
         </Card>

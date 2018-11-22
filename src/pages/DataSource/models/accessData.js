@@ -22,6 +22,13 @@ import {
   updateFile,
   updateFtp,
   searchTask,
+  viewDbDetailCurrent,
+  viewDbStructCurrent,
+  viewFtpDetailCurrent,
+  initFtpListCurrent,
+  getSyncBasic,
+  viewFileDetailCurrent,
+  initFileListCurrent,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
 
@@ -83,6 +90,7 @@ export default {
     type: '',
     alias: '',
     oldName: '',
+    status: '',
     dbList: [],
     treeList: [],
     tableList: [],
@@ -131,6 +139,9 @@ export default {
       },
     ],
     params: {},
+    currentDetail: {},
+    currentSync: {},
+    currentList: [],
   },
 
   effects: {
@@ -429,6 +440,10 @@ export default {
       }
       const response = yield call(callbackApi, payload.id);
       if (response && response.code < 300) {
+        yield put({
+          type: 'updateStatus',
+          payload: response.result.data.status,
+        });
         switch (dataType) {
           case 'db':
             yield put({
@@ -660,6 +675,51 @@ export default {
         });
       }
     },
+    *getCurrentdetail({ payload }, { call, put }) {
+      let callbackApi;
+      const { dataType } = payload;
+      if (dataType === 'db') {
+        callbackApi = viewDbDetailCurrent;
+      } else if (dataType === 'ftp') {
+        callbackApi = viewFtpDetailCurrent;
+      } else {
+        callbackApi = viewFileDetailCurrent;
+      }
+      const response = yield call(callbackApi, payload.id);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateCurrentDetail',
+          payload: response.result.data,
+        });
+      }
+    },
+    *getCurrentSync({ payload }, { call, put }) {
+      const response = yield call(getSyncBasic, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateCurrentSync',
+          payload: response.result.data,
+        });
+      }
+    },
+    *getCurrentList({ payload }, { call, put }) {
+      let callbackApi;
+      const { dataType } = payload;
+      if (dataType === 'db') {
+        callbackApi = viewDbStructCurrent;
+      } else if (dataType === 'ftp') {
+        callbackApi = initFtpListCurrent;
+      } else {
+        callbackApi = initFileListCurrent;
+      }
+      const response = yield call(callbackApi, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateCurrentList',
+          payload: response.result.datas,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -683,6 +743,30 @@ export default {
           syncAddDto,
         },
         current: state.current - 1,
+      };
+    },
+    updateCurrentDetail(state, { payload }) {
+      return {
+        ...state,
+        currentDetail: payload,
+      };
+    },
+    updateCurrentSync(state, { payload }) {
+      return {
+        ...state,
+        currentSync: payload,
+      };
+    },
+    updateCurrentList(state, { payload }) {
+      return {
+        ...state,
+        currentList: payload,
+      };
+    },
+    updateStatus(state, { payload }) {
+      return {
+        ...state,
+        status: payload,
       };
     },
     updateDataType(state, { payload }) {

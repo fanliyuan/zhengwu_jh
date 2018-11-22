@@ -134,7 +134,7 @@ export async function initDataSourceManagement(params) {
 
 // 删除数据
 export async function deleteDataSourceManagement(params) {
-  return request(`/api/api/v2/zhengwu/swap/data`, {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}`, {
     method: 'DELETE',
     body: params,
   });
@@ -266,7 +266,7 @@ export async function searchTask(params) {
 // 查询同步基本信息(任务)
 
 export async function getSyncBasic(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.id}/task/basicInfo`);
+  return request(`/api/api/v2/zhengwu/swap/dataR/${params.dataType}/${params.id}/task/basicInfo`);
 }
 
 // 查看运行日志
@@ -289,4 +289,12 @@ export async function getDBTableStruct(params) {
 // 查看资源详情
 export async function getInfoSrcDetail(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.path}`);
+}
+
+// 取消数据
+export async function cancelData(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/cancel`, {
+    method: 'POST',
+    body: params,
+  });
 }

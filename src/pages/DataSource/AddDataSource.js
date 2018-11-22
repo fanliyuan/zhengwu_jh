@@ -176,8 +176,11 @@ class StepForm extends PureComponent {
       submit: this.submit,
     };
     const buttonList = (
-      <div style={{ position: 'absolute', top: 0, right: 0 }}>
-        <Button className="pageHeaderBtn" type="primary" onClick={() => this.back()}>
+      <div
+        className={current !== 2 ? styles.show : styles.hidden}
+        style={{ position: 'absolute', top: 0, right: 0 }}
+      >
+        <Button type="primary" onClick={() => this.back()}>
           取消
         </Button>
       </div>
@@ -235,11 +238,6 @@ class StepForm extends PureComponent {
                   onClick={() => this.handleAdd()}
                 >
                   提交
-                </Button>
-              )}
-              {current < 2 && (
-                <Button type="danger" style={{ marginLeft: 8 }} onClick={() => this.back()}>
-                  返回
                 </Button>
               )}
             </div>

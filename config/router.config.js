@@ -268,6 +268,13 @@ export default [
             audit: 'user',
             hideInMenu: true,
           },
+          {
+            path: '/data/management/taskview/:id',
+            name: 'taskview',
+            component: './DataSource/Taskview',
+            auditor: 'user',
+            hideInMenu: true,
+          },
         ],
       },
       // 数据订阅管理
@@ -316,7 +323,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/data/management/infoSource/:id',
+            path: '/data/management/infoSource/:type/:id/:resourceId',
             name: 'infoSource',
             component: './DataSource/InfoSource',
             audit: 'user',

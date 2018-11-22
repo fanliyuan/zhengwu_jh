@@ -73,7 +73,7 @@ class AccessDataInfo extends PureComponent {
     {
       title: '数据类型',
       dataIndex: 'type',
-      render: (text, record) => `text(${record.length})`,
+      render: (text, record) => `${text}(${record.length})`,
     },
     {
       title: '中文标注',
@@ -133,7 +133,22 @@ class AccessDataInfo extends PureComponent {
   }
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const {
+      onRef,
+      route,
+      accessData: {
+        params: { fileAddDtoList },
+      },
+    } = this.props;
+    const { hasReceiveFiles } = this.state;
+    if (route.name === 'managementUpdate' && !hasReceiveFiles) {
+      if (fileAddDtoList && fileAddDtoList.length > 0) {
+        this.setState({
+          fileList: fileAddDtoList,
+          hasReceiveFiles: true,
+        });
+      }
+    }
     onRef(this);
   }
 
