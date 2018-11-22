@@ -3,7 +3,7 @@ import { Row, Col, Table, Button, Form, Input } from 'antd';
 import { connect } from 'dva';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import DataBaseInfo from '@/components/DataFileInfo';
+import DataFileInfo from '@/components/DataFileInfo';
 import styles from './DataSourceManagement.less';
 
 const FormItem = Form.Item;
@@ -212,7 +212,6 @@ class FtpView extends Component {
     const dataBaseInfo = {
       dataType: ftpType,
       name,
-      pubNodeName: '石家庄民政局',
       createUnit,
       dutyName,
       dutyPhone,
@@ -238,7 +237,7 @@ class FtpView extends Component {
     return (
       <PageHeaderWrapper buttonList={buttonList}>
         <div className="content_layout">
-          <DataBaseInfo dataBaseInfo={dataBaseInfo} />
+          <DataFileInfo dataBaseInfo={dataBaseInfo} />
           <div className={`${styles.tableListForm} mt16`}>{this.renderForm()}</div>
           <div className={styles.tableListOperator}>
             <Button

@@ -22,7 +22,6 @@ export default class DataBaseInfo extends PureComponent {
         dataBaseName = '',
         dataBaseType = '',
         dataName = '',
-        pubNodeName = '',
         updateTime = '',
         createUnit = '',
         appsysName = '',
@@ -59,14 +58,6 @@ export default class DataBaseInfo extends PureComponent {
             <span className={styles.value3}>
               <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {dataName}
-              </Ellipsis>
-            </span>
-          </span>
-          <span className="mr40">
-            <span className={styles.label}>所属节点</span>
-            <span className={styles.value4}>
-              <Ellipsis lines={1} fullWidthRecognition tooltip>
-                {pubNodeName}
               </Ellipsis>
             </span>
           </span>

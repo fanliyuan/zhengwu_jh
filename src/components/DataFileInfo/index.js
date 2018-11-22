@@ -21,7 +21,6 @@ export default class DataFileInfo extends PureComponent {
       dataBaseInfo: {
         dataType = '',
         name = '',
-        pubNodeName = '',
         createUnit = '',
         dutyName = '',
         dutyPhone = '',
@@ -48,14 +47,6 @@ export default class DataFileInfo extends PureComponent {
             <span className={styles.value3}>
               <Ellipsis lines={1} fullWidthRecognition tooltip>
                 {name}
-              </Ellipsis>
-            </span>
-          </span>
-          <span className="mr40">
-            <span className={styles.label}>所属节点</span>
-            <span className={styles.value4}>
-              <Ellipsis lines={1} fullWidthRecognition tooltip>
-                {pubNodeName}
               </Ellipsis>
             </span>
           </span>

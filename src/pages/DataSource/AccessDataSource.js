@@ -238,11 +238,17 @@ class AccessStepForm extends PureComponent {
     this.child.handleSubmit();
   }
 
-  prev() {
+  prev(dataType) {
+    let content;
     const { dispatch } = this.props;
+    if (dataType === 'db') {
+      content = '返回数据信息页面，当前信息将不会被保存，是否返回？';
+    } else {
+      content = '返回选择文件或文件夹页面，当前信息将不会被保存，是否返回？';
+    }
     Modal.confirm({
       title: '警告',
-      content: '返回数据信息页面，当前信息将不会被保存，是否返回？',
+      content,
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
@@ -593,7 +599,7 @@ class AccessStepForm extends PureComponent {
             </div>
             <div className={styles.stepsAction}>
               {dataType !== 'file' &&
-                current === 1 && <Button onClick={() => this.prev()}>上一步</Button>}
+                current === 1 && <Button onClick={() => this.prev(dataType)}>上一步</Button>}
               {current < steps.length - 2 &&
                 dataType !== 'file' && (
                   <Button

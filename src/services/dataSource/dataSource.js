@@ -271,12 +271,20 @@ export async function getSyncBasic(params) {
 
 // 查看运行日志
 export async function viewRunlog(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/runlog`);
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/${params.type}/${params.id}/task/runLog?${stringify(
+      params.query
+    )}`
+  );
 }
 
 // 查看同步日志
 export async function viewSynclog(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/task/synclog`);
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/${params.type}/${params.id}/task/syncLog?${stringify(
+      params.query
+    )}`
+  );
 }
 
 // 查看数据库数据表的结构
