@@ -242,7 +242,7 @@ class AccessStepForm extends PureComponent {
     const { dispatch } = this.props;
     Modal.confirm({
       title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      content: '返回数据源页面，当前信息将不会被保存，是否返回1？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
