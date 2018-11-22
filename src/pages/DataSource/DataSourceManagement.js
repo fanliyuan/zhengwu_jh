@@ -131,19 +131,20 @@ class TableList extends PureComponent {
               <Divider type="vertical" />
             </Fragment>
           )}
-          {record.rw && (
-            <Fragment>
-              <a
-                onClick={() => {
-                  const { match } = this.props;
-                  return router.push(`${match.url}/update/${record.id}`);
-                }}
-              >
-                任务
-              </a>
-              <Divider type="vertical" />
-            </Fragment>
-          )}
+          {record.rw &&
+            record.type !== 'file' && (
+              <Fragment>
+                <a
+                  onClick={() => {
+                    const { match } = this.props;
+                    return router.push(`${match.url}/update/${record.id}`);
+                  }}
+                >
+                  任务
+                </a>
+                <Divider type="vertical" />
+              </Fragment>
+            )}
           {record.xg && (
             <Fragment>
               <a
