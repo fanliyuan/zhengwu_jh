@@ -266,7 +266,7 @@ export async function searchTask(params) {
 // 查询同步基本信息(任务)
 
 export async function getSyncBasic(params) {
-  return request(`/api/api/v2/zhengwu/swap/data/${params.dataType}/${params.id}/task/basicInfo`);
+  return request(`/api/api/v2/zhengwu/swap/dataR/${params.dataType}/${params.id}/task/basicInfo`);
 }
 
 // 查看运行日志

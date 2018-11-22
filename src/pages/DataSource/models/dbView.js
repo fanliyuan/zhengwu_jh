@@ -26,7 +26,7 @@ export default {
       }
     },
     *getDBTableStruct({ payload }, { call, put }) {
-      const response = yield call(viewDbStructCurrent, payload);
+      const response = yield call(viewDbStructCurrent, payload.id);
       if (response && response.code < 300) {
         yield put({
           type: 'saveTabelStruct',

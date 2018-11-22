@@ -1,12 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Steps, Button, Modal, Alert } from 'antd';
+import { Card, Steps, Button, Modal, Alert, Divider, Table, Icon } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import DescriptionList from '@/components/DescriptionList';
 import AccessDataInfo from './AccessDataInfo';
 import SetSyncPlan from './SetSyncPlans';
 import AddSuccess from './AddSuccess';
 import styles from './AddDataSource.less';
 
+const { Description } = DescriptionList;
 const { Step } = Steps;
 const stepsDb = [
   {
@@ -44,8 +46,18 @@ let steps = [];
   accessData,
   submitting: loading.effects['accessData/submit'],
   testNameSubmitting: loading.effects['accessData/testName'],
+  loadingTable: loading.effects['accessData/getCurrentdetail'],
+  loadingStruct: loading.effects['accessData/getCurrentList'],
 }))
 class AccessStepForm extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasSetCurrent: false,
+      currentConfig: [1, -11, 10],
+    };
+  }
+
   componentDidMount() {
     const { dispatch, match, route } = this.props;
     if (route.name === 'managementUpdate') {
@@ -62,6 +74,47 @@ class AccessStepForm extends PureComponent {
         payload: {
           id: match.params.id,
         },
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, match } = this.props;
+    const {
+      accessData: { dataType, status },
+    } = nextProps;
+    const { hasSetCurrent, currentConfig } = this.state;
+    if (
+      !hasSetCurrent &&
+      dataType !== '' &&
+      status !== '' &&
+      currentConfig.indexOf(status) !== -1
+    ) {
+      if (dataType !== 'file') {
+        dispatch({
+          type: 'accessData/getCurrentSync',
+          payload: {
+            id: match.params.id,
+            dataType,
+          },
+        });
+      }
+      dispatch({
+        type: 'accessData/getCurrentdetail',
+        payload: {
+          id: match.params.id,
+          dataType,
+        },
+      });
+      dispatch({
+        type: 'accessData/getCurrentList',
+        payload: {
+          id: match.params.id,
+          dataType,
+        },
+      });
+      this.setState({
+        hasSetCurrent: true,
       });
     }
   }
@@ -124,6 +177,9 @@ class AccessStepForm extends PureComponent {
           },
         ],
         params: {},
+        currentDetail: {},
+        currentSync: {},
+        currentList: [],
       },
     });
   }
@@ -154,7 +210,29 @@ class AccessStepForm extends PureComponent {
     });
   };
 
-  showCurrentConfig = () => {};
+  showCurrentConfig = () => {
+    const {
+      accessData: { dataType },
+    } = this.props;
+    Modal.info({
+      title: '当前配置',
+      width: 900,
+      okText: '关闭',
+      maskClosable: false,
+      content: (() => {
+        switch (dataType) {
+          case 'db':
+            return this.renderDbInfo();
+          case 'ftp':
+            return this.renderFtpInfo();
+          case 'file':
+            return this.renderFileInfo();
+          default:
+            return '';
+        }
+      })(),
+    });
+  };
 
   next() {
     this.child.handleSubmit();
@@ -193,8 +271,185 @@ class AccessStepForm extends PureComponent {
     history.goBack();
   }
 
+  renderDbInfo = () => {
+    const {
+      loadingTable,
+      loadingStruct,
+      accessData: { currentDetail, currentSync, currentList },
+    } = this.props;
+    const tableList = [currentDetail];
+    const tableColumn = [
+      {
+        title: '表名称',
+        dataIndex: 'tableName',
+        align: 'center',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'tableNote',
+        align: 'center',
+      },
+    ];
+    const structColumn = [
+      {
+        title: '主键',
+        dataIndex: 'primaryKey',
+        render: text => {
+          if (text) {
+            return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
+          }
+          return '';
+        },
+      },
+      {
+        title: '字段名称',
+        dataIndex: 'columnName',
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'columnType',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'note',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据库">{currentDetail.dbName}</Description>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="建库单位">{currentDetail.createUnit}</Description>
+          <Description term="应用系统名称">{currentDetail.appsysName}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <DescriptionList size="large" title="同步信息" style={{ marginBottom: 32 }}>
+          <Description term="同步模式">{currentSync.syncMode}</Description>
+          <Description term="同步频率">{currentSync.syncRate}</Description>
+          <Description term="定时设置">每{currentSync.timeSet}</Description>
+          <Description term="自动停止">{currentSync.stopNum}次</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>表信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={tableList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+        <div className={styles.title}>结构信息</div>
+        <Table
+          style={{ marginBottom: 16 }}
+          loading={loadingStruct}
+          dataSource={currentList}
+          columns={structColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
+  };
+
+  renderFtpInfo = () => {
+    const {
+      loadingTable,
+      accessData: { currentDetail, currentSync, currentList },
+    } = this.props;
+    const tableColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件相对路径',
+        dataIndex: 'path',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="文件所属单位">{currentDetail.createUnit}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <DescriptionList size="large" title="同步信息" style={{ marginBottom: 32 }}>
+          <Description term="同步模式">{currentSync.syncMode}</Description>
+          <Description term="同步频率">{currentSync.syncRate}</Description>
+          <Description term="定时设置">每{currentSync.timeSet}</Description>
+          <Description term="自动停止">{currentSync.stopNum}次</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>文件信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={currentList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
+  };
+
+  renderFileInfo = () => {
+    const {
+      loadingTable,
+      accessData: { currentDetail, currentList },
+    } = this.props;
+    const tableColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件大小',
+        dataIndex: 'size',
+      },
+      {
+        title: '最近更新时间',
+        dataIndex: 'uploadTimeStr',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="文件所属单位">{currentDetail.createUnit}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>文件信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={currentList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
+  };
+
   render() {
-    const currentConfig = [1, -11, 10];
     const {
       location,
       match,
@@ -204,6 +459,7 @@ class AccessStepForm extends PureComponent {
       route,
       accessData: { params, current, dataType, type, status },
     } = this.props;
+    const { currentConfig } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       submit: this.submit,
