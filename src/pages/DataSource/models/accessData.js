@@ -320,6 +320,8 @@ export default {
       const response = yield call(connectBase, payload.connectParams);
       const treeType = payload.connectParams.type;
       if (response && response.code < 300) {
+        message.destroy();
+        message.success('连接成功！');
         const alias = response.result.data;
         if (payload.dataType === 'db') {
           yield put({
@@ -354,6 +356,9 @@ export default {
             });
           }
         }
+      } else {
+        message.destroy();
+        message.success(response.message);
       }
     },
     *submit({ payload }, { call, put }) {
