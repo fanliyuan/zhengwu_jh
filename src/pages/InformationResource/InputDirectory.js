@@ -5,9 +5,10 @@ import { Card, Button, Upload, message } from 'antd';
 import styles from './InputDirectory.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
-let isEnable = false;
 export default class InputDirectory extends Component {
-  state = {};
+  state = {
+    isEnable: false,
+  };
 
   render() {
     const props = {
@@ -19,18 +20,21 @@ export default class InputDirectory extends Component {
       data: {
         method: 'post',
       },
-      onChange(info) {
+      onChange: info => {
         if (info.file.status !== 'uploading') {
           console.log(info.file, info.fileList);
         }
         if (info.file.status === 'done') {
           message.success(`${info.file.name} 导入成功`);
-          isEnable = true;
+          this.setState({
+            isEnable: true,
+          });
         } else if (info.file.status === 'error') {
           message.error(`${info.file.response.message}`);
         }
       },
     };
+    const { isEnable } = this.state;
 
     return (
       <PageHeaderLayout>
