@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-05 17:20:24
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-20 11:53:27
+ * @Last Modified by: fly
+ * @Last Modified time: 2018-11-22 17:20:56
 */
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Input, message, Popconfirm, Divider, Tooltip } from 'antd';
@@ -17,6 +17,7 @@ export default class TableForm extends PureComponent {
       data: props.value,
       loading: false,
       target: {},
+      enAble: true,
     };
     // 原始数据的的缓存 -- 其实是每行点击编辑的时候,会把当前行的数据记录下来
     this.cacheOriginData = {};
@@ -24,6 +25,15 @@ export default class TableForm extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (sessionStorage.getItem('itemData')) {
+      this.setState({
+        enAble: false,
+      });
+    } else {
+      this.setState({
+        enAble: true,
+      });
+    }
     if ('value' in nextProps) {
       this.setState({
         data: nextProps.value,
@@ -115,7 +125,7 @@ export default class TableForm extends PureComponent {
 
   render() {
     const { disabled = false } = this.props;
-    const { data, loading } = this.state;
+    const { data, loading, enAble } = this.state;
     const columns = [
       {
         title: '信息项名称',
@@ -280,7 +290,7 @@ export default class TableForm extends PureComponent {
             );
           }
           return (
-            <span>
+            <span style={{ display: enAble ? 'inline-block' : 'none' }}>
               <a onClick={e => this.toggleEditable(e, row.key)}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(row.key)}>

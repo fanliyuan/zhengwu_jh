@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-21 11:23:39
+ * @Last Modified by: fly
+ * @Last Modified time: 2018-11-22 15:36:33
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -72,6 +72,8 @@ export default class Step1 extends PureComponent {
     dispatch({
       type: 'informationResource/getClassfiyList',
     });
+    sessionStorage.removeItem('routeData');
+    sessionStorage.removeItem('itemData');
   }
 
   // handleSubmit = e => {

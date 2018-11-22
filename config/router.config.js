@@ -151,6 +151,13 @@ export default [
             authority: ['user'],
           },
           {
+            path: 'inputDirectoryItem',
+            name: 'inputDirectoryItem',
+            hideInMenu: true,
+            component: './InformationResource/InputDirectoryitem',
+            authority: ['user'],
+          },
+          {
             path: 'viewDirectory',
             name: 'viewDirectory',
             hideInMenu: true,

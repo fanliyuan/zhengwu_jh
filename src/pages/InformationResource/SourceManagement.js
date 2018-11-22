@@ -185,10 +185,10 @@ export default class SourceManagement extends Component {
     dispatch(routerRedux.push('/informationResource/resourceConnectionData'));
   };
 
-  handleAdd = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/newMenu/one'));
-  };
+  // handleAdd = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push('/informationResource/newMenu/one'));
+  // };
 
   handleOpen = () => {
     const { dispatch } = this.props;
@@ -505,10 +505,10 @@ export default class SourceManagement extends Component {
               >
                 新建
               </Button>
-              <Button type="primary" onClick={this.handleInput}>
-                导入
-              </Button>
             </Link>
+            <Button type="primary" onClick={this.handleInput}>
+              导入
+            </Button>
           </div>
           <div>
             <Table
