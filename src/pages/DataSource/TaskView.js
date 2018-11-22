@@ -1,12 +1,11 @@
-import React, { Component, Fragment } from 'react';
-import { Table, Icon, Button, Tabs, List } from 'antd';
+import React, { Component } from 'react';
+import { Table, Button, Tabs, List } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataBaseInfo from '@/components/DataBaseInfo';
 import DataFileInfo from '@/components/DataFileInfo';
-import styles from './DataSourceManagement.less';
 
 const { TabPane } = Tabs;
 
