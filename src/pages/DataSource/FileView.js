@@ -150,7 +150,7 @@ class FileView extends Component {
         query: {
           ...paramsPage,
         },
-        page: 2,
+        page: 1,
       },
     });
     this.resetSelectedIds();
