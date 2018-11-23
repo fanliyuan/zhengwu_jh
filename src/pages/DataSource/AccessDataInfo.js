@@ -511,17 +511,30 @@ class AccessDataInfo extends PureComponent {
     });
 
   addFileAddDtoList = info => {
-    const { status } = info.file;
+    const { status, name, size } = info.file;
+    info.file.name = `${name}（${this.setFileSize(size)}）`;
     if (status !== 'uploading') {
       this.setState({
         fileList: info.fileList,
       });
     }
     if (status === 'done') {
-      message.success(`${info.file.name}上传成功！`);
+      message.success(`${name}上传成功！`);
     } else if (status === 'error') {
-      message.error(`${info.file.name}上传失败！`);
+      message.error(`${name}上传失败！`);
     }
+  };
+
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let newSize = srcSize / Math.pow(1024, index);
+    newSize = newSize.toFixed(2);
+    return newSize + unitArr[index];
   };
 
   changePage = current => {
@@ -965,10 +978,14 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderFileForm() {
+    let fileTotal = 0;
     const {
       params,
       form: { getFieldDecorator },
     } = this.props;
+    const { fileList } = this.state;
+    const fileNums = fileList.length;
+    console.log(fileList);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -988,6 +1005,10 @@ class AccessDataInfo extends PureComponent {
       onChange: this.addFileAddDtoList,
       defaultFileList: params.fileAddDtoList,
     };
+    fileList.map(item => {
+      fileTotal += parseInt(item.size);
+      return fileTotal;
+    });
     return (
       <Fragment>
         <Dragger {...fileProps} className={styles.hiddenFiles}>
@@ -996,6 +1017,11 @@ class AccessDataInfo extends PureComponent {
           </p>
           <p className="ant-upload-text">单击或拖动文件到该区域上传</p>
           <p className="ant-upload-hint">支持单个或批量上传</p>
+          <p className="ant-upload-hint">
+            最大上传文件大小：50 MB，
+            <span style={{ color: '#ed4014' }}>{fileNums}</span> 个文件上传已完成，共{' '}
+            <span style={{ color: '#ed4014' }}>{this.setFileSize(fileTotal)}</span>
+          </p>
         </Dragger>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem

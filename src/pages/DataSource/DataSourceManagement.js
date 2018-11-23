@@ -58,6 +58,10 @@ class TableList extends PureComponent {
       },
     },
     {
+      title: '所属数据源',
+      dataIndex: 'datasourceName',
+    },
+    {
       title: '最近更新时间',
       dataIndex: 'updateTime',
     },

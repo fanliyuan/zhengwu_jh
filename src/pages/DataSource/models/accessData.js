@@ -217,19 +217,21 @@ export default {
             oldName: '',
           },
         });
-        yield put({
-          type: 'connection',
-          payload: {
-            dataType,
-            connectParams: {
-              type,
-              addr: ip,
-              port,
-              username,
-              password,
+        if (dataType !== 'file') {
+          yield put({
+            type: 'connection',
+            payload: {
+              dataType,
+              connectParams: {
+                type,
+                addr: ip,
+                port,
+                username,
+                password,
+              },
             },
-          },
-        });
+          });
+        }
       }
     },
     *setDbList({ payload }, { call, put }) {
