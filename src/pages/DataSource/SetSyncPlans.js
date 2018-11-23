@@ -1,13 +1,12 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import { Form, Input, Select, Card, message } from 'antd';
-import styles from './AddDataSource.less';
 
-const Option = Select.Option;
+const { Option } = Select;
 const FormItem = Form.Item;
 
-@connect(({ accessData, loading }) => ({
+@connect(({ accessData }) => ({
   accessData,
 }))
 @Form.create()
@@ -21,7 +20,8 @@ class SetSyncPlan extends PureComponent {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
+    const { onRef } = this.props;
+    onRef(this);
   }
 
   handleSubmit = () => {
@@ -69,8 +69,9 @@ class SetSyncPlan extends PureComponent {
   render() {
     const { params } = this.props;
     const timeArr = params.syncAddDto.timeSet.split('-');
-    const { syncModeList, syncRateList, timeList } = this.props.accessData;
-    const { syncRate } = this.state;
+    const {
+      accessData: { syncModeList, syncRateList, timeList },
+    } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -125,8 +126,8 @@ class SetSyncPlan extends PureComponent {
               initialValue: timeArr[0],
               rules: [
                 {
-                  validator(rule, value, callback, source, options) {
-                    var errors = [];
+                  validator(rule, value, callback) {
+                    const errors = [];
                     if (!/^[0-9]+$/.test(value) && value !== '') {
                       callback(
                         formatMessage({ id: 'validation.accessDataSource.syncAddDto.timeNum.type' })
@@ -178,8 +179,8 @@ class SetSyncPlan extends PureComponent {
               initialValue: params.syncAddDto.stopNum,
               rules: [
                 {
-                  validator(rule, value, callback, source, options) {
-                    var errors = [];
+                  validator(rule, value, callback) {
+                    const errors = [];
                     if (!/^[0-9]+$/.test(value) && value !== '') {
                       callback(
                         formatMessage({ id: 'validation.accessDataSource.syncAddDto.stopNum.type' })

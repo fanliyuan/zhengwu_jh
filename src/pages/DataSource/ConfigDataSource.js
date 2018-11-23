@@ -455,6 +455,8 @@ class ConfigDataSource extends PureComponent {
               return this.renderFtpForm();
             case 'file':
               return this.renderFileForm();
+            default:
+              return '';
           }
         })()}
       </Card>

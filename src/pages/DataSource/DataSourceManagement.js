@@ -426,20 +426,6 @@ class TableList extends PureComponent {
     });
   };
 
-  onSelectChange = (selectedRowKeys, selectedRows) => {
-    const selectedIds = [];
-    selectedRows.map(item => {
-      selectedIds.push({
-        id: item.id,
-        type: item.type,
-      });
-      return selectedIds;
-    });
-    this.setState({
-      selectedIds,
-    });
-  };
-
   renderForm() {
     const {
       form: { getFieldDecorator },

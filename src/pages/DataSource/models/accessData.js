@@ -358,7 +358,7 @@ export default {
         }
       } else {
         message.destroy();
-        message.success(response.message);
+        message.error(response.message);
       }
     },
     *submit({ payload }, { call, put }) {
