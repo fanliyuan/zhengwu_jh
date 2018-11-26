@@ -1,4 +1,5 @@
 import {
+  connectBase,
   isSameNameData,
   viewDataSource,
   mysqlDbList,
@@ -325,18 +326,21 @@ export default {
         payload,
       });
     },
-    *connection({ payload }, { put }) {
+    *connection({ payload }, { call, put }) {
       const treeType = payload.connectParams.type;
       if (payload.dataType === 'db') {
-        yield put({
-          type: 'setDbList',
-          payload: {
-            addr: payload.connectParams.addr,
-            port: payload.connectParams.port,
-            username: payload.connectParams.username,
-            password: payload.connectParams.password,
-          },
-        });
+        const response = yield call(connectBase, payload.connectParams);
+        if (response && response.code < 300) {
+          message.destroy();
+          message.success('连接成功！');
+          const alias = response.result.data;
+          yield put({
+            type: 'setDbList',
+            payload: {
+              alias,
+            },
+          });
+        }
       } else if (payload.dataType === 'ftp') {
         if (payload.getAllTree) {
           yield put({

@@ -142,13 +142,13 @@ class AccessDataInfo extends PureComponent {
     } = this.props;
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
-      fileAddDtoList.map(item => {
-        Object.defineProperty(item, 'name', {
-          value: `${item.name}（${this.setFileSize(item.size)}）`,
-        });
-        return item;
-      });
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        fileAddDtoList.map(item => {
+          Object.defineProperty(item, 'name', {
+            value: `${item.name}（${this.setFileSize(item.size)}）`,
+          });
+          return item;
+        });
         this.setState({
           fileList: fileAddDtoList,
           hasReceiveFiles: true,
@@ -163,13 +163,13 @@ class AccessDataInfo extends PureComponent {
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
-      fileAddDtoList.map(item => {
-        Object.defineProperty(item, 'name', {
-          value: `${item.name}（${this.setFileSize(item.size)}）`,
-        });
-        return item;
-      });
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        fileAddDtoList.map(item => {
+          Object.defineProperty(item, 'name', {
+            value: `${item.name}（${this.setFileSize(item.size)}）`,
+          });
+          return item;
+        });
         this.setState({
           fileList: fileAddDtoList,
           hasReceiveFiles: true,
@@ -269,7 +269,7 @@ class AccessDataInfo extends PureComponent {
   showModal = (dbName, params) => {
     const {
       dispatch,
-      accessData: { ip, port, username, password },
+      accessData: { alias },
     } = this.props;
     const { tableName, tableNote, structAddDtoList } = params;
     this.setState({
@@ -280,10 +280,7 @@ class AccessDataInfo extends PureComponent {
     dispatch({
       type: 'accessData/setTableList',
       payload: {
-        addr: ip,
-        port,
-        username,
-        password,
+        alias,
         db: dbName,
       },
     });
@@ -296,10 +293,7 @@ class AccessDataInfo extends PureComponent {
       dispatch({
         type: 'accessData/setColumnList',
         payload: {
-          addr: ip,
-          port,
-          username,
-          password,
+          alias,
           db: dbName,
           table: tableName,
         },
