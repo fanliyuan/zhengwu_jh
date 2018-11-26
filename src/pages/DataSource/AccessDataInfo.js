@@ -142,6 +142,12 @@ class AccessDataInfo extends PureComponent {
     } = this.props;
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
+      fileAddDtoList.map(item => {
+        Object.defineProperty(item, 'name', {
+          value: `${item.name}（${this.setFileSize(item.size)}）`,
+        });
+        return item;
+      });
       if (fileAddDtoList && fileAddDtoList.length > 0) {
         this.setState({
           fileList: fileAddDtoList,
@@ -157,6 +163,12 @@ class AccessDataInfo extends PureComponent {
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
+      fileAddDtoList.map(item => {
+        Object.defineProperty(item, 'name', {
+          value: `${item.name}（${this.setFileSize(item.size)}）`,
+        });
+        return item;
+      });
       if (fileAddDtoList && fileAddDtoList.length > 0) {
         this.setState({
           fileList: fileAddDtoList,
@@ -206,7 +218,7 @@ class AccessDataInfo extends PureComponent {
             }
             return paramsFile.push({
               id: item.id,
-              name: item.name,
+              name: item.uname,
               size: item.size,
               type: item.type,
               uploadTime: item.uploadTime,
@@ -257,7 +269,7 @@ class AccessDataInfo extends PureComponent {
   showModal = (dbName, params) => {
     const {
       dispatch,
-      accessData: { alias },
+      accessData: { ip, port, username, password },
     } = this.props;
     const { tableName, tableNote, structAddDtoList } = params;
     this.setState({
@@ -268,7 +280,10 @@ class AccessDataInfo extends PureComponent {
     dispatch({
       type: 'accessData/setTableList',
       payload: {
-        alias,
+        addr: ip,
+        port,
+        username,
+        password,
         db: dbName,
       },
     });
@@ -281,7 +296,10 @@ class AccessDataInfo extends PureComponent {
       dispatch({
         type: 'accessData/setColumnList',
         payload: {
-          alias,
+          addr: ip,
+          port,
+          username,
+          password,
           db: dbName,
           table: tableName,
         },
@@ -333,7 +351,7 @@ class AccessDataInfo extends PureComponent {
   handleSelectTable = (selectedRowKeys, selectedRows) => {
     const {
       dispatch,
-      accessData: { alias },
+      accessData: { alias, ip, port, username, password },
     } = this.props;
     const { dbName } = this.state;
     dispatch({
@@ -348,6 +366,10 @@ class AccessDataInfo extends PureComponent {
       type: 'accessData/setColumnList',
       payload: {
         alias,
+        addr: ip,
+        port,
+        username,
+        password,
         db: dbName,
         table: selectedRows[0].name,
       },
@@ -426,14 +448,15 @@ class AccessDataInfo extends PureComponent {
   };
 
   setRowNum = (record, index) => {
-    record.index = index + 1;
+    Object.defineProperty(record, 'index', { value: index + 1 });
+    return record;
   };
 
   onLoadTreeData = treeNode => {
     const {
       dispatch,
       type,
-      accessData: { alias },
+      accessData: { alias, ip, port, username, password },
     } = this.props;
     const { path, name, open, children } = treeNode.props.dataRef;
     return new Promise(resolve => {
@@ -443,7 +466,10 @@ class AccessDataInfo extends PureComponent {
             type: 'accessData/setTreeList',
             payload: {
               params: {
-                alias,
+                addr: ip,
+                port,
+                username,
+                password,
                 path: `${path}${name}/`,
               },
               type: 'update',
@@ -812,7 +838,6 @@ class AccessDataInfo extends PureComponent {
         className={styles.tree}
         checkable
         showIcon
-        autoExpandParent
         loadData={this.onLoadTreeData}
         onCheck={this.checkTree}
         defaultCheckedKeys={checkedKeys}
@@ -832,7 +857,6 @@ class AccessDataInfo extends PureComponent {
         className={styles.tree}
         checkable
         showIcon
-        autoExpandParent
         onCheck={this.checkTree}
         defaultCheckedKeys={checkedKeys}
         defaultExpandedKeys={checkedKeys}
@@ -985,7 +1009,6 @@ class AccessDataInfo extends PureComponent {
     } = this.props;
     const { fileList } = this.state;
     const fileNums = fileList.length;
-    console.log(fileList);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },

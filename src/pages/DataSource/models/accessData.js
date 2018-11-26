@@ -1,5 +1,4 @@
 import {
-  connectBase,
   isSameNameData,
   viewDataSource,
   mysqlDbList,
@@ -89,6 +88,10 @@ export default {
     dataType: '',
     type: '',
     alias: '',
+    ip: '',
+    port: '',
+    username: '',
+    password: '',
     oldName: '',
     status: '',
     dbList: [],
@@ -214,6 +217,10 @@ export default {
             dataType,
             type,
             alias,
+            ip,
+            port,
+            username,
+            password,
             oldName: '',
           },
         });
@@ -318,49 +325,49 @@ export default {
         payload,
       });
     },
-    *connection({ payload }, { call, put }) {
-      const response = yield call(connectBase, payload.connectParams);
+    *connection({ payload }, { put }) {
       const treeType = payload.connectParams.type;
-      if (response && response.code < 300) {
-        message.destroy();
-        message.success('连接成功！');
-        const alias = response.result.data;
-        if (payload.dataType === 'db') {
+      if (payload.dataType === 'db') {
+        yield put({
+          type: 'setDbList',
+          payload: {
+            addr: payload.connectParams.addr,
+            port: payload.connectParams.port,
+            username: payload.connectParams.username,
+            password: payload.connectParams.password,
+          },
+        });
+      } else if (payload.dataType === 'ftp') {
+        if (payload.getAllTree) {
           yield put({
-            type: 'setDbList',
+            type: 'setTreeData',
             payload: {
-              alias,
+              params: {
+                addr: payload.connectParams.addr,
+                port: payload.connectParams.port,
+                username: payload.connectParams.username,
+                password: payload.connectParams.password,
+              },
+              type: 'create',
+              treeType,
             },
           });
-        } else if (payload.dataType === 'ftp') {
-          if (payload.getAllTree) {
-            yield put({
-              type: 'setTreeData',
-              payload: {
-                params: {
-                  alias,
-                },
-                type: 'create',
-                treeType,
+        } else {
+          yield put({
+            type: 'setTreeList',
+            payload: {
+              params: {
+                addr: payload.connectParams.addr,
+                port: payload.connectParams.port,
+                username: payload.connectParams.username,
+                password: payload.connectParams.password,
+                path: '/',
               },
-            });
-          } else {
-            yield put({
-              type: 'setTreeList',
-              payload: {
-                params: {
-                  alias,
-                  path: '/',
-                },
-                type: 'create',
-                treeType,
-              },
-            });
-          }
+              type: 'create',
+              treeType,
+            },
+          });
         }
-      } else {
-        message.destroy();
-        message.error(response.message);
       }
     },
     *submit({ payload }, { call, put }) {
@@ -519,6 +526,7 @@ export default {
             id: item.id,
             uid: item.id,
             name: item.name,
+            uname: item.name,
             size: item.size,
             type: item.type,
             uploadTime: item.uploadTime,
@@ -677,6 +685,10 @@ export default {
             dataType: payload.dataType,
             type: payload.type,
             alias: payload.alias,
+            ip: payload.params.datasourceDetailDto.ip,
+            port: payload.params.datasourceDetailDto.port,
+            username: payload.params.datasourceDetailDto.username,
+            password: payload.params.datasourceDetailDto.password,
             oldName: payload.oldName,
           },
         });
@@ -782,6 +794,10 @@ export default {
         dataType: payload.dataType,
         type: payload.type,
         alias: payload.alias,
+        ip: payload.ip,
+        port: payload.port,
+        username: payload.username,
+        password: payload.password,
         oldName: payload.oldName,
       };
     },
