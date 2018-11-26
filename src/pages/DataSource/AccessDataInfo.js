@@ -450,7 +450,7 @@ class AccessDataInfo extends PureComponent {
     const {
       dispatch,
       type,
-      accessData: { alias, ip, port, username, password },
+      accessData: { ip, port, username, password },
     } = this.props;
     const { path, name, open, children } = treeNode.props.dataRef;
     return new Promise(resolve => {
@@ -532,7 +532,9 @@ class AccessDataInfo extends PureComponent {
 
   addFileAddDtoList = info => {
     const { status, name, size } = info.file;
-    info.file.name = `${name}（${this.setFileSize(size)}）`;
+    Object.defineProperty(info.file, 'name', {
+      value: `${name}（${this.setFileSize(size)}）`,
+    });
     if (status !== 'uploading') {
       this.setState({
         fileList: info.fileList,
@@ -1034,8 +1036,8 @@ class AccessDataInfo extends PureComponent {
           </p>
           <p className="ant-upload-text">单击或拖动文件到该区域上传</p>
           <p className="ant-upload-hint">支持单个或批量上传</p>
+          <p className="ant-upload-hint">最大上传文件大小：50 MB</p>
           <p className="ant-upload-hint">
-            最大上传文件大小：50 MB，
             <span style={{ color: '#ed4014' }}>{fileNums}</span> 个文件上传已完成，共{' '}
             <span style={{ color: '#ed4014' }}>{this.setFileSize(fileTotal)}</span>
           </p>
