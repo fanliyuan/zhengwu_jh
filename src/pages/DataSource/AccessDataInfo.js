@@ -17,6 +17,14 @@ import {
   Alert,
 } from 'antd';
 import styles from './AddDataSource.less';
+import codeThumb from '../../assets/code.svg';
+import fileThumb from '../../assets/file.svg';
+import fileExcelThumb from '../../assets/file-excel.svg';
+import fileImageThumb from '../../assets/file-image.svg';
+import filePdfThumb from '../../assets/file-pdf.svg';
+import filePptThumb from '../../assets/file-ppt.svg';
+import fileTextThumb from '../../assets/file-text.svg';
+import fileWordThumb from '../../assets/file-word.svg';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -97,34 +105,42 @@ class AccessDataInfo extends PureComponent {
       fileTypes: [
         {
           name: 'file-text',
+          thumb: fileTextThumb,
           datas: ['txt'],
         },
         {
           name: 'file-pdf',
+          thumb: filePdfThumb,
           datas: ['pdf'],
         },
         {
           name: 'file-word',
+          thumb: fileWordThumb,
           datas: ['doc', 'docx'],
         },
         {
           name: 'file-excel',
+          thumb: fileExcelThumb,
           datas: ['xls', 'xlsx'],
         },
         {
           name: 'file-ppt',
+          thumb: filePptThumb,
           datas: ['ppt', 'pptx'],
         },
         {
           name: 'picture',
+          thumb: fileImageThumb,
           datas: ['jpg', 'png', 'bmp', 'gif', 'jpeg'],
         },
         {
           name: 'code',
+          thumb: codeThumb,
           datas: ['html', 'css', 'js', 'java', 'php'],
         },
         {
           name: 'folder',
+          thumb: fileThumb,
           datas: ['folder'],
         },
       ],
@@ -143,10 +159,19 @@ class AccessDataInfo extends PureComponent {
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        const { fileTypes } = this.state;
         fileAddDtoList.map(item => {
           Object.defineProperty(item, 'name', {
             value: `${item.name}（${this.setFileSize(item.size)}）`,
           });
+          for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+            if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              Object.defineProperty(item, 'thumbUrl', {
+                value: fileTypes[i].thumb,
+              });
+              break;
+            }
+          }
           return item;
         });
         this.setState({
@@ -164,10 +189,19 @@ class AccessDataInfo extends PureComponent {
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        const { fileTypes } = this.state;
         fileAddDtoList.map(item => {
           Object.defineProperty(item, 'name', {
             value: `${item.name}（${this.setFileSize(item.size)}）`,
           });
+          for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+            if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              Object.defineProperty(item, 'thumbUrl', {
+                value: fileTypes[i].thumb,
+              });
+              break;
+            }
+          }
           return item;
         });
         this.setState({
@@ -532,10 +566,23 @@ class AccessDataInfo extends PureComponent {
 
   addFileAddDtoList = info => {
     const { status, name, size } = info.file;
+    const { fileTypes } = this.state;
     Object.defineProperty(info.file, 'name', {
       value: `${name}（${this.setFileSize(size)}）`,
     });
     if (status !== 'uploading') {
+      const file = info.fileList[info.fileList.length - 1];
+      if (file.response) {
+        const { type } = file.response.result.data;
+        for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+          if (fileTypes[i].datas.indexOf(type) !== -1) {
+            Object.defineProperty(file, 'thumbUrl', {
+              value: fileTypes[i].thumb,
+            });
+            break;
+          }
+        }
+      }
       this.setState({
         fileList: info.fileList,
       });
@@ -546,6 +593,8 @@ class AccessDataInfo extends PureComponent {
       message.error(`${name}上传失败！`);
     }
   };
+
+  onPreview = () => false;
 
   setFileSize = size => {
     if (size === null || size === 0) {
@@ -1023,6 +1072,8 @@ class AccessDataInfo extends PureComponent {
       beforeUpload: this.uploadBefore,
       onChange: this.addFileAddDtoList,
       defaultFileList: params.fileAddDtoList,
+      listType: 'picture',
+      onPreview: this.onPreview,
     };
     fileList.map(item => {
       fileTotal += parseInt(item.size);
