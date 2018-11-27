@@ -439,7 +439,7 @@ class TableList extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="数据名称">
-              {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据源名称" />)}
+              {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据名称" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
