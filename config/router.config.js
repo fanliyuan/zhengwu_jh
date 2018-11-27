@@ -195,9 +195,9 @@ export default [
         authority: ['user', 'assessor'],
         routes: [
           {
-            path: '/data/audit',
-            name: 'audit',
-            component: './Result/Success',
+            path: '/data/assess',
+            name: 'assess',
+            component: './DataSource/Assess',
             authority: ['assessor'],
           },
           {
