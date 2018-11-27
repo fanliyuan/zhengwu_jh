@@ -53,7 +53,11 @@ export default {
         if (+response.code === 200) {
           const pagination =
             response.result.totalCounts > 9
-              ? { current: 1, pageSize: 10, total: response.result.totalCounts }
+              ? {
+                  current: payload.pageNum ? payload.pageNum : 1,
+                  pageSize: payload.pageSize ? payload.pageSize : 10,
+                  total: response.result.totalCounts,
+                }
               : false;
           yield put({
             type: 'queryList',

@@ -28,16 +28,20 @@ export default class SourceManagement extends Component {
   state = {
     // isNodeOperator: false,
     queryData: {},
-    isChanged: false,
+    // isChanged: false,
   };
 
   componentDidMount() {
     // this.setState({
     //   isNodeOperator: Cookies.get(['antd-pro-authority']) === 'operator-n',
     // })
-    this.props.dispatch({
+    const { dispatch } = this.props;
+    dispatch({
       type: 'informationResource/getResourceList',
       payload: { pageNum: 1, pageSize: 10, mount: false },
+    });
+    dispatch({
+      type: 'informationResource/getClassfiyList',
     });
     // this.searchHandle({});
   }
@@ -49,7 +53,7 @@ export default class SourceManagement extends Component {
         ...queryData,
         rsName: e.target.value.trim(),
       },
-      isChanged: true,
+      // isChanged: true,
     });
   };
 
@@ -66,7 +70,7 @@ export default class SourceManagement extends Component {
         ...queryData,
         dataType: val === '' ? undefined : val,
       },
-      isChanged: true,
+      // isChanged: true,
     });
   };
 
@@ -101,7 +105,7 @@ export default class SourceManagement extends Component {
         ...queryData,
         checkStatus: val === '-2' ? undefined : val,
       },
-      isChanged: true,
+      // isChanged: true,
     });
   };
 
@@ -115,22 +119,26 @@ export default class SourceManagement extends Component {
         startTime: val[0] ? format0(val[0].format('x')) : undefined,
         endTime: val[1] ? format24(val[1].format('x')) : undefined,
       },
-      isChanged: true,
+      // isChanged: true,
     });
   };
 
+  tableChange = pagination => {
+    this.searchHandle(pagination);
+  };
+
   searchHandle = ({ pageSize, current }, flag) => {
-    const { isChanged } = this.state;
-    if (!isChanged && flag) return null;
+    // const { isChanged } = this.state;
+    // if (!isChanged && flag) return null;
     const {
       queryData: { rsName, dataType, checkStatus, startTime, endTime, nodeName },
     } = this.state;
     this.props.dispatch({
-      type: 'sourceManagement/getResources',
+      type: 'informationResource/getResourceList',
       payload: {
         body: {
-          pageSize: pageSize || '10',
-          pageNum: current || '1',
+          pageSize: pageSize || 10,
+          pageNum: current || 1,
           checkStatus,
           rsName,
           dataType,
@@ -140,9 +148,9 @@ export default class SourceManagement extends Component {
         },
       },
     });
-    this.setState({
-      isChanged: false,
-    });
+    // this.setState({
+    //   isChanged: false,
+    // });
   };
 
   handleSource = () => {
@@ -176,10 +184,6 @@ export default class SourceManagement extends Component {
     // dispatch(routerRedux.push('/dataSourceManagement/viewDirectory', { resourceId: row.resourceId }))
   };
 
-  tableChange = pagination => {
-    this.searchHandle(pagination);
-  };
-
   handlerelatedData = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push('/informationResource/resourceConnectionData'));
@@ -205,7 +209,7 @@ export default class SourceManagement extends Component {
     const that = this;
     // const { isNodeOperator } = this.state
     const {
-      informationResource: { resourceList, pagination },
+      informationResource: { resourceList, pagination, classfiyList },
     } = this.props;
     const parentNodeList = [];
     const dataList = [];
@@ -458,26 +462,18 @@ export default class SourceManagement extends Component {
               style={{ width: 150, marginRight: 20 }}
               onChange={this.nameChange}
             />
-            <Select
-              style={{ marginRight: 20, width: 120 }}
-              defaultValue=""
-              onChange={this.dataTypeChange}
-            >
-              {selectData}
-            </Select>
-            <Select
-              style={{ marginRight: 20, width: 120 }}
-              defaultValue=""
-              onChange={this.dataTypeChange}
-            >
-              {selectData}
-            </Select>
+            <Cascader
+              options={classfiyList}
+              fieldNames={{ label: 'name', value: 'name' }}
+              style={{ width: 300, marginRight: 20 }}
+              onChange={this.handleClassfiy}
+            />
             {/* <Select
               style={{ marginRight: 20, width: 120 }}
-              value={owingJg}
-              onChange={this.owingJgChange}
+              defaultValue=""
+              onChange={this.dataTypeChange}
             >
-              {selectData2}
+              {selectData}
             </Select> */}
             <Select
               style={{ marginRight: 20, width: 120 }}
@@ -523,7 +519,7 @@ export default class SourceManagement extends Component {
                     `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
                 }
               }
-              // rowKey="rsId"
+              rowKey="id"
               // rowSelection={rowSelection}
               bordered
               onChange={this.tableChange}

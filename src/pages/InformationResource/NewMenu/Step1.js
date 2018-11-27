@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-22 15:36:33
+ * @Last Modified time: 2018-11-27 15:26:46
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -53,7 +53,7 @@ export default class Step1 extends PureComponent {
       resourceCode: '',
       formName: '',
     },
-    disabled: true,
+    // disabled: true,
     selectCode: '',
     selectId: '',
     isNext: false,
@@ -64,9 +64,9 @@ export default class Step1 extends PureComponent {
 
   componentDidMount() {
     // if (this.props.location.pathname !== '/dataSourceManagement/checkMenu/one') {
-    this.setState({
-      disabled: false,
-    });
+    // this.setState({
+    //   disabled: false,
+    // });
     // }
     const { dispatch } = this.props;
     dispatch({
@@ -114,8 +114,10 @@ export default class Step1 extends PureComponent {
     }
   };
 
+  handleNameChange = e => {};
+
   handleSummaryChange = e => {
-    this.checkLength(e.target.value, 50);
+    this.checkLength(e.target.value, 500);
   };
 
   handlePrividerChange = e => {
@@ -127,7 +129,8 @@ export default class Step1 extends PureComponent {
     this.checkLength(e + '', 500);
   };
 
-  handleCheckName = async () => {
+  handleCheckName = async e => {
+    const t = e.target.value;
     const {
       form: { getFieldValue },
       dispatch,
@@ -143,9 +146,10 @@ export default class Step1 extends PureComponent {
         isNext: true,
       });
     } else {
-      this.setState({
-        isNext: false,
-      });
+      this.checkLength(t, 50);
+      // this.setState({
+      //   isNext: false,
+      // });
     }
   };
 
@@ -268,7 +272,7 @@ export default class Step1 extends PureComponent {
     } = this.props;
     isSameMsg = sameMsg;
     // console.log(classfiyList)
-    const { data, disabled, isNext, startValue } = this.state;
+    const { data, isNext, startValue } = this.state;
 
     const onValidateForm = () => {
       validateFields(err => {
@@ -459,7 +463,7 @@ export default class Step1 extends PureComponent {
               })(
                 <Input
                   placeholder="请输入名称"
-                  disabled={disabled}
+                  // disabled={disabled}
                   onChange={this.handleNameChange}
                   onBlur={this.handleCheckName}
                 />
@@ -473,7 +477,7 @@ export default class Step1 extends PureComponent {
                 <Input.TextArea
                   placeholder="请输入描述"
                   rows={4}
-                  readOnly={disabled}
+                  // readOnly={disabled}
                   onChange={this.handleSummaryChange}
                 />
               )}
@@ -499,13 +503,13 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('providerName', {
                 initialValue: data.providerName,
                 rules: [{ required: true, message: '请输入提供方名称' }],
-              })(<Input placeholder="请输入提供方名称" disabled={disabled} />)}
+              })(<Input placeholder="请输入提供方名称" />)}
             </Item>
             <Item label="提供方代码" {...formItemLayout}>
               {getFieldDecorator('providerNo', {
                 initialValue: data.innerDepartmentName,
                 rules: [{ required: true, message: '请输入提供方代码' }],
-              })(<InputNumber disabled={disabled} min={1} onChange={this.handleNumChange} />)}
+              })(<InputNumber min={1} onChange={this.handleNumChange} />)}
             </Item>
             <Item label="提供方内部部门" {...formItemLayout}>
               {getFieldDecorator('providerDept', {
@@ -514,7 +518,7 @@ export default class Step1 extends PureComponent {
               })(
                 <Input
                   placeholder="请输入部门"
-                  disabled={disabled}
+                  // disabled={disabled}
                   onChange={this.handlePrividerChange}
                 />
               )}
@@ -531,7 +535,7 @@ export default class Step1 extends PureComponent {
                 initialValue: data.formName,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
-                <Select disabled={disabled}>
+                <Select>
                   {/* <Option value="classify1">分类1</Option>
                   <Option value="classify2">分类2</Option>
                   <Option value="classify21">分类21</Option> */}
@@ -551,7 +555,7 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('relateCode', {
                 initialValue: data.providerCode,
                 // rules: [{ required: true, message: '请输入名称' }],
-              })(<InputNumber disabled={disabled} min={1} />)}
+              })(<InputNumber min={1} />)}
             </Item>
             <div className="btnclsb">
               {/* {!disabled ? (

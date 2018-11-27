@@ -2,10 +2,10 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 17:20:24
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-22 17:20:56
+ * @Last Modified time: 2018-11-27 17:49:59
 */
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Input, message, Popconfirm, Divider, Tooltip } from 'antd';
+import { Table, Input, Popconfirm, Divider, Tooltip } from 'antd';
 
 // eslint-disable-next-line
 import styles from './index.less';
@@ -16,7 +16,7 @@ export default class TableForm extends PureComponent {
     this.state = {
       data: props.value,
       loading: false,
-      target: {},
+      // target: {},
       enAble: true,
     };
     // 原始数据的的缓存 -- 其实是每行点击编辑的时候,会把当前行的数据记录下来

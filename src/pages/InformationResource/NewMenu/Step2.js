@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-22 17:07:08
+ * @Last Modified time: 2018-11-27 17:51:43
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -74,7 +74,7 @@ export default class Step2 extends PureComponent {
     visible1: false,
     visible2: false,
     selectKeys: [],
-    disabled: true,
+    // disabled: true,
     addVisible: false,
     routeData: {},
     isEnable: false,
@@ -94,7 +94,7 @@ export default class Step2 extends PureComponent {
         // const { tableData } = this.state
         const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
         this.setState({
-          disabled: false,
+          // disabled: false,
           tableData: JSON.parse(sessionStorage.getItem('itemData')),
           routeData: {
             ...sessionData,
@@ -104,7 +104,7 @@ export default class Step2 extends PureComponent {
       }
     } else {
       this.setState({
-        disabled: false,
+        // disabled: false,
         routeData: this.props.location.state ? this.props.location.state.routeData : '',
       });
       sessionStorage.setItem('routeData', JSON.stringify(this.props.location.state.routeData));
@@ -234,13 +234,13 @@ export default class Step2 extends PureComponent {
   };
 
   handleNameChange = e => {
-    this.checkLength(e.target.value, 5);
+    this.checkLength(e.target.value, 50);
   };
 
   render() {
     // const { form: { getFieldDecorator, validateFields }, dispatch } = this.props
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const {
       data,
@@ -250,7 +250,7 @@ export default class Step2 extends PureComponent {
       addVisible,
       visible2,
       selectKeys,
-      disabled,
+      // disabled,
       isEnable,
     } = this.state;
     const columns = [
@@ -403,16 +403,16 @@ export default class Step2 extends PureComponent {
           </Steps>
           <Form>
             <Item lable="名称">
-              <Radio.Group value={data.method} onChange={this.methodChange} disabled={disabled}>
-                <Radio value={3}>手工建立</Radio>
-                <Radio value={2}>模板导入</Radio>
+              <Radio.Group value={data.method} onChange={this.methodChange}>
+                <Radio value={3}>手工添加</Radio>
+                <Radio value={2}>信息项模板导入</Radio>
               </Radio.Group>
             </Item>
             <Item label="信息项">
               <TableForm
                 value={tableData}
                 onChange={val => this.onChange(val)}
-                disabled={disabled}
+                // disabled={disabled}
                 handleChange={this.handleDataChange}
               />
             </Item>
@@ -421,11 +421,11 @@ export default class Step2 extends PureComponent {
             <Button className="mr64" onClick={this.goBack} style={{ marginRight: 20 }}>
               上一步
             </Button>
-            {!disabled && (
-              <Button type="primary" onClick={this.goForward}>
-                提交
-              </Button>
-            )}
+            {/* {!disabled && ( */}
+            <Button type="primary" onClick={this.goForward}>
+              提交
+            </Button>
+            {/* )}*/}
           </div>
           <Button
             type="primary"
@@ -449,7 +449,7 @@ export default class Step2 extends PureComponent {
                 })(
                   <Input
                     placeholder="信息项名称"
-                    disabled={disabled}
+                    // disabled={disabled}
                     onChange={this.handleNameChange}
                   />
                 )}
@@ -458,35 +458,44 @@ export default class Step2 extends PureComponent {
                 {getFieldDecorator('dataType', {
                   initialValue: data.formName,
                   rules: [{ required: true, message: '请选择数据类型' }],
-                })(<Select disabled={disabled}>{dataTypeOption}</Select>)}
+                })(<Select>{dataTypeOption}</Select>)}
               </Item>
               <Item label="数据长度" {...formItemLayout}>
                 {getFieldDecorator('dataLength', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入数据长度' }],
-                })(<InputNumber disabled={disabled} min={1} onChange={this.handleLengthChange} />)}
+                })(<InputNumber min={1} onChange={this.handleLengthChange} />)}
               </Item>
               <Item label="共享类型" {...formItemLayout}>
                 {getFieldDecorator('shareType', {
                   initialValue: data.classify,
                   rules: [{ required: true, message: '请选择共享类型' }],
                 })(
-                  <Select disabled={disabled}>
+                  <Select>
                     <Option value="有条件共享">有条件共享</Option>
                     <Option value="无条件共享">无条件共享</Option>
                     <Option value="不予共享">不予共享</Option>
                   </Select>
                 )}
               </Item>
-              <Item label="共享条件" {...formItemLayout}>
+              <Item
+                label="共享条件"
+                {...formItemLayout}
+                style={{ display: getFieldValue('shareType') === '有条件共享' ? 'block' : 'none' }}
+              >
                 {getFieldDecorator('shareCondition', {
                   initialValue: data.desc,
-                  rules: [{ required: true, message: '请输入共享条件' }],
+                  rules: [
+                    {
+                      required: getFieldValue('shareType') === '有条件共享' ? true : false,
+                      message: '请输入共享条件',
+                    },
+                  ],
                 })(
                   <Input.TextArea
                     placeholder="请输入共享条件"
                     rows={4}
-                    readOnly={disabled}
+                    // readOnly={disabled}
                     onChange={this.handleShareChange}
                   />
                 )}
@@ -496,7 +505,7 @@ export default class Step2 extends PureComponent {
                   initialValue: data.formName,
                   rules: [{ required: true, message: '请选择共享方式' }],
                 })(
-                  <Select disabled={disabled}>
+                  <Select>
                     {/* <Option value="classify1">分类1</Option>
                       <Option value="classify2">分类2</Option>
                       <Option value="classify21">分类21</Option> */}
@@ -509,7 +518,7 @@ export default class Step2 extends PureComponent {
                   initialValue: data.classify,
                   rules: [{ required: true, message: '请选择共享类型' }],
                 })(
-                  <Select disabled={disabled}>
+                  <Select>
                     <Option value="是">是</Option>
                     <Option value="否">否</Option>
                     {/* <Option value="classify21">不予共享</Option> */}
@@ -524,7 +533,7 @@ export default class Step2 extends PureComponent {
                   <Input.TextArea
                     placeholder="请输入开放条件"
                     rows={4}
-                    readOnly={disabled}
+                    // readOnly={disabled}
                     onChange={this.handleOpenConditionChange}
                   />
                 )}
