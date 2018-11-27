@@ -1,13 +1,12 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Form, Input, Select, Card, message } from 'antd';
-import styles from './AddDataSource.less';
+import { Form, Input, Select, Card } from 'antd';
 
-const Option = Select.Option;
+const { Option } = Select;
 const FormItem = Form.Item;
 
-@connect(({ accessData, loading }) => ({
+@connect(({ accessData }) => ({
   accessData,
 }))
 @Form.create()
@@ -16,23 +15,21 @@ class SetSyncPlan extends PureComponent {
     super(props);
     this.state = {
       timeRate: '分钟',
-      syncRate: '定时',
+      isTimeRequire: true,
     };
   }
 
   componentDidMount() {
-    this.props.onRef(this);
+    const { onRef } = this.props;
+    onRef(this);
   }
 
   handleSubmit = () => {
     const { form, dispatch } = this.props;
     const { submit } = this.props;
-    const { timeRate, syncRate } = this.state;
+    const { timeRate } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (syncRate === '定时' && values.timeNum === '') {
-          return message.error('请填写定时时间！');
-        }
         values.syncAddDto.timeSet = `${values.timeNum}-${timeRate}`;
         delete values.timeNum;
         dispatch({
@@ -60,17 +57,23 @@ class SetSyncPlan extends PureComponent {
       setFieldsValue({
         timeNum: '',
       });
+      this.setState({
+        isTimeRequire: false,
+      });
+    } else {
+      this.setState({
+        isTimeRequire: true,
+      });
     }
-    this.setState({
-      syncRate: value,
-    });
   };
 
   render() {
     const { params } = this.props;
+    const { isTimeRequire } = this.state;
     const timeArr = params.syncAddDto.timeSet.split('-');
-    const { syncModeList, syncRateList, timeList } = this.props.accessData;
-    const { syncRate } = this.state;
+    const {
+      accessData: { syncModeList, syncRateList, timeList },
+    } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -125,8 +128,8 @@ class SetSyncPlan extends PureComponent {
               initialValue: timeArr[0],
               rules: [
                 {
-                  validator(rule, value, callback, source, options) {
-                    var errors = [];
+                  validator(rule, value, callback) {
+                    const errors = [];
                     if (!/^[0-9]+$/.test(value) && value !== '') {
                       callback(
                         formatMessage({ id: 'validation.accessDataSource.syncAddDto.timeNum.type' })
@@ -146,6 +149,12 @@ class SetSyncPlan extends PureComponent {
                   max: 3,
                   message: formatMessage({
                     id: 'validation.accessDataSource.syncAddDto.timeNum.max',
+                  }),
+                },
+                {
+                  required: isTimeRequire,
+                  message: formatMessage({
+                    id: 'validation.accessDataSource.syncAddDto.timeNum.require',
                   }),
                 },
               ],
@@ -178,8 +187,8 @@ class SetSyncPlan extends PureComponent {
               initialValue: params.syncAddDto.stopNum,
               rules: [
                 {
-                  validator(rule, value, callback, source, options) {
-                    var errors = [];
+                  validator(rule, value, callback) {
+                    const errors = [];
                     if (!/^[0-9]+$/.test(value) && value !== '') {
                       callback(
                         formatMessage({ id: 'validation.accessDataSource.syncAddDto.stopNum.type' })

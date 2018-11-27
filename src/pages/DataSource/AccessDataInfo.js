@@ -17,6 +17,14 @@ import {
   Alert,
 } from 'antd';
 import styles from './AddDataSource.less';
+import codeThumb from '../../assets/code.svg';
+import fileThumb from '../../assets/file.svg';
+import fileExcelThumb from '../../assets/file-excel.svg';
+import fileImageThumb from '../../assets/file-image.svg';
+import filePdfThumb from '../../assets/file-pdf.svg';
+import filePptThumb from '../../assets/file-ppt.svg';
+import fileTextThumb from '../../assets/file-text.svg';
+import fileWordThumb from '../../assets/file-word.svg';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -97,34 +105,42 @@ class AccessDataInfo extends PureComponent {
       fileTypes: [
         {
           name: 'file-text',
+          thumb: fileTextThumb,
           datas: ['txt'],
         },
         {
           name: 'file-pdf',
+          thumb: filePdfThumb,
           datas: ['pdf'],
         },
         {
           name: 'file-word',
+          thumb: fileWordThumb,
           datas: ['doc', 'docx'],
         },
         {
           name: 'file-excel',
+          thumb: fileExcelThumb,
           datas: ['xls', 'xlsx'],
         },
         {
           name: 'file-ppt',
+          thumb: filePptThumb,
           datas: ['ppt', 'pptx'],
         },
         {
           name: 'picture',
+          thumb: fileImageThumb,
           datas: ['jpg', 'png', 'bmp', 'gif', 'jpeg'],
         },
         {
           name: 'code',
+          thumb: codeThumb,
           datas: ['html', 'css', 'js', 'java', 'php'],
         },
         {
           name: 'folder',
+          thumb: fileThumb,
           datas: ['folder'],
         },
       ],
@@ -143,6 +159,28 @@ class AccessDataInfo extends PureComponent {
     const { hasReceiveFiles } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        const { fileTypes } = this.state;
+        fileAddDtoList.map(item => {
+          let flag = false;
+          Object.defineProperty(item, 'name', {
+            value: `${item.name}（${this.setFileSize(item.size)}）`,
+          });
+          for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+            if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              flag = true;
+              Object.defineProperty(item, 'thumbUrl', {
+                value: fileTypes[i].thumb,
+              });
+              break;
+            }
+          }
+          if (!flag) {
+            Object.defineProperty(item, 'thumbUrl', {
+              value: fileThumb,
+            });
+          }
+          return item;
+        });
         this.setState({
           fileList: fileAddDtoList,
           hasReceiveFiles: true,
@@ -158,6 +196,28 @@ class AccessDataInfo extends PureComponent {
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
       if (fileAddDtoList && fileAddDtoList.length > 0) {
+        const { fileTypes } = this.state;
+        fileAddDtoList.map(item => {
+          let flag = false;
+          Object.defineProperty(item, 'name', {
+            value: `${item.name}（${this.setFileSize(item.size)}）`,
+          });
+          for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+            if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              flag = true;
+              Object.defineProperty(item, 'thumbUrl', {
+                value: fileTypes[i].thumb,
+              });
+              break;
+            }
+          }
+          if (!flag) {
+            Object.defineProperty(item, 'thumbUrl', {
+              value: fileThumb,
+            });
+          }
+          return item;
+        });
         this.setState({
           fileList: fileAddDtoList,
           hasReceiveFiles: true,
@@ -206,7 +266,7 @@ class AccessDataInfo extends PureComponent {
             }
             return paramsFile.push({
               id: item.id,
-              name: item.name,
+              name: item.uname,
               size: item.size,
               type: item.type,
               uploadTime: item.uploadTime,
@@ -333,7 +393,7 @@ class AccessDataInfo extends PureComponent {
   handleSelectTable = (selectedRowKeys, selectedRows) => {
     const {
       dispatch,
-      accessData: { alias },
+      accessData: { alias, ip, port, username, password },
     } = this.props;
     const { dbName } = this.state;
     dispatch({
@@ -348,6 +408,10 @@ class AccessDataInfo extends PureComponent {
       type: 'accessData/setColumnList',
       payload: {
         alias,
+        addr: ip,
+        port,
+        username,
+        password,
         db: dbName,
         table: selectedRows[0].name,
       },
@@ -426,14 +490,15 @@ class AccessDataInfo extends PureComponent {
   };
 
   setRowNum = (record, index) => {
-    record.index = index + 1;
+    Object.defineProperty(record, 'index', { value: index + 1 });
+    return record;
   };
 
   onLoadTreeData = treeNode => {
     const {
       dispatch,
       type,
-      accessData: { alias },
+      accessData: { ip, port, username, password },
     } = this.props;
     const { path, name, open, children } = treeNode.props.dataRef;
     return new Promise(resolve => {
@@ -443,7 +508,10 @@ class AccessDataInfo extends PureComponent {
             type: 'accessData/setTreeList',
             payload: {
               params: {
-                alias,
+                addr: ip,
+                port,
+                username,
+                password,
                 path: `${path}${name}/`,
               },
               type: 'update',
@@ -511,17 +579,54 @@ class AccessDataInfo extends PureComponent {
     });
 
   addFileAddDtoList = info => {
-    const { status } = info.file;
+    const { status, name, size } = info.file;
+    const { fileTypes } = this.state;
+    Object.defineProperty(info.file, 'name', {
+      value: `${name}（${this.setFileSize(size)}）`,
+    });
     if (status !== 'uploading') {
+      const file = info.fileList[info.fileList.length - 1];
+      if (file.response) {
+        const { type } = file.response.result.data;
+        let flag = false;
+        for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+          if (fileTypes[i].datas.indexOf(type) !== -1) {
+            flag = true;
+            Object.defineProperty(file, 'thumbUrl', {
+              value: fileTypes[i].thumb,
+            });
+            break;
+          }
+        }
+        if (!flag) {
+          Object.defineProperty(file, 'thumbUrl', {
+            value: fileThumb,
+          });
+        }
+      }
       this.setState({
         fileList: info.fileList,
       });
     }
     if (status === 'done') {
-      message.success(`${info.file.name}上传成功！`);
+      message.success(`${name}上传成功！`);
     } else if (status === 'error') {
-      message.error(`${info.file.name}上传失败！`);
+      message.error(`${name}上传失败！`);
     }
+  };
+
+  onPreview = () => false;
+
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let newSize = srcSize / Math.pow(1024, index);
+    newSize = newSize.toFixed(2);
+    return newSize + unitArr[index];
   };
 
   changePage = current => {
@@ -799,7 +904,6 @@ class AccessDataInfo extends PureComponent {
         className={styles.tree}
         checkable
         showIcon
-        autoExpandParent
         loadData={this.onLoadTreeData}
         onCheck={this.checkTree}
         defaultCheckedKeys={checkedKeys}
@@ -819,7 +923,6 @@ class AccessDataInfo extends PureComponent {
         className={styles.tree}
         checkable
         showIcon
-        autoExpandParent
         onCheck={this.checkTree}
         defaultCheckedKeys={checkedKeys}
         defaultExpandedKeys={checkedKeys}
@@ -965,10 +1068,13 @@ class AccessDataInfo extends PureComponent {
   }
 
   renderFileForm() {
+    let fileTotal = 0;
     const {
       params,
       form: { getFieldDecorator },
     } = this.props;
+    const { fileList } = this.state;
+    const fileNums = fileList.length;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -987,15 +1093,26 @@ class AccessDataInfo extends PureComponent {
       beforeUpload: this.uploadBefore,
       onChange: this.addFileAddDtoList,
       defaultFileList: params.fileAddDtoList,
+      listType: 'picture',
+      onPreview: this.onPreview,
     };
+    fileList.map(item => {
+      fileTotal += parseInt(item.size);
+      return fileTotal;
+    });
     return (
       <Fragment>
-        <Dragger {...fileProps}>
+        <Dragger {...fileProps} className={styles.hiddenFiles}>
           <p className="ant-upload-drag-icon">
             <Icon type="inbox" />
           </p>
           <p className="ant-upload-text">单击或拖动文件到该区域上传</p>
           <p className="ant-upload-hint">支持单个或批量上传</p>
+          <p className="ant-upload-hint">最大上传文件大小：50 MB</p>
+          <p className="ant-upload-hint">
+            <span style={{ color: '#ed4014' }}>{fileNums}</span> 个文件上传已完成，共{' '}
+            <span style={{ color: '#ed4014' }}>{this.setFileSize(fileTotal)}</span>
+          </p>
         </Dragger>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem

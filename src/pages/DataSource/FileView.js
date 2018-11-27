@@ -156,6 +156,18 @@ class FileView extends Component {
     this.resetSelectedIds();
   };
 
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let newSize = srcSize / Math.pow(1024, index);
+    newSize = newSize.toFixed(2);
+    return newSize + unitArr[index];
+  };
+
   renderForm() {
     const {
       form: { getFieldDecorator },
@@ -203,6 +215,7 @@ class FileView extends Component {
       {
         title: '文件大小',
         dataIndex: 'size',
+        render: text => this.setFileSize(parseInt(text)),
       },
       {
         title: '最近更新时间',

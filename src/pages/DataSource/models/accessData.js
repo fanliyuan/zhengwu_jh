@@ -89,6 +89,10 @@ export default {
     dataType: '',
     type: '',
     alias: '',
+    ip: '',
+    port: '',
+    username: '',
+    password: '',
     oldName: '',
     status: '',
     dbList: [],
@@ -214,22 +218,28 @@ export default {
             dataType,
             type,
             alias,
+            ip,
+            port,
+            username,
+            password,
             oldName: '',
           },
         });
-        yield put({
-          type: 'connection',
-          payload: {
-            dataType,
-            connectParams: {
-              type,
-              addr: ip,
-              port,
-              username,
-              password,
+        if (dataType !== 'file') {
+          yield put({
+            type: 'connection',
+            payload: {
+              dataType,
+              connectParams: {
+                type,
+                addr: ip,
+                port,
+                username,
+                password,
+              },
             },
-          },
-        });
+          });
+        }
       }
     },
     *setDbList({ payload }, { call, put }) {
@@ -317,42 +327,50 @@ export default {
       });
     },
     *connection({ payload }, { call, put }) {
-      const response = yield call(connectBase, payload.connectParams);
       const treeType = payload.connectParams.type;
-      if (response && response.code < 300) {
-        const alias = response.result.data;
-        if (payload.dataType === 'db') {
+      if (payload.dataType === 'db') {
+        const response = yield call(connectBase, payload.connectParams);
+        if (response && response.code < 300) {
+          message.destroy();
+          message.success('连接成功！');
+          const alias = response.result.data;
           yield put({
             type: 'setDbList',
             payload: {
               alias,
             },
           });
-        } else if (payload.dataType === 'ftp') {
-          if (payload.getAllTree) {
-            yield put({
-              type: 'setTreeData',
-              payload: {
-                params: {
-                  alias,
-                },
-                type: 'create',
-                treeType,
+        }
+      } else if (payload.dataType === 'ftp') {
+        if (payload.getAllTree) {
+          yield put({
+            type: 'setTreeData',
+            payload: {
+              params: {
+                addr: payload.connectParams.addr,
+                port: payload.connectParams.port,
+                username: payload.connectParams.username,
+                password: payload.connectParams.password,
               },
-            });
-          } else {
-            yield put({
-              type: 'setTreeList',
-              payload: {
-                params: {
-                  alias,
-                  path: '/',
-                },
-                type: 'create',
-                treeType,
+              type: 'create',
+              treeType,
+            },
+          });
+        } else {
+          yield put({
+            type: 'setTreeList',
+            payload: {
+              params: {
+                addr: payload.connectParams.addr,
+                port: payload.connectParams.port,
+                username: payload.connectParams.username,
+                password: payload.connectParams.password,
+                path: '/',
               },
-            });
-          }
+              type: 'create',
+              treeType,
+            },
+          });
         }
       }
     },
@@ -512,6 +530,7 @@ export default {
             id: item.id,
             uid: item.id,
             name: item.name,
+            uname: item.name,
             size: item.size,
             type: item.type,
             uploadTime: item.uploadTime,
@@ -670,6 +689,10 @@ export default {
             dataType: payload.dataType,
             type: payload.type,
             alias: payload.alias,
+            ip: payload.params.datasourceDetailDto.ip,
+            port: payload.params.datasourceDetailDto.port,
+            username: payload.params.datasourceDetailDto.username,
+            password: payload.params.datasourceDetailDto.password,
             oldName: payload.oldName,
           },
         });
@@ -775,6 +798,10 @@ export default {
         dataType: payload.dataType,
         type: payload.type,
         alias: payload.alias,
+        ip: payload.ip,
+        port: payload.port,
+        username: payload.username,
+        password: payload.password,
         oldName: payload.oldName,
       };
     },

@@ -29,3 +29,16 @@ export async function updateDataSource(params) {
     body: params,
   });
 }
+
+// 获取数据审核的列表
+export async function getAssessList(params) {
+  return request(`/api/api/v2/zhengwu/swap/datas/?${stringify(params)}`);
+}
+
+// 数据审核
+export async function assessData(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/review`, {
+    method: 'POST',
+    body: params.body,
+  });
+}

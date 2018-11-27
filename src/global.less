@@ -42,6 +42,19 @@ ol {
 .fl {
   float: left;
 }
+.clearfix,
+.cf {
+  &::before {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
 .mr16 {
   margin-right: 16px !important;
 }

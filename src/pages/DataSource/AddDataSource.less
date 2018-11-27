@@ -134,3 +134,12 @@
   font-weight: 500;
   margin-bottom: 16px;
 }
+
+.hiddenFiles {
+  :global {
+    .ant-upload-list {
+      max-height: 210px;
+      overflow-y: scroll;
+    }
+  }
+}
