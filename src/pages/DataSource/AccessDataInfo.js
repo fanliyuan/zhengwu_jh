@@ -161,16 +161,23 @@ class AccessDataInfo extends PureComponent {
       if (fileAddDtoList && fileAddDtoList.length > 0) {
         const { fileTypes } = this.state;
         fileAddDtoList.map(item => {
+          let flag = false;
           Object.defineProperty(item, 'name', {
             value: `${item.name}（${this.setFileSize(item.size)}）`,
           });
           for (let i = 0, len = fileTypes.length; i < len; i += 1) {
             if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              flag = true;
               Object.defineProperty(item, 'thumbUrl', {
                 value: fileTypes[i].thumb,
               });
               break;
             }
+          }
+          if (!flag) {
+            Object.defineProperty(item, 'thumbUrl', {
+              value: fileThumb,
+            });
           }
           return item;
         });
@@ -191,16 +198,23 @@ class AccessDataInfo extends PureComponent {
       if (fileAddDtoList && fileAddDtoList.length > 0) {
         const { fileTypes } = this.state;
         fileAddDtoList.map(item => {
+          let flag = false;
           Object.defineProperty(item, 'name', {
             value: `${item.name}（${this.setFileSize(item.size)}）`,
           });
           for (let i = 0, len = fileTypes.length; i < len; i += 1) {
             if (fileTypes[i].datas.indexOf(item.type) !== -1) {
+              flag = true;
               Object.defineProperty(item, 'thumbUrl', {
                 value: fileTypes[i].thumb,
               });
               break;
             }
+          }
+          if (!flag) {
+            Object.defineProperty(item, 'thumbUrl', {
+              value: fileThumb,
+            });
           }
           return item;
         });
@@ -574,13 +588,20 @@ class AccessDataInfo extends PureComponent {
       const file = info.fileList[info.fileList.length - 1];
       if (file.response) {
         const { type } = file.response.result.data;
+        let flag = false;
         for (let i = 0, len = fileTypes.length; i < len; i += 1) {
           if (fileTypes[i].datas.indexOf(type) !== -1) {
+            flag = true;
             Object.defineProperty(file, 'thumbUrl', {
               value: fileTypes[i].thumb,
             });
             break;
           }
+        }
+        if (!flag) {
+          Object.defineProperty(file, 'thumbUrl', {
+            value: fileThumb,
+          });
         }
       }
       this.setState({
