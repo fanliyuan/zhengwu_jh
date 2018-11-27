@@ -41,6 +41,7 @@ export default {
   'validation.accessDataSource.syncAddDto.timeNum.type': '定时设置为正整数！',
   'validation.accessDataSource.syncAddDto.timeNum.isZero': '定时设置必须大于0！',
   'validation.accessDataSource.syncAddDto.timeNum.max': '定时设置长度不能大于3个字符！',
+  'validation.accessDataSource.syncAddDto.timeNum.require': '请填写定时设置！',
   'validation.accessDataSource.syncAddDto.stopNum.required': '请填写停止次数！',
   'validation.accessDataSource.syncAddDto.stopNum.type': '自动停止为正整数！',
   'validation.accessDataSource.syncAddDto.stopNum.max': '自动停止长度不能大于3个字符！',

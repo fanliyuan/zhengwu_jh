@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Form, Input, Select, Card, message } from 'antd';
+import { Form, Input, Select, Card } from 'antd';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -15,7 +15,7 @@ class SetSyncPlan extends PureComponent {
     super(props);
     this.state = {
       timeRate: '分钟',
-      syncRate: '定时',
+      isTimeRequire: true,
     };
   }
 
@@ -27,12 +27,9 @@ class SetSyncPlan extends PureComponent {
   handleSubmit = () => {
     const { form, dispatch } = this.props;
     const { submit } = this.props;
-    const { timeRate, syncRate } = this.state;
+    const { timeRate } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (syncRate === '定时' && values.timeNum === '') {
-          return message.error('请填写定时时间！');
-        }
         values.syncAddDto.timeSet = `${values.timeNum}-${timeRate}`;
         delete values.timeNum;
         dispatch({
@@ -60,14 +57,19 @@ class SetSyncPlan extends PureComponent {
       setFieldsValue({
         timeNum: '',
       });
+      this.setState({
+        isTimeRequire: false,
+      });
+    } else {
+      this.setState({
+        isTimeRequire: true,
+      });
     }
-    this.setState({
-      syncRate: value,
-    });
   };
 
   render() {
     const { params } = this.props;
+    const { isTimeRequire } = this.state;
     const timeArr = params.syncAddDto.timeSet.split('-');
     const {
       accessData: { syncModeList, syncRateList, timeList },
@@ -147,6 +149,12 @@ class SetSyncPlan extends PureComponent {
                   max: 3,
                   message: formatMessage({
                     id: 'validation.accessDataSource.syncAddDto.timeNum.max',
+                  }),
+                },
+                {
+                  required: isTimeRequire,
+                  message: formatMessage({
+                    id: 'validation.accessDataSource.syncAddDto.timeNum.require',
                   }),
                 },
               ],
