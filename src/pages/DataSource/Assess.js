@@ -1,21 +1,30 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Select, Modal, Button, Radio, Input } from 'antd';
 import { connect } from 'dva';
+import router from 'umi/router';
 import { Bind, Throttle } from 'lodash-decorators';
 
+import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SearchForm from '@/components/SearchForm';
+import KeyValue from '@/components/KeyValue';
 import styles from './Assess.less';
 
 const { Option, OptGroup } = Select;
 const { Group } = Radio;
 const { TextArea } = Input;
 
-const statusData = [
-  { value: '-1', label: '待审核' },
-  { value: '0', label: '已拒绝' },
-  { value: '1', label: '已通过' },
-];
+// 审核状态
+const statusObject = {
+  '-1': '待审核',
+  '0': '已拒绝',
+  '1': '已通过',
+  '10': '修改已拒绝',
+  '11': '修改已通过',
+  '20': '删除已拒绝',
+  '21': '删除已通过',
+};
+const statusData = Object.entries(statusObject);
 
 @connect(({ assess, loading }) => ({ assess, loading: loading.models.assess }))
 export default class Assess extends Component {
@@ -33,7 +42,6 @@ export default class Assess extends Component {
         typeOptions: {
           placeholder: '应用系统名称',
           maxLength: 50,
-          disabled: true,
         },
       },
       {
@@ -106,14 +114,28 @@ export default class Assess extends Component {
         //   <Option value='1'>已通过</Option>
         // </Fragment>)
         children: statusData.map(item => (
-          <Option value={item.value} key={item.value}>
-            {item.label}
+          <Option value={item[0]} key={item[0]}>
+            {item[1]}
           </Option>
         )),
       },
     ],
     searchHandler: this.handleSearch,
   };
+
+  operationsObject = {
+    infoResource: '信息资源',
+    view: '查看',
+    assessLog: '审核日志',
+    assess: '审核',
+  };
+
+  operationsData = [
+    ['view', 'assess'],
+    ['assessLog'],
+    ['infoResource', 'view', 'assessLog'],
+    ['infoResource', 'view', 'assessLog', 'assess'],
+  ];
 
   columns = [
     {
@@ -123,6 +145,14 @@ export default class Assess extends Component {
     {
       dataIndex: 'name',
       title: '数据名称',
+      width: '400px',
+      render(text) {
+        return (
+          <Ellipsis tooltip={true} lines={1}>
+            {text}
+          </Ellipsis>
+        );
+      },
     },
     {
       dataIndex: 'dataType',
@@ -131,37 +161,56 @@ export default class Assess extends Component {
     {
       dataIndex: 'appsysName',
       title: '应用系统名称',
+      width: '200px',
       render(text) {
-        return text || '暂无';
+        return (
+          <Ellipsis tooltip={true} lines={1}>
+            {text || '暂无'}
+          </Ellipsis>
+        );
       },
     },
     {
       dataIndex: 'updateTime',
       title: '提交时间',
     },
-    {
-      dataIndex: 'audit',
-      title: '审核类型',
-    },
+    // {
+    //   dataIndex: 'audit',
+    //   title: '审核类型',
+    // },
     {
       dataIndex: 'status',
       title: '状态',
       render(text) {
         // return statusData.find(item => item.value === text).label
-        return text === -1 ? '待审核' : text === 0 ? '已拒绝' : '已通过';
+        return statusObject[text];
       },
     },
     {
       title: '操作',
       render: (_, row) => {
-        return (
-          <Fragment>
-            {/* row.auditType !== 'add' &&  */ <a className="mr16">信息资源</a>}
-            {/* row.status !== -1 && */ <a className="mr16">查看</a>}
-            {/* row.auditType !== 'add' && row.status !== -1 && */ <a className="mr16">审核日志</a>}
-            {/* row.status === -1 && */ <a onClick={this.handleAssess.bind(this, row)}>审核</a>}
-          </Fragment>
-        );
+        let index = 1;
+        if (row.status === -1) {
+          index = 0;
+        } else if (row.status === 1 || row.status === 10 || row.status === 20) {
+          index = 2;
+        } else if (row.status === 11 || row.status === 21) {
+          index = 3;
+        }
+        return this.operationsData[index].map(item => {
+          if (item === 'infoResource' && !row.resourceId) {
+            return (
+              <a className="mr16 disabled" key={item}>
+                信息资源
+              </a>
+            );
+          }
+          return (
+            <a className="mr16" onClick={this['handle' + item].bind(this, row)} key={item}>
+              {this.operationsObject[item]}
+            </a>
+          );
+        });
       },
     },
   ];
@@ -170,21 +219,13 @@ export default class Assess extends Component {
     queryData: {},
     pagination: { pageNum: 1, pageSize: 10 },
     dataId: 0,
+    type: 'ftp',
     assessVisible: false,
-    assessPass: 1,
+    status: 1,
     rejectReason: '',
   };
 
   componentDidMount() {
-    // this.props.dispatch({
-    //   type: 'assess/getAssessList',
-    //   payload: {
-    //     params: {
-    //       pageNum: 1,
-    //       pageSize: 10
-    //     }
-    //   }
-    // })
     this.handleSearch();
   }
 
@@ -203,18 +244,45 @@ export default class Assess extends Component {
     );
   };
 
-  handleAssess = row => {
+  handleinfoResource = row => {
+    // console.log(row, '信息资源')
+    router.push(
+      `/data/management/infoSource/${row.type || 'ftp'}/${row.id || 0}/${row.resourceId || 0}`
+    );
+  };
+
+  handleview = row => {
+    console.log(row, '查看');
+  };
+
+  handleassessLog = row => {
+    // 查看日志
+    router.push(`/data/assessLog/${row.type || 'ftp'}/${row.id || 0}`);
+  };
+
+  handleassess = row => {
     // console.log(row)
     this.setState({
-      dataId: row.dataId || 1,
+      dataId: row.id || 1,
       assessVisible: true,
+      type: row.type || 'ftp',
     });
   };
 
   handleAssessOk = () => {
-    const { assessPass, rejectReason, dataId } = this.state;
+    const { status, type, rejectReason, dataId } = this.state;
     // 这里发送 审核请求
-    console.log(assessPass, rejectReason, dataId); // eslint-disable-line
+    this.props.dispatch({
+      type: 'assess/assessData',
+      payload: {
+        id: dataId,
+        type,
+        body: {
+          status,
+          reason: rejectReason,
+        },
+      },
+    });
     this.setState({
       assessVisible: false,
     });
@@ -228,7 +296,7 @@ export default class Assess extends Component {
 
   handlePassChange = e => {
     this.setState({
-      assessPass: e.target.value,
+      status: e.target.value,
     });
   };
 
@@ -266,7 +334,7 @@ export default class Assess extends Component {
       assess: { assessList, pagination },
       loading,
     } = this.props;
-    const { assessVisible, assessPass, rejectReason } = this.state;
+    const { assessVisible, status, rejectReason } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       hideOnSinglePage: true,
@@ -285,7 +353,7 @@ export default class Assess extends Component {
             dataSource={assessList}
             onChange={this.handleChange}
             pagination={paginationProps}
-            rowKey="id"
+            rowKey="index"
             bordered
           />
           <Modal
@@ -296,15 +364,15 @@ export default class Assess extends Component {
           >
             <div className={styles.modals}>
               <div>
-                <Group value={assessPass} onChange={this.handlePassChange}>
+                <Group value={status} onChange={this.handlePassChange}>
                   <Radio value={1}>通过</Radio>
                   <Radio value={0}>拒绝</Radio>
                 </Group>
               </div>
-              <div style={{ display: +assessPass === 1 ? 'block' : 'none' }}>
+              <div style={{ display: +status === 1 ? 'block' : 'none' }}>
                 您是否确定通过此次审核?
               </div>
-              <div style={{ display: +assessPass === 0 ? 'block' : 'none' }}>
+              <div style={{ display: +status === 0 ? 'block' : 'none' }}>
                 <div style={{ marginBottom: '10px' }}>请输入拒绝理由</div>
                 <TextArea row={5} onChange={this.reasonChange} />
               </div>
