@@ -204,17 +204,12 @@ class AccessDataInfo extends PureComponent {
           });
           for (let i = 0, len = fileTypes.length; i < len; i += 1) {
             if (fileTypes[i].datas.indexOf(item.type) !== -1) {
-              flag = true;
+              fl;
               Object.defineProperty(item, 'thumbUrl', {
                 value: fileTypes[i].thumb,
               });
               break;
             }
-          }
-          if (!flag) {
-            Object.defineProperty(item, 'thumbUrl', {
-              value: fileThumb,
-            });
           }
           return item;
         });
@@ -581,27 +576,20 @@ class AccessDataInfo extends PureComponent {
   addFileAddDtoList = info => {
     const { status, name, size } = info.file;
     const { fileTypes } = this.state;
+    Object.defineProperty(info.file, 'name', {
+      value: `${name}（${this.setFileSize(size)}）`,
+    });
     if (status !== 'uploading') {
       const file = info.fileList[info.fileList.length - 1];
       if (file.response) {
         const { type } = file.response.result.data;
-        Object.defineProperty(file, 'name', {
-          value: `${file.response.result.data.name}（${this.setFileSize(size)}）`,
-        });
-        let flag = false;
         for (let i = 0, len = fileTypes.length; i < len; i += 1) {
           if (fileTypes[i].datas.indexOf(type) !== -1) {
-            flag = true;
             Object.defineProperty(file, 'thumbUrl', {
               value: fileTypes[i].thumb,
             });
             break;
           }
-        }
-        if (!flag) {
-          Object.defineProperty(file, 'thumbUrl', {
-            value: fileThumb,
-          });
         }
       }
       this.setState({

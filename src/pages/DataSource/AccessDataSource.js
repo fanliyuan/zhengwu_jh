@@ -265,10 +265,14 @@ class AccessStepForm extends PureComponent {
   }
 
   back() {
-    const { history } = this.props;
+    const { history, route } = this.props;
+    let pageName = '数据源';
+    if (route.name === 'managementUpdate') {
+      pageName = '数据管理';
+    }
     Modal.confirm({
       title: '警告',
-      content: '返回数据源页面，当前信息将不会被保存，是否返回？',
+      content: `返回${pageName}页面，当前信息将不会被保存，是否返回？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
