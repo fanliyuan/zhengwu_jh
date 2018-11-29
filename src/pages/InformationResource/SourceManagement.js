@@ -21,14 +21,22 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-@connect(({ informationResource }) => ({
+const { isMoment } = moment;
+@connect(({ informationResource, loading }) => ({
   informationResource,
+  // loading:loading.effects.
 }))
 export default class SourceManagement extends Component {
   state = {
-    // isNodeOperator: false,
-    queryData: {},
-    // isChanged: false,
+    queryData: {
+      name: '',
+      code: '',
+      beginTime: '',
+      endTime: '',
+      mount: false,
+      status: '-2',
+      typeId: '',
+    },
   };
 
   componentDidMount() {
@@ -51,59 +59,60 @@ export default class SourceManagement extends Component {
     this.setState({
       queryData: {
         ...queryData,
-        rsName: e.target.value.trim(),
+        name: e.target.value.trim(),
       },
-      // isChanged: true,
     });
   };
 
-  codeChange = () => {};
+  codeChange = e => {
+    const { queryData } = this.state;
+    this.setState({
+      queryData: {
+        ...queryData,
+        code: e.target.value,
+      },
+    });
+  };
 
   handleIsRelated = e => {
-    console.log(e.target.checked); // eslint-disable-line
-  };
-
-  dataTypeChange = val => {
     const { queryData } = this.state;
     this.setState({
       queryData: {
         ...queryData,
-        dataType: val === '' ? undefined : val,
+        mount: e.target.checked,
       },
-      // isChanged: true,
     });
   };
 
-  nodeChange = (val, params) => {
-    const { queryData } = this.state;
-    this.setState({
-      queryData: {
-        ...queryData,
-        nodeId: val[0] && +[...val].pop(),
-        nodeName: params[0] && params[0].label,
-      },
-      isChanged: true,
-    });
-  };
-
-  // nodeNameChange = () => {
-  // this.setState({
-  //   nodeName: val,
-  // })
-  // }
-
-  // owingJgChange = () => {
+  // dataTypeChange = val => {
+  //   const { queryData } = this.state;
   //   this.setState({
-  //     owingJg: val,
-  //   })
-  // }
+  //     queryData: {
+  //       ...queryData,
+  //       dataType: val === '' ? undefined : val,
+  //     },
+  //     // isChanged: true,
+  //   });
+  // };
+
+  // nodeChange = (val, params) => {
+  //   const { queryData } = this.state;
+  //   this.setState({
+  //     queryData: {
+  //       ...queryData,
+  //       nodeId: val[0] && +[...val].pop(),
+  //       nodeName: params[0] && params[0].label,
+  //     },
+  //     isChanged: true,
+  //   });
+  // };
 
   statusChange = val => {
     const { queryData } = this.state;
     this.setState({
       queryData: {
         ...queryData,
-        checkStatus: val === '-2' ? undefined : val,
+        status: val,
       },
       // isChanged: true,
     });
@@ -111,13 +120,18 @@ export default class SourceManagement extends Component {
 
   timeChange = val => {
     const { queryData } = this.state;
+    const timeArr = val.map(item => {
+      if (isMoment(item)) {
+        return item.format('YYYY-MM-DD');
+      } else {
+        return '';
+      }
+    });
     this.setState({
       queryData: {
         ...queryData,
-        // startTime: val[0] ? `${val[0].format().substr(0,10)} 0:00:00` :undefined,
-        // endTime: val[1] ? `${val[1].format().substr(0,10)} 23:59:59` :undefined,
-        startTime: val[0] ? format0(val[0].format('x')) : undefined,
-        endTime: val[1] ? format24(val[1].format('x')) : undefined,
+        beginTime: timeArr[0], //  ? timeArr[0]+' 00:59:59' : ''
+        endTime: timeArr[1], // ? timeArr[1]+' 00:59:59' : ''
       },
       // isChanged: true,
     });
@@ -127,25 +141,26 @@ export default class SourceManagement extends Component {
     this.searchHandle(pagination);
   };
 
-  searchHandle = ({ pageSize, current }, flag) => {
+  searchHandle = ({ pageSize, current }) => {
     // const { isChanged } = this.state;
     // if (!isChanged && flag) return null;
     const {
-      queryData: { rsName, dataType, checkStatus, startTime, endTime, nodeName },
+      queryData: { name, code, beginTime, endTime, mount, status, typeId },
     } = this.state;
     this.props.dispatch({
       type: 'informationResource/getResourceList',
       payload: {
-        body: {
-          pageSize: pageSize || 10,
-          pageNum: current || 1,
-          checkStatus,
-          rsName,
-          dataType,
-          nodeName,
-          startTime,
-          endTime,
-        },
+        // body: {
+        pageSize: pageSize || 10,
+        pageNum: current || 1,
+        name: name ? name : undefined,
+        code: code ? code : undefined,
+        beginTime: beginTime ? beginTime : undefined,
+        endTime: endTime ? endTime : undefined,
+        mount,
+        status: +status === -2 ? undefined : +status,
+        typeId: typeId ? typeId : undefined,
+        // },
       },
     });
     // this.setState({
@@ -203,6 +218,35 @@ export default class SourceManagement extends Component {
   handleInput = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push('/informationResource/inputDirectory'));
+  };
+
+  handleClassfiy = val => {
+    const { queryData } = this.state;
+    console.log(val[val.length - 1]);
+    this.setState({
+      queryData: {
+        ...queryData,
+        typeId: val[val.length - 1],
+      },
+    });
+  };
+
+  handleReset = async () => {
+    const { queryData } = this.state;
+    await this.setState({
+      queryData: {
+        ...queryData,
+        name: '',
+        code: '',
+        beginTime: '',
+        endTime: '',
+        mount: false,
+        status: '-2',
+        typeId: '',
+        // typeIdValue:0,
+      },
+    });
+    this.searchHandle({});
   };
 
   render() {
@@ -275,7 +319,7 @@ export default class SourceManagement extends Component {
     //   )
     // })
     const data4 = [
-      { value: '-2', label: '审核状态' },
+      { value: '-2', label: '全部审核状态' },
       { value: '0', label: '已拒绝' },
       { value: '1', label: '已通过' },
       { value: '-1', label: '待审核' },
@@ -301,6 +345,9 @@ export default class SourceManagement extends Component {
       {
         title: '资源属性分类',
         dataIndex: 'typeName',
+        render: text => {
+          return text.slice(text.lastIndexOf('-') + 1);
+        },
       },
       // {
       //   title: '数据类型',
@@ -337,33 +384,22 @@ export default class SourceManagement extends Component {
       },
       {
         title: '信息项',
-        dataIndex: 'xxx',
+        dataIndex: 'infoCount',
       },
       {
         title: '订阅数',
-        dataIndex: 'subscription',
+        dataIndex: 'subCount',
       },
-      // {
-      //   title: '数据最后更新时间',
-      //   dataIndex: 'lastUpdataTime',
-      //   render(text) {
-      // //     return moment(text).format('YYYY-MM-DD HH:mm:ss')
-      // //   },
-      // // },
-      // {
-      //   title: '订阅数',
-      //   dataIndex: 'subscription',
-      // },
       {
         title: '审核状态',
         dataIndex: 'status',
         render(text) {
           switch (+text) {
-            case '-1':
+            case -1:
               return '待审核';
-            case '0':
+            case 0:
               return '已拒绝';
-            default:
+            case 1:
               return '已通过';
           }
         },
@@ -448,6 +484,9 @@ export default class SourceManagement extends Component {
     //     align: 'center',
     //   })
     // }
+    const {
+      queryData: { name, code, beginTime, endTime, mount, status, typeId },
+    } = this.state;
     return (
       <PageHeaderLayout>
         <Card>
@@ -455,18 +494,23 @@ export default class SourceManagement extends Component {
             <Input
               placeholder="信息资源代码"
               style={{ width: 150, marginRight: 20 }}
+              value={code}
               onChange={this.codeChange}
             />
             <Input
               placeholder="信息资源名称"
               style={{ width: 150, marginRight: 20 }}
+              value={name}
               onChange={this.nameChange}
             />
             <Cascader
               options={classfiyList}
-              fieldNames={{ label: 'name', value: 'name' }}
+              fieldNames={{ label: 'name', value: 'id' }}
               style={{ width: 300, marginRight: 20 }}
               onChange={this.handleClassfiy}
+              placeholder="资源属性分类"
+              // defaultValue={typeIdValue}
+              changeOnSelect
             />
             {/* <Select
               style={{ marginRight: 20, width: 120 }}
@@ -477,17 +521,21 @@ export default class SourceManagement extends Component {
             </Select> */}
             <Select
               style={{ marginRight: 20, width: 120 }}
-              defaultValue="-2"
+              // defaultValue="-2"
+              value={status}
+              // placeholder="审核状态"
               onChange={this.statusChange}
             >
               {selectData4}
             </Select>
             <RangePicker style={{ marginRight: 20, width: 210 }} onChange={this.timeChange} />
-            <Checkbox onChange={this.handleIsRelated}>数据已关联</Checkbox>
-            <Button type="primary" onClick={() => this.searchHandle({}, true)}>
+            <Checkbox onChange={this.handleIsRelated} value={mount}>
+              数据已关联
+            </Checkbox>
+            <Button type="primary" onClick={() => this.searchHandle({})}>
               搜索
             </Button>
-            <Button type="primary" style={{ marginLeft: 20 }}>
+            <Button type="primary" style={{ marginLeft: 20 }} onClick={this.handleReset}>
               重置
             </Button>
           </div>
