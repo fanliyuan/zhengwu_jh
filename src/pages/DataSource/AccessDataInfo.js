@@ -586,9 +586,11 @@ class AccessDataInfo extends PureComponent {
     Object.defineProperty(info.file, 'name', {
       value: `${name}（${this.setFileSize(size)}）`,
     });
-    Object.defineProperty(info.file, 'uname', {
-      value: `${name}`,
-    });
+    if (!info.file.uname) {
+      Object.defineProperty(info.file, 'uname', {
+        value: `${name}`,
+      });
+    }
     if (status !== 'uploading') {
       const file = info.fileList[info.fileList.length - 1];
       if (file.response) {
