@@ -597,15 +597,17 @@ class AccessDataInfo extends PureComponent {
       });
     }
     if (status !== 'uploading') {
-      const file = info.fileList[info.fileList.length - 1];
-      if (file.response) {
-        const { type } = file.response.result.data;
-        for (let i = 0, len = fileTypes.length; i < len; i += 1) {
-          if (fileTypes[i].datas.indexOf(type) !== -1) {
-            Object.defineProperty(file, 'thumbUrl', {
-              value: fileTypes[i].thumb,
-            });
-            break;
+      if (info.fileList.length > 0) {
+        const file = info.fileList[info.fileList.length - 1];
+        if (file.response) {
+          const { type } = file.response.result.data;
+          for (let i = 0, len = fileTypes.length; i < len; i += 1) {
+            if (fileTypes[i].datas.indexOf(type) !== -1) {
+              Object.defineProperty(file, 'thumbUrl', {
+                value: fileTypes[i].thumb,
+              });
+              break;
+            }
           }
         }
       }
