@@ -565,6 +565,13 @@ class AccessDataInfo extends PureComponent {
 
   uploadBefore = file =>
     new Promise((resolve, reject) => {
+      const { fileList } = this.state;
+      for (let i = 0, len = fileList.length; i < len; i += 1) {
+        if (fileList[i].uname === file.name) {
+          message.destroy();
+          reject(message.error(`已上传名称为“${file.name}”的文件，请不要上传名称相同的文件！`));
+        }
+      }
       if (file.size > 52428800) {
         message.destroy();
         reject(message.error(`${file.name} 大于50M，停止上传！`));
@@ -578,6 +585,9 @@ class AccessDataInfo extends PureComponent {
     const { fileTypes } = this.state;
     Object.defineProperty(info.file, 'name', {
       value: `${name}（${this.setFileSize(size)}）`,
+    });
+    Object.defineProperty(info.file, 'uname', {
+      value: `${name}`,
     });
     if (status !== 'uploading') {
       const file = info.fileList[info.fileList.length - 1];
