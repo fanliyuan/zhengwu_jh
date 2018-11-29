@@ -244,21 +244,21 @@ export default [
             path: '/data/management/dbview/:id',
             name: 'dbview',
             component: './DataSource/DBView',
-            auditor: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {
             path: '/data/management/fileview/:id',
             name: 'fileview',
             component: './DataSource/FileView',
-            auditor: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {
             path: '/data/management/ftpview/:id',
             name: 'ftpview',
             component: './DataSource/FtpView',
-            auditor: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {
@@ -272,7 +272,7 @@ export default [
             path: '/data/management/taskview/:type/:id',
             name: 'taskview',
             component: './DataSource/TaskView',
-            auditor: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {

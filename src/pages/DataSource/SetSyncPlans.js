@@ -20,7 +20,19 @@ class SetSyncPlan extends PureComponent {
   }
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const {
+      onRef,
+      accessData: {
+        params: {
+          syncAddDto: { syncRate },
+        },
+      },
+    } = this.props;
+    if (syncRate === '实时') {
+      this.setState({
+        isTimeRequire: false,
+      });
+    }
     onRef(this);
   }
 
