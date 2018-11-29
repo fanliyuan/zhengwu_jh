@@ -24,6 +24,11 @@ export async function checkIsSameName(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/name?${stringify(params)}`);
 }
 
+// 开放门户得到回填数据
+export async function openDataById(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params}/shareopen`);
+}
+
 // // 删除数据源
 // export async function deleteDataSource(params) {
 //   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {

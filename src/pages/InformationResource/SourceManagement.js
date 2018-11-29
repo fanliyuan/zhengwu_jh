@@ -37,6 +37,8 @@ export default class SourceManagement extends Component {
       status: '-2',
       typeId: '',
     },
+    classfiyValue: [],
+    timeValue: [],
   };
 
   componentDidMount() {
@@ -133,6 +135,7 @@ export default class SourceManagement extends Component {
         beginTime: timeArr[0], //  ? timeArr[0]+' 00:59:59' : ''
         endTime: timeArr[1], // ? timeArr[1]+' 00:59:59' : ''
       },
+      timeValue: val,
       // isChanged: true,
     });
   };
@@ -209,10 +212,14 @@ export default class SourceManagement extends Component {
   //   dispatch(routerRedux.push('/informationResource/newMenu/one'));
   // };
 
-  handleOpen = () => {
+  handleOpen = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/openShare'));
-    // dispatch(routerRedux.push('/informationResource/openShareFile'))
+    dispatch(
+      routerRedux.push({
+        pathname: '/informationResource/openShare',
+        state: { openId: id },
+      })
+    );
   };
 
   handleInput = () => {
@@ -222,12 +229,20 @@ export default class SourceManagement extends Component {
 
   handleClassfiy = val => {
     const { queryData } = this.state;
-    console.log(val[val.length - 1]);
+    let ids;
+    if (val.length === 0) {
+      ids = '';
+    } else if (val.length === 1) {
+      ids = val[0];
+    } else {
+      ids = val.join('-');
+    }
     this.setState({
       queryData: {
         ...queryData,
-        typeId: val[val.length - 1],
+        typeId: ids,
       },
+      classfiyValue: val,
     });
   };
 
@@ -243,8 +258,9 @@ export default class SourceManagement extends Component {
         mount: false,
         status: '-2',
         typeId: '',
-        // typeIdValue:0,
       },
+      classfiyValue: [],
+      timeValue: [],
     });
     this.searchHandle({});
   };
@@ -414,7 +430,7 @@ export default class SourceManagement extends Component {
             <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row)}>
               关联数据
             </span>
-            <span className={styles.clickBtn} onClick={that.handleOpen}>
+            <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
               共享开放
             </span>
             <span className={styles.clickBtn} onClick={that.handleEdit}>
@@ -486,6 +502,8 @@ export default class SourceManagement extends Component {
     // }
     const {
       queryData: { name, code, beginTime, endTime, mount, status, typeId },
+      classfiyValue,
+      timeValue,
     } = this.state;
     return (
       <PageHeaderLayout>
@@ -509,7 +527,7 @@ export default class SourceManagement extends Component {
               style={{ width: 300, marginRight: 20 }}
               onChange={this.handleClassfiy}
               placeholder="资源属性分类"
-              // defaultValue={typeIdValue}
+              value={classfiyValue}
               changeOnSelect
             />
             {/* <Select
@@ -528,8 +546,12 @@ export default class SourceManagement extends Component {
             >
               {selectData4}
             </Select>
-            <RangePicker style={{ marginRight: 20, width: 210 }} onChange={this.timeChange} />
-            <Checkbox onChange={this.handleIsRelated} value={mount}>
+            <RangePicker
+              style={{ marginRight: 20, width: 210 }}
+              onChange={this.timeChange}
+              value={timeValue}
+            />
+            <Checkbox onChange={this.handleIsRelated} checked={mount}>
               数据已关联
             </Checkbox>
             <Button type="primary" onClick={() => this.searchHandle({})}>

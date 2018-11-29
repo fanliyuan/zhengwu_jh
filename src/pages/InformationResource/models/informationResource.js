@@ -7,6 +7,7 @@ import {
   addResource,
   getResourceLists,
   checkIsSameName,
+  openDataById,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -18,6 +19,7 @@ export default {
     resourceList: [],
     pagination: {},
     sameMsg: false,
+    openData: {},
   },
 
   effects: {
@@ -84,6 +86,22 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
+    *openShare({ payload }, { call, put }) {
+      const response = yield call(openDataById, payload);
+      try {
+        if (+response.code === 200) {
+          // message.success(response.message);
+          yield put({
+            type: 'getOpenData',
+            payload: response.result.data,
+          });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
   },
 
   reducers: {
@@ -109,6 +127,12 @@ export default {
       return {
         ...state,
         sameMsg: payload,
+      };
+    },
+    getOpenData(state, { payload }) {
+      return {
+        ...state,
+        openData: payload,
       };
     },
   },

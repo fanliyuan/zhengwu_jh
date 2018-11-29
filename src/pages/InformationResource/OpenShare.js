@@ -12,11 +12,22 @@ const RadioGroup = Radio.Group;
 const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 @Form.create()
-@connect(({ openShare }) => ({
-  openShare,
+@connect(({ informationResource }) => ({
+  informationResource,
 }))
 export default class OpenShare extends Component {
   state = {};
+
+  componentDidMount() {
+    // if(this.props.location.state){
+
+    // }
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/openShare',
+      payload: this.props.location.state && this.props.location.state.openId,
+    });
+  }
 
   setInputs = () => {
     const { setFieldValue } = this.props.form;
@@ -27,10 +38,18 @@ export default class OpenShare extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    message.success('提交成功, 即将跳转');
-    setTimeout(() => {
-      this.props.dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'));
-    }, 1000);
+    const {
+      form: { validateFields },
+      dispatch,
+    } = this.props;
+    validateFields((errors, values) => {
+      if (!errors) {
+        dispatch({
+          type: 'informationResource/openShare',
+          payload: this.props.location.state && this.props.location.state.openId,
+        });
+      }
+    });
   };
 
   handleSave = () => {
@@ -40,11 +59,14 @@ export default class OpenShare extends Component {
 
   handleBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'));
+    dispatch(routerRedux.push('/informationResource/sourceManagement'));
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      form: { getFieldDecorator },
+      informationResource: { openData },
+    } = this.props;
     const plainOptions = ['交换域1', '交换域2', '交换域3'];
     const formItemLayout = {
       labelCol: {
@@ -55,6 +77,12 @@ export default class OpenShare extends Component {
         xs: { span: 24 },
         sm: { span: 12 },
         md: { span: 10 },
+      },
+    };
+    const submitLayout = {
+      wrapperCol: {
+        xs: { span: 24, offset: 0 },
+        sm: { span: 10, offset: 7 },
       },
     };
     const optionData = [
@@ -107,40 +135,71 @@ export default class OpenShare extends Component {
         ],
       },
     ];
+    const updateTime = [
+      { id: 1, label: '实时' },
+      { id: 2, label: '每日' },
+      { id: 3, label: '每周' },
+      { id: 4, label: '每月' },
+      { id: 5, label: '每季度' },
+      { id: 6, label: '每年' },
+    ];
+    const updateTimeOption = updateTime.map(item => {
+      return (
+        <Option value={item.label} key={item.id}>
+          {item.label}
+        </Option>
+      );
+    });
     return (
       <PageHeaderLayout>
         <Card>
           <Form onSubmit={this.handleSubmit}>
-            <FormItem label="是否共享" {...formItemLayout}>
-              {getFieldDecorator('isShare')(
-                <RadioGroup>
-                  <Radio value={0}>是</Radio>
-                  <Radio value={1}>否</Radio>
-                </RadioGroup>
-              )}
-            </FormItem>
             <FormItem label="是否开放" {...formItemLayout}>
-              {getFieldDecorator('isOpen')(
+              {getFieldDecorator('open', {
+                initialValue: openData && openData.open ? 1 : 0,
+                rules: [{ required: true, message: '请选择是否开放' }],
+              })(
                 <RadioGroup>
-                  <Radio value={0}>是</Radio>
-                  <Radio value={1}>否</Radio>
+                  <Radio value={1}>是</Radio>
+                  <Radio value={0}>否</Radio>
+                </RadioGroup>
+              )}
+              {/* {getFieldDecorator('openType',{
+                initialValue:''
+              })(
+                <Select style={{width:150}} placeholder="请选择类型">
+                  {updateTimeOption}
+                </Select>
+              )} */}
+            </FormItem>
+            <FormItem label="是否共享" {...formItemLayout}>
+              {getFieldDecorator('share', {
+                initialValue: openData && openData.share ? 1 : 0,
+                rules: [{ required: true, message: '请选择是否共享' }],
+              })(
+                <RadioGroup>
+                  <Radio value={1}>是</Radio>
+                  <Radio value={0}>否</Radio>
                 </RadioGroup>
               )}
             </FormItem>
-            <FormItem label="交换域" {...formItemLayout}>
+            {/* <FormItem label="交换域" {...formItemLayout}>
               <InputGroup compact>
                 {getFieldDecorator('switchArea')(<CheckboxGroup options={plainOptions} />)}
               </InputGroup>
-            </FormItem>
-            <FormItem label="订阅是否审核" {...formItemLayout}>
-              {getFieldDecorator('isAudit')(
+            </FormItem> */}
+            <FormItem label="订阅授权" {...formItemLayout}>
+              {getFieldDecorator('subscribeLicense', {
+                initialValue: openData && openData.subscribeLicense ? 1 : 0,
+                rules: [{ required: true, message: '请选择是否需要订阅授权' }],
+              })(
                 <RadioGroup>
-                  <Radio value={0}>是</Radio>
-                  <Radio value={1}>否</Radio>
+                  <Radio value={1}>需要</Radio>
+                  <Radio value={0}>不需要</Radio>
                 </RadioGroup>
               )}
             </FormItem>
-            <FormItem label="发布模式" {...formItemLayout}>
+            {/* <FormItem label="发布模式" {...formItemLayout}>
               {getFieldDecorator('types')(<Cascader options={options} />)}
             </FormItem>
             <FormItem label="发布频率" {...formItemLayout}>
@@ -160,13 +219,20 @@ export default class OpenShare extends Component {
                   <Input style={{ width: '20%' }} placeholder="星期" />
                 )}
               </InputGroup>
+            </FormItem> */}
+            <FormItem {...submitLayout}>
+              <div className="btnclsb">
+                <Button
+                  type="primary"
+                  className="mr64"
+                  htmlType="submit"
+                  style={{ marginRight: 20 }}
+                >
+                  保存
+                </Button>
+                <Button onClick={this.handleBack}>返回</Button>
+              </div>
             </FormItem>
-            <div className="btnclsb">
-              <Button type="primary" className="mr64" htmlType="submit">
-                保存
-              </Button>
-              <Button onClick={this.handleBack}>返回</Button>
-            </div>
           </Form>
         </Card>
       </PageHeaderLayout>

@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-27 15:26:46
+ * @Last Modified time: 2018-11-29 15:56:25
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -205,6 +205,7 @@ export default class Step1 extends PureComponent {
   };
 
   handleClassfiy = async (val, selectedOptions) => {
+    console.log(selectedOptions);
     const {
       form: { getFieldValue },
     } = this.props;
@@ -221,12 +222,16 @@ export default class Step1 extends PureComponent {
       await dispatch({
         type: 'informationResource/isNameSame',
         payload: {
-          typeId: selectedOptions[selectedOptions.length - 1].id,
+          typeId: `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${
+            selectedOptions[3].id
+          }`, // `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${selectedOptions[3].id}`
           name: getFieldValue('name'),
         },
       });
       this.setState({
-        xmId: selectedOptions[selectedOptions.length - 1].id,
+        xmId: `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${
+          selectedOptions[3].id
+        }`, // `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${selectedOptions[3].id}`
       });
       if (isSameMsg) {
         message.error('资源名称重名，请重新填写');
@@ -238,17 +243,17 @@ export default class Step1 extends PureComponent {
           isNext: false,
         });
       }
+      let codeList = '';
+      for (var i = 0; i < selectedOptions.length; i++) {
+        codeList += selectedOptions[i].code;
+      }
+      this.setState({
+        selectCode: selectedOptions ? codeList : '',
+        selectId: `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${
+          selectedOptions[3].id
+        }`, // `${selectedOptions[0].id}-${selectedOptions[1].id}-${selectedOptions[2].id}-${selectedOptions[3].id}`
+      });
     }
-    let codeList = '';
-    for (var i = 0; i < selectedOptions.length; i++) {
-      codeList += selectedOptions[i].code;
-    }
-    this.setState({
-      selectCode: selectedOptions ? codeList : '',
-      selectId: selectedOptions[selectedOptions.length - 1]
-        ? selectedOptions[selectedOptions.length - 1].id
-        : '',
-    });
   };
 
   // TimeChange = val => {
