@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Select, Modal, Button, Radio, Input } from 'antd';
+import { Table, Select, Modal, Button, Radio, Input, Card, Divider } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Bind, Throttle } from 'lodash-decorators';
@@ -8,11 +8,14 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SearchForm from '@/components/SearchForm';
 import KeyValue from '@/components/KeyValue';
+import DescriptionList from '@/components/DescriptionList';
 import styles from './Assess.less';
+import { spawn } from 'child_process';
 
 const { Option, OptGroup } = Select;
 const { Group } = Radio;
 const { TextArea } = Input;
+const { Description } = DescriptionList;
 
 // 审核状态
 const statusObject = {
@@ -20,13 +23,19 @@ const statusObject = {
   '0': '已拒绝',
   '1': '已通过',
   '10': '修改已拒绝',
-  '11': '修改已通过',
+  '-11': '修改待审核',
   '20': '删除已拒绝',
-  '21': '删除已通过',
+  '-21': '删除待审核',
 };
 const statusData = Object.entries(statusObject);
 
-@connect(({ assess, loading }) => ({ assess, loading: loading.models.assess }))
+@connect(({ assess, accessData, loading }) => ({
+  assess,
+  accessData,
+  loading: loading.models.assess,
+  loadingTable: loading.effects['accessData/getCurrentdetail'],
+  loadingStruct: loading.effects['accessData/getCurrentList'],
+}))
 export default class Assess extends Component {
   formOptions = {
     formData: [
@@ -183,7 +192,7 @@ export default class Assess extends Component {
       title: '状态',
       render(text) {
         // return statusData.find(item => item.value === text).label
-        return statusObject[text];
+        return <span>{statusObject[text]}</span>;
       },
     },
     {
@@ -194,7 +203,7 @@ export default class Assess extends Component {
           index = 0;
         } else if (row.status === 1 || row.status === 10 || row.status === 20) {
           index = 2;
-        } else if (row.status === 11 || row.status === 21) {
+        } else if (row.status === -11 || row.status === -21) {
           index = 3;
         }
         return this.operationsData[index].map(item => {
@@ -218,11 +227,14 @@ export default class Assess extends Component {
   state = {
     queryData: {},
     pagination: { pageNum: 1, pageSize: 10 },
+    row: {},
     dataId: 0,
     type: 'ftp',
     assessVisible: false,
     status: 1,
     rejectReason: '',
+    hasSetCurrent: false,
+    currentConfig: [1, -11, 10],
   };
 
   componentDidMount() {
@@ -253,6 +265,23 @@ export default class Assess extends Component {
 
   handleview = row => {
     console.log(row, '查看');
+    const { dispatch } = this.props;
+    const { dataType } = row;
+    this.showCurrentConfig(row);
+    dispatch({
+      type: 'accessData/getCurrentdetail',
+      payload: {
+        id: row.id,
+        dataType,
+      },
+    });
+    dispatch({
+      type: 'accessData/getCurrentList',
+      payload: {
+        id: row.id,
+        dataType,
+      },
+    });
   };
 
   handleassessLog = row => {
@@ -263,6 +292,7 @@ export default class Assess extends Component {
   handleassess = row => {
     // console.log(row)
     this.setState({
+      row,
       dataId: row.id || 1,
       assessVisible: true,
       type: row.type || 'ftp',
@@ -270,7 +300,22 @@ export default class Assess extends Component {
   };
 
   handleAssessOk = () => {
-    const { status, type, rejectReason, dataId } = this.state;
+    let { status, type, rejectReason, dataId, row } = this.state;
+    if (status === 1) {
+      status = 1;
+    } else {
+      switch (this.state.row.status) {
+        case -1:
+          status = 0;
+          break;
+        case -11:
+          status = 10;
+          break;
+        default:
+          status = 20;
+          break;
+      }
+    }
     // 这里发送 审核请求
     this.props.dispatch({
       type: 'assess/assessData',
@@ -304,6 +349,208 @@ export default class Assess extends Component {
     this.setState({
       rejectReason: e.target.value,
     });
+  };
+
+  showCurrentConfig = row => {
+    const { type: dataType } = row;
+    Modal.info({
+      title: '当前配置',
+      width: 900,
+      okText: '关闭',
+      maskClosable: false,
+      content: (() => {
+        switch (dataType) {
+          case 'db':
+            return this.renderDbInfo();
+          case 'ftp':
+            return this.renderFtpInfo();
+          case 'file':
+            return this.renderFileInfo();
+          default:
+            return '';
+        }
+      })(),
+    });
+  };
+
+  renderDbInfo = () => {
+    const {
+      loadingTable,
+      loadingStruct,
+      accessData: { currentDetail, currentSync, currentList },
+    } = this.props;
+    const tableList = [currentDetail];
+    const tableColumn = [
+      {
+        title: '表名称',
+        dataIndex: 'tableName',
+        align: 'center',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'tableNote',
+        align: 'center',
+      },
+    ];
+    const structColumn = [
+      {
+        title: '主键',
+        dataIndex: 'primaryKey',
+        render: text => {
+          if (text) {
+            return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
+          }
+          return '';
+        },
+      },
+      {
+        title: '字段名称',
+        dataIndex: 'columnName',
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'columnType',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'note',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据库">{currentDetail.dbName}</Description>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="建库单位">{currentDetail.createUnit}</Description>
+          <Description term="应用系统名称">{currentDetail.appsysName}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <DescriptionList size="large" title="同步信息" style={{ marginBottom: 32 }}>
+          <Description term="同步模式">{currentSync.syncMode}</Description>
+          <Description term="同步频率">{currentSync.syncRate}</Description>
+          <Description term="定时设置">每{currentSync.timeSet}</Description>
+          <Description term="自动停止">{currentSync.stopNum}次</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>表信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={tableList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+        <div className={styles.title}>结构信息</div>
+        <Table
+          style={{ marginBottom: 16 }}
+          loading={loadingStruct}
+          dataSource={currentList}
+          columns={structColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
+  };
+
+  renderFtpInfo = () => {
+    const {
+      loadingTable,
+      accessData: { currentDetail, currentSync, currentList },
+    } = this.props;
+    console.log(currentDetail, currentSync, currentList);
+    const tableColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件相对路径',
+        dataIndex: 'path',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="文件所属单位">{currentDetail.createUnit}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <DescriptionList size="large" title="同步信息" style={{ marginBottom: 32 }}>
+          <Description term="同步模式">{currentSync.syncMode}</Description>
+          <Description term="同步频率">{currentSync.syncRate}</Description>
+          <Description term="定时设置">每{currentSync.timeSet}</Description>
+          <Description term="自动停止">{currentSync.stopNum}次</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>文件信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={currentList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
+  };
+
+  renderFileInfo = () => {
+    const {
+      loadingTable,
+      accessData: { currentDetail, currentList },
+    } = this.props;
+    const tableColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件大小',
+        dataIndex: 'size',
+        render: text => this.setFileSize(parseInt(text)),
+      },
+      {
+        title: '最近更新时间',
+        dataIndex: 'uploadTimeStr',
+      },
+    ];
+    return (
+      <Card bordered={false}>
+        <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+          <Description term="数据名称">{currentDetail.name}</Description>
+          <Description term="文件所属单位">{currentDetail.createUnit}</Description>
+          <Description term="数据描述">{currentDetail.describe}</Description>
+          <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+          <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+          <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+        </DescriptionList>
+        <Divider style={{ marginBottom: 32 }} />
+        <div className={styles.title}>文件信息</div>
+        <Table
+          style={{ marginBottom: 24 }}
+          loading={loadingTable}
+          dataSource={currentList}
+          columns={tableColumn}
+          rowKey="id"
+        />
+      </Card>
+    );
   };
 
   @Bind()

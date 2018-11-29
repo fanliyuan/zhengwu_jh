@@ -70,9 +70,6 @@ export default {
       }
     },
     *assessData({ payload }, { call, put }) {
-      yield put({
-        type: 'getAssessList',
-      });
       try {
         const res = yield call(assessData, {
           id: payload.id,
