@@ -170,6 +170,7 @@ export default {
   'menu.informationResource.openShare': '共享开放',
   'menu.data': '数据发布管理',
   'menu.data.assess': '数据审核',
+  'menu.data.assessLog': '审核日志',
   'menu.data.source': '数据源',
   'menu.data.sourceAdd': '新建数据源',
   'menu.data.sourceUpdate': '修改数据源',

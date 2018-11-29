@@ -204,17 +204,12 @@ class AccessDataInfo extends PureComponent {
           });
           for (let i = 0, len = fileTypes.length; i < len; i += 1) {
             if (fileTypes[i].datas.indexOf(item.type) !== -1) {
-              flag = true;
+              fl;
               Object.defineProperty(item, 'thumbUrl', {
                 value: fileTypes[i].thumb,
               });
               break;
             }
-          }
-          if (!flag) {
-            Object.defineProperty(item, 'thumbUrl', {
-              value: fileThumb,
-            });
           }
           return item;
         });
@@ -570,6 +565,13 @@ class AccessDataInfo extends PureComponent {
 
   uploadBefore = file =>
     new Promise((resolve, reject) => {
+      const { fileList } = this.state;
+      for (let i = 0, len = fileList.length; i < len; i += 1) {
+        if (fileList[i].uname === file.name) {
+          message.destroy();
+          reject(message.error(`已上传名称为“${file.name}”的文件，请不要上传名称相同的文件！`));
+        }
+      }
       if (file.size > 52428800) {
         message.destroy();
         reject(message.error(`${file.name} 大于50M，停止上传！`));
@@ -584,24 +586,20 @@ class AccessDataInfo extends PureComponent {
     Object.defineProperty(info.file, 'name', {
       value: `${name}（${this.setFileSize(size)}）`,
     });
+    Object.defineProperty(info.file, 'uname', {
+      value: `${name}`,
+    });
     if (status !== 'uploading') {
       const file = info.fileList[info.fileList.length - 1];
       if (file.response) {
         const { type } = file.response.result.data;
-        let flag = false;
         for (let i = 0, len = fileTypes.length; i < len; i += 1) {
           if (fileTypes[i].datas.indexOf(type) !== -1) {
-            flag = true;
             Object.defineProperty(file, 'thumbUrl', {
               value: fileTypes[i].thumb,
             });
             break;
           }
-        }
-        if (!flag) {
-          Object.defineProperty(file, 'thumbUrl', {
-            value: fileThumb,
-          });
         }
       }
       this.setState({

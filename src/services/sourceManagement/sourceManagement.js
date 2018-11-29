@@ -42,3 +42,8 @@ export async function assessData(params) {
     body: params.body,
   });
 }
+
+// 获取审核日志
+export async function getAssessLog(params) {
+  return request(`/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/review`);
+}
