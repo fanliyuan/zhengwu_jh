@@ -31,8 +31,11 @@ class DBView extends Component {
     super(props);
     this.state = {
       modelName: '浏览',
+      modelTitle: '数据',
+      modelUnit: '行',
       visible: false,
       modalTitle: '数据导出',
+      totals: 0,
     };
   }
 
@@ -60,6 +63,18 @@ class DBView extends Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {
+      dbView: { dataList },
+    } = nextProps;
+    const { totals } = this.state;
+    if (totals === 0 && dataList.totalCounts) {
+      this.setState({
+        totals: dataList.totalCounts,
+      });
+    }
+  }
+
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
@@ -75,14 +90,26 @@ class DBView extends Component {
   }
 
   viewTableData = () => {
+    const {
+      dbView: { dataList },
+    } = this.props;
     this.setState({
       modelName: '浏览',
+      modelTitle: '数据',
+      modelUnit: '行',
+      totals: dataList.totalCounts,
     });
   };
 
   viewTableStruct = () => {
+    const {
+      dbView: { tableStruct },
+    } = this.props;
     this.setState({
       modelName: '结构',
+      modelTitle: '数据项',
+      modelUnit: '项',
+      totals: tableStruct.length,
     });
   };
 
@@ -164,7 +191,7 @@ class DBView extends Component {
       loadingInfo,
       form: { getFieldDecorator },
     } = this.props;
-    const { modelName, visible, modalTitle } = this.state;
+    const { modelName, modelTitle, modelUnit, visible, modalTitle, totals } = this.state;
     const tableColumn = [
       {
         title: '序号',
@@ -200,8 +227,12 @@ class DBView extends Component {
             </Fragment>
           ) : (
             <Fragment>
-              <a className="mr16">浏览</a>
-              <a className="mr16">结构</a>
+              <a className="mr16" disabled={modelName === '浏览'} onClick={methods.viewTableData}>
+                浏览
+              </a>
+              <a className="mr16" disabled={modelName === '结构'} onClick={methods.viewTableStruct}>
+                结构
+              </a>
             </Fragment>
           );
         },
@@ -321,6 +352,9 @@ class DBView extends Component {
             rowKey="id"
             loading={loadingInfo}
           />
+          <div className={`mt16 ${styles.title}`}>
+            {modelTitle} 共 <span style={{ color: '#ed4014' }}>{totals}</span> {modelUnit}
+          </div>
           <Table
             bordered
             pagination={paginationProps}
