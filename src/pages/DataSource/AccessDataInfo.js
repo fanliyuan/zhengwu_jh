@@ -204,12 +204,17 @@ class AccessDataInfo extends PureComponent {
           });
           for (let i = 0, len = fileTypes.length; i < len; i += 1) {
             if (fileTypes[i].datas.indexOf(item.type) !== -1) {
-              fl;
+              flag = true;
               Object.defineProperty(item, 'thumbUrl', {
                 value: fileTypes[i].thumb,
               });
               break;
             }
+          }
+          if (!flag) {
+            Object.defineProperty(item, 'thumbUrl', {
+              value: fileThumb,
+            });
           }
           return item;
         });
@@ -624,7 +629,11 @@ class AccessDataInfo extends PureComponent {
     const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const srcSize = parseFloat(size);
     const index = Math.floor(Math.log(srcSize) / Math.log(1024));
-    let newSize = srcSize / Math.pow(1024, index);
+    let powNum = 1;
+    for (let i = 0, len = index; i < len; i += 1) {
+      powNum *= 1024;
+    }
+    let newSize = srcSize / powNum;
     newSize = newSize.toFixed(2);
     return newSize + unitArr[index];
   };
@@ -1097,7 +1106,7 @@ class AccessDataInfo extends PureComponent {
       onPreview: this.onPreview,
     };
     fileList.map(item => {
-      fileTotal += parseInt(item.size);
+      fileTotal += parseInt(item.size, 10);
       return fileTotal;
     });
     return (
