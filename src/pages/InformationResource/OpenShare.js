@@ -16,7 +16,9 @@ const CheckboxGroup = Checkbox.Group;
   informationResource,
 }))
 export default class OpenShare extends Component {
-  state = {};
+  state = {
+    id: -1,
+  };
 
   componentDidMount() {
     // if(this.props.location.state){
@@ -26,6 +28,9 @@ export default class OpenShare extends Component {
     dispatch({
       type: 'informationResource/openShare',
       payload: this.props.location.state && this.props.location.state.openId,
+    });
+    this.setState({
+      id: this.props.location.state && this.props.location.state.openId,
     });
   }
 
@@ -44,9 +49,19 @@ export default class OpenShare extends Component {
     } = this.props;
     validateFields((errors, values) => {
       if (!errors) {
+        const { id } = this.state;
         dispatch({
-          type: 'informationResource/openShare',
-          payload: this.props.location.state && this.props.location.state.openId,
+          type: 'informationResource/submitOpenShare',
+          payload: {
+            publishMode: '',
+            publishRate: '',
+            switchAreaId: [],
+            timeSet: '',
+            open: +values.open === 1 ? true : false,
+            share: +values.share === 1 ? true : false,
+            id,
+            subscribeLicense: +values.subscribeLicense === 1 ? true : false,
+          },
         });
       }
     });

@@ -8,6 +8,7 @@ import {
   getResourceLists,
   checkIsSameName,
   openDataById,
+  updateOpenData,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -95,6 +96,19 @@ export default {
             type: 'getOpenData',
             payload: response.result.data,
           });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *submitOpenShare({ payload }, { call, put }) {
+      const response = yield call(updateOpenData, payload);
+      try {
+        if (+response.code === 200) {
+          message.success(response.message);
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
         } else {
           message.error(response.message);
         }

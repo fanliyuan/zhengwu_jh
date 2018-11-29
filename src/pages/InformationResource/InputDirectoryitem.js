@@ -42,14 +42,13 @@ export default class InputDirectory extends Component {
         }
         if (info.file.status === 'done') {
           message.success(`${info.file.name} 导入成功`);
-          console.log(info);
           if (info.file.response) {
             if (+info.file.response.code === 200) {
               arr = arr.concat(info.file.response.result.datas);
             }
           }
         } else if (info.file.status === 'error') {
-          message.error(`${info.file.name} 导入失败`);
+          message.error(`${info.file.response.message}`);
         }
       },
     };
@@ -73,10 +72,10 @@ export default class InputDirectory extends Component {
             >
               下载模板{' '}
             </a>
-            按格式填写目录信息资源内容后导入
+            按格式填写信息资源项内容后导入
           </h3>
           <Upload className={styles.infos} {...props}>
-            <span>导入资源: </span>
+            <span>导入信息项: </span>
             <Button type="primary"> 选取文件</Button>
           </Upload>
         </Card>

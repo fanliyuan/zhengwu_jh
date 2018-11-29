@@ -115,13 +115,13 @@ export default [
             component: './InformationResource/AddDirectory',
             authority: ['user'],
           },
-          {
-            path: 'newMenu',
-            name: 'newMenu',
-            hideInMenu: true,
-            component: './InformationResource/NewMenu',
-            authority: ['user'],
-          },
+          // {
+          //   path: 'newMenu',
+          //   name: 'newMenu',
+          //   hideInMenu: true,
+          //   component: './InformationResource/NewMenu',
+          //   authority: ['user'],
+          // },
           {
             path: 'newMenu/one',
             name: 'newMenuOne',

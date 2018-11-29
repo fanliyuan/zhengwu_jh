@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-29 15:56:25
+ * @Last Modified time: 2018-11-29 18:26:57
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -127,6 +127,10 @@ export default class Step1 extends PureComponent {
   handleNumChange = e => {
     console.log(e);
     this.checkLength(e + '', 500);
+  };
+
+  handleProviderChange = e => {
+    this.checkLength(e.target.value, 500);
   };
 
   handleCheckName = async e => {
@@ -508,7 +512,7 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('providerName', {
                 initialValue: data.providerName,
                 rules: [{ required: true, message: '请输入提供方名称' }],
-              })(<Input placeholder="请输入提供方名称" />)}
+              })(<Input placeholder="请输入提供方名称" onChange={this.handleProviderChange} />)}
             </Item>
             <Item label="提供方代码" {...formItemLayout}>
               {getFieldDecorator('providerNo', {
@@ -532,7 +536,13 @@ export default class Step1 extends PureComponent {
               {getFieldDecorator('format', {
                 initialValue: data.resourceCode,
                 rules: [{ required: true, message: '请输入信息资源编码' }],
-              })(<Cascader options={options} fieldNames={{ label: 'label', value: 'label' }} />)}
+              })(
+                <Cascader
+                  options={options}
+                  fieldNames={{ label: 'label', value: 'label' }}
+                  placeholder="请选择信息资源格式"
+                />
+              )}
               {/* <a>编码规则说明</a> */}
             </Item>
             <Item label="更新周期" {...formItemLayout}>
@@ -581,7 +591,14 @@ export default class Step1 extends PureComponent {
               >
                 下一步
               </Button>
-              {/* </Link> */}
+              <Link to="/informationResource/sourceManagement">
+                <Button
+                  // type="primary"
+                  style={{ marginLeft: 20 }}
+                >
+                  取消
+                </Button>
+              </Link>
             </div>
           </Form>
         </Card>

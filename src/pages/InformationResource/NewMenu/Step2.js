@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-29 14:29:53
+ * @Last Modified time: 2018-11-29 18:45:14
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -24,6 +24,7 @@ import {
   Steps,
   message,
   InputNumber,
+  Popconfirm,
 } from 'antd';
 
 import TableForm from './TableForm';
@@ -418,10 +419,14 @@ export default class Step2 extends PureComponent {
             </Item>
           </Form>
           <div style={{ textAlign: 'center' }}>
-            <Button className="mr64" onClick={this.goBack} style={{ marginRight: 20 }}>
-              上一步
-            </Button>
-            {/* {!disabled && ( */}
+            <Popconfirm
+              title="返回填写信息资源内容页面，当前信息将不会被保存，是否返回？"
+              onConfirm={this.goBack}
+            >
+              <Button className="mr64" style={{ marginRight: 20 }}>
+                上一步
+              </Button>
+            </Popconfirm>
             <Button type="primary" onClick={this.goForward}>
               提交
             </Button>
@@ -525,7 +530,11 @@ export default class Step2 extends PureComponent {
                   </Select>
                 )}
               </Item>
-              <Item label="开放条件" {...formItemLayout}>
+              <Item
+                label="开放条件"
+                {...formItemLayout}
+                style={{ display: getFieldValue('openType') === '是' ? 'block' : 'none' }}
+              >
                 {getFieldDecorator('openCondition', {
                   initialValue: data.desc,
                   rules: [{ required: true, message: '请输入开放条件' }],

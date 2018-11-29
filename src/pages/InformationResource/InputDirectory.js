@@ -53,7 +53,7 @@ export default class InputDirectory extends Component {
             >
               下载模板{' '}
             </a>
-            按格式填写目录信息资源内容后导入
+            按格式填写信息资源内容后导入
           </h3>
           <Upload className={styles.infos} {...props}>
             <span>导入资源: </span>

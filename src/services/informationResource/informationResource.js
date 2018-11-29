@@ -29,6 +29,14 @@ export async function openDataById(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params}/shareopen`);
 }
 
+// 提交开放门户数据
+export async function updateOpenData(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/shareopen`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
 // // 删除数据源
 // export async function deleteDataSource(params) {
 //   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
