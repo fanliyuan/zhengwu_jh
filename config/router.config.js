@@ -53,7 +53,7 @@ export default [
           {
             path: '/users/usersManagement',
             name: 'usersManagement',
-            component: './Forms/BasicForm',
+            component: './User/UsersManagement',
             authority: ['admin'],
           },
           {
