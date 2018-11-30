@@ -138,11 +138,13 @@ class DBView extends Component {
         this.setState({
           visible: false,
         });
-        form.setFieldsValue({
-          fileFormat: 'EXCEL/XLSX',
-          codeFormat: 'UTF-8',
-          exportFileName: dbInfo.tableName,
-        });
+        setTimeout(() => {
+          form.setFieldsValue({
+            fileFormat: 'EXCEL/XLSX',
+            codeFormat: 'UTF-8',
+            exportFileName: dbInfo.tableName,
+          });
+        }, 20);
       }
     });
   };
@@ -155,11 +157,13 @@ class DBView extends Component {
     this.setState({
       visible: false,
     });
-    form.setFieldsValue({
-      fileFormat: 'EXCEL/XLSX',
-      codeFormat: 'UTF-8',
-      exportFileName: dbInfo.tableName,
-    });
+    setTimeout(() => {
+      form.setFieldsValue({
+        fileFormat: 'EXCEL/XLSX',
+        codeFormat: 'UTF-8',
+        exportFileName: dbInfo.tableName,
+      });
+    }, 20);
   };
 
   changePage = (pageNum, pageSize) => {
@@ -242,6 +246,7 @@ class DBView extends Component {
       {
         title: '序号',
         dataIndex: 'index',
+        align: 'center',
         render: (text, record, index) => `${index + 1 + (page - 1) * 10}`,
       },
     ];
@@ -249,11 +254,13 @@ class DBView extends Component {
       {
         title: '序号',
         dataIndex: 'index',
+        align: 'center',
         render: (text, record, index) => `${index + 1}`,
       },
       {
         title: '主键',
         dataIndex: 'primaryKey',
+        align: 'center',
         render: text => {
           if (text) {
             return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
@@ -263,14 +270,17 @@ class DBView extends Component {
       },
       {
         title: '字段名称',
+        align: 'center',
         dataIndex: 'columnName',
       },
       {
         title: '数据类型',
+        align: 'center',
         dataIndex: 'columnType',
       },
       {
         title: '中文标注',
+        align: 'center',
         dataIndex: 'note',
       },
     ];
@@ -295,6 +305,7 @@ class DBView extends Component {
         dataColumn.push({
           title: item.columnName,
           dataIndex: item.columnName,
+          align: 'center',
         })
       );
     }

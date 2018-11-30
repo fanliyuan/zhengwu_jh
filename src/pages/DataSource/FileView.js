@@ -163,7 +163,11 @@ class FileView extends Component {
     const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const srcSize = parseFloat(size);
     const index = Math.floor(Math.log(srcSize) / Math.log(1024));
-    let newSize = srcSize / Math.pow(1024, index);
+    let powNum = 1;
+    for (let i = 0, len = index; i < len; i += 1) {
+      powNum *= 1024;
+    }
+    let newSize = srcSize / powNum;
     newSize = newSize.toFixed(2);
     return newSize + unitArr[index];
   };
@@ -207,18 +211,22 @@ class FileView extends Component {
       {
         title: '文件名称',
         dataIndex: 'name',
+        align: 'center',
       },
       {
         title: '文件类型',
         dataIndex: 'type',
+        align: 'center',
       },
       {
         title: '文件大小',
         dataIndex: 'size',
-        render: text => this.setFileSize(parseInt(text)),
+        align: 'center',
+        render: text => this.setFileSize(parseInt(text, 10)),
       },
       {
         title: '最近更新时间',
+        align: 'center',
         dataIndex: 'uploadTimeStr',
       },
     ];

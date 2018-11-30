@@ -5,7 +5,7 @@ import {
 } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'dbView',
+  namespace: 'dbView',
 
   state: {
     tableList: [],

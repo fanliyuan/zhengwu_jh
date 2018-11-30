@@ -173,14 +173,17 @@ class FtpView extends Component {
       {
         title: '文件名称',
         dataIndex: 'name',
+        align: 'center',
       },
       {
         title: '文件类型',
         dataIndex: 'type',
+        align: 'center',
       },
       {
         title: '文件相对路径',
         dataIndex: 'path',
+        align: 'center',
       },
     ];
     const {
