@@ -7,7 +7,7 @@ import {
 } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'taskView',
+  namespace: 'taskView',
 
   state: {
     runLogList: {},

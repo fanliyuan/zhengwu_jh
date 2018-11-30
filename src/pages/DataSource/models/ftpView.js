@@ -1,7 +1,7 @@
 import { viewFtpDetailCurrent, initFtpListCurrent } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'ftpView',
+  namespace: 'ftpView',
 
   state: {
     dataList: {},

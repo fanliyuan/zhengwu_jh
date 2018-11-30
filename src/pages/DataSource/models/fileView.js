@@ -1,7 +1,7 @@
 import { viewFileDetailCurrent, initFileListCurrent } from '@/services/dataSource/dataSource';
 
 export default {
-  namescpace: 'fileView',
+  namespace: 'fileView',
 
   state: {
     dataList: {},
