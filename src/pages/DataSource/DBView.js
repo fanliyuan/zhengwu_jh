@@ -138,11 +138,13 @@ class DBView extends Component {
         this.setState({
           visible: false,
         });
-        form.setFieldsValue({
-          fileFormat: 'EXCEL/XLSX',
-          codeFormat: 'UTF-8',
-          exportFileName: dbInfo.tableName,
-        });
+        setTimeout(() => {
+          form.setFieldsValue({
+            fileFormat: 'EXCEL/XLSX',
+            codeFormat: 'UTF-8',
+            exportFileName: dbInfo.tableName,
+          });
+        }, 20);
       }
     });
   };
@@ -155,11 +157,13 @@ class DBView extends Component {
     this.setState({
       visible: false,
     });
-    form.setFieldsValue({
-      fileFormat: 'EXCEL/XLSX',
-      codeFormat: 'UTF-8',
-      exportFileName: dbInfo.tableName,
-    });
+    setTimeout(() => {
+      form.setFieldsValue({
+        fileFormat: 'EXCEL/XLSX',
+        codeFormat: 'UTF-8',
+        exportFileName: dbInfo.tableName,
+      });
+    }, 20);
   };
 
   changePage = (pageNum, pageSize) => {
