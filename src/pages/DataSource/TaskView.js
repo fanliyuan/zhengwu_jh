@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Table, Button, Tabs, List } from 'antd';
 import router from 'umi/router';
@@ -8,6 +8,7 @@ import DataBaseInfo from '@/components/DataBaseInfo';
 import DataFileInfo from '@/components/DataFileInfo';
 
 const { TabPane } = Tabs;
+console.log(window);
 
 @connect(({ taskView, loading }) => ({
   taskView,
@@ -15,7 +16,7 @@ const { TabPane } = Tabs;
   loadingRunLog: loading.effects['taskView/getRunlog'],
   loadingSyncLog: loading.effects['taskView/getSyncInfo'],
 }))
-class TaskView extends PureComponent {
+class TaskView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -24,6 +25,7 @@ class TaskView extends PureComponent {
   }
 
   componentDidMount() {
+    console.log(this.prop);
     const { dispatch, match } = this.props;
     if (match.params.type === 'db') {
       this.setState({
@@ -120,6 +122,7 @@ class TaskView extends PureComponent {
   };
 
   render() {
+    console.log(this.prop);
     let dType;
     let dataBaseInfo;
     const {
