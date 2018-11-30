@@ -10,11 +10,11 @@ import DataFileInfo from '@/components/DataFileInfo';
 const { TabPane } = Tabs;
 console.log(window);
 
-@connect(({ taskView, loading }) => ({
-  taskView,
-  loadingSyncInfo: loading.effects['taskView/getSyncInfo'],
-  loadingRunLog: loading.effects['taskView/getRunlog'],
-  loadingSyncLog: loading.effects['taskView/getSyncInfo'],
+@connect(({ viewTask, loading }) => ({
+  viewTask,
+  loadingSyncInfo: loading.effects['viewTask/getSyncInfo'],
+  loadingRunLog: loading.effects['viewTask/getRunlog'],
+  loadingSyncLog: loading.effects['viewTask/getSyncInfo'],
 }))
 class TaskView extends Component {
   constructor(props) {
@@ -37,21 +37,21 @@ class TaskView extends Component {
       });
     }
     dispatch({
-      type: 'taskView/getDetail',
+      type: 'viewTask/getDetail',
       payload: {
         id: match.params.id,
         dataType: match.params.type,
       },
     });
     dispatch({
-      type: 'taskView/getSyncInfo',
+      type: 'viewTask/getSyncInfo',
       payload: {
         id: match.params.id,
         dataType: match.params.type,
       },
     });
     dispatch({
-      type: 'taskView/getRunlog',
+      type: 'viewTask/getRunlog',
       payload: {
         id: match.params.id,
         type: match.params.type,
@@ -62,7 +62,7 @@ class TaskView extends Component {
       },
     });
     dispatch({
-      type: 'taskView/getSynclog',
+      type: 'viewTask/getSynclog',
       payload: {
         id: match.params.id,
         type: match.params.type,
@@ -77,7 +77,7 @@ class TaskView extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'taskView/reset',
+      type: 'viewTask/reset',
       payload: {
         runLogList: {},
         syncLogList: {},
@@ -93,7 +93,7 @@ class TaskView extends Component {
     const { dispatch, match } = this.props;
     const paramsPage = { pageNum, pageSize };
     dispatch({
-      type: 'taskView/getRunlog',
+      type: 'viewTask/getRunlog',
       payload: {
         id: match.params.id,
         type: match.params.type,
@@ -109,7 +109,7 @@ class TaskView extends Component {
     const { dispatch, match } = this.props;
     const paramsPage = { pageNum, pageSize };
     dispatch({
-      type: 'taskView/getSynclog',
+      type: 'viewTask/getSynclog',
       payload: {
         id: match.params.id,
         type: match.params.type,
@@ -128,7 +128,7 @@ class TaskView extends Component {
     const {
       location,
       match,
-      taskView: { runLogList, syncLogList, basicInfo, syncInfo, pageRun, pageSync },
+      viewTask: { runLogList, syncLogList, basicInfo, syncInfo, pageRun, pageSync },
       loadingSyncInfo,
       loadingRunLog,
       loadingSyncLog,
