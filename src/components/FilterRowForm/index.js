@@ -16,8 +16,8 @@ class FilterRowForm extends PureComponent {
       let paramsTime = {};
       if (fieldsForm.date) {
         paramsTime = {
-          beginTime: moment(fieldsForm.date[0], 'YYYY-MM-DD').valueOf(),
-          endTime: moment(fieldsForm.date[1], 'YYYY-MM-DD').valueOf(),
+          beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+          endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
         };
       }
       actions.handleSearch(fieldsForm, paramsTime);

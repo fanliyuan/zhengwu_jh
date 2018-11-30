@@ -128,9 +128,13 @@ class UsersManagement extends PureComponent {
     const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
     formValues = fieldsForm;
+    const fields = fieldsForm;
+    Object.defineProperty(fields, 'date', {
+      value: ``,
+    });
     formTime = paramsTime;
     const values = {
-      ...fieldsForm,
+      ...fields,
       ...paramsPage,
       ...paramsTime,
     };
