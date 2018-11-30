@@ -103,12 +103,12 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *submitOpenShare({ payload }, { call, put }) {
+    *submitOpenShare({ payload }, { call }) {
       const response = yield call(updateOpenData, payload);
       try {
-        if (+response.code === 200) {
+        if (+response.code === 202) {
           message.success(response.message);
-          yield put(routerRedux.push('/informationResource/sourceManagement'));
+          // yield put(routerRedux.push('/informationResource/sourceManagement'));
         } else {
           message.error(response.message);
         }

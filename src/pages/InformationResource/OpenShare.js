@@ -30,7 +30,7 @@ export default class OpenShare extends Component {
       payload: this.props.location.state && this.props.location.state.openId,
     });
     this.setState({
-      id: this.props.location.state && this.props.location.state.openId,
+      id: this.props.location.state && +this.props.location.state.openId,
     });
   }
 
@@ -45,25 +45,25 @@ export default class OpenShare extends Component {
     e.preventDefault();
     const {
       form: { validateFields },
-      dispatch,
     } = this.props;
     validateFields((errors, values) => {
       if (!errors) {
         const { id } = this.state;
-        dispatch({
+        const params = {
+          publishMode: '',
+          publishRate: '',
+          switchAreaId: [],
+          timeSet: '',
+          open: +values.open === 1 ? true : false,
+          share: +values.share === 1 ? true : false,
+          opendoorType: values.openType === '开放门户分类' ? '' : values.openType,
+          subscribeLicense: +values.subscribeLicense === 1 ? true : false,
+        };
+        this.props.dispatch({
           type: 'informationResource/submitOpenShare',
           payload: {
             id,
-            shareopenEditDto: {
-              publishMode: '',
-              publishRate: '',
-              switchAreaId: [],
-              timeSet: '',
-              open: +values.open === 1 ? true : false,
-              share: +values.share === 1 ? true : false,
-              opendoorType: openType === '开放门户分类' ? '' : openType,
-              subscribeLicense: +values.subscribeLicense === 1 ? true : false,
-            },
+            shareopenEditDto: params,
           },
         });
       }
@@ -183,6 +183,8 @@ export default class OpenShare extends Component {
               {/* {
                 <span style={{marginRight:10,marginLeft:10}}>开放门户分类：</span>
               } */}
+            </FormItem>
+            <FormItem label="开放门户分类" {...formItemLayout}>
               {getFieldDecorator('openType', {
                 initialValue:
                   openData && openData.opendoorType ? openData.opendoorType : '开放门户分类',

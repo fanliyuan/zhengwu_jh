@@ -33,7 +33,7 @@ export async function openDataById(params) {
 export async function updateOpenData(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/shareopen`, {
     method: 'PUT',
-    body: params,
+    body: params.shareopenEditDto,
   });
 }
 
