@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Table, Button, Form, Input, DatePicker } from 'antd';
 import { connect } from 'dva';
+import { Row, Col, Table, Button, Form, Input, DatePicker } from 'antd';
 import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';

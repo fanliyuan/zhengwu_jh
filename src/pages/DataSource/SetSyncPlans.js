@@ -225,7 +225,7 @@ class SetSyncPlan extends PureComponent {
             })(<Input maxLength="3" style={{ width: 80, marginLeft: 5, marginRight: 5 }} />)}
             次后自动停止服务
           </FormItem>
-          <FormItem {...formItemLayout} label="tips">
+          <FormItem {...formItemLayout} label=" ">
             <h4>0次代表永不停止</h4>
           </FormItem>
         </Form>

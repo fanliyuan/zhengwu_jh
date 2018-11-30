@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Button, Tabs, List } from 'antd';
 import { connect } from 'dva';
+import { Table, Button, Tabs, List } from 'antd';
 import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -8,6 +8,7 @@ import DataBaseInfo from '@/components/DataBaseInfo';
 import DataFileInfo from '@/components/DataFileInfo';
 
 const { TabPane } = Tabs;
+console.log(window);
 
 @connect(({ taskView, loading }) => ({
   taskView,
@@ -24,6 +25,7 @@ class TaskView extends Component {
   }
 
   componentDidMount() {
+    console.log(this.prop);
     const { dispatch, match } = this.props;
     if (match.params.type === 'db') {
       this.setState({
@@ -120,6 +122,7 @@ class TaskView extends Component {
   };
 
   render() {
+    console.log(this.prop);
     let dType;
     let dataBaseInfo;
     const {

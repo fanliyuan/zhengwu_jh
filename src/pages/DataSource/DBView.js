@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
+import { connect } from 'dva';
 import { stringify } from 'qs';
 import { Table, Icon, Modal, Form, Select, Input } from 'antd';
-import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
