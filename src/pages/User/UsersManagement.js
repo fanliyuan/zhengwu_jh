@@ -1,74 +1,73 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  DatePicker,
-  Modal,
-  Divider,
-  Table,
-  message,
-} from 'antd';
+import { Card, Form, Button, Modal, Divider, Table, message } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './User.less';
 
-const { RangePicker } = DatePicker;
-const FormItem = Form.Item;
-const { Option, OptGroup } = Select;
 const resetParamsPage = { pageNum: 1, pageSize: 10 };
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
 
-@connect(({ dataSource, loading }) => ({
-  dataSource,
-  loading: loading.effects['dataSource/fetch'],
+@connect(({ usersManagement, loading }) => ({
+  usersManagement,
+  loading: loading.effects['usersManagement/fetch'],
 }))
 @Form.create()
-class TableList extends PureComponent {
+class UsersManagement extends PureComponent {
   columns = [
     {
-      title: '序号',
-      dataIndex: 'id',
-      render: (text, record, index) => {
-        const { dataSource } = this.props;
-        return `${index + 1 + (dataSource.page - 1) * 10}`;
-      },
+      title: '用户名',
+      align: 'center',
+      dataIndex: 'account',
     },
     {
-      title: '数据源名称',
+      title: '姓名',
+      align: 'center',
       dataIndex: 'name',
     },
     {
-      title: '数据类型',
-      dataIndex: 'type',
+      title: '电话',
+      align: 'center',
+      dataIndex: 'phone',
+    },
+    {
+      title: '角色',
+      align: 'center',
+      dataIndex: 'roleName',
+    },
+    {
+      title: '状态',
+      align: 'center',
+      dataIndex: 'status',
       render: text => {
-        if (text === 'file') {
-          return '文件';
+        switch (text) {
+          case 1:
+            return <span style={{ color: '#5cadff' }}>启用</span>;
+          case 2:
+            return <span style={{ color: '#ed4014' }}>停用</span>;
+          default:
+            return <span>无状态</span>;
         }
-        return text;
       },
     },
     {
-      title: '创建人',
-      dataIndex: 'createUserName',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
+      title: '建立时间',
+      align: 'center',
+      dataIndex: 'createtime',
     },
     {
       title: '操作',
+      align: 'center',
       render: (text, record) => (
         <Fragment>
+          {record.status === 2 && <a onClick={() => this.handleDelete(record.id)}>启用</a>}
+          {record.status === 1 && <a onClick={() => this.handleDelete(record.id)}>停用</a>}
+          <Divider type="vertical" />
           <a
             onClick={() => {
               if (!record.xg) {
@@ -81,16 +80,7 @@ class TableList extends PureComponent {
             修改
           </a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id, record.sc)}>删除</a>
-          <Divider type="vertical" />
-          <a
-            onClick={() => {
-              const { match } = this.props;
-              router.push(`${match.url}/access/${record.id}`);
-            }}
-          >
-            接入数据
-          </a>
+          <a onClick={() => this.handleDelete(record.id)}>删除</a>
         </Fragment>
       ),
     },
@@ -117,12 +107,15 @@ class TableList extends PureComponent {
       form.setFieldsValue(formValues);
     }
     dispatch({
-      type: 'dataSource/fetch',
+      type: 'usersManagement/fetch',
       payload: {
         ...paramsPage,
         ...formValues,
         ...formTime,
       },
+    });
+    dispatch({
+      type: 'usersManagement/getRoles',
     });
   }
 
@@ -131,52 +124,19 @@ class TableList extends PureComponent {
     sessionStorage.setItem('currentList', route.name);
   }
 
-  handleFormReset = () => {
-    const { form, dispatch } = this.props;
-    form.resetFields();
-    formValues = {};
-    formTime = {};
+  handleSearch = (fieldsForm, paramsTime) => {
+    const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
+    formValues = fieldsForm;
+    formTime = paramsTime;
+    const values = {
+      ...fieldsForm,
+      ...paramsPage,
+      ...paramsTime,
+    };
     dispatch({
-      type: 'dataSource/fetch',
-      payload: resetParamsPage,
-    });
-  };
-
-  handleSearch = e => {
-    e.preventDefault();
-    paramsPage = { pageNum: 1, pageSize: 10 };
-    this.getFormValues();
-  };
-
-  getFormValues = () => {
-    const { dispatch, form } = this.props;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const fieldsForm = fieldsValue;
-      let paramsTime = {};
-      if (fieldsForm.date) {
-        paramsTime = {
-          beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-          endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
-        };
-        formTime = paramsTime;
-        delete fieldsForm.date;
-      }
-
-      formValues = fieldsForm;
-
-      const values = {
-        ...fieldsForm,
-        ...paramsPage,
-        ...paramsTime,
-      };
-
-      dispatch({
-        type: 'dataSource/fetch',
-        payload: values,
-      });
+      type: 'usersManagement/fetch',
+      payload: values,
     });
   };
 
@@ -211,7 +171,7 @@ class TableList extends PureComponent {
             };
 
             dispatch({
-              type: 'dataSource/deleteItem',
+              type: 'usersManagement/deleteItem',
               payload: {
                 values,
                 item: {
@@ -235,7 +195,7 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     paramsPage = { pageNum, pageSize };
     dispatch({
-      type: 'dataSource/fetch',
+      type: 'usersManagement/fetch',
       payload: {
         ...paramsPage,
         ...formValues,
@@ -246,69 +206,109 @@ class TableList extends PureComponent {
 
   renderForm() {
     const {
-      form: { getFieldDecorator },
+      usersManagement: { roleList },
     } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem label="数据源名称">
-              {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入数据源名称" />)}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="创建人">
-              {getFieldDecorator('createUserName')(
-                <Input maxLength="50" placeholder="请输入创建人" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="数据类型">
-              {getFieldDecorator('type')(
-                <Select style={{ width: '100%' }} placeholder="请选择数据类型">
-                  <Option value="">全部</Option>
-                  <OptGroup label="数据库类型">
-                    <Option value="mysql">mysql</Option>
-                    <Option value="sqlserver">sqlserver</Option>
-                    <Option value="oracle">oracle</Option>
-                    <Option value="dm">dm</Option>
-                    <Option value="kingbase">kingbase</Option>
-                  </OptGroup>
-                  <OptGroup label="半结构文件类型">
-                    <Option value="ftp">ftp</Option>
-                    <Option value="sftp">sftp</Option>
-                    <Option value="file">文件</Option>
-                  </OptGroup>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="创建时间">
-              {getFieldDecorator('date')(
-                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <div style={{ overflow: 'hidden' }}>
-          <div style={{ float: 'right', marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
-            </Button>
-          </div>
-        </div>
-      </Form>
+    const roles = [
+      {
+        key: '全部',
+        value: '',
+      },
+    ];
+    roleList.map(item =>
+      roles.push({
+        key: item.name,
+        value: item.id,
+      })
     );
+    const formData = {
+      md: 8,
+      lg: 24,
+      xl: 48,
+      data: [
+        {
+          key: 1,
+          data: [
+            {
+              prop: 'account',
+              label: '用户名',
+              typeOptions: {
+                placeholder: '请输入用户名',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'name',
+              label: '姓名',
+              typeOptions: {
+                placeholder: '请输入姓名',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'phone',
+              label: '电话',
+              typeOptions: {
+                placeholder: '请输入电话',
+                maxLength: 11,
+              },
+            },
+          ],
+        },
+        {
+          key: 2,
+          data: [
+            {
+              type: 'Select',
+              prop: 'role',
+              label: '角色',
+              typeOptions: {
+                placeholder: '请选择角色',
+              },
+              options: roles,
+            },
+            {
+              type: 'Select',
+              prop: 'status',
+              label: '状态',
+              typeOptions: {
+                placeholder: '请选择状态',
+              },
+              options: [
+                {
+                  key: '全部',
+                  value: '',
+                },
+                {
+                  key: '启用',
+                  value: 1,
+                },
+                {
+                  key: '停用',
+                  value: 2,
+                },
+              ],
+            },
+            {
+              type: 'RangePicker',
+              prop: 'date',
+              label: '创建时间',
+            },
+          ],
+        },
+      ],
+    };
+    const actions = {
+      handleSearch: this.handleSearch,
+    };
+    const data = {
+      ...formValues,
+    };
+    return <FilterRowForm formData={formData} actions={actions} data={data} />;
   }
 
   render() {
     const {
-      dataSource: { data, page },
+      usersManagement: { data, page },
       loading,
       match,
     } = this.props;
@@ -351,4 +351,4 @@ class TableList extends PureComponent {
   }
 }
 
-export default TableList;
+export default UsersManagement;
