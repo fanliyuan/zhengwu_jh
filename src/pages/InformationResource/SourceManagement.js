@@ -53,6 +53,7 @@ export default class SourceManagement extends Component {
     dispatch({
       type: 'informationResource/getClassfiyList',
     });
+    sessionStorage.removeItem('routeData');
     // this.searchHandle({});
   }
 

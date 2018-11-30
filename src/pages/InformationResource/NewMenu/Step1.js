@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-29 18:26:57
+ * @Last Modified time: 2018-11-30 13:29:01
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -44,14 +44,16 @@ let isSameMsg;
 export default class Step1 extends PureComponent {
   state = {
     data: {
-      menuName: '',
-      desc: '',
+      infoName: '',
+      infoSummary: '',
       classify: '',
       providerName: '',
-      innerDepartmentName: '',
       providerCode: '',
-      resourceCode: '',
-      formName: '',
+      innerDepartmentName: '',
+      infoType: '',
+      updateCycle: '',
+      updateTime: '',
+      relatedCode: '',
     },
     // disabled: true,
     selectCode: '',
@@ -72,8 +74,31 @@ export default class Step1 extends PureComponent {
     dispatch({
       type: 'informationResource/getClassfiyList',
     });
-    sessionStorage.removeItem('routeData');
+    const sessionData =
+      sessionStorage.getItem('routeData') && JSON.parse(sessionStorage.getItem('routeData'));
+    if (sessionData) {
+      console.log(sessionData);
+      const { data } = this.state;
+      const classifyData = sessionData.typeName.split('-');
+      const formatData = sessionData.format.split('-');
+      this.setState({
+        data: {
+          ...data,
+          infoName: sessionData.name,
+          infoSummary: sessionData.summary,
+          classify: classifyData,
+          providerName: sessionData.providerName,
+          providerCode: sessionData.providerNo,
+          innerDepartmentName: sessionData.providerDept,
+          infoType: formatData,
+          updateCycle: sessionData.updateCycle,
+          updateTime: moment(sessionData.publishTime),
+          relatedCode: sessionData.relateCode ? sessionData.relateCode : '',
+        },
+      });
+    }
     sessionStorage.removeItem('itemData');
+    sessionStorage.setItem('isBack', false);
   }
 
   // handleSubmit = e => {
@@ -125,8 +150,11 @@ export default class Step1 extends PureComponent {
   };
 
   handleNumChange = e => {
-    console.log(e);
-    this.checkLength(e + '', 500);
+    this.checkLength(e.target.value, 500);
+  };
+
+  handleRelateCode = e => {
+    this.checkLength(e.target.value, 50);
   };
 
   handleProviderChange = e => {
@@ -180,6 +208,7 @@ export default class Step1 extends PureComponent {
           typeName: values.typeName.join('-'),
           typeId: selectId,
         };
+        sessionStorage.setItem('routeData', JSON.stringify(step1Data));
         dispatch(
           routerRedux.push({
             pathname: '/informationResource/newMenu/two',
@@ -209,7 +238,6 @@ export default class Step1 extends PureComponent {
   };
 
   handleClassfiy = async (val, selectedOptions) => {
-    console.log(selectedOptions);
     const {
       form: { getFieldValue },
     } = this.props;
@@ -467,7 +495,7 @@ export default class Step1 extends PureComponent {
           <Form className={styles.stepForm} onSubmit={this.handleNext}>
             <Item label="信息资源名称" {...formItemLayout}>
               {getFieldDecorator('name', {
-                initialValue: data.menuName,
+                initialValue: data.infoName,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
                 <Input
@@ -480,7 +508,7 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="信息资源摘要" {...formItemLayout}>
               {getFieldDecorator('summary', {
-                initialValue: data.desc,
+                initialValue: data.infoSummary,
                 rules: [{ required: true, message: '请输入描述' }],
               })(
                 <Input.TextArea
@@ -505,6 +533,7 @@ export default class Step1 extends PureComponent {
                   options={classfiyList}
                   fieldNames={{ label: 'name', value: 'name' }}
                   onChange={this.handleClassfiy}
+                  placeholder="请选择信息资源分类"
                 />
               )}
             </Item>
@@ -516,13 +545,13 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="提供方代码" {...formItemLayout}>
               {getFieldDecorator('providerNo', {
-                initialValue: data.innerDepartmentName,
+                initialValue: data.providerCode,
                 rules: [{ required: true, message: '请输入提供方代码' }],
-              })(<InputNumber min={1} onChange={this.handleNumChange} />)}
+              })(<Input onChange={this.handleNumChange} />)}
             </Item>
             <Item label="提供方内部部门" {...formItemLayout}>
               {getFieldDecorator('providerDept', {
-                initialValue: data.providerCode,
+                initialValue: data.innerDepartmentName,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
                 <Input
@@ -534,7 +563,7 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="信息资源格式" {...formItemLayout}>
               {getFieldDecorator('format', {
-                initialValue: data.resourceCode,
+                initialValue: data.infoType,
                 rules: [{ required: true, message: '请输入信息资源编码' }],
               })(
                 <Cascader
@@ -547,7 +576,7 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="更新周期" {...formItemLayout}>
               {getFieldDecorator('updateCycle', {
-                initialValue: data.formName,
+                initialValue: data.updateCycle,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
                 <Select>
@@ -560,7 +589,7 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="发布日期" {...formItemLayout}>
               {getFieldDecorator('publishTime', {
-                initialValue: startValue,
+                initialValue: data.updateTime, //startValue,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
                 <DatePicker disabledDate={this.disabledStartDate} onChange={this.onStartChange} />
@@ -568,9 +597,9 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="关联资源代码" {...formItemLayout}>
               {getFieldDecorator('relateCode', {
-                initialValue: data.providerCode,
+                initialValue: data.relatedCode,
                 // rules: [{ required: true, message: '请输入名称' }],
-              })(<InputNumber min={1} />)}
+              })(<Input onChange={this.handleRelateCode} />)}
             </Item>
             <div className="btnclsb">
               {/* {!disabled ? (

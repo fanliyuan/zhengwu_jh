@@ -53,14 +53,17 @@ export default class OpenShare extends Component {
         dispatch({
           type: 'informationResource/submitOpenShare',
           payload: {
-            publishMode: '',
-            publishRate: '',
-            switchAreaId: [],
-            timeSet: '',
-            open: +values.open === 1 ? true : false,
-            share: +values.share === 1 ? true : false,
             id,
-            subscribeLicense: +values.subscribeLicense === 1 ? true : false,
+            shareopenEditDto: {
+              publishMode: '',
+              publishRate: '',
+              switchAreaId: [],
+              timeSet: '',
+              open: +values.open === 1 ? true : false,
+              share: +values.share === 1 ? true : false,
+              opendoorType: openType === '开放门户分类' ? '' : openType,
+              subscribeLicense: +values.subscribeLicense === 1 ? true : false,
+            },
           },
         });
       }
@@ -151,12 +154,10 @@ export default class OpenShare extends Component {
       },
     ];
     const updateTime = [
-      { id: 1, label: '实时' },
-      { id: 2, label: '每日' },
-      { id: 3, label: '每周' },
-      { id: 4, label: '每月' },
-      { id: 5, label: '每季度' },
-      { id: 6, label: '每年' },
+      { id: 1, label: '政务' },
+      { id: 2, label: '健康' },
+      { id: 3, label: '交通' },
+      { id: 4, label: '治安' },
     ];
     const updateTimeOption = updateTime.map(item => {
       return (
@@ -179,13 +180,17 @@ export default class OpenShare extends Component {
                   <Radio value={0}>否</Radio>
                 </RadioGroup>
               )}
-              {/* {getFieldDecorator('openType',{
-                initialValue:''
+              {/* {
+                <span style={{marginRight:10,marginLeft:10}}>开放门户分类：</span>
+              } */}
+              {getFieldDecorator('openType', {
+                initialValue:
+                  openData && openData.opendoorType ? openData.opendoorType : '开放门户分类',
               })(
-                <Select style={{width:150}} placeholder="请选择类型">
+                <Select style={{ width: 150 }} placeholder="开放门户分类">
                   {updateTimeOption}
                 </Select>
-              )} */}
+              )}
             </FormItem>
             <FormItem label="是否共享" {...formItemLayout}>
               {getFieldDecorator('share', {

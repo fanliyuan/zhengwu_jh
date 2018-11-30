@@ -23,6 +23,7 @@ export default class InputDirectory extends Component {
       }
       sessionStorage.setItem('itemData', JSON.stringify(arr));
     }
+    sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
     window.history.back();
   };
 
