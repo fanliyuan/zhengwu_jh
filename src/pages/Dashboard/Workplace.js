@@ -42,16 +42,16 @@ const links = [
   project,
   activities,
   chart,
-  currentUserLoading: loading.effects['user/fetchCurrent'],
+  // currentUserLoading: loading.effects['user/fetchCurrent'],
   projectLoading: loading.effects['project/fetchNotice'],
   activitiesLoading: loading.effects['activities/fetchList'],
 }))
 class Workplace extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'user/fetchCurrent',
-    });
+    // dispatch({
+    //   type: 'user/fetchCurrent',
+    // });
     dispatch({
       type: 'project/fetchNotice',
     });

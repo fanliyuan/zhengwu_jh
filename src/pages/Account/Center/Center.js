@@ -9,7 +9,7 @@ import styles from './Center.less';
 @connect(({ loading, user, project }) => ({
   listLoading: loading.effects['list/fetch'],
   currentUser: user.currentUser,
-  currentUserLoading: loading.effects['user/fetchCurrent'],
+  // currentUserLoading: loading.effects['user/fetchCurrent'],
   project,
   projectLoading: loading.effects['project/fetchNotice'],
 }))
@@ -22,9 +22,9 @@ class Center extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'user/fetchCurrent',
-    });
+    // dispatch({
+    //   type: 'user/fetchCurrent',
+    // });
     dispatch({
       type: 'list/fetch',
       payload: {
