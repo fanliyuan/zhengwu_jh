@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Table, Button, Tabs, List } from 'antd';
 import router from 'umi/router';
@@ -15,7 +15,7 @@ const { TabPane } = Tabs;
   loadingRunLog: loading.effects['taskView/getRunlog'],
   loadingSyncLog: loading.effects['taskView/getSyncInfo'],
 }))
-class TaskView extends Component {
+class TaskView extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
