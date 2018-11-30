@@ -271,7 +271,7 @@ export default [
           {
             path: '/data/management/taskview/:type/:id',
             name: 'taskview',
-            component: './DataSource/TaskViewData',
+            component: './DataSource/TaskView',
             authority: ['user'],
             hideInMenu: true,
           },
