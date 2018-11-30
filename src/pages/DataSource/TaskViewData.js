@@ -72,20 +72,20 @@ class TaskView extends Component {
     });
   }
 
-  //componentWillUnmount() {
-  //  const { dispatch } = this.props;
-  //  dispatch({
-  //    type: 'taskView/reset',
-  //    payload: {
-  //      runLogList: {},
-  //      syncLogList: {},
-  //      basicInfo: {},
-  //      syncInfo: {},
-  //      pageRun: 1,
-  //      pageSync: 1,
-  //    },
-  //  });
-  //}
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'taskView/reset',
+      payload: {
+        runLogList: {},
+        syncLogList: {},
+        basicInfo: {},
+        syncInfo: {},
+        pageRun: 1,
+        pageSync: 1,
+      },
+    });
+  }
 
   changePage = (pageNum, pageSize) => {
     const { dispatch, match } = this.props;
