@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Button, Tabs, List } from 'antd';
 import { connect } from 'dva';
+import { Table, Button, Tabs, List } from 'antd';
 import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';

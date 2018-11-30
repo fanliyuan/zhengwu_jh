@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Table, Button, Form, Input } from 'antd';
 import { connect } from 'dva';
+import { Row, Col, Table, Button, Form, Input } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataFileInfo from '@/components/DataFileInfo';
