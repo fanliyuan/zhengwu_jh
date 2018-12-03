@@ -700,10 +700,10 @@ export default {
     },
     *getCurrentdetail({ payload }, { call, put }) {
       let callbackApi;
-      const { dataType } = payload;
-      if (dataType === 'db') {
+      const { type } = payload;
+      if (type === 'db') {
         callbackApi = viewDbDetailCurrent;
-      } else if (dataType === 'ftp') {
+      } else if (type === 'ftp') {
         callbackApi = viewFtpDetailCurrent;
       } else {
         callbackApi = viewFileDetailCurrent;

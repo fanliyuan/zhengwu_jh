@@ -266,20 +266,20 @@ export default class Assess extends Component {
   handleview = row => {
     console.log(row, '查看');
     const { dispatch } = this.props;
-    const { dataType } = row;
+    const { type } = row;
     this.showCurrentConfig(row);
     dispatch({
       type: 'accessData/getCurrentdetail',
       payload: {
         id: row.id,
-        dataType,
+        type,
       },
     });
     dispatch({
       type: 'accessData/getCurrentList',
       payload: {
         id: row.id,
-        dataType,
+        type,
       },
     });
   };
@@ -374,6 +374,7 @@ export default class Assess extends Component {
   };
 
   renderDbInfo = () => {
+    console.log('表格');
     const {
       loadingTable,
       loadingStruct,
