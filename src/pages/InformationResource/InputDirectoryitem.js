@@ -15,6 +15,7 @@ export default class InputDirectory extends Component {
   }
 
   handleCancel = () => {
+    sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
     window.history.back();
   };
 
@@ -66,7 +67,7 @@ export default class InputDirectory extends Component {
         <div className="btncls clearfix">
           {/* <Link to="/informationResource/newMenu/two"> */}
           <Button className="fr mr40" onClick={this.handleCancel}>
-            返回
+            取消
           </Button>
           {/* </Link> */}
         </div>
