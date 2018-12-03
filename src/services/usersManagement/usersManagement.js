@@ -66,7 +66,7 @@ export async function roleUpdate(params) {
 
 // 重置密码
 export async function resetPwd(params) {
-  return request(`/api/mgr/resetPwd1/${params.id}`, {
+  return request(`/api/mgr/resetPwd1/${params.userId}`, {
     method: 'POST',
     body: params,
   });

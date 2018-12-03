@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Modal, Form, Input, Checkbox } from 'antd';
+import { Card, Button, Modal, Form, Input, Checkbox, message } from 'antd';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './User.less';
@@ -62,10 +62,35 @@ class AddUser extends PureComponent {
   }
 
   onChange = e => {
-    console.log(e);
     this.setState({
       checked: e.target.checked,
     });
+  };
+
+  random = () => {
+    const { form } = this.props;
+    const len = 8;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWWXYZabcdefghijklmnopqrstuvwwxyz0123456789';
+    const maxPos = chars.length;
+    let pwd = '';
+    for (let i = 0; i < len; i += 1) {
+      pwd += chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    console.log(pwd);
+    form.setFieldsValue({
+      password: pwd,
+    });
+    console.log(form.getFieldsValue());
+  };
+
+  copy = () => {
+    const input = document.getElementById('password');
+    input.setAttribute('type', 'text');
+    input.select();
+    document.execCommand('copy');
+    input.setAttribute('type', 'password');
+    message.destroy();
+    message.success('复制成功！');
   };
 
   submit = () => {
@@ -169,6 +194,10 @@ class AddUser extends PureComponent {
                 },
               ],
             })(<Input type="password" autoComplete="new-password" />)}
+            <a style={{ marginRight: 10 }} onClick={() => this.random()}>
+              随机生成
+            </a>
+            <a onClick={() => this.copy()}>复制</a>
           </FormItem>
         )}
         <FormItem {...formItemLayout} label={<FormattedMessage id="form.addUser.name.label" />}>

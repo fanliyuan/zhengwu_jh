@@ -1,14 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import { Card, Form, Button, Modal, Divider, Table, message } from 'antd';
+import { Card, Form, Button, Modal, Divider, Table } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './User.less';
 
-const resetParamsPage = { pageNum: 1, pageSize: 10 };
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
@@ -70,6 +68,8 @@ class UsersManagement extends PureComponent {
           <Divider type="vertical" />
           <a onClick={() => router.push(`/users/usersManagement/update/${record.id}`)}>修改</a>
           <Divider type="vertical" />
+          <a onClick={() => this.handleResetPassword(record.id)}>重置密码</a>
+          <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id)}>删除</a>
         </Fragment>
       ),
@@ -78,23 +78,11 @@ class UsersManagement extends PureComponent {
 
   componentDidMount() {
     const routeName = sessionStorage.getItem('currentList');
-    const { dispatch, form, route } = this.props;
+    const { dispatch, route } = this.props;
     if (routeName && routeName !== route.name) {
       paramsPage = { pageNum: 1, pageSize: 10 };
       formValues = {};
       formTime = {};
-    } else {
-      if (formTime !== undefined && formValues !== undefined) {
-        if (formTime.beginTime) {
-          formValues.date = [
-            moment(formTime.beginTime, 'YYYY-MM-DD'),
-            moment(formTime.endTime, 'YYYY-MM-DD'),
-          ];
-          form.setFieldsValue(formValues);
-          delete formValues.date;
-        }
-      }
-      form.setFieldsValue(formValues);
     }
     dispatch({
       type: 'usersManagement/fetch',
@@ -190,6 +178,41 @@ class UsersManagement extends PureComponent {
               values,
               item: {
                 id,
+              },
+            },
+            callback: res => {
+              if (res.code < 300) {
+                resolve();
+              } else {
+                reject();
+              }
+            },
+          });
+        }),
+    });
+  };
+
+  handleResetPassword = id => {
+    const { dispatch } = this.props;
+    return Modal.confirm({
+      title: '警告',
+      content: '是否重置密码，重置后密码为"111111"？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          const values = {
+            ...paramsPage,
+            ...formValues,
+            ...formTime,
+          };
+
+          dispatch({
+            type: 'usersManagement/resetPassword',
+            payload: {
+              values,
+              item: {
+                userId: id,
               },
             },
             callback: res => {

@@ -4,6 +4,7 @@ import {
   userFreeze,
   userDelete,
   roleList,
+  resetPwd,
 } from '@/services/usersManagement/usersManagement';
 import { message } from 'antd';
 
@@ -81,6 +82,19 @@ export default {
         });
       } else {
         message.error(jsonRes.message);
+      }
+    },
+    *resetPassword({ payload, callback }, { call, put }) {
+      const response = yield call(resetPwd, payload.item);
+      callback(response);
+      if (response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
       }
     },
   },
