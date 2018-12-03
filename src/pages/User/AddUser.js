@@ -76,11 +76,9 @@ class AddUser extends PureComponent {
     for (let i = 0; i < len; i += 1) {
       pwd += chars.charAt(Math.floor(Math.random() * maxPos));
     }
-    console.log(pwd);
     form.setFieldsValue({
       password: pwd,
     });
-    console.log(form.getFieldsValue());
   };
 
   copy = () => {

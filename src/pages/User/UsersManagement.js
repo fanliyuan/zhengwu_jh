@@ -77,18 +77,24 @@ class UsersManagement extends PureComponent {
   ];
 
   componentDidMount() {
+    let fields;
     const routeName = sessionStorage.getItem('currentList');
     const { dispatch, route } = this.props;
     if (routeName && routeName !== route.name) {
       paramsPage = { pageNum: 1, pageSize: 10 };
       formValues = {};
       formTime = {};
+    } else {
+      fields = { ...formValues };
+      Object.defineProperty(fields, 'date', {
+        value: ``,
+      });
     }
     dispatch({
       type: 'usersManagement/fetch',
       payload: {
         ...paramsPage,
-        ...formValues,
+        ...fields,
         ...formTime,
       },
     });
@@ -105,7 +111,7 @@ class UsersManagement extends PureComponent {
   handleSearch = (fieldsForm, paramsTime) => {
     const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
-    formValues = fieldsForm;
+    formValues = { ...fieldsForm };
     const fields = fieldsForm;
     Object.defineProperty(fields, 'date', {
       value: ``,
