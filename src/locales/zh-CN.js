@@ -166,7 +166,7 @@ export default {
   'menu.users.usersManagement': '用户管理',
   'menu.users.usersAdd': '新增用户',
   'menu.users.usersUpdate': '修改用户',
-  'menu.users.assignRole': '分配角色',
+  'menu.users.roleManagement': '分配角色',
   'menu.audit': '审计管理',
   'menu.audit.loginAudit': '登录审计',
   'menu.audit.operationAudit': '操作审计',

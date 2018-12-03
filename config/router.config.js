@@ -71,9 +71,9 @@ export default [
             authority: ['admin'],
           },
           {
-            path: '/users/assignRole',
-            name: 'assignRole',
-            component: './Forms/StepForm',
+            path: '/users/roleManagement',
+            name: 'roleManagement',
+            component: './User/RoleManagement',
             authority: ['security'],
           },
         ],
