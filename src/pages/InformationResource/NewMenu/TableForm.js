@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 17:20:24
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-27 17:49:59
+ * @Last Modified time: 2018-12-03 14:31:13
 */
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Input, Popconfirm, Divider, Tooltip } from 'antd';
@@ -263,7 +263,7 @@ export default class TableForm extends PureComponent {
         },
       },
     ];
-    if (!disabled) {
+    if (!disabled && enAble) {
       columns.push({
         title: '操作',
         dataIndex: 'operation',

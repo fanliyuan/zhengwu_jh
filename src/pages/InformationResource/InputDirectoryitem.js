@@ -10,13 +10,19 @@ export default class InputDirectory extends Component {
   state = {};
 
   componentDidMount() {
-    sessionStorage.setItem('itemData', '');
+    // sessionStorage.setItem('itemData', '');
     arr = [];
   }
 
+  handleCancel = () => {
+    window.history.back();
+  };
+
   handleBackBtn = () => {
     if (arr.length === 0) {
-      sessionStorage.setItem('itemData', '');
+      if (!sessionStorage.getItem('itemData')) {
+        sessionStorage.setItem('itemData', '');
+      }
     } else {
       for (let i = 0; i < arr.length; i += 1) {
         arr[i].key = i;
@@ -42,6 +48,7 @@ export default class InputDirectory extends Component {
           // console.log(info.file, info.fileList);
         }
         if (info.file.status === 'done') {
+          sessionStorage.setItem('itemData', '');
           message.success(`${info.file.name} 导入成功`);
           if (info.file.response) {
             if (+info.file.response.code === 200) {
@@ -58,7 +65,7 @@ export default class InputDirectory extends Component {
       <PageHeaderLayout>
         <div className="btncls clearfix">
           {/* <Link to="/informationResource/newMenu/two"> */}
-          <Button className="fr mr40" onClick={this.handleBackBtn}>
+          <Button className="fr mr40" onClick={this.handleCancel}>
             返回
           </Button>
           {/* </Link> */}
@@ -79,6 +86,9 @@ export default class InputDirectory extends Component {
             <span>导入信息项: </span>
             <Button type="primary"> 选取文件</Button>
           </Upload>
+          <Button type="primary" onClick={this.handleBackBtn}>
+            上一步
+          </Button>
         </Card>
       </PageHeaderLayout>
     );

@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-30 13:29:01
+ * @Last Modified time: 2018-12-03 14:41:25
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -99,6 +99,7 @@ export default class Step1 extends PureComponent {
     }
     sessionStorage.removeItem('itemData');
     sessionStorage.setItem('isBack', false);
+    sessionStorage.setItem('inputType', '');
   }
 
   // handleSubmit = e => {

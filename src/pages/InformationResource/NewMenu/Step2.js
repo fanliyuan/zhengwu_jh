@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-11-30 13:32:46
+ * @Last Modified time: 2018-12-03 15:19:20
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -25,6 +25,7 @@ import {
   message,
   InputNumber,
   Popconfirm,
+  // Tabs,
 } from 'antd';
 
 import TableForm from './TableForm';
@@ -34,6 +35,7 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 const { Item } = Form;
 const { Step } = Steps;
 const { Option } = Select;
+// const TabPane = Tabs.TabPane
 let keyId = 1;
 const modalList = [
   {
@@ -63,7 +65,7 @@ const modalList = [
 export default class Step2 extends PureComponent {
   state = {
     data: {
-      method: 3,
+      method: 1,
     },
     tableData: [],
     modalData: {
@@ -79,6 +81,7 @@ export default class Step2 extends PureComponent {
     addVisible: false,
     routeData: {},
     isEnable: false,
+    isAgain: false,
   };
 
   componentDidMount() {
@@ -99,7 +102,13 @@ export default class Step2 extends PureComponent {
       if (sessionStorage.getItem('itemData')) {
         // const { tableData } = this.state
         const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
+        const { data } = this.state;
         this.setState({
+          data: {
+            ...data,
+            method: 2,
+          },
+          isAgain: true,
           // disabled: false,
           tableData: JSON.parse(sessionStorage.getItem('itemData')),
           routeData: {
@@ -140,8 +149,25 @@ export default class Step2 extends PureComponent {
   };
 
   methodChange = e => {
-    if (e.target.value === 2) {
+    if (+e.target.value === 2) {
       this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
+      sessionStorage.setItem('inputType', 2);
+      this.setState({
+        isAgain: false,
+        tableData: [],
+      });
+    } else if (+e.target.value === 1) {
+      sessionStorage.setItem('inputType', '');
+      sessionStorage.setItem('itemData', '');
+      const { data } = this.state;
+      this.setState({
+        isAgain: false,
+        data: {
+          ...data,
+          method: 1,
+        },
+        tableData: [],
+      });
     }
   };
 
@@ -229,6 +255,11 @@ export default class Step2 extends PureComponent {
     }
   };
 
+  handleInputAgain = () => {
+    this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
+    sessionStorage.setItem('inputType', 2);
+  };
+
   handleOpenConditionChange = e => {
     this.checkLength(e.target.value, 500);
   };
@@ -260,6 +291,7 @@ export default class Step2 extends PureComponent {
       selectKeys,
       // disabled,
       isEnable,
+      isAgain,
     } = this.state;
     const columns = [
       {
@@ -298,6 +330,23 @@ export default class Step2 extends PureComponent {
       },
       wrapperCol: {
         span: 17,
+      },
+    };
+    const formItemLayout1 = {
+      labelCol: {
+        span: 2,
+      },
+      wrapperCol: {
+        span: 22,
+      },
+    };
+    const formItemLayout2 = {
+      labelCol: {
+        span: 2,
+        // offset:2,
+      },
+      wrapperCol: {
+        span: 22,
       },
     };
     const options = [
@@ -410,13 +459,20 @@ export default class Step2 extends PureComponent {
             <Step title="完成" />
           </Steps>
           <Form>
-            <Item lable="名称">
+            <Item label="添加方式" {...formItemLayout1}>
               <Radio.Group value={data.method} onChange={this.methodChange}>
-                <Radio value={3}>手工添加</Radio>
+                <Radio value={1}>手工添加</Radio>
                 <Radio value={2}>信息项模板导入</Radio>
               </Radio.Group>
+              <Button
+                type="primary"
+                onClick={this.handleInputAgain}
+                style={{ display: isAgain ? 'inline-block' : 'none' }}
+              >
+                重新导入
+              </Button>
             </Item>
-            <Item label="信息项">
+            <Item label="信息项" {...formItemLayout2}>
               <TableForm
                 value={tableData}
                 onChange={val => this.onChange(val)}
@@ -544,7 +600,12 @@ export default class Step2 extends PureComponent {
               >
                 {getFieldDecorator('openCondition', {
                   initialValue: data.desc,
-                  rules: [{ required: true, message: '请输入开放条件' }],
+                  rules: [
+                    {
+                      required: getFieldValue('openType') === '是' ? true : false,
+                      message: '请输入开放条件',
+                    },
+                  ],
                 })(
                   <Input.TextArea
                     placeholder="请输入开放条件"
