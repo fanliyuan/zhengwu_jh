@@ -55,12 +55,16 @@ class AccessStepForm extends PureComponent {
     this.state = {
       hasSetCurrent: false,
       currentConfig: [1, -11, 10],
+      pageTitle: '',
     };
   }
 
   componentDidMount() {
     const { dispatch, match, route } = this.props;
     if (route.name === 'managementUpdate') {
+      this.setState({
+        pageTitle: '待审核配置',
+      });
       dispatch({
         type: 'accessData/updateDetail',
         payload: {
@@ -491,7 +495,7 @@ class AccessStepForm extends PureComponent {
       route,
       accessData: { params, current, dataType, type, status, currentList },
     } = this.props;
-    const { currentConfig } = this.state;
+    const { currentConfig, pageTitle } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       submit: this.submit,
@@ -559,7 +563,7 @@ class AccessStepForm extends PureComponent {
       </div>
     );
     return (
-      <PageHeaderWrapper tabActiveKey={location.pathname} action={buttonList}>
+      <PageHeaderWrapper title={pageTitle} tabActiveKey={location.pathname} action={buttonList}>
         <Card bordered={false}>
           <Fragment>
             <Steps current={current}>
