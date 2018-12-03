@@ -89,6 +89,22 @@ class TaskView extends Component {
     });
   }
 
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let powNum = 1;
+    for (let i = 0, len = index; i < len; i += 1) {
+      powNum *= 1024;
+    }
+    let newSize = srcSize / powNum;
+    newSize = newSize.toFixed(2);
+    return `${newSize} ${unitArr[index]}`;
+  };
+
   changePage = (pageNum, pageSize) => {
     const { dispatch, match } = this.props;
     const paramsPage = { pageNum, pageSize };
@@ -122,7 +138,6 @@ class TaskView extends Component {
   };
 
   render() {
-    console.log(this.prop);
     let dType;
     let dataBaseInfo;
     const {
@@ -173,8 +188,9 @@ class TaskView extends Component {
         dataIndex: 'transferNum',
       },
       {
-        title: '传输大小（MB）',
+        title: '传输大小',
         dataIndex: 'transferSize',
+        render: text => this.setFileSize(text),
       },
       {
         title: '新增记录数',
@@ -299,10 +315,17 @@ class TaskView extends Component {
                 itemLayout="horizontal"
                 dataSource={syncDatas}
                 renderItem={item => {
-                  if (item.title !== '查看数据') {
+                  if (item.title !== '查看数据' && item.title !== '数据库文件大小') {
                     return (
                       <List.Item style={{ borderBottom: 'none' }} key={item.title}>
                         {item.title}：{item.value}
+                      </List.Item>
+                    );
+                  }
+                  if (item.title === '数据库文件大小') {
+                    return (
+                      <List.Item style={{ borderBottom: 'none' }} key={item.title}>
+                        {item.title}：{this.setFileSize(parseInt(item.value, 10))}
                       </List.Item>
                     );
                   }
