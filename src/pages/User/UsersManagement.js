@@ -65,20 +65,10 @@ class UsersManagement extends PureComponent {
       align: 'center',
       render: (text, record) => (
         <Fragment>
-          {record.status === 2 && <a onClick={() => this.handleDelete(record.id)}>启用</a>}
-          {record.status === 1 && <a onClick={() => this.handleDelete(record.id)}>停用</a>}
+          {record.status === 2 && <a onClick={() => this.handleEnable(record.id)}>启用</a>}
+          {record.status === 1 && <a onClick={() => this.handleDisabled(record.id)}>停用</a>}
           <Divider type="vertical" />
-          <a
-            onClick={() => {
-              if (!record.xg) {
-                return message.error('已接入数据，禁止修改！');
-              }
-              const { match } = this.props;
-              return router.push(`${match.url}/update/${record.id}`);
-            }}
-          >
-            修改
-          </a>
+          <a onClick={() => router.push(`/users/usersManagement/update/${record.id}`)}>修改</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record.id)}>删除</a>
         </Fragment>
@@ -144,52 +134,106 @@ class UsersManagement extends PureComponent {
     });
   };
 
-  handleDelete = (id, sc) => {
-    if (!sc) {
-      return message.error('已接入数据，禁止删除！');
-    }
-    const { dispatch, form } = this.props;
+  handleEnable = id => {
+    const { dispatch } = this.props;
     return Modal.confirm({
       title: '警告',
-      content: '是否删除数据源？',
+      content: '启用后当前用户可登录系统，您是否确认启用当前用户？',
       okText: '确认',
       cancelText: '取消',
       onOk: () =>
         new Promise((resolve, reject) => {
-          form.validateFields((err, fieldsValue) => {
-            if (err) return;
-            const fieldsForm = fieldsValue;
-            let paramsTime = {};
-            if (fieldsForm.date) {
-              paramsTime = {
-                beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
-                endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
-              };
-              delete fieldsForm.date;
-            }
+          const values = {
+            ...paramsPage,
+            ...formValues,
+            ...formTime,
+          };
 
-            const values = {
-              ...fieldsForm,
-              ...resetParamsPage,
-              ...paramsTime,
-            };
+          dispatch({
+            type: 'usersManagement/enable',
+            payload: {
+              values,
+              item: {
+                id,
+              },
+            },
+            callback: res => {
+              if (res.code < 300) {
+                resolve();
+              } else {
+                reject();
+              }
+            },
+          });
+        }),
+    });
+  };
 
-            dispatch({
-              type: 'usersManagement/deleteItem',
-              payload: {
-                values,
-                item: {
-                  id,
-                },
+  handleDisabled = id => {
+    const { dispatch } = this.props;
+    return Modal.confirm({
+      title: '警告',
+      content: '停用后当前用户不可登录，您是否确认停用当前用户？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          const values = {
+            ...paramsPage,
+            ...formValues,
+            ...formTime,
+          };
+
+          dispatch({
+            type: 'usersManagement/disabled',
+            payload: {
+              values,
+              item: {
+                id,
               },
-              callback: res => {
-                if (res.code < 300) {
-                  resolve();
-                } else {
-                  reject();
-                }
+            },
+            callback: res => {
+              if (res.code < 300) {
+                resolve();
+              } else {
+                reject();
+              }
+            },
+          });
+        }),
+    });
+  };
+
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    return Modal.confirm({
+      title: '警告',
+      content: '是否删除当前用户？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          const values = {
+            ...paramsPage,
+            ...formValues,
+            ...formTime,
+          };
+
+          dispatch({
+            type: 'usersManagement/deleteItem',
+            payload: {
+              values,
+              item: {
+                id,
               },
-            });
+            },
+            callback: res => {
+              if (res.code < 300) {
+                resolve();
+              } else {
+                reject();
+              }
+            },
           });
         }),
     });

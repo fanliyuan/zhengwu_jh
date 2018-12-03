@@ -33,7 +33,7 @@ export default {
       }
     },
     *getRoles({ payload }, { call, put }) {
-      const response = yield call(roleList);
+      const response = yield call(roleList, payload);
       if (response.code === 200) {
         yield put({
           type: 'setRoles',
@@ -41,6 +41,46 @@ export default {
         });
       } else {
         message.error(response.message);
+      }
+    },
+    *enable({ payload, callback }, { call, put }) {
+      const response = yield call(userUnfreeze, payload.item);
+      callback(response);
+      if (response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
+      }
+    },
+    *disabled({ payload, callback }, { call, put }) {
+      const response = yield call(userFreeze, payload.item);
+      callback(response);
+      if (response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
+      }
+    },
+    *deleteItem({ payload, callback }, { call, put }) {
+      const response = yield call(userDelete, payload.item);
+      const jsonRes = JSON.parse(response);
+      callback(jsonRes);
+      if (jsonRes && jsonRes.code < 300) {
+        message.success(jsonRes.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(jsonRes.message);
       }
     },
   },

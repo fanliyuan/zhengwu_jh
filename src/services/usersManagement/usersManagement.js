@@ -16,7 +16,7 @@ export async function userAdd(params) {
 
 // 启用用户
 export async function userUnfreeze(params) {
-  return request(`/mgr/unfreeze1`, {
+  return request(`/api/mgr/unfreeze1/${params.id}`, {
     method: 'POST',
     body: params,
   });
@@ -24,7 +24,7 @@ export async function userUnfreeze(params) {
 
 // 冻结用户
 export async function userFreeze(params) {
-  return request(`/mgr/freeze1`, {
+  return request(`/api/mgr/freeze1/${params.id}`, {
     method: 'POST',
     body: params,
   });
@@ -32,7 +32,7 @@ export async function userFreeze(params) {
 
 // 删除用户
 export async function userDelete(params) {
-  return request(`/mgr/delete1`, {
+  return request(`/api/mgr/delete1/${params.id}`, {
     method: 'DELETE',
     body: params,
   });
@@ -40,12 +40,12 @@ export async function userDelete(params) {
 
 // 用户详情
 export async function userDetail(params) {
-  return request(`/mgr/userInfo?${stringify(params)}`);
+  return request(`/api/mgr/userInfo?${stringify(params)}`);
 }
 
 // 用户编辑
 export async function userEdit(params) {
-  return request(`/mgr/edit1`, {
+  return request(`/api/mgr/edit1`, {
     method: 'PUT',
     body: params,
   });
@@ -66,7 +66,7 @@ export async function roleUpdate(params) {
 
 // 重置密码
 export async function resetPwd(params) {
-  return request(`/mgr/resetPwd1/${params.id}`, {
+  return request(`/api/mgr/resetPwd1/${params.id}`, {
     method: 'POST',
     body: params,
   });
@@ -74,7 +74,7 @@ export async function resetPwd(params) {
 
 // 修改密码
 export async function changePwd(params) {
-  return request(`/mgr/changePwd1`, {
+  return request(`/api/mgr/changePwd1`, {
     method: 'POST',
     body: params,
   });

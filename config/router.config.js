@@ -57,6 +57,20 @@ export default [
             authority: ['admin'],
           },
           {
+            path: '/users/usersManagement/add',
+            name: 'usersAdd',
+            component: './User/AddUser',
+            hideInMenu: true,
+            authority: ['admin'],
+          },
+          {
+            path: '/users/usersManagement/update/:id',
+            name: 'usersUpdate',
+            component: './User/AddUser',
+            hideInMenu: true,
+            authority: ['admin'],
+          },
+          {
             path: '/users/assignRole',
             name: 'assignRole',
             component: './Forms/StepForm',
