@@ -186,6 +186,13 @@ export default [
             authority: ['user'],
           },
           {
+            path: 'resourceConnection',
+            name: 'resourceConnection',
+            // hideInMenu: true,
+            component: './InformationResource/ResourceConnection',
+            authority: ['user'],
+          },
+          {
             path: 'openShare',
             name: 'openShare',
             hideInMenu: true,

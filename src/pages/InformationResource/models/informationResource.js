@@ -21,6 +21,7 @@ export default {
     pagination: {},
     sameMsg: false,
     openData: {},
+    DBInfo: {},
   },
 
   effects: {

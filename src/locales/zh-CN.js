@@ -183,6 +183,7 @@ export default {
   'menu.informationResource.inputDirectoryItem': '导入信息项',
   'menu.informationResource.viewDirectory': '信息项',
   'menu.informationResource.resourceConnectionData': '资源挂接数据',
+  'menu.informationResource.resourceConnection': '关联数据',
   'menu.informationResource.openShareFile': '共享开放文件',
   'menu.informationResource.openShare': '共享开放',
   'menu.data': '数据发布管理',

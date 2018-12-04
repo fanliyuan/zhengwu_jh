@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-27 14:49:28
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-07 16:16:42
+ * @Last Modified by: fly
+ * @Last Modified time: 2018-12-04 11:19:15
  * @Description: 这个页面值得研究
  */
 import React, { Component } from 'react';
@@ -79,9 +79,9 @@ class EditableCell extends React.Component {
   }
 }
 
-@connect(({ sourceManagement, loading }) => ({
-  sourceManagement,
-  loading: loading.models.sourceManagement,
+@connect(({ informationResource, loading }) => ({
+  informationResource,
+  loading: loading.models.informationResource,
 }))
 export default class ResourceConnectionData extends Component {
   state = {
@@ -206,7 +206,9 @@ export default class ResourceConnectionData extends Component {
     } = this.state; // eslint-disable-line
     const pagination = false;
     const {
-      sourceManagement: { DBInfo: { name, value: { structAddDtoList = [], tableName } = {} } = {} },
+      informationResource: {
+        DBInfo: { name, value: { structAddDtoList = [], tableName } = {} } = {},
+      },
     } = this.props;
     structAddDtoList.forEach((item, index) => {
       item.tableName = tableName;

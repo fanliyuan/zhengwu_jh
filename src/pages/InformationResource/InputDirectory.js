@@ -25,10 +25,16 @@ export default class InputDirectory extends Component {
           console.log(info.file, info.fileList);
         }
         if (info.file.status === 'done') {
-          message.success(`${info.file.name} 导入成功`);
-          this.setState({
-            isEnable: true,
-          });
+          if (info.file.response) {
+            if (+info.file.response.code === 200) {
+              message.success(`${info.file.name} 导入成功`);
+              this.setState({
+                isEnable: true,
+              });
+            } else {
+              message.error(`${info.file.response.message}`);
+            }
+          }
         } else if (info.file.status === 'error') {
           message.error(`${info.file.response.message}`);
         }

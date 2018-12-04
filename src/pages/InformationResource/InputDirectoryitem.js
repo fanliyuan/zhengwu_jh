@@ -50,10 +50,12 @@ export default class InputDirectory extends Component {
         }
         if (info.file.status === 'done') {
           sessionStorage.setItem('itemData', '');
-          message.success(`${info.file.name} 导入成功`);
           if (info.file.response) {
             if (+info.file.response.code === 200) {
+              message.success(`${info.file.name} 导入成功`);
               arr = arr.concat(info.file.response.result.datas);
+            } else {
+              message.error(`${info.file.response.message}`);
             }
           }
         } else if (info.file.status === 'error') {
