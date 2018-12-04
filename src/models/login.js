@@ -19,6 +19,7 @@ export default {
       const response = yield call(fakeAccountLogin, payload);
       // Login successfully
       if (response && response.code === 200) {
+        localStorage.setItem('currentUser', JSON.stringify(response.result.data));
         yield put({
           type: 'saveCurrentUser',
           payload: response.result.data,
@@ -60,6 +61,7 @@ export default {
         },
       });
       reloadAuthorized();
+      localStorage.setItem('currentUser', '');
       yield put(
         routerRedux.push({
           pathname: '/user/login',

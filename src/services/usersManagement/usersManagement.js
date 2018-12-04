@@ -58,7 +58,7 @@ export async function roleList() {
 
 // 设置用户角色
 export async function roleUpdate(params) {
-  return request(`/mgr/setRole1`, {
+  return request(`/api/mgr/setRole1`, {
     method: 'POST',
     body: params,
   });

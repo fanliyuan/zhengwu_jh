@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Button, Modal, Table } from 'antd';
-import router from 'umi/router';
+import { Card, Form, Modal, Table } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
@@ -72,7 +71,9 @@ class UsersManagement extends PureComponent {
     {
       title: '操作',
       align: 'center',
-      render: (text, record) => <a onClick={() => this.handleAssignRole(record.id)}>分配角色</a>,
+      render: (text, record) => (
+        <a onClick={() => this.handleAssignRole(record.id, record.roleid)}>分配角色</a>
+      ),
     },
   ];
 
@@ -81,10 +82,6 @@ class UsersManagement extends PureComponent {
       title: '序号',
       align: 'center',
       dataIndex: 'index',
-      render: text => {
-        const { page } = this.state;
-        return `${text + (page - 1) * 10}`;
-      },
     },
     {
       title: '角色名称',
@@ -101,7 +98,8 @@ class UsersManagement extends PureComponent {
   state = {
     visible: false,
     pageRole: 1,
-    selectedTableRowKeys: [],
+    selectedRowKeys: [],
+    userId: '',
   };
 
   componentDidMount() {
@@ -156,38 +154,64 @@ class UsersManagement extends PureComponent {
     });
   };
 
-  handleAssignRole = id => {
-    const { dispatch } = this.props;
-    return Modal.confirm({
-      title: '警告',
-      content: '启用后当前用户可登录系统，您是否确认启用当前用户？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () =>
-        new Promise((resolve, reject) => {
-          const values = {
-            ...paramsPage,
-            ...formValues,
-            ...formTime,
-          };
+  handleAssignRole = (id, roleId) => {
+    let roleIds;
+    if (roleId) {
+      roleIds = parseInt(roleId, 10);
+    } else {
+      roleIds = 5;
+    }
+    this.setState({
+      visible: true,
+      userId: id,
+      selectedRowKeys: [roleIds],
+    });
+  };
 
-          dispatch({
-            type: 'roleManagement/assignRole',
-            payload: {
-              values,
-              item: {
-                id,
-              },
-            },
-            callback: res => {
-              if (res.code < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            },
-          });
-        }),
+  setRowNum = (record, index) => {
+    Object.defineProperty(record, 'index', { value: index + 1 });
+    return record;
+  };
+
+  handleSelectTable = selectedRowKeys => {
+    this.setState({
+      selectedRowKeys,
+    });
+  };
+
+  handleOk = () => {
+    const { dispatch } = this.props;
+    const { userId, selectedRowKeys } = this.state;
+    const values = {
+      ...paramsPage,
+      ...formValues,
+      ...formTime,
+    };
+    const roleIds = JSON.stringify(selectedRowKeys[0]);
+    dispatch({
+      type: 'roleManagement/assignRole',
+      payload: {
+        values,
+        item: {
+          userId,
+          roleIds,
+        },
+      },
+    });
+    this.setState({
+      visible: false,
+      pageRole: 1,
+      selectedRowKeys: [],
+      userId: '',
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+      pageRole: 1,
+      selectedRowKeys: [],
+      userId: '',
     });
   };
 
@@ -319,7 +343,7 @@ class UsersManagement extends PureComponent {
       roleLoading,
       confirmLoading,
     } = this.props;
-    const { visible, pageRole, selectedTableRowKeys } = this.state;
+    const { visible, pageRole, selectedRowKeys } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       total: data.totalCounts,
@@ -340,7 +364,7 @@ class UsersManagement extends PureComponent {
     };
     const rowSelection = {
       type: 'radio',
-      selectedRowKeys: selectedTableRowKeys,
+      selectedRowKeys,
       onChange: this.handleSelectTable,
     };
     return (
@@ -363,7 +387,7 @@ class UsersManagement extends PureComponent {
             visible={visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
-            width={900}
+            width={600}
             maskClosable={false}
             confirmLoading={confirmLoading}
           >

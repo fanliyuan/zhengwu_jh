@@ -37,9 +37,8 @@ export default {
         message.error(response.message);
       }
     },
-    *assignRole({ payload, callback }, { call, put }) {
+    *assignRole({ payload }, { call, put }) {
       const response = yield call(roleUpdate, payload.item);
-      callback(response);
       if (response.code < 300) {
         message.success(response.message);
         yield put({

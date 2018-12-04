@@ -107,7 +107,7 @@ export default [
           {
             path: '/informationResource/audit',
             name: 'audit',
-            component: './Profile/BasicProfile',
+            component: './InformationResource/ResourceAudit',
             authority: ['assessor'],
           },
           {
