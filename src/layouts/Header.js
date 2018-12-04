@@ -156,8 +156,8 @@ class HeaderView extends PureComponent {
   }
 }
 
-export default connect(({ login, global, setting, loading }) => ({
-  currentUser: login.currentUser,
+export default connect(({ global, setting, loading }) => ({
+  currentUser: JSON.parse(localStorage.getItem('currentUser')),
   collapsed: global.collapsed,
   fetchingNotices: loading.effects['global/fetchNotices'],
   notices: global.notices,

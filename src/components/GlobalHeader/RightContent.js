@@ -8,6 +8,8 @@ import HeaderSearch from '../HeaderSearch';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
 
+import avaStar from '../../assets/logo.svg';
+
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
     const { notices = [] } = this.props;
@@ -79,7 +81,7 @@ export default class GlobalHeaderRight extends PureComponent {
       <div className={className}>
         <NoticeIcon
           className={styles.action}
-          count={currentUser.notifyCount}
+          // count={currentUser.notifyCount}
           onItemClick={(item, tabProps) => {
             console.log(item, tabProps); // eslint-disable-line
           }}
@@ -114,15 +116,10 @@ export default class GlobalHeaderRight extends PureComponent {
             emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
           />
         </NoticeIcon>
-        {currentUser.name ? (
+        {currentUser ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
-              <Avatar
-                size="small"
-                className={styles.avatar}
-                src={currentUser.avatar}
-                alt="avatar"
-              />
+              <Avatar size="small" className={styles.avatar} src={avaStar} alt="avatar" />
               <span className={styles.name}>{currentUser.name}</span>
             </span>
           </Dropdown>
