@@ -97,6 +97,10 @@ class ResourceAudit extends Component {
     },
   ];
 
+  state = {
+    mount: false,
+  };
+
   componentDidMount() {
     let fields;
     const routeName = sessionStorage.getItem('currentList');
@@ -129,6 +133,17 @@ class ResourceAudit extends Component {
     const { route } = this.props;
     sessionStorage.setItem('currentList', route.name);
   }
+
+  handleClassfiy = val => {
+    console.log(val);
+  };
+
+  handleIsRelated = e => {
+    console.log(e);
+    this.setState({
+      mount: e.target.checked,
+    });
+  };
 
   handleSearch = (fieldsForm, paramsTime) => {
     const { dispatch } = this.props;
@@ -167,6 +182,7 @@ class ResourceAudit extends Component {
     const {
       resourceAudit: { sourceClassfiyList },
     } = this.props;
+    const { mount } = this.state;
     const formData = {
       md: 8,
       lg: 24,
@@ -193,14 +209,14 @@ class ResourceAudit extends Component {
             },
             {
               type: 'Cascader',
-              prop: 'typeName',
+              prop: 'typeId',
               label: '资源属性分类',
               typeOptions: {
+                options: sourceClassfiyList,
+                fieldNames: { label: 'name', value: 'id' },
+                onChange: this.handleClassfiy,
                 placeholder: '请选择资源属性分类',
-                fieldLabel: 'name',
-                fieldValue: 'id',
               },
-              options: sourceClassfiyList,
             },
           ],
         },
@@ -241,7 +257,13 @@ class ResourceAudit extends Component {
             {
               type: 'Checkbox',
               prop: 'mount',
-              label: '数据已关联',
+              label: '是否已关联',
+              checkLabel: '数据已关联',
+              typeOptions: {
+                onChange: this.handleIsRelated,
+                checked: mount,
+                style: { marginRight: 5, marginLeft: 12 },
+              },
             },
           ],
         },
