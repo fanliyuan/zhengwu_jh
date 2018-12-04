@@ -15,7 +15,7 @@ export default class InputDirectory extends Component {
   }
 
   handleCancel = () => {
-    sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
+    // sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
     window.history.back();
   };
 
@@ -87,7 +87,7 @@ export default class InputDirectory extends Component {
             <span>导入信息项: </span>
             <Button type="primary"> 选取文件</Button>
           </Upload>
-          <Button type="primary" onClick={this.handleBackBtn}>
+          <Button type="primary" onClick={this.handleBackBtn} style={{ marginTop: 20 }}>
             上一步
           </Button>
         </Card>
