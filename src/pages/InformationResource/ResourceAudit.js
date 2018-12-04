@@ -146,13 +146,25 @@ class ResourceAudit extends Component {
   };
 
   handleSearch = (fieldsForm, paramsTime) => {
+    let fields;
     const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
-    formValues = { ...fieldsForm };
-    const fields = fieldsForm;
+    const keyArr = Object.keys(fieldsForm);
+    if (keyArr.length > 0) {
+      formValues = { ...fieldsForm };
+      fields = fieldsForm;
+    } else {
+      formValues = { ...fieldsForm, mount: false };
+      fields = { ...fieldsForm, mount: false };
+    }
     Object.defineProperty(fields, 'date', {
       value: ``,
     });
+    if (fields.typeId) {
+      Object.defineProperty(fields, 'typeId', {
+        value: fields.typeId.join('-'),
+      });
+    }
     formTime = paramsTime;
     const values = {
       ...fields,
