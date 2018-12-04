@@ -1,6 +1,6 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Button, Modal, Divider, Table } from 'antd';
+import { Card, Form, Button, Modal, Table } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
@@ -11,13 +11,24 @@ let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
 
-@connect(({ usersManagement, loading }) => ({
-  usersManagement,
-  loading: loading.effects['usersManagement/fetch'],
+@connect(({ roleManagement, loading }) => ({
+  roleManagement,
+  loading: loading.effects['roleManagement/fetch'],
+  roleLoading: loading.effects['roleManagement/getRoles'],
+  confirmLoading: loading.effects['roleManagement/assignRole'],
 }))
 @Form.create()
 class UsersManagement extends PureComponent {
   columns = [
+    {
+      title: '序号',
+      align: 'center',
+      dataIndex: 'index',
+      render: (text, record, index) => {
+        const { roleManagement } = this.props;
+        return `${index + 1 + (roleManagement.page - 1) * 10}`;
+      },
+    },
     {
       title: '用户名',
       align: 'center',
@@ -54,27 +65,44 @@ class UsersManagement extends PureComponent {
       },
     },
     {
-      title: '建立时间',
+      title: '操作时间',
       align: 'center',
       dataIndex: 'createtime',
     },
     {
       title: '操作',
       align: 'center',
-      render: (text, record) => (
-        <Fragment>
-          {record.status === 2 && <a onClick={() => this.handleEnable(record.id)}>启用</a>}
-          {record.status === 1 && <a onClick={() => this.handleDisabled(record.id)}>停用</a>}
-          <Divider type="vertical" />
-          <a onClick={() => router.push(`/users/usersManagement/update/${record.id}`)}>修改</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleResetPassword(record.id)}>重置密码</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id)}>删除</a>
-        </Fragment>
-      ),
+      render: (text, record) => <a onClick={() => this.handleAssignRole(record.id)}>分配角色</a>,
     },
   ];
+
+  roleColumns = [
+    {
+      title: '序号',
+      align: 'center',
+      dataIndex: 'index',
+      render: text => {
+        const { page } = this.state;
+        return `${text + (page - 1) * 10}`;
+      },
+    },
+    {
+      title: '角色名称',
+      align: 'center',
+      dataIndex: 'name',
+    },
+    {
+      title: '角色说明',
+      align: 'center',
+      dataIndex: 'tips',
+    },
+  ];
+
+  state = {
+    visible: false,
+    pageRole: 1,
+    selectedTableRowKeys: [],
+  };
 
   componentDidMount() {
     let fields;
@@ -91,7 +119,7 @@ class UsersManagement extends PureComponent {
       });
     }
     dispatch({
-      type: 'usersManagement/fetch',
+      type: 'roleManagement/fetch',
       payload: {
         ...paramsPage,
         ...fields,
@@ -99,7 +127,7 @@ class UsersManagement extends PureComponent {
       },
     });
     dispatch({
-      type: 'usersManagement/getRoles',
+      type: 'roleManagement/getRoles',
     });
   }
 
@@ -123,12 +151,12 @@ class UsersManagement extends PureComponent {
       ...paramsTime,
     };
     dispatch({
-      type: 'usersManagement/fetch',
+      type: 'roleManagement/fetch',
       payload: values,
     });
   };
 
-  handleEnable = id => {
+  handleAssignRole = id => {
     const { dispatch } = this.props;
     return Modal.confirm({
       title: '警告',
@@ -144,112 +172,7 @@ class UsersManagement extends PureComponent {
           };
 
           dispatch({
-            type: 'usersManagement/enable',
-            payload: {
-              values,
-              item: {
-                id,
-              },
-            },
-            callback: res => {
-              if (res.code < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            },
-          });
-        }),
-    });
-  };
-
-  handleDisabled = id => {
-    const { dispatch } = this.props;
-    return Modal.confirm({
-      title: '警告',
-      content: '停用后当前用户不可登录，您是否确认停用当前用户？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () =>
-        new Promise((resolve, reject) => {
-          const values = {
-            ...paramsPage,
-            ...formValues,
-            ...formTime,
-          };
-
-          dispatch({
-            type: 'usersManagement/disabled',
-            payload: {
-              values,
-              item: {
-                id,
-              },
-            },
-            callback: res => {
-              if (res.code < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            },
-          });
-        }),
-    });
-  };
-
-  handleResetPassword = id => {
-    const { dispatch } = this.props;
-    return Modal.confirm({
-      title: '警告',
-      content: '是否重置密码，重置后密码为"111111"？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () =>
-        new Promise((resolve, reject) => {
-          const values = {
-            ...paramsPage,
-            ...formValues,
-            ...formTime,
-          };
-
-          dispatch({
-            type: 'usersManagement/resetPassword',
-            payload: {
-              values,
-              item: {
-                userId: id,
-              },
-            },
-            callback: res => {
-              if (res.code < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            },
-          });
-        }),
-    });
-  };
-
-  handleDelete = id => {
-    const { dispatch } = this.props;
-    return Modal.confirm({
-      title: '警告',
-      content: '是否删除当前用户？',
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () =>
-        new Promise((resolve, reject) => {
-          const values = {
-            ...paramsPage,
-            ...formValues,
-            ...formTime,
-          };
-
-          dispatch({
-            type: 'usersManagement/deleteItem',
+            type: 'roleManagement/assignRole',
             payload: {
               values,
               item: {
@@ -272,7 +195,7 @@ class UsersManagement extends PureComponent {
     const { dispatch } = this.props;
     paramsPage = { pageNum, pageSize };
     dispatch({
-      type: 'usersManagement/fetch',
+      type: 'roleManagement/fetch',
       payload: {
         ...paramsPage,
         ...formValues,
@@ -281,9 +204,15 @@ class UsersManagement extends PureComponent {
     });
   };
 
+  changePageRole = current => {
+    this.setState({
+      pageRole: current,
+    });
+  };
+
   renderForm() {
     const {
-      usersManagement: { roleList },
+      roleManagement: { roleList },
     } = this.props;
     const roles = [
       {
@@ -368,7 +297,7 @@ class UsersManagement extends PureComponent {
             {
               type: 'RangePicker',
               prop: 'date',
-              label: '创建时间',
+              label: '操作时间',
             },
           ],
         },
@@ -385,10 +314,12 @@ class UsersManagement extends PureComponent {
 
   render() {
     const {
-      usersManagement: { data, page },
+      roleManagement: { data, page, roleList },
       loading,
-      match,
+      roleLoading,
+      confirmLoading,
     } = this.props;
+    const { visible, pageRole, selectedTableRowKeys } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       total: data.totalCounts,
@@ -399,19 +330,24 @@ class UsersManagement extends PureComponent {
         return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
     };
+    const paginationRoleProps = {
+      current: pageRole,
+      onChange: this.changePageRole,
+      pageSize: 10,
+    };
     const locale = {
       emptyText: '很遗憾，没有搜索到匹配的数据源',
+    };
+    const rowSelection = {
+      type: 'radio',
+      selectedRowKeys: selectedTableRowKeys,
+      onChange: this.handleSelectTable,
     };
     return (
       <PageHeaderWrapper title="">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => router.push(`${match.url}/add`)}>
-                新建
-              </Button>
-            </div>
             <Table
               rowKey="id"
               bordered
@@ -422,6 +358,27 @@ class UsersManagement extends PureComponent {
               loading={loading}
             />
           </div>
+          <Modal
+            title="分配角色"
+            visible={visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+            width={900}
+            maskClosable={false}
+            confirmLoading={confirmLoading}
+          >
+            <Table
+              rowKey="id"
+              bordered
+              onRow={this.setRowNum}
+              columns={this.roleColumns}
+              dataSource={roleList}
+              size="small"
+              loading={roleLoading}
+              rowSelection={rowSelection}
+              pagination={paginationRoleProps}
+            />
+          </Modal>
         </Card>
       </PageHeaderWrapper>
     );
