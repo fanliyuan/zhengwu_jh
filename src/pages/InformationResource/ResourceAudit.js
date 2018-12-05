@@ -95,7 +95,7 @@ class ResourceAudit extends Component {
               <Divider type="vertical" />
             </Fragment>
           )}
-          <a onClick={() => router.push(`/viewDirectory/${record.id}`)}>查看</a>
+          <a onClick={() => router.push(`/informationResource/viewDirectory/${record.id}`)}>查看</a>
         </Fragment>
       ),
     },
@@ -140,10 +140,6 @@ class ResourceAudit extends Component {
     const { route } = this.props;
     sessionStorage.setItem('currentList', route.name);
   }
-
-  handleClassfiy = val => {
-    console.log(val);
-  };
 
   handleIsRelated = e => {
     this.setState({
@@ -367,7 +363,6 @@ class ResourceAudit extends Component {
               typeOptions: {
                 options: sourceClassfiyList,
                 fieldNames: { label: 'name', value: 'id' },
-                onChange: this.handleClassfiy,
                 placeholder: '请选择资源属性分类',
               },
             },

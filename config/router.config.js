@@ -179,11 +179,11 @@ export default [
             authority: ['user'],
           },
           {
-            path: 'viewDirectory',
+            path: 'viewDirectory/:id',
             name: 'viewDirectory',
             hideInMenu: true,
             component: './InformationResource/ViewDirectory',
-            authority: ['user'],
+            authority: ['user', 'assessor'],
           },
           {
             path: 'resourceConnectionData',

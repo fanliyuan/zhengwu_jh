@@ -182,7 +182,7 @@ export default {
   // 'menu.informationResource.newMenu': '测试',
   'menu.informationResource.inputDirectory': '导入资源',
   'menu.informationResource.inputDirectoryItem': '导入信息项',
-  'menu.informationResource.viewDirectory': '信息项',
+  'menu.informationResource.viewDirectory': '查看资源',
   'menu.informationResource.resourceConnectionData': '资源挂接数据',
   'menu.informationResource.resourceConnection': '关联数据',
   'menu.informationResource.openShareFile': '共享开放文件',
