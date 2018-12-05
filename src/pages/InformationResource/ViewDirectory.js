@@ -1,301 +1,311 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Table, Button, Input, Select, Card, Row, Col } from 'antd';
-// import { Link, routerRedux } from 'dva/router'
+import { Table, Button, Card, Divider } from 'antd';
 
 import styles from './ViewDirectory.less';
-import PageHeaderLayout from '@/components/PageHeaderWrapper';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import ViewCard from '@/components/ViewCard';
+import FilterRowForm from '@/components/FilterRowForm';
 
-const { Option } = Select;
-@connect(({ sourceManagement, loading }) => ({
-  sourceManagement,
-  loading: loading.models.sourceManagement,
+let paramsPage = { pageNum: 1, pageSize: 10 };
+let formValues;
+
+@connect(({ viewDirectory, loading }) => ({
+  viewDirectory,
+  loading: loading.effects['viewDirectory/fetch'],
+  loadingDetail: loading.effects['viewDirectory/getSourceDetail'],
 }))
-export default class ViewDirectory extends Component {
-  state = {
-    queryData: {},
-    isChanged: false,
-  };
+class ViewDirectory extends Component {
+  columns = [
+    {
+      title: '信息项名称',
+      align: 'center',
+      dataIndex: 'name',
+    },
+    {
+      title: '数据类型',
+      align: 'center',
+      dataIndex: 'dataType',
+    },
+    {
+      title: '数据长度',
+      align: 'center',
+      dataIndex: 'dataLength',
+    },
+    {
+      title: '共享类型',
+      align: 'center',
+      dataIndex: 'shareType',
+    },
+    {
+      title: '共享条件',
+      align: 'center',
+      dataIndex: 'shareCondition',
+    },
+    {
+      title: '共享方式',
+      align: 'center',
+      dataIndex: 'shareMode',
+    },
+    {
+      title: '是否向社会开放',
+      align: 'center',
+      dataIndex: 'openType',
+    },
+    {
+      title: '开放条件',
+      align: 'center',
+      dataIndex: 'openCondition',
+    },
+  ];
 
   componentDidMount() {
-    const { state: { resourceId } = {} } = this.props.history.location;
-    // this.props.dispatch({
-    //   type: 'catalogManagement/getCatalogInfo',
-    //   payload: {
-    //     params: {
-    //       index: '1',
-    //       limit: '10',
-    //       resourceId,
-    //     },
-    //   },
-    // })
-    // this.props.dispatch({
-    //   type: 'catalogManagement/getResourceTitle',
-    //   payload: {
-    //     params: {
-    //       resourceId,
-    //     },
-    //   },
-    // })
+    const { dispatch, match } = this.props;
+    paramsPage = { pageNum: 1, pageSize: 10 };
+    formValues = {};
+    dispatch({
+      type: 'viewDirectory/fetch',
+      payload: {
+        id: match.params.id,
+        query: {
+          ...paramsPage,
+          ...formValues,
+        },
+      },
+    });
+    dispatch({
+      type: 'viewDirectory/getSourceDetail',
+      payload: {
+        id: match.params.id,
+      },
+    });
   }
 
-  codeChange = e => {
-    const { queryData } = this.state;
-    this.setState({
-      queryData: {
-        ...queryData,
-        resourceItemCode: e.target.value.trim(),
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'viewDirectory/reset',
+    });
+  }
+
+  handleSearch = fieldsForm => {
+    const { dispatch, match } = this.props;
+    paramsPage = { pageNum: 1, pageSize: 10 };
+    formValues = { ...fieldsForm };
+    dispatch({
+      type: 'viewDirectory/fetch',
+      payload: {
+        id: match.params.id,
+        query: {
+          ...paramsPage,
+          ...fieldsForm,
+        },
       },
-      isChanged: true,
     });
   };
 
-  nameChange = e => {
-    const { queryData } = this.state;
-    this.setState({
-      queryData: {
-        ...queryData,
-        resourceItemName: e.target.value.trim(),
+  changePage = (pageNum, pageSize) => {
+    const { dispatch, match } = this.props;
+    paramsPage = { pageNum, pageSize };
+    dispatch({
+      type: 'viewDirectory/fetch',
+      payload: {
+        id: match.params.id,
+        query: {
+          ...paramsPage,
+          ...formValues,
+        },
       },
-      isChanged: true,
     });
   };
 
-  selectDataTypeChange = val => {
-    const { queryData } = this.state;
-    this.setState({
-      queryData: {
-        ...queryData,
-        shareType: val === '-1' ? undefined : val,
-      },
-      isChanged: true,
-    });
-  };
+  back() {
+    const { history } = this.props;
+    history.goBack();
+  }
 
-  selectNodeChange = val => {
-    const { queryData } = this.state;
-    this.setState({
-      queryData: {
-        ...queryData,
-        disparkType: val === '-1' ? undefined : val,
-      },
-      isChanged: true,
-    });
-  };
-
-  handelSearch = ({ pageSize: limit = '10', current: index = '1' }, params) => {
-    const { isChanged } = this.state;
-    if (!isChanged && params) {
-      return null;
-    }
+  renderViewCard() {
     const {
-      queryData: { resourceItemCode, resourceItemName, shareType, disparkType },
-    } = this.state;
-    // this.props.dispatch({
-    //   type: 'catalogManagement/getCatalogInfo',
-    //   payload: {
-    //     params: {
-    //       resourceId: this.props.history.location.state.resourceId,
-    //       resourceItemCode,
-    //       resourceItemName,
-    //       shareType,
-    //       disparkType,
-    //       limit,
-    //       index,
-    //     },
-    //   },
-    // })
-    this.setState({
-      isChanged: false,
-    });
-  };
+      viewDirectory: { detail },
+    } = this.props;
+    const viewData = {
+      title: '核心元数据',
+      col: 3,
+      data: [
+        {
+          key: '信息资源代码',
+          value: detail.code,
+        },
+        {
+          key: '信息资源名称',
+          value: detail.name,
+        },
+        {
+          key: '信息资源属性分类',
+          value: detail.typeName,
+        },
+        {
+          key: '信息资源提供方',
+          value: detail.providerName,
+        },
+        {
+          key: '提供方代码',
+          value: detail.providerNo,
+        },
+        {
+          key: '提供方内部部门',
+          value: detail.providerDept,
+        },
+        {
+          key: '更新周期',
+          value: detail.updateCycle,
+        },
+        {
+          key: '发布日期',
+          value: detail.publishTime,
+        },
+        {
+          key: '共享日期',
+          value: detail.shareTime,
+        },
+        {
+          key: '信息资源格式',
+          value: detail.format,
+        },
+        {
+          key: '关联资源代码',
+          value: detail.relateCode,
+        },
+        {
+          key: '信息项',
+          value: detail.infoCount,
+        },
+        {
+          key: '信息资源摘要',
+          value: detail.summary,
+          fullWidth: true,
+          lines: 3,
+        },
+      ],
+    };
+    return <ViewCard data={viewData} />;
+  }
 
-  tableChange = pagination => {
-    this.handelSearch(pagination);
-  };
+  renderForm() {
+    const formData = {
+      md: 8,
+      lg: 24,
+      xl: 48,
+      data: [
+        {
+          key: 1,
+          data: [
+            {
+              prop: 'name',
+              label: '信息项名称',
+              typeOptions: {
+                placeholder: '请输入信息项名称',
+                maxLength: 50,
+              },
+            },
+            {
+              type: 'Select',
+              prop: 'dataType',
+              label: '数据类型',
+              typeOptions: {
+                placeholder: '请选择数据类型',
+              },
+              options: [
+                { key: '全部', value: '' },
+                { key: '字符型C', value: '字符型C' },
+                { key: '数值型N', value: '数值型N' },
+                { key: '货币型Y', value: '货币型Y' },
+                { key: '日期型D', value: '日期型D' },
+                { key: '日期时间型T', value: '日期时间型T' },
+                { key: '逻辑型L', value: '逻辑型L' },
+                { key: '备注型M', value: '备注型M' },
+                { key: '通用型G', value: '通用型G' },
+                { key: '双精度型B', value: '双精度型B' },
+                { key: '整型I', value: '整型I' },
+                { key: '浮点型F', value: '浮点型F' },
+                { key: '自定义', value: '自定义' },
+              ],
+            },
+            {
+              type: 'Select',
+              prop: 'shareType',
+              label: '共享类型',
+              typeOptions: {
+                placeholder: '请选择共享类型',
+              },
+              options: [
+                { key: '全部', value: '' },
+                { key: '有条件共享', value: '有条件共享' },
+                { key: '无条件共享', value: '无条件共享' },
+                { key: '不予共享', value: '不予共享' },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const actions = {
+      handleSearch: this.handleSearch,
+    };
+    const data = {
+      ...formValues,
+    };
+    return <FilterRowForm formData={formData} actions={actions} data={data} />;
+  }
 
   render() {
-    // const { catalogManagement: { catalogInfo, pagination1, resourceTitle }, loading } = this.props
-    const catalogInfo = [];
-    const pagination1 = false;
-    const resourceTitle = {};
-    const data = [
-      { value: '-1', id: -1, label: '全部共享类型' },
-      { value: '1', id: 1, label: '有条件共享' },
-      { value: '2', id: 2, label: '无条件共享' },
-      { value: '3', id: 3, label: '不予共享' },
-    ];
-    const selectData = data.map(item => {
-      return (
-        <Option value={item.value} key={item.id} title={item.label}>
-          {item.label}
-        </Option>
-      );
-    });
-    const data1 = [
-      { value: '-1', id: -1, label: '全部开放类型' },
-      { value: '2', id: 2, label: '无条件开放' },
-      { value: '1', id: 1, label: '有条件开放' },
-      { value: '3', id: 3, label: '不予开放' },
-    ];
-    const selectData1 = data1.map(item => {
-      return (
-        <Option value={item.value} key={item.id} title={item.label}>
-          {item.label}
-        </Option>
-      );
-    });
-    const columns = [
-      {
-        title: '信息项编码',
-        dataIndex: 'resourceItemCode',
+    const {
+      viewDirectory: { dataList, detail, page },
+      loadingDetail,
+      loading,
+    } = this.props;
+    const keyArr = Object.keys(detail);
+    const buttonList = (
+      <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Button type="primary" onClick={() => this.back()}>
+          返回
+        </Button>
+      </div>
+    );
+    const paginationProps = {
+      showQuickJumper: true,
+      total: dataList.totalCounts,
+      current: page,
+      onChange: this.changePage,
+      pageSize: 10,
+      showTotal(total) {
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
-      {
-        title: '信息项名称',
-        dataIndex: 'resourceItemName',
-      },
-      {
-        title: '数据类型',
-        dataIndex: 'resourceType',
-      },
-      {
-        title: '数据长度',
-        dataIndex: 'resourceLength',
-      },
-      {
-        title: '共享类型',
-        dataIndex: 'shareTypeName',
-      },
-      {
-        title: '共享条件',
-        dataIndex: 'shareCondition',
-      },
-      {
-        title: '共享方式分类',
-        dataIndex: 'shareWayClassifyName',
-      },
-      {
-        title: '共享方式类型',
-        dataIndex: 'shareWayTypeName',
-      },
-      {
-        title: '开放类型',
-        dataIndex: 'disparkTypeName',
-      },
-      {
-        title: '开放条件',
-        dataIndex: 'disparkCondition',
-      },
-    ];
-    columns.forEach(item => {
-      item.align = 'center';
-    });
+    };
+    const locale = {
+      emptyText: '很遗憾，没有搜索到匹配的数据源',
+    };
     return (
-      <PageHeaderLayout>
-        <div className="btncls">
-          {/* <Link to="/dataSourceManagement/sourceManagement" className="fr mr40">
-            <Button>返回</Button>
-          </Link> */}
-          <Button className="fr mr40" onClick={() => this.props.history.go(-1)}>
-            返回
-          </Button>
-        </div>
-        <div>
-          <Card className={styles.InfoBlock}>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={6}>
-                名称: <span>{resourceTitle && resourceTitle.resourceName}</span>
-              </Col>
-              <Col span={6}>
-                分类: <span>{resourceTitle && resourceTitle.dataType}</span>
-              </Col>
-              <Col span={6}>
-                信息资源代码: <span>{resourceTitle && resourceTitle.resourceCode}</span>
-              </Col>
-              <Col span={6}>
-                信息资源格式: <span>{resourceTitle && resourceTitle.resourceFormatClassify}</span>
-              </Col>
-            </Row>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={6}>
-                提供方名称: <span>{resourceTitle && resourceTitle.resourceProviderName}</span>
-              </Col>
-              <Col span={6}>
-                提供方内部部门:{' '}
-                <span>{resourceTitle && resourceTitle.resourceProviderDepartment}</span>
-              </Col>
-              <Col span={6}>
-                资源提供方代码: <span>{resourceTitle && resourceTitle.resourceProviderCode}</span>
-              </Col>
-            </Row>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={24}>
-                摘要: <span>{resourceTitle && resourceTitle.resourceAbstract}</span>
-              </Col>
-            </Row>
-            {/* <Row>
-              <Col span={24}>
-                <span className={styles.labels}>标签:</span>
-                <Tag>标签1</Tag>
-                <Tag>标签2</Tag>
-                <Tag>标签3</Tag>
-                <Tag>标签4</Tag>
-                <Tag>标签5</Tag>
-                <Tag>标签6</Tag>
-              </Col>
-            </Row> */}
-          </Card>
-          <div className={styles.table}>
-            <div className={styles.form}>
-              <Input
-                placeholder="信息项编码"
-                style={{ width: 150, marginRight: 20 }}
-                onChange={this.codeChange}
-              />
-              <Input
-                placeholder="信息项名称"
-                style={{ width: 150, marginRight: 20 }}
-                onChange={this.nameChange}
-              />
-              <Select
-                style={{ marginRight: 20, width: 120 }}
-                defaultValue="-1"
-                onChange={this.selectDataTypeChange}
-              >
-                {selectData}
-              </Select>
-              <Select
-                style={{ marginRight: 20, width: 120 }}
-                defaultValue="-1"
-                onChange={this.selectNodeChange}
-              >
-                {selectData1}
-              </Select>
-              <Button type="primary" onClick={() => this.handelSearch({}, true)}>
-                搜索
-              </Button>
-            </div>
-            <div>
-              <Table
-                // loading={loading}
-                columns={columns}
-                dataSource={catalogInfo}
-                pagination={
-                  pagination1 && {
-                    ...pagination1,
-                    showQuickJumper: true,
-                    showTotal: total =>
-                      `共 ${Math.ceil(total / pagination1.pageSize)}页 / ${total}条 数据`,
-                  }
-                }
-                // rowKey="itemId"
-                onChange={this.tableChange}
-                bordered
-              />
-            </div>
+      <PageHeaderWrapper action={buttonList}>
+        <Card loading={loadingDetail} bordered={false}>
+          {keyArr.length > 0 && this.renderViewCard()}
+          <Divider style={{ marginBottom: 32, marginTop: 0 }} />
+          <div className={styles.tableList}>
+            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            <Table
+              rowKey="id"
+              bordered
+              columns={this.columns}
+              dataSource={dataList.datas}
+              pagination={paginationProps}
+              locale={locale}
+              loading={loading}
+            />
           </div>
-        </div>
-      </PageHeaderLayout>
+        </Card>
+      </PageHeaderWrapper>
     );
   }
 }
+
+export default ViewDirectory;

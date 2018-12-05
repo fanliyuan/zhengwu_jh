@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Table, Form, Divider, Card } from 'antd';
+import { Table, Form, Divider, Card, Modal, Radio, Input } from 'antd';
 import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -8,6 +8,9 @@ import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './ResourceAudit.less';
 
+const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
+const { TextArea } = Input;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues = { mount: false };
 let formTime;
@@ -15,6 +18,7 @@ let formTime;
 @connect(({ resourceAudit, loading }) => ({
   resourceAudit,
   loading: loading.effects['resourceAudit/fetch'],
+  confirmLoading: loading.effects['resourceAudit/audit'],
 }))
 @Form.create()
 class ResourceAudit extends Component {
@@ -79,19 +83,19 @@ class ResourceAudit extends Component {
         <Fragment>
           {record.status === -1 && (
             <Fragment>
-              <a onClick={() => this.handleAudit()}>审核</a>
+              <a onClick={() => this.handleAudit(record.id)}>审核</a>
               <Divider type="vertical" />
             </Fragment>
           )}
           {record.status !== -1 && (
             <Fragment>
-              <a onClick={() => router.push(`/informationResource/auditLogs/${record.id}`)}>
+              <a onClick={() => router.push(`/informationResource/audit/auditLog/${record.id}`)}>
                 审核日志
               </a>
               <Divider type="vertical" />
             </Fragment>
           )}
-          <a onClick={() => router.push(`/viewDirectory/${record.id}`)}>查看</a>
+          <a onClick={() => router.push(`/informationResource/viewDirectory/${record.id}`)}>查看</a>
         </Fragment>
       ),
     },
@@ -99,6 +103,9 @@ class ResourceAudit extends Component {
 
   state = {
     mount: false,
+    visible: false,
+    status: 1,
+    id: '',
   };
 
   componentDidMount() {
@@ -134,25 +141,99 @@ class ResourceAudit extends Component {
     sessionStorage.setItem('currentList', route.name);
   }
 
-  handleClassfiy = val => {
-    console.log(val);
-  };
-
   handleIsRelated = e => {
-    console.log(e);
     this.setState({
       mount: e.target.checked,
     });
   };
 
+  handleAudit = id => {
+    this.setState({
+      visible: true,
+      id,
+    });
+  };
+
+  handleOk = e => {
+    e.preventDefault();
+    const { dispatch, form } = this.props;
+    const { id } = this.state;
+    const values = {
+      ...paramsPage,
+      ...formValues,
+      ...formTime,
+    };
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'resourceAudit/audit',
+        payload: {
+          values,
+          item: {
+            id,
+            reviewAddDto: fieldsValue,
+          },
+        },
+        callback: res => {
+          if (res.code < 300) {
+            this.setState({
+              visible: false,
+              id: '',
+            });
+            setTimeout(() => {
+              this.setState({
+                status: 1,
+              });
+              form.setFieldsValue({
+                status: 1,
+              });
+            }, 20);
+          }
+        },
+      });
+    });
+  };
+
+  handleCancel = e => {
+    e.preventDefault();
+    const { form } = this.props;
+    this.setState({
+      visible: false,
+      id: '',
+    });
+    setTimeout(() => {
+      this.setState({
+        status: 1,
+      });
+      form.setFieldsValue({
+        status: 1,
+      });
+    }, 20);
+  };
+
   handleSearch = (fieldsForm, paramsTime) => {
+    let fields;
     const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
-    formValues = { ...fieldsForm };
-    const fields = fieldsForm;
+    const keyArr = Object.keys(fieldsForm);
+    if (keyArr.length > 0) {
+      formValues = { ...fieldsForm };
+      fields = fieldsForm;
+    } else {
+      formValues = { ...fieldsForm, mount: false };
+      fields = { ...fieldsForm, mount: false };
+      this.setState({
+        mount: false,
+      });
+    }
     Object.defineProperty(fields, 'date', {
       value: ``,
     });
+    if (fields.typeId) {
+      Object.defineProperty(fields, 'typeId', {
+        value: fields.typeId.join('-'),
+      });
+    }
     formTime = paramsTime;
     const values = {
       ...fields,
@@ -162,6 +243,13 @@ class ResourceAudit extends Component {
     dispatch({
       type: 'resourceAudit/fetch',
       payload: values,
+    });
+  };
+
+  onChangeStatus = e => {
+    e.preventDefault();
+    this.setState({
+      status: e.target.value,
     });
   };
 
@@ -177,6 +265,70 @@ class ResourceAudit extends Component {
       },
     });
   };
+
+  renderAuditForm() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    const { status } = this.state;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+    const formTailLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24, offset: 24 },
+        sm: { span: 12, offset: 7 },
+        md: { span: 10, offset: 7 },
+      },
+    };
+    return (
+      <Form onSubmit={this.handleOk} style={{ marginTop: 8 }}>
+        <FormItem {...formTailLayout}>
+          {getFieldDecorator('status', {
+            initialValue: status,
+          })(
+            <RadioGroup onChange={this.onChangeStatus}>
+              <Radio value={1}>通过</Radio>
+              <Radio value={0}>拒绝</Radio>
+            </RadioGroup>
+          )}
+        </FormItem>
+        {status === 1 && (
+          <FormItem {...formTailLayout}>
+            <span style={{ fontSize: 16 }}>你是否确定通过此次审核？</span>
+          </FormItem>
+        )}
+        {status === 0 && (
+          <FormItem {...formItemLayout} label="请输入拒绝理由">
+            {getFieldDecorator('reason', {
+              rules: [
+                {
+                  max: 500,
+                  message: '拒绝理由不能超过500个字符！',
+                },
+                {
+                  required: true,
+                  message: '请填写拒绝理由！',
+                },
+              ],
+            })(<TextArea rows={4} />)}
+          </FormItem>
+        )}
+      </Form>
+    );
+  }
 
   renderForm() {
     const {
@@ -214,7 +366,6 @@ class ResourceAudit extends Component {
               typeOptions: {
                 options: sourceClassfiyList,
                 fieldNames: { label: 'name', value: 'id' },
-                onChange: this.handleClassfiy,
                 placeholder: '请选择资源属性分类',
               },
             },
@@ -282,7 +433,9 @@ class ResourceAudit extends Component {
     const {
       resourceAudit: { dataList, page },
       loading,
+      confirmLoading,
     } = this.props;
+    const { visible } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       total: dataList.totalCounts,
@@ -311,6 +464,17 @@ class ResourceAudit extends Component {
               locale={locale}
             />
           </div>
+          <Modal
+            title="审核"
+            visible={visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+            width={520}
+            maskClosable={false}
+            confirmLoading={confirmLoading}
+          >
+            {this.renderAuditForm()}
+          </Modal>
         </Card>
       </PageHeaderWrapper>
     );

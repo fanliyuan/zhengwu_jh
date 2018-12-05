@@ -62,3 +62,26 @@ export async function getConnectList(params) {
 //     body: params,
 //   });
 // }
+
+// 资源审核
+export async function review(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/review`, {
+    method: 'POST',
+    body: params.reviewAddDto,
+  });
+}
+
+// 查询审核日志
+export async function reviewLog(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/review`);
+}
+
+// 查询资源详情
+export async function getResourceDetail(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`);
+}
+
+// 查询信息项列表
+export async function getInfoItems(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/info?${stringify(params.query)}`);
+}
