@@ -9,7 +9,7 @@ import {
   checkIsSameName,
   openDataById,
   updateOpenData,
-  getResourceDetail,
+  getResourceDetails,
   getConnectList,
 } from '@/services/informationResource/informationResource';
 
@@ -122,7 +122,7 @@ export default {
       }
     },
     *getResources({ payload }, { call, put }) {
-      const response = yield call(getResourceDetail, payload);
+      const response = yield call(getResourceDetails, payload);
       try {
         if (+response.code === 200) {
           yield put({

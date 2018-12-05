@@ -38,7 +38,7 @@ export async function updateOpenData(params) {
 }
 
 // 关联数据-得到资源信息
-export async function getResourceDetail(params) {
+export async function getResourceDetails(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`);
 }
 
