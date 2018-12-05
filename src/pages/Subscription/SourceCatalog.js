@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Modal, Table, Divider } from 'antd';
+import { Card, Form, Modal, Table, Divider, Tabs } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './SourceCatalog.less';
 
+const TabPane = Tabs.TabPane;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
@@ -34,7 +35,7 @@ class SourceCatalog extends Component {
     {
       title: '关联数据名称',
       align: 'center',
-      dataIndex: 'roleName',
+      dataIndex: 'mountResourceName',
     },
     {
       title: '关联数据类型',
@@ -133,9 +134,13 @@ class SourceCatalog extends Component {
       const typeArr = ['classId', 'projectId', 'catalogId', 'typeId'];
       fields.typeIds.map((item, index) =>
         Object.defineProperty(fields, typeArr[index], {
-          value: item,
+          value: JSON.stringify(item),
+          enumerable: true,
         })
       );
+      Object.defineProperty(fields, 'typeIds', {
+        value: ``,
+      });
     }
     formValues = { ...fieldsForm };
     formTime = paramsTime;
@@ -275,18 +280,25 @@ class SourceCatalog extends Component {
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <Table
-              rowKey="resourceId"
-              bordered
-              pagination={paginationProps}
-              dataSource={dataList.rows}
-              columns={this.columns}
-              loading={loading}
-              locale={locale}
-            />
-          </div>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="共享资源" key="1">
+              <div className={styles.tableList}>
+                <div className={styles.tableListForm}>{this.renderForm()}</div>
+                <Table
+                  rowKey="resourceId"
+                  bordered
+                  pagination={paginationProps}
+                  dataSource={dataList.rows}
+                  columns={this.columns}
+                  loading={loading}
+                  locale={locale}
+                />
+              </div>
+            </TabPane>
+            <TabPane tab="API资源" key="2" disabled>
+              内容暂未开放
+            </TabPane>
+          </Tabs>
         </Card>
       </PageHeaderWrapper>
     );

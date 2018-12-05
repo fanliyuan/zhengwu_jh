@@ -11,8 +11,5 @@ export async function getFileList(params) {
 
 // 资源列表
 export async function getResourceList(params) {
-  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/list`, {
-    method: 'GET',
-    query: params,
-  });
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/list?${stringify(params)}`);
 }
