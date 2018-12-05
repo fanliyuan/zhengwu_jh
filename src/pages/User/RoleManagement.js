@@ -110,6 +110,7 @@ class UsersManagement extends PureComponent {
       paramsPage = { pageNum: 1, pageSize: 10 };
       formValues = {};
       formTime = {};
+      fields = { ...formValues };
     } else {
       fields = { ...formValues };
       Object.defineProperty(fields, 'date', {
