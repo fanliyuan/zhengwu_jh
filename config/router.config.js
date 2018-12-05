@@ -111,6 +111,13 @@ export default [
             authority: ['assessor'],
           },
           {
+            path: '/informationResource/audit/auditLog/:id',
+            name: 'auditLog',
+            hideInMenu: true,
+            component: './InformationResource/ResourceAuditLog',
+            authority: ['assessor'],
+          },
+          {
             path: '/informationResource/subscriptionLicense',
             name: 'subscriptionLicense',
             component: './Profile/AdvancedProfile',

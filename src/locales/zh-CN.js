@@ -172,6 +172,7 @@ export default {
   'menu.audit.operationAudit': '操作审计',
   'menu.informationResource': '政务信息资源目录',
   'menu.informationResource.audit': '信息资源审核',
+  'menu.informationResource.auditLog': '审核日志',
   'menu.informationResource.subscriptionLicense': '订阅授权',
   'menu.informationResource.sourceManagement': '信息资源管理',
   'menu.informationResource.addDirectory': '新建资源',

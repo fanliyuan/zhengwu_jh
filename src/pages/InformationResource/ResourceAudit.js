@@ -89,7 +89,7 @@ class ResourceAudit extends Component {
           )}
           {record.status !== -1 && (
             <Fragment>
-              <a onClick={() => router.push(`/informationResource/auditLogs/${record.id}`)}>
+              <a onClick={() => router.push(`/informationResource/audit/auditLog/${record.id}`)}>
                 审核日志
               </a>
               <Divider type="vertical" />

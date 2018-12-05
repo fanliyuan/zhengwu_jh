@@ -2,8 +2,19 @@ import {
   getResourceLists,
   getSourceClassfiyList,
   review,
+  reviewLog,
 } from '@/services/informationResource/informationResource';
 import { message } from 'antd';
+
+const statusObject = {
+  '-1': '待审核',
+  '0': '已拒绝',
+  '1': '已通过',
+  '10': '修改已拒绝',
+  '11': '修改已通过',
+  '20': '删除已拒绝',
+  '21': '删除已通过',
+};
 
 export default {
   namespace: 'resourceAudit',
@@ -11,6 +22,7 @@ export default {
   state: {
     dataList: {},
     sourceClassfiyList: [],
+    auditLog: [],
     page: 1,
   },
 
@@ -52,6 +64,48 @@ export default {
         message.error(response.message);
       }
     },
+    *auditLog({ payload }, { call, put }) {
+      let datas = [];
+      const response = yield call(reviewLog, payload);
+      if (response && response.code < 300) {
+        datas = [
+          {
+            name: '申请人',
+            value: response.result.datas[0].applyUsername || '未知',
+          },
+          {
+            name: '申请时间',
+            value: response.result.datas[0].applyTime || '未知',
+          },
+          {
+            name: '审核人',
+            value: response.result.datas[0].reviewUsername,
+          },
+          {
+            name: '审核时间',
+            value: response.result.datas[0].reviewTime,
+          },
+          {
+            name: '审核结果',
+            value: statusObject[response.result.datas[0].status] || '未知',
+          },
+        ];
+        if (
+          response.result.datas[0].status === 0 ||
+          response.result.datas[0].status === 10 ||
+          response.result.datas[0].status === 20
+        ) {
+          datas.push({
+            name: '拒绝理由',
+            value: response.result.datas[0].reason,
+          });
+        }
+        yield put({
+          type: 'saveAuditLog',
+          payload: datas,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -59,6 +113,12 @@ export default {
       return {
         ...state,
         dataList: payload,
+      };
+    },
+    saveAuditLog(state, { payload }) {
+      return {
+        ...state,
+        auditLog: payload,
       };
     },
     saveSourceClassfiyList(state, { payload }) {
@@ -73,10 +133,10 @@ export default {
         page: payload,
       };
     },
-    reset(state, { payload }) {
+    resetAuditLog(state) {
       return {
         ...state,
-        ...payload,
+        auditLog: [],
       };
     },
   },

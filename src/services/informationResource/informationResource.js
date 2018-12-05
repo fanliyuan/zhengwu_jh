@@ -60,3 +60,8 @@ export async function review(params) {
     body: params.reviewAddDto,
   });
 }
+
+// 查询审核日志
+export async function reviewLog(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/review`);
+}
