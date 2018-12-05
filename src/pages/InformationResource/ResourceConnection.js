@@ -41,9 +41,14 @@ export default class ResourceConnection extends Component {
   };
 
   componentDidMount() {
-    // this.setState({
-    //   isNodeOperator: Cookies.get('antd-pro-authority') === 'operator-n',
-    // })
+    const {
+      dispatch,
+      location: { state },
+    } = this.props;
+    dispatch({
+      type: 'informationResource/getResources',
+      payload: { id: state ? state.routeId : '' },
+    });
   }
 
   handleSave = () => {
@@ -59,6 +64,11 @@ export default class ResourceConnection extends Component {
   showModal1 = () => {
     this.setState({
       visible1: true,
+    });
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/getConnectListss',
+      payload: { pageNum: 1, pageSize: 10 },
     });
   };
 
@@ -94,6 +104,10 @@ export default class ResourceConnection extends Component {
 
   render() {
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
+    const {
+      informationResource: { resourceDetail, connectList },
+    } = this.props;
+    console.log(resourceDetail);
     const { visible1, visible2 } = this.state;
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
@@ -204,7 +218,7 @@ export default class ResourceConnection extends Component {
       },
       {
         title: '数据名称',
-        dataIndex: 'sourceName',
+        dataIndex: 'name',
       },
       {
         title: '数据类型',
@@ -216,7 +230,7 @@ export default class ResourceConnection extends Component {
       // },
       {
         title: '接入时间',
-        dataIndex: 'registerTime',
+        dataIndex: 'createTime',
         render(text) {
           return moment(text).format('lll');
         },
@@ -327,13 +341,13 @@ export default class ResourceConnection extends Component {
           <div className={styles.form}>
             <h3>
               信息资源代码:
-              <span> 3300031306381126/00001</span>
+              <span> {resourceDetail && resourceDetail.code}</span>
               信息资源名称:
-              <span> 资产负债表信息</span>
+              <span> {resourceDetail && resourceDetail.name}</span>
               信息资源提供方:
-              <span> 规划局</span>
+              <span> {resourceDetail && resourceDetail.providerDept}</span>
               发布时间:
-              <span> 2018-06-08 10:11:10</span>
+              <span> {resourceDetail && resourceDetail.shareTime}</span>
               <Button style={{ marginLeft: 10 }}>查看更多</Button>
             </h3>
             <Divider />
@@ -424,7 +438,7 @@ export default class ResourceConnection extends Component {
               bordered
             />
           </Modal>
-          <Modal
+          {/* <Modal
             title="选择要挂接的数据"
             visible={visible2}
             onOk={this.handleOk2}
@@ -445,7 +459,7 @@ export default class ResourceConnection extends Component {
               rowKey="id"
               bordered
             />
-          </Modal>
+          </Modal> */}
         </Card>
       </PageHeaderLayout>
     );

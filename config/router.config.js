@@ -188,7 +188,7 @@ export default [
           {
             path: 'resourceConnection',
             name: 'resourceConnection',
-            // hideInMenu: true,
+            hideInMenu: true,
             component: './InformationResource/ResourceConnection',
             authority: ['user'],
           },

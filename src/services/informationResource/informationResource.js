@@ -37,6 +37,16 @@ export async function updateOpenData(params) {
   });
 }
 
+// 关联数据-得到资源信息
+export async function getResourceDetail(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`);
+}
+
+// 得到要挂接数据的列表
+export async function getConnectList(params) {
+  return request(`/api/api/v2/zhengwu/swap/datas?${stringify(params)}`);
+}
+
 // // 删除数据源
 // export async function deleteDataSource(params) {
 //   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {

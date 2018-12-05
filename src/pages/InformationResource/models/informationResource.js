@@ -9,6 +9,8 @@ import {
   checkIsSameName,
   openDataById,
   updateOpenData,
+  getResourceDetail,
+  getConnectList,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -22,6 +24,8 @@ export default {
     sameMsg: false,
     openData: {},
     DBInfo: {},
+    resoutceDetail: {},
+    connectList: [],
   },
 
   effects: {
@@ -117,6 +121,36 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
+    *getResources({ payload }, { call, put }) {
+      const response = yield call(getResourceDetail, payload);
+      try {
+        if (+response.code === 200) {
+          yield put({
+            type: 'getResourceDetail',
+            payload: response.result.data,
+          });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *getConnectListss({ payload }, { call, put }) {
+      const response = yield call(getConnectList, payload);
+      try {
+        if (+response.code === 200) {
+          yield put({
+            type: 'getConnectLists',
+            payload: response.result.datas,
+          });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
   },
 
   reducers: {
@@ -148,6 +182,18 @@ export default {
       return {
         ...state,
         openData: payload,
+      };
+    },
+    getResourceDetail(state, { payload }) {
+      return {
+        ...state,
+        resourceDetail: payload,
+      };
+    },
+    getConnectLists(state, { payload }) {
+      return {
+        ...state,
+        connectList: payload,
       };
     },
   },

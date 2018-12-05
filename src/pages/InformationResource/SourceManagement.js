@@ -203,9 +203,14 @@ export default class SourceManagement extends Component {
     // dispatch(routerRedux.push('/dataSourceManagement/viewDirectory', { resourceId: row.resourceId }))
   };
 
-  handlerelatedData = () => {
+  handlerelatedData = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/resourceConnectionData'));
+    dispatch(
+      routerRedux.push({
+        pathname: '/informationResource/resourceConnection',
+        state: { routeId: id },
+      })
+    );
   };
 
   // handleAdd = () => {
@@ -428,7 +433,7 @@ export default class SourceManagement extends Component {
             <span className={styles.clickBtn} onClick={() => that.handleSource(row)}>
               查看
             </span>
-            <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row)}>
+            <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
               关联数据
             </span>
             <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
