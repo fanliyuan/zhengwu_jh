@@ -1,7 +1,9 @@
 import {
   getResourceLists,
   getSourceClassfiyList,
+  review,
 } from '@/services/informationResource/informationResource';
+import { message } from 'antd';
 
 export default {
   namespace: 'resourceAudit',
@@ -35,6 +37,19 @@ export default {
           type: 'saveSourceClassfiyList',
           payload: response.result,
         });
+      }
+    },
+    *audit({ payload, callback }, { call, put }) {
+      const response = yield call(review, payload.item);
+      callback(response);
+      if (response && response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
       }
     },
   },

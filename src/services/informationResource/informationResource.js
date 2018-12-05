@@ -52,3 +52,11 @@ export async function updateOpenData(params) {
 //     body: params,
 //   });
 // }
+
+// 资源审核
+export async function review(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/review`, {
+    method: 'POST',
+    body: params.reviewAddDto,
+  });
+}
