@@ -222,6 +222,9 @@ class ResourceAudit extends Component {
     } else {
       formValues = { ...fieldsForm, mount: false };
       fields = { ...fieldsForm, mount: false };
+      this.setState({
+        mount: false,
+      });
     }
     Object.defineProperty(fields, 'date', {
       value: ``,
