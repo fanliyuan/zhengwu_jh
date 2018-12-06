@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Modal, Table } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -66,13 +66,17 @@ class UsersManagement extends PureComponent {
     {
       title: '操作时间',
       align: 'center',
-      dataIndex: 'createtime',
+      dataIndex: 'updatetime',
     },
     {
       title: '操作',
       align: 'center',
       render: (text, record) => (
-        <a onClick={() => this.handleAssignRole(record.id, record.roleid)}>分配角色</a>
+        <Fragment>
+          {record.system !== 1 && (
+            <a onClick={() => this.handleAssignRole(record.id, record.roleid)}>分配角色</a>
+          )}
+        </Fragment>
       ),
     },
   ];
