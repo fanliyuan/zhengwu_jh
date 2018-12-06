@@ -22,6 +22,8 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
 const { RangePicker } = DatePicker;
 const { isMoment } = moment;
+let initialData = [];
+let enableEditFile = [];
 @connect(({ informationResource, loading }) => ({
   informationResource,
   loading: loading.models.informationResource,
@@ -37,12 +39,17 @@ export default class ResourceConnection extends Component {
   // };
   state = {
     visible1: false,
+    routeId: '',
     visible2: false,
     connectName: '',
     connectType: '',
     startTimes: '',
     endTimes: '',
     connectTime: [],
+    chooseName: '',
+    chooseType: '',
+    chooseId: -1,
+    fileListData: [],
     // isNodeOperator: false,
   };
 
@@ -54,6 +61,9 @@ export default class ResourceConnection extends Component {
     dispatch({
       type: 'informationResource/getResources',
       payload: { id: state ? state.routeId : '' },
+    });
+    this.setState({
+      routeId: state ? state.routeId : '',
     });
   }
 
@@ -78,7 +88,12 @@ export default class ResourceConnection extends Component {
     });
   };
 
-  handleChooseChange = id => {};
+  handleChooseChange = row => {
+    this.setState({
+      chooseName: row.name,
+      chooseId: row.id,
+    });
+  };
 
   handleSearch = pagination => {
     const { connectName, connectType, startTimes, endTimes } = this.state;
@@ -134,9 +149,23 @@ export default class ResourceConnection extends Component {
     });
   };
 
-  handleOk1 = () => {
+  handleOk1 = async () => {
+    initialData = [];
+    enableEditFile = [];
+    const { chooseName, chooseId } = this.state;
+    const { dispatch } = this.props;
     this.setState({
       visible1: false,
+    });
+    await dispatch({
+      type: 'informationResource/getFileList',
+      payload: { id: chooseId, pagination: { pageNum: 1, pageSize: 10 } },
+    });
+    for (let i = 0; i < enableEditFile.length; i++) {
+      initialData.push(enableEditFile[i]);
+    }
+    this.setState({
+      fileListData: enableEditFile,
     });
   };
 
@@ -158,12 +187,62 @@ export default class ResourceConnection extends Component {
     });
   };
 
+  handleDeleteFile = id => {
+    const { fileListData } = this.state;
+    initialData = [];
+    fileListData.forEach((item, i) => {
+      initialData[i] = item;
+    });
+    const fileData = fileListData;
+    fileData.forEach((item, i) => {
+      if (+item.id === +id) {
+        fileData.splice(i, 1);
+      }
+    });
+    this.setState({
+      fileListData: fileData,
+    });
+  };
+
+  handleResetFile = () => {
+    this.setState({
+      fileListData: initialData,
+    });
+  };
+
+  handleSaveMountData = () => {
+    const { routeId, fileListData, chooseId } = this.state;
+    const { dispatch } = this.props;
+    const ids = fileListData.map(item => {
+      return item.id;
+    });
+    let arr = {};
+    for (let i = 0; i < ids.length; i++) {
+      arr[i] = ids[i];
+    }
+    console.log(arr);
+    dispatch({
+      type: 'informationResource/saveMountData',
+      payload: {
+        id: routeId,
+        resourceMountDto: { infoItemIdMap: arr, itemId: chooseId, type: 'ftp' },
+      },
+    });
+  };
+
   render() {
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
-      informationResource: { resourceDetail, connectList, connectPagination },
+      informationResource: {
+        resourceDetail,
+        connectList,
+        connectPagination,
+        connectFileList,
+        connectFilePagination,
+      },
     } = this.props;
-    const { visible1, visible2, connectName, connectType, connectTime } = this.state;
+    enableEditFile = connectFileList;
+    const { visible1, visible2, connectName, connectType, connectTime, fileListData } = this.state;
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
       {
@@ -172,11 +251,11 @@ export default class ResourceConnection extends Component {
       },
       {
         title: '文件名称',
-        dataIndex: 'fileName',
+        dataIndex: 'name',
       },
       {
         title: '类型',
-        dataIndex: 'types',
+        dataIndex: 'type',
       },
       {
         title: '文件大小',
@@ -193,11 +272,11 @@ export default class ResourceConnection extends Component {
     // if (isNodeOperator) {
     columns.push({
       title: '操作',
-      render(text, row) {
+      render: (text, row) => {
         return (
           <Popconfirm
             title={`是否删除${row.fileName || '此行'}?`}
-            onConfirm={() => message.info('删除成功!')}
+            onConfirm={() => this.handleDeleteFile(row.id)}
           >
             <a>删除</a>
           </Popconfirm>
@@ -265,11 +344,7 @@ export default class ResourceConnection extends Component {
         render: (text, row) => {
           return (
             <div>
-              <input
-                type="radio"
-                name="mo1"
-                onChange={this.handleChooseChange.bind(null, row.id)}
-              />
+              <input type="radio" name="mo1" onChange={this.handleChooseChange.bind(null, row)} />
               <span style={{ marginLeft: 10 }}>{text}</span>
             </div>
           );
@@ -423,7 +498,11 @@ export default class ResourceConnection extends Component {
               <span className={styles.linkBtn} onClick={this.showModal1}>
                 去选择
               </span>
-              <span className={styles.linkBtn} style={{ marginLeft: 20 }}>
+              <span
+                className={styles.linkBtn}
+                style={{ marginLeft: 20 }}
+                onClick={this.handleResetFile}
+              >
                 重载文件
               </span>
             </div>
@@ -447,19 +526,21 @@ export default class ResourceConnection extends Component {
           <div>
             <Table
               columns={columns}
-              dataSource={list}
+              dataSource={fileListData}
               pagination={
-                pagination && {
-                  ...pagination,
+                connectFilePagination && {
+                  ...connectFilePagination,
                   showQuickJumper: true,
                   showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
+                    `共 ${Math.ceil(total / connectFilePagination.pageSize)}页 / ${total}条 数据`,
                 }
               }
               rowKey="id"
               bordered
             />
-            <Button type="primary">保存</Button>
+            <Button type="primary" style={{ marginTop: 20 }} onClick={this.handleSaveMountData}>
+              保存
+            </Button>
           </div>
           <Modal
             title="选择要挂接的数据"

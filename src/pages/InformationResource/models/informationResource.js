@@ -11,6 +11,8 @@ import {
   updateOpenData,
   getResourceDetails,
   getConnectList,
+  getConnectFileList,
+  saveMountData,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -27,6 +29,9 @@ export default {
     resoutceDetail: {},
     connectList: [],
     connectPagination: {},
+    connectFileList: [],
+    connectFilePagination: {},
+    // forEditFile:[],
   },
 
   effects: {
@@ -137,6 +142,44 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
+    *saveMountData({ payload }, { call, put }) {
+      const response = yield call(saveMountData, payload);
+      try {
+        if (+response.code === 200) {
+          // yield put({
+          //   type: 'getResourceDetail',
+          //   payload: response.result.data,
+          // });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *getFileList({ payload }, { call, put }) {
+      const response = yield call(getConnectFileList, payload);
+      try {
+        if (+response.code === 200) {
+          const pagination =
+            response.result.totalCounts > 9
+              ? {
+                  current: response.result.number + 1,
+                  pageSize: response.result.size,
+                  total: response.result.totalCounts,
+                }
+              : false;
+          yield put({
+            type: 'FileList',
+            payload: { list: response.result.datas, pagination },
+          });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
     *getConnectListss({ payload }, { call, put }) {
       const response = yield call(getConnectList, payload);
       try {
@@ -204,6 +247,14 @@ export default {
         ...state,
         connectList: payload.list,
         connectPagination: payload.pagination,
+      };
+    },
+    FileList(state, { payload }) {
+      return {
+        ...state,
+        connectFileList: payload.list,
+        connectFilePagination: payload.pagination,
+        // forEditFile:payload.forEdit,
       };
     },
   },

@@ -47,6 +47,21 @@ export async function getConnectList(params) {
   return request(`/api/api/v2/zhengwu/swap/datas?${stringify(params)}`);
 }
 
+// 得到要挂接数据的列表
+export async function getConnectFileList(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/data/ftp/${params.id}/ftpfile?${stringify(params.pagination)}`
+  );
+}
+
+// 新建资源
+export async function saveMountData(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/mount`, {
+    method: 'POST',
+    body: params.resourceMountDto,
+  });
+}
+
 // // 删除数据源
 // export async function deleteDataSource(params) {
 //   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
