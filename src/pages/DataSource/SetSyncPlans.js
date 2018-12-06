@@ -193,6 +193,7 @@ class SetSyncPlan extends PureComponent {
           <FormItem
             {...formItemLayout}
             label={<FormattedMessage id="form.accessDataSource.syncAddDto.stopNum.label" />}
+            extra="0次代表永不停止"
           >
             报错
             {getFieldDecorator('syncAddDto.stopNum', {
@@ -224,9 +225,6 @@ class SetSyncPlan extends PureComponent {
               ],
             })(<Input maxLength="3" style={{ width: 80, marginLeft: 5, marginRight: 5 }} />)}
             次后自动停止服务
-          </FormItem>
-          <FormItem {...formItemLayout} label=" ">
-            <h4>0次代表永不停止</h4>
           </FormItem>
         </Form>
       </Card>

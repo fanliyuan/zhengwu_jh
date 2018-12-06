@@ -463,18 +463,14 @@ class TableList extends PureComponent {
               {getFieldDecorator('dataType')(
                 <Select style={{ width: '100%' }} placeholder="请选择数据类型">
                   <Option value="">全部</Option>
-                  <OptGroup label="数据库类型">
-                    <Option value="mysql">mysql</Option>
-                    <Option value="sqlserver">sqlserver</Option>
-                    <Option value="oracle">oracle</Option>
-                    <Option value="dm">dm</Option>
-                    <Option value="kingbase">kingbase</Option>
-                  </OptGroup>
-                  <OptGroup label="半结构文件类型">
-                    <Option value="ftp">ftp</Option>
-                    <Option value="sftp">sftp</Option>
-                    <Option value="file">文件</Option>
-                  </OptGroup>
+                  <Option value="mysql">mysql</Option>
+                  <Option value="sqlserver">sqlserver</Option>
+                  <Option value="oracle">oracle</Option>
+                  <Option value="dm">dm</Option>
+                  <Option value="kingbase">kingbase</Option>
+                  <Option value="ftp">ftp</Option>
+                  <Option value="sftp">sftp</Option>
+                  <Option value="file">文件</Option>
                 </Select>
               )}
             </FormItem>
