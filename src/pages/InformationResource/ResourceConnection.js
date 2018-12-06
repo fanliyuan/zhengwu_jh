@@ -21,6 +21,7 @@ import styles from './ResourceConnection.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
 const { RangePicker } = DatePicker;
+const { isMoment } = moment;
 @connect(({ informationResource, loading }) => ({
   informationResource,
   loading: loading.models.informationResource,
@@ -37,6 +38,11 @@ export default class ResourceConnection extends Component {
   state = {
     visible1: false,
     visible2: false,
+    connectName: '',
+    connectType: '',
+    startTimes: '',
+    endTimes: '',
+    connectTime: [],
     // isNodeOperator: false,
   };
 
@@ -68,8 +74,58 @@ export default class ResourceConnection extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'informationResource/getConnectListss',
-      payload: { pageNum: 1, pageSize: 10 },
+      payload: { pageNum: 1, pageSize: 10, status: 1 },
     });
+  };
+
+  handleChooseChange = id => {};
+
+  handleSearch = pagination => {
+    const { connectName, connectType, startTimes, endTimes } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/getConnectListss',
+      payload: {
+        pageNum: pagination ? pagination.current : 1,
+        pageSize: pagination ? pagination.pageSize : 10,
+        name: connectName ? connectName : undefined,
+        dataType: connectType ? connectType : undefined,
+        beginTime: startTimes ? startTimes : undefined,
+        endTime: endTimes ? endTimes : undefined,
+        status: 1,
+      },
+    });
+  };
+
+  handleConnectName = e => {
+    this.setState({
+      connectName: e.target.value,
+    });
+  };
+
+  handleConnectType = e => {
+    this.setState({
+      connectType: e.target.value,
+    });
+  };
+
+  handleConnectTimeChange = val => {
+    const timeArr = val.map(item => {
+      if (isMoment(item)) {
+        return item.format('YYYY-MM-DD');
+      } else {
+        return '';
+      }
+    });
+    this.setState({
+      startTimes: timeArr[0] ? timeArr[0] : undefined,
+      endTimes: timeArr[1] ? timeArr[1] : undefined,
+      connectTime: val,
+    });
+  };
+
+  handleConnectListChange = pagination => {
+    this.handleSearch(pagination);
   };
 
   showModal2 = () => {
@@ -105,10 +161,9 @@ export default class ResourceConnection extends Component {
   render() {
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
-      informationResource: { resourceDetail, connectList },
+      informationResource: { resourceDetail, connectList, connectPagination },
     } = this.props;
-    console.log(resourceDetail);
-    const { visible1, visible2 } = this.state;
+    const { visible1, visible2, connectName, connectType, connectTime } = this.state;
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
       {
@@ -207,10 +262,14 @@ export default class ResourceConnection extends Component {
       {
         title: 'ID',
         dataIndex: 'id',
-        render(text) {
+        render: (text, row) => {
           return (
             <div>
-              <input type="radio" name="mo1" />
+              <input
+                type="radio"
+                name="mo1"
+                onChange={this.handleChooseChange.bind(null, row.id)}
+              />
               <span style={{ marginLeft: 10 }}>{text}</span>
             </div>
           );
@@ -411,27 +470,38 @@ export default class ResourceConnection extends Component {
           >
             <Row style={{ marginBottom: 20 }}>
               <Col span={5}>
-                <Input placeholder="资源名称" />
+                <Input
+                  placeholder="资源名称"
+                  value={connectName}
+                  onChange={this.handleConnectName}
+                />
               </Col>
               <Col span={5} offset={1}>
-                <Input placeholder="数据源类型" />
+                <Input
+                  placeholder="数据源类型"
+                  value={connectType}
+                  onChange={this.handleConnectType}
+                />
               </Col>
               <Col span={5} offset={1}>
-                <RangePicker />
+                <RangePicker onChange={this.handleConnectTimeChange} value={connectTime} />
               </Col>
               <Col span={5} offset={1}>
-                <Button type="primary">搜索</Button>
+                <Button type="primary" onClick={this.handleSearch.bind(null, '')}>
+                  搜索
+                </Button>
               </Col>
             </Row>
             <Table
               columns={columnsModal1}
-              dataSource={listModal1}
+              dataSource={connectList}
+              onChange={this.handleConnectListChange}
               pagination={
-                pagination && {
-                  ...pagination,
+                connectPagination && {
+                  ...connectPagination,
                   showQuickJumper: true,
                   showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
+                    `共 ${Math.ceil(total / connectPagination.pageSize)}页 / ${total}条 数据`,
                 }
               }
               rowKey="id"

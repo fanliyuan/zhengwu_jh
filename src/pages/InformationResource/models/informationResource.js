@@ -26,6 +26,7 @@ export default {
     DBInfo: {},
     resoutceDetail: {},
     connectList: [],
+    connectPagination: {},
   },
 
   effects: {
@@ -140,9 +141,17 @@ export default {
       const response = yield call(getConnectList, payload);
       try {
         if (+response.code === 200) {
+          const pagination =
+            response.result.totalCounts > 9
+              ? {
+                  current: response.result.number + 1,
+                  pageSize: response.result.size,
+                  total: response.result.totalCounts,
+                }
+              : false;
           yield put({
             type: 'getConnectLists',
-            payload: response.result.datas,
+            payload: { list: response.result.datas, pagination },
           });
         } else {
           message.error(response.message);
@@ -193,7 +202,8 @@ export default {
     getConnectLists(state, { payload }) {
       return {
         ...state,
-        connectList: payload,
+        connectList: payload.list,
+        connectPagination: payload.pagination,
       };
     },
   },

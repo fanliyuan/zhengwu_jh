@@ -172,14 +172,14 @@ export default class SourceManagement extends Component {
     // });
   };
 
-  handleSource = () => {
+  handleSource = id => {
     const { dispatch } = this.props;
     // if (row.dataType === 'file') {
     //   dispatch(routerRedux.push('/dataSourceManagement/fileSource', { mountResourceId: row.id }))
     // } else {
     //   dispatch(routerRedux.push('/dataSourceManagement/dataBaseSource', { mountResourceId: row.id }))
     // }
-    dispatch(routerRedux.push('/informationResource/viewDirectory'));
+    dispatch(routerRedux.push(`/informationResource/viewDirectory/${id}`));
   };
 
   // handleSource1 = () => {
@@ -430,7 +430,7 @@ export default class SourceManagement extends Component {
         title: '操作',
         render: (text, row) => (
           <div>
-            <span className={styles.clickBtn} onClick={() => that.handleSource(row)}>
+            <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
               查看
             </span>
             <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
