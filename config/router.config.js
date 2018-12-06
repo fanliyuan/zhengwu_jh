@@ -213,6 +213,12 @@ export default [
             component: './InformationResource/OpenShareFile',
             authority: ['user'],
           },
+          {
+            path: 'subAuth',
+            name: 'subAuth',
+            component: './InformationResource/SubAuth',
+            authority: 'user',
+          },
         ],
       },
       // 数据发布管理

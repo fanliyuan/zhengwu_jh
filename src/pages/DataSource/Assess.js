@@ -9,8 +9,8 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SearchForm from '@/components/SearchForm';
 import KeyValue from '@/components/KeyValue';
 import DescriptionList from '@/components/DescriptionList';
+import DataTypeSelectOption from '@/components/DataTypeSelectOption';
 import styles from './Assess.less';
-import { spawn } from 'child_process';
 
 const { Option, OptGroup } = Select;
 const { Group } = Radio;
@@ -26,6 +26,15 @@ const statusObject = {
   '-11': '修改待审核',
   '20': '删除已拒绝',
   '-21': '删除待审核',
+};
+const classNameObject = {
+  '-1': 'blue',
+  '0': 'red',
+  '1': 'green',
+  '10': 'red',
+  '-11': 'blue',
+  '20': 'red',
+  '-21': 'blue',
 };
 const statusData = Object.entries(statusObject);
 
@@ -63,48 +72,7 @@ export default class Assess extends Component {
           placeholder: '数据类型',
           allowClear: true,
         },
-        children: [
-          {
-            label: '数据库类型',
-            children: [
-              { value: 'mysql', label: 'mysql' },
-              { value: 'sqlserver', label: 'sqlserver' },
-              { value: 'oracle', label: 'oracle' },
-              { value: 'dm', label: 'dm' },
-              { value: 'kingbase', label: 'kingbase' },
-            ],
-          },
-          {
-            label: '半结构文件类型',
-            children: [
-              { value: 'ftp', label: 'ftp' },
-              { value: 'sftp', label: 'sftp' },
-              { value: 'file', label: '文件' },
-            ],
-          },
-        ].map(sub => (
-          <OptGroup label={sub.label} key={sub.label}>
-            {sub.children.map(item => (
-              <Option value={item.value} key={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </OptGroup>
-        )),
-        // children: (<Fragment>
-        //   <OptGroup label="数据库类型">
-        //     <Option value="mysql">mysql</Option>
-        //     <Option value="sqlserver">sqlserver</Option>
-        //     <Option value="oracle">oracle</Option>
-        //     <Option value="dm">dm</Option>
-        //     <Option value="kingbase">kingbase</Option>
-        //   </OptGroup>
-        //   <OptGroup label="半结构文件类型">
-        //     <Option value="ftp">ftp</Option>
-        //     <Option value="sftp">sftp</Option>
-        //     <Option value="file">文件</Option>
-        //   </OptGroup>
-        // </Fragment>)
+        children: DataTypeSelectOption,
       },
       {
         name: 'time',
@@ -114,14 +82,9 @@ export default class Assess extends Component {
         name: 'status',
         type: 'Select',
         typeOptions: {
-          placeholder: '审核类型',
+          placeholder: '审核状态',
           allowClear: true,
         },
-        // children: (<Fragment>
-        //   <Option value='-1'>待审核</Option>
-        //   <Option value='0'>已拒绝</Option>
-        //   <Option value='1'>已通过</Option>
-        // </Fragment>)
         children: statusData.map(item => (
           <Option value={item[0]} key={item[0]}>
             {item[1]}
@@ -144,6 +107,7 @@ export default class Assess extends Component {
     ['assessLog'],
     ['infoResource', 'view', 'assessLog'],
     ['infoResource', 'view', 'assessLog', 'assess'],
+    ['infoResource', 'assessLog'],
   ];
 
   columns = [
@@ -189,22 +153,35 @@ export default class Assess extends Component {
     // },
     {
       dataIndex: 'status',
-      title: '状态',
+      title: '审核状态',
       render(text) {
         // return statusData.find(item => item.value === text).label
-        return <span>{statusObject[text]}</span>;
+        return <span className={classNameObject[text]}>{statusObject[text]}</span>;
       },
     },
     {
       title: '操作',
       render: (_, row) => {
+        // 这下面复杂的判断,不是我的本意
         let index = 1;
+        let showData = true;
+        let isCurOption = true;
         if (row.status === -1) {
           index = 0;
-        } else if (row.status === 1 || row.status === 10 || row.status === 20) {
+          isCurOption = false;
+          showData = false;
+        } else if (row.status === 1) {
           index = 2;
+          showData = false;
         } else if (row.status === -11 || row.status === -21) {
           index = 3;
+          if (row.status === -21) {
+            showData = false;
+          } else {
+            isCurOption = false;
+          }
+        } else {
+          index = 4;
         }
         return this.operationsData[index].map(item => {
           if (item === 'infoResource' && !row.resourceId) {
@@ -215,7 +192,11 @@ export default class Assess extends Component {
             );
           }
           return (
-            <a className="mr16" onClick={this['handle' + item].bind(this, row)} key={item}>
+            <a
+              className="mr16"
+              onClick={this['handle' + item].bind(this, row, showData)}
+              key={item}
+            >
               {this.operationsObject[item]}
             </a>
           );
@@ -263,11 +244,10 @@ export default class Assess extends Component {
     );
   };
 
-  handleview = row => {
-    console.log(row, '查看');
+  handleview = (row, showData, isCurOption) => {
     const { dispatch } = this.props;
     const { type } = row;
-    this.showCurrentConfig(row);
+    this.showCurrentConfig(row, showData);
     dispatch({
       type: 'accessData/getCurrentdetail',
       payload: {
@@ -351,7 +331,7 @@ export default class Assess extends Component {
     });
   };
 
-  showCurrentConfig = row => {
+  showCurrentConfig = (row, showData) => {
     const { type: dataType } = row;
     Modal.info({
       title: '当前配置',
@@ -361,11 +341,11 @@ export default class Assess extends Component {
       content: (() => {
         switch (dataType) {
           case 'db':
-            return this.renderDbInfo();
+            return this.renderDbInfo(showData);
           case 'ftp':
-            return this.renderFtpInfo();
+            return this.renderFtpInfo(showData);
           case 'file':
-            return this.renderFileInfo();
+            return this.renderFileInfo(showData);
           default:
             return '';
         }
@@ -373,7 +353,7 @@ export default class Assess extends Component {
     });
   };
 
-  renderDbInfo = () => {
+  renderDbInfo = showData => {
     console.log('表格');
     const {
       loadingTable,
@@ -436,28 +416,32 @@ export default class Assess extends Component {
           <Description term="定时设置">每{currentSync.timeSet}</Description>
           <Description term="自动停止">{currentSync.stopNum}次</Description>
         </DescriptionList>
-        <Divider style={{ marginBottom: 32 }} />
-        <div className={styles.title}>表信息</div>
-        <Table
-          style={{ marginBottom: 24 }}
-          loading={loadingTable}
-          dataSource={tableList}
-          columns={tableColumn}
-          rowKey="id"
-        />
-        <div className={styles.title}>结构信息</div>
-        <Table
-          style={{ marginBottom: 16 }}
-          loading={loadingStruct}
-          dataSource={currentList}
-          columns={structColumn}
-          rowKey="id"
-        />
+        {showData && (
+          <Fragment>
+            <Divider style={{ marginBottom: 32 }} />
+            <div className={styles.title}>表信息</div>
+            <Table
+              style={{ marginBottom: 24 }}
+              loading={loadingTable}
+              dataSource={tableList}
+              columns={tableColumn}
+              rowKey="id"
+            />
+            <div className={styles.title}>结构信息</div>
+            <Table
+              style={{ marginBottom: 16 }}
+              loading={loadingStruct}
+              dataSource={currentList}
+              columns={structColumn}
+              rowKey="id"
+            />
+          </Fragment>
+        )}
       </Card>
     );
   };
 
-  renderFtpInfo = () => {
+  renderFtpInfo = showData => {
     const {
       loadingTable,
       accessData: { currentDetail, currentSync, currentList },
@@ -494,20 +478,24 @@ export default class Assess extends Component {
           <Description term="定时设置">每{currentSync.timeSet}</Description>
           <Description term="自动停止">{currentSync.stopNum}次</Description>
         </DescriptionList>
-        <Divider style={{ marginBottom: 32 }} />
-        <div className={styles.title}>文件信息</div>
-        <Table
-          style={{ marginBottom: 24 }}
-          loading={loadingTable}
-          dataSource={currentList}
-          columns={tableColumn}
-          rowKey="id"
-        />
+        {showData && (
+          <Fragment>
+            <Divider style={{ marginBottom: 32 }} />
+            <div className={styles.title}>文件信息</div>
+            <Table
+              style={{ marginBottom: 24 }}
+              loading={loadingTable}
+              dataSource={currentList}
+              columns={tableColumn}
+              rowKey="id"
+            />
+          </Fragment>
+        )}
       </Card>
     );
   };
 
-  renderFileInfo = () => {
+  renderFileInfo = showData => {
     const {
       loadingTable,
       accessData: { currentDetail, currentList },
@@ -541,15 +529,19 @@ export default class Assess extends Component {
           <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
           <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
         </DescriptionList>
-        <Divider style={{ marginBottom: 32 }} />
-        <div className={styles.title}>文件信息</div>
-        <Table
-          style={{ marginBottom: 24 }}
-          loading={loadingTable}
-          dataSource={currentList}
-          columns={tableColumn}
-          rowKey="id"
-        />
+        {showData && (
+          <Fragment>
+            <Divider style={{ marginBottom: 32 }} />
+            <div className={styles.title}>文件信息</div>
+            <Table
+              style={{ marginBottom: 24 }}
+              loading={loadingTable}
+              dataSource={currentList}
+              columns={tableColumn}
+              rowKey="id"
+            />
+          </Fragment>
+        )}
       </Card>
     );
   };
