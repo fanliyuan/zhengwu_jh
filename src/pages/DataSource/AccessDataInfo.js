@@ -554,6 +554,8 @@ class AccessDataInfo extends PureComponent {
           open: item.props.dataRef.open,
           path: item.props.dataRef.path,
           type: item.props.dataRef.type,
+          size: item.props.dataRef.size,
+          time: item.props.dataRef.time,
         });
       }
       return false;
@@ -947,7 +949,7 @@ class AccessDataInfo extends PureComponent {
     const {
       params,
       type,
-      route,
+      // route,
       accessData: { treeList },
       form: { getFieldDecorator },
     } = this.props;
@@ -967,13 +969,7 @@ class AccessDataInfo extends PureComponent {
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="结构树">
             {treeList.length < 1 && <Alert message="数据加载中..." type="info" showIcon />}
-            {treeList.length > 0 &&
-              (() => {
-                if (route.name === 'managementUpdate') {
-                  return this.renderSyncTree(treeList);
-                }
-                return this.renderAsyncTree(treeList);
-              })()}
+            {treeList.length > 0 && (() => this.renderSyncTree(treeList))()}
           </FormItem>
           <FormItem
             {...formItemLayout}

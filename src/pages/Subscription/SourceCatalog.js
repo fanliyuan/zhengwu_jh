@@ -6,7 +6,7 @@ import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './SourceCatalog.less';
 
-const TabPane = Tabs.TabPane;
+const { TabPane } = Tabs;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
@@ -33,6 +33,11 @@ class SourceCatalog extends Component {
       dataIndex: 'resourceProjectCatalogType',
     },
     {
+      title: '发布节点',
+      align: 'center',
+      dataIndex: 'nodeName',
+    },
+    {
       title: '关联数据名称',
       align: 'center',
       dataIndex: 'mountResourceName',
@@ -40,7 +45,19 @@ class SourceCatalog extends Component {
     {
       title: '关联数据类型',
       align: 'center',
-      dataIndex: 'roleName',
+      dataIndex: 'dataType',
+      render: text => {
+        switch (text) {
+          case 'db':
+            return <span>数据库</span>;
+          case 'file':
+            return <span>文件</span>;
+          case 'ftp':
+            return <span>ftp</span>;
+          default:
+            return <span>数据类型错误</span>;
+        }
+      },
     },
     {
       title: '共享时间',
@@ -66,6 +83,20 @@ class SourceCatalog extends Component {
       title: '订阅状态',
       align: 'center',
       dataIndex: 'orderStatus',
+      render: text => {
+        switch (text) {
+          case '待审核':
+            return <span style={{ color: '#5cadff' }}>待审核</span>;
+          case '未订阅':
+            return <span style={{ color: '#999999' }}>未订阅</span>;
+          case '已订阅':
+            return <span style={{ color: '#19be6b' }}>已订阅</span>;
+          case '已拒绝':
+            return <span style={{ color: '#ed4014' }}>已拒绝</span>;
+          default:
+            return <span>状态错误</span>;
+        }
+      },
     },
     {
       title: '操作',
