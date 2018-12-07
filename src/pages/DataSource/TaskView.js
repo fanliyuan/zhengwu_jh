@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Table, Button, Tabs, List } from 'antd';
+import { Table, Button, Tabs, List, Card } from 'antd';
 import router from 'umi/router';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -14,7 +14,7 @@ console.log(window);
   taskView,
   loadingSyncInfo: loading.effects['taskView/getSyncInfo'],
   loadingRunLog: loading.effects['taskView/getRunlog'],
-  loadingSyncLog: loading.effects['taskView/getSyncInfo'],
+  loadingSyncLog: loading.effects['taskView/getSynclog'],
 }))
 class TaskView extends Component {
   constructor(props) {
@@ -119,6 +119,14 @@ class TaskView extends Component {
         page: pageNum,
       },
     });
+  };
+
+  setTimeFormat = val => {
+    let str = '';
+    if (val) {
+      str = val.replace('-', '');
+    }
+    return str;
   };
 
   changeSyncPage = (pageNum, pageSize) => {
@@ -269,7 +277,7 @@ class TaskView extends Component {
       },
       {
         title: '同步频率',
-        value: `${syncInfo.syncRate} - 每${syncInfo.timeSet}`,
+        value: `${syncInfo.syncRate} - 每${this.setTimeFormat(syncInfo.timeSet)}`,
       },
       {
         title: '状态',
@@ -310,41 +318,42 @@ class TaskView extends Component {
           })()}
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">
-              <List
-                loading={loadingSyncInfo}
-                itemLayout="horizontal"
-                dataSource={syncDatas}
-                renderItem={item => {
-                  if (item.title !== '查看数据' && item.title !== '数据库文件大小') {
+              <Card loading={loadingSyncInfo} bordered={false}>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={syncDatas}
+                  renderItem={item => {
+                    if (item.title !== '查看数据' && item.title !== '数据库文件大小') {
+                      return (
+                        <List.Item style={{ borderBottom: 'none' }} key={item.title}>
+                          {item.title}：{item.value}
+                        </List.Item>
+                      );
+                    }
+                    if (item.title === '数据库文件大小') {
+                      return (
+                        <List.Item style={{ borderBottom: 'none' }} key={item.title}>
+                          {item.title}：{this.setFileSize(parseInt(item.value, 10))}
+                        </List.Item>
+                      );
+                    }
                     return (
                       <List.Item style={{ borderBottom: 'none' }} key={item.title}>
-                        {item.title}：{item.value}
+                        {item.title}：
+                        {
+                          <a
+                            onClick={() =>
+                              router.push(`/data/management/${viewType}/${match.params.id}`)
+                            }
+                          >
+                            {item.value}
+                          </a>
+                        }
                       </List.Item>
                     );
-                  }
-                  if (item.title === '数据库文件大小') {
-                    return (
-                      <List.Item style={{ borderBottom: 'none' }} key={item.title}>
-                        {item.title}：{this.setFileSize(parseInt(item.value, 10))}
-                      </List.Item>
-                    );
-                  }
-                  return (
-                    <List.Item style={{ borderBottom: 'none' }} key={item.title}>
-                      {item.title}：
-                      {
-                        <a
-                          onClick={() =>
-                            router.push(`/data/management/${viewType}/${match.params.id}`)
-                          }
-                        >
-                          {item.value}
-                        </a>
-                      }
-                    </List.Item>
-                  );
-                }}
-              />
+                  }}
+                />
+              </Card>
             </TabPane>
             <TabPane tab="运行日志" key="2">
               <Table

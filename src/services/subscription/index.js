@@ -18,3 +18,8 @@ export async function getResourceList(params) {
 export async function getAllNode() {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/allNode`);
 }
+
+// 资源详细信息
+export async function getResourceDetails(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/resourceDetails?${stringify(params)}`);
+}
