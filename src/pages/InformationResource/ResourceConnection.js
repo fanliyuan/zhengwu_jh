@@ -24,6 +24,7 @@ const { RangePicker } = DatePicker;
 const { isMoment } = moment;
 let initialData = [];
 let enableEditFile = [];
+let resourceDetailData;
 @connect(({ informationResource, loading }) => ({
   informationResource,
   loading: loading.models.informationResource,
@@ -51,7 +52,35 @@ export default class ResourceConnection extends Component {
     chooseId: -1,
     fileListData: [],
     // isNodeOperator: false,
+    isExpandOrFolder: true,
+    dataType: '',
   };
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      fileListData: [],
+    });
+    if (resourceDetailData) {
+      this.setState({
+        dataType: resourceDetailData.mountType,
+      });
+      if (resourceDetailData.mount) {
+        let arr = [];
+        initialData = [];
+        for (let val in resourceDetailData.mountInfoItemIdMap) {
+          enableEditFile.forEach((item, i) => {
+            if (+resourceDetailData.mountInfoItemIdMap[val] === +item.id) {
+              arr.push(item);
+            }
+          });
+        }
+        initialData = [...arr];
+        this.setState({
+          fileListData: [...arr],
+        });
+      }
+    }
+  }
 
   componentDidMount() {
     const {
@@ -64,6 +93,7 @@ export default class ResourceConnection extends Component {
     });
     this.setState({
       routeId: state ? state.routeId : '',
+      fileListData: [],
     });
   }
 
@@ -143,6 +173,22 @@ export default class ResourceConnection extends Component {
     this.handleSearch(pagination);
   };
 
+  handleFileTableChange = async pagination => {
+    enableEditFile = [];
+    const { chooseName, chooseId } = this.state;
+    const { dispatch } = this.props;
+    await dispatch({
+      type: 'informationResource/getFileList',
+      payload: {
+        id: chooseId,
+        pagination: { pageNum: pagination.current, pageSize: pagination.pageSize },
+      },
+    });
+    this.setState({
+      fileListData: [...enableEditFile],
+    });
+  };
+
   showModal2 = () => {
     this.setState({
       visible2: true,
@@ -152,21 +198,26 @@ export default class ResourceConnection extends Component {
   handleOk1 = async () => {
     initialData = [];
     enableEditFile = [];
-    const { chooseName, chooseId } = this.state;
+    const { chooseName, chooseId, dataType } = this.state;
     const { dispatch } = this.props;
     this.setState({
       visible1: false,
     });
-    await dispatch({
-      type: 'informationResource/getFileList',
-      payload: { id: chooseId, pagination: { pageNum: 1, pageSize: 10 } },
-    });
-    for (let i = 0; i < enableEditFile.length; i++) {
-      initialData.push(enableEditFile[i]);
+    if (dataType === 'ftp') {
+      await dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: chooseId,
+          pagination: { pageNum: 1, pageSize: 10 },
+          type: 'ftp',
+          type1: 'ftpfile',
+        },
+      });
+      initialData = [...enableEditFile];
+      this.setState({
+        fileListData: [...enableEditFile],
+      });
     }
-    this.setState({
-      fileListData: enableEditFile,
-    });
   };
 
   handleOk2 = () => {
@@ -189,24 +240,20 @@ export default class ResourceConnection extends Component {
 
   handleDeleteFile = id => {
     const { fileListData } = this.state;
-    initialData = [];
-    fileListData.forEach((item, i) => {
-      initialData[i] = item;
-    });
-    const fileData = fileListData;
+    const fileData = [...fileListData];
     fileData.forEach((item, i) => {
       if (+item.id === +id) {
         fileData.splice(i, 1);
       }
     });
     this.setState({
-      fileListData: fileData,
+      fileListData: [...fileData],
     });
   };
 
   handleResetFile = () => {
     this.setState({
-      fileListData: initialData,
+      fileListData: [...initialData],
     });
   };
 
@@ -220,13 +267,47 @@ export default class ResourceConnection extends Component {
     for (let i = 0; i < ids.length; i++) {
       arr[i] = ids[i];
     }
-    console.log(arr);
     dispatch({
       type: 'informationResource/saveMountData',
       payload: {
         id: routeId,
         resourceMountDto: { infoItemIdMap: arr, itemId: chooseId, type: 'ftp' },
       },
+    });
+  };
+
+  handleCancelMount = () => {
+    const { routeId } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/saveMountData',
+      payload: {
+        id: routeId,
+        resourceMountDto: { infoItemIdMap: {}, itemId: null, type: '' },
+      },
+    });
+  };
+
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let powNum = 1;
+    for (let i = 0, len = index; i < len; i += 1) {
+      powNum *= 1024;
+    }
+    let newSize = srcSize / powNum;
+    newSize = newSize.toFixed(2);
+    return newSize + unitArr[index];
+  };
+
+  isFolderOrExpand = () => {
+    const { isExpandOrFolder } = this.state;
+    this.setState({
+      isExpandOrFolder: !isExpandOrFolder,
     });
   };
 
@@ -241,8 +322,18 @@ export default class ResourceConnection extends Component {
         connectFilePagination,
       },
     } = this.props;
-    enableEditFile = connectFileList;
-    const { visible1, visible2, connectName, connectType, connectTime, fileListData } = this.state;
+    enableEditFile = [...connectFileList];
+    // initialData = [...connectFileList]
+    resourceDetailData = resourceDetail;
+    const {
+      visible1,
+      visible2,
+      connectName,
+      connectType,
+      connectTime,
+      fileListData,
+      isExpandOrFolder,
+    } = this.state;
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
       {
@@ -259,7 +350,10 @@ export default class ResourceConnection extends Component {
       },
       {
         title: '文件大小',
-        dataIndex: 'fileSize',
+        dataIndex: 'size',
+        render: text => {
+          return this.setFileSize(text);
+        },
       },
       {
         title: '挂接时间',
@@ -482,8 +576,20 @@ export default class ResourceConnection extends Component {
               <span> {resourceDetail && resourceDetail.providerDept}</span>
               发布时间:
               <span> {resourceDetail && resourceDetail.shareTime}</span>
-              <Button style={{ marginLeft: 10 }}>查看更多</Button>
             </h3>
+            <h3 style={{ display: isExpandOrFolder ? 'none' : 'block' }}>
+              提供方代码:
+              <span> {resourceDetail && resourceDetail.providerNo}</span>
+              信息属性分类:
+              <span> {resourceDetail && resourceDetail.typeName}</span>
+              信息资源格式:
+              <span> {resourceDetail && resourceDetail.format}</span>
+              信息资源摘要:
+              <span> {resourceDetail && resourceDetail.summary}</span>
+            </h3>
+            <Button style={{ marginLeft: 10 }} onClick={this.isFolderOrExpand}>
+              {isExpandOrFolder ? '查看更多' : '收起'}
+            </Button>
             <Divider />
           </div>
           <div style={{ marginBottom: 15 }} className="clearfix">
@@ -506,7 +612,11 @@ export default class ResourceConnection extends Component {
                 重载文件
               </span>
             </div>
-            <span className={styles.linkBtn} style={{ float: 'right' }}>
+            <span
+              className={styles.linkBtn}
+              style={{ float: 'right' }}
+              onClick={this.handleCancelMount}
+            >
               取消关联
             </span>
             {/* )} */}
@@ -537,6 +647,7 @@ export default class ResourceConnection extends Component {
               }
               rowKey="id"
               bordered
+              onChange={this.handleFileTableChange}
             />
             <Button type="primary" style={{ marginTop: 20 }} onClick={this.handleSaveMountData}>
               保存

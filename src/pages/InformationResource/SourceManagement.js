@@ -399,7 +399,7 @@ export default class SourceManagement extends Component {
       },
       {
         title: '数据已关联',
-        dataIndex: 'havaGL',
+        dataIndex: 'mount',
         render: text => {
           return text ? '是' : '否';
         },
@@ -428,25 +428,58 @@ export default class SourceManagement extends Component {
       },
       {
         title: '操作',
-        render: (text, row) => (
-          <div>
-            <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
-              查看
-            </span>
-            <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
-              关联数据
-            </span>
-            <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
-              共享开放
-            </span>
-            <span className={styles.clickBtn} onClick={that.handleEdit}>
-              修改
-            </span>
-            <Popconfirm title={`确认删除${row.name}?`} onConfirm={() => message.info('删除成功')}>
-              <a>删除</a>
-            </Popconfirm>
-          </div>
-        ),
+        render: (text, row) => {
+          if (+row.status === -1) {
+            return (
+              <div>
+                <span className={styles.clickBtn} onClick={that.handleEdit}>
+                  修改
+                </span>
+                <Popconfirm
+                  title={`确认删除${row.name}?`}
+                  onConfirm={() => message.info('删除成功')}
+                >
+                  <a>删除</a>
+                </Popconfirm>
+              </div>
+            );
+          } else if (+row.status === 0) {
+            return (
+              <div>
+                <span className={styles.clickBtn}>审核日志</span>
+                <Popconfirm
+                  title={`确认删除${row.name}?`}
+                  onConfirm={() => message.info('删除成功')}
+                >
+                  <a>删除</a>
+                </Popconfirm>
+              </div>
+            );
+          } else {
+            return (
+              <div>
+                <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
+                  查看
+                </span>
+                <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
+                  关联数据
+                </span>
+                <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
+                  共享开放
+                </span>
+                <span className={styles.clickBtn} onClick={that.handleEdit}>
+                  修改
+                </span>
+                <Popconfirm
+                  title={`确认删除${row.name}?`}
+                  onConfirm={() => message.info('删除成功')}
+                >
+                  <a>删除</a>
+                </Popconfirm>
+              </div>
+            );
+          }
+        },
       },
     ];
     columns.forEach(item => {

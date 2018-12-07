@@ -50,7 +50,9 @@ export async function getConnectList(params) {
 // 得到要挂接数据的列表
 export async function getConnectFileList(params) {
   return request(
-    `/api/api/v2/zhengwu/swap/data/ftp/${params.id}/ftpfile?${stringify(params.pagination)}`
+    `/api/api/v2/zhengwu/swap/data/${params.type}/${params.id}/${params.type1}?${stringify(
+      params.pagination
+    )}`
   );
 }
 

@@ -131,6 +131,18 @@ export default {
       const response = yield call(getResourceDetails, payload);
       try {
         if (+response.code === 200) {
+          if (response.result.data && response.result.data.mount) {
+            if (response.result.data.mountType === 'ftp')
+              yield put({
+                type: 'getFileList',
+                payload: {
+                  id: response.result.data.mountId,
+                  pagination: { pageNum: 1, pageSize: 10 },
+                  type: 'ftp',
+                  type1: 'ftpfile',
+                },
+              });
+          }
           yield put({
             type: 'getResourceDetail',
             payload: response.result.data,
@@ -142,14 +154,15 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *saveMountData({ payload }, { call, put }) {
+    *saveMountData({ payload }, { call }) {
       const response = yield call(saveMountData, payload);
       try {
-        if (+response.code === 200) {
+        if (+response.code === 201) {
           // yield put({
           //   type: 'getResourceDetail',
           //   payload: response.result.data,
           // });
+          message.success(response.message);
         } else {
           message.error(response.message);
         }
