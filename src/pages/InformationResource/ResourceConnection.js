@@ -48,12 +48,15 @@ export default class ResourceConnection extends Component {
     endTimes: '',
     connectTime: [],
     chooseName: '',
-    chooseType: '',
     chooseId: -1,
+    zcName: '',
+    zcId: -1,
+    zcType: '',
     fileListData: [],
     // isNodeOperator: false,
     isExpandOrFolder: true,
-    dataType: '',
+    dataTypes: '',
+    initialType: '',
   };
 
   componentWillReceiveProps(nextProps) {
@@ -62,7 +65,7 @@ export default class ResourceConnection extends Component {
     });
     if (resourceDetailData) {
       this.setState({
-        dataType: resourceDetailData.mountType,
+        initialType: resourceDetailData.mountType,
       });
       if (resourceDetailData.mount) {
         let arr = [];
@@ -77,6 +80,7 @@ export default class ResourceConnection extends Component {
         initialData = [...arr];
         this.setState({
           fileListData: [...arr],
+          chooseId: resourceDetailData.mountId,
         });
       }
     }
@@ -110,6 +114,7 @@ export default class ResourceConnection extends Component {
   showModal1 = () => {
     this.setState({
       visible1: true,
+      dataTypes: '',
     });
     const { dispatch } = this.props;
     dispatch({
@@ -120,8 +125,9 @@ export default class ResourceConnection extends Component {
 
   handleChooseChange = row => {
     this.setState({
-      chooseName: row.name,
-      chooseId: row.id,
+      zcName: row.name,
+      zcId: row.id,
+      zcType: row.dataType,
     });
   };
 
@@ -198,19 +204,37 @@ export default class ResourceConnection extends Component {
   handleOk1 = async () => {
     initialData = [];
     enableEditFile = [];
-    const { chooseName, chooseId, dataType } = this.state;
-    const { dispatch } = this.props;
+    const { zcName, zcId, zcType } = this.state;
     this.setState({
+      chooseName: zcName,
+      chooseId: zcId,
+      abc: zcType,
+      dataTypes: zcType,
       visible1: false,
     });
-    if (dataType === 'ftp') {
+    const { dispatch } = this.props;
+    if (zcType === 'ftp') {
       await dispatch({
         type: 'informationResource/getFileList',
         payload: {
-          id: chooseId,
+          id: zcId,
           pagination: { pageNum: 1, pageSize: 10 },
           type: 'ftp',
           type1: 'ftpfile',
+        },
+      });
+      initialData = [...enableEditFile];
+      this.setState({
+        fileListData: [...enableEditFile],
+      });
+    } else if (zcType === 'file') {
+      await dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: zcId,
+          pagination: { pageNum: 1, pageSize: 10 },
+          type: 'file',
+          type1: 'file',
         },
       });
       initialData = [...enableEditFile];
@@ -229,6 +253,9 @@ export default class ResourceConnection extends Component {
   handleCancel1 = () => {
     this.setState({
       visible1: false,
+      zcName: '',
+      zcId: -1,
+      zcType: '',
     });
   };
 
@@ -258,7 +285,7 @@ export default class ResourceConnection extends Component {
   };
 
   handleSaveMountData = () => {
-    const { routeId, fileListData, chooseId } = this.state;
+    const { routeId, fileListData, chooseId, dataTypes, initialType } = this.state;
     const { dispatch } = this.props;
     const ids = fileListData.map(item => {
       return item.id;
@@ -271,7 +298,11 @@ export default class ResourceConnection extends Component {
       type: 'informationResource/saveMountData',
       payload: {
         id: routeId,
-        resourceMountDto: { infoItemIdMap: arr, itemId: chooseId, type: 'ftp' },
+        resourceMountDto: {
+          infoItemIdMap: arr,
+          itemId: chooseId,
+          type: dataTypes ? dataTypes : initialType,
+        },
       },
     });
   };

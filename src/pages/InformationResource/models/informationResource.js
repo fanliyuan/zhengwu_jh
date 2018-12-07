@@ -132,7 +132,7 @@ export default {
       try {
         if (+response.code === 200) {
           if (response.result.data && response.result.data.mount) {
-            if (response.result.data.mountType === 'ftp')
+            if (response.result.data.mountType === 'ftp') {
               yield put({
                 type: 'getFileList',
                 payload: {
@@ -142,6 +142,17 @@ export default {
                   type1: 'ftpfile',
                 },
               });
+            } else if (response.result.data.mountType === 'file') {
+              yield put({
+                type: 'getFileList',
+                payload: {
+                  id: response.result.data.mountId,
+                  pagination: { pageNum: 1, pageSize: 10 },
+                  type: 'file',
+                  type1: 'file',
+                },
+              });
+            }
           }
           yield put({
             type: 'getResourceDetail',
@@ -154,7 +165,7 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *saveMountData({ payload }, { call }) {
+    *saveMountData({ payload }, { call, put }) {
       const response = yield call(saveMountData, payload);
       try {
         if (+response.code === 201) {
@@ -163,6 +174,7 @@ export default {
           //   payload: response.result.data,
           // });
           message.success(response.message);
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
         } else {
           message.error(response.message);
         }
