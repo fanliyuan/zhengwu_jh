@@ -137,6 +137,9 @@ class SourceCatalog extends Component {
       });
     }
     dispatch({
+      type: 'sourceCatalog/getNodes',
+    });
+    dispatch({
       type: 'sourceCatalog/fetch',
       payload: {
         ...paramsPage,
@@ -201,8 +204,20 @@ class SourceCatalog extends Component {
 
   renderForm() {
     const {
-      sourceCatalog: { sourceClassfiyList },
+      sourceCatalog: { sourceClassfiyList, pubNodes },
     } = this.props;
+    const nodes = [
+      {
+        key: '全部',
+        value: '',
+      },
+    ];
+    pubNodes.map(item =>
+      nodes.push({
+        key: item.nodeName,
+        value: item.nodeName,
+      })
+    );
     const formData = {
       md: 8,
       lg: 24,
@@ -242,6 +257,15 @@ class SourceCatalog extends Component {
         {
           key: 2,
           data: [
+            {
+              type: 'Select',
+              prop: 'nodeName',
+              label: '发布节点',
+              typeOptions: {
+                placeholder: '请选择发布节点',
+              },
+              options: nodes,
+            },
             {
               type: 'Select',
               prop: 'status',

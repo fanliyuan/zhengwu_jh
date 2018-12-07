@@ -13,3 +13,8 @@ export async function getFileList(params) {
 export async function getResourceList(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/list?${stringify(params)}`);
 }
+
+// 获取所有发布节点
+export async function getAllNode() {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/allNode`);
+}

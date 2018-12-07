@@ -22,7 +22,7 @@ import styles from './DataSource.less';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const resetParamsPage = { pageNum: 1, pageSize: 10 };
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
