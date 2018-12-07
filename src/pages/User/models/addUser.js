@@ -8,6 +8,7 @@ function initAddParams() {
     password: '',
     name: '',
     phone: '',
+    email: '',
     status: 2,
   };
 }
@@ -17,6 +18,7 @@ function initUpdateParams() {
     account: '',
     name: '',
     phone: '',
+    email: '',
     status: '',
   };
 }

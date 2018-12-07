@@ -63,14 +63,18 @@ class UsersManagement extends PureComponent {
       align: 'center',
       render: (text, record) => (
         <Fragment>
-          {record.status === 2 && <a onClick={() => this.handleEnable(record.id)}>启用</a>}
-          {record.status === 1 && <a onClick={() => this.handleDisabled(record.id)}>停用</a>}
-          <Divider type="vertical" />
-          <a onClick={() => router.push(`/users/usersManagement/update/${record.id}`)}>修改</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleResetPassword(record.id)}>重置密码</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record.id)}>删除</a>
+          {record.system !== 1 && (
+            <Fragment>
+              {record.status === 2 && <a onClick={() => this.handleEnable(record.id)}>启用</a>}
+              {record.status === 1 && <a onClick={() => this.handleDisabled(record.id)}>停用</a>}
+              <Divider type="vertical" />
+              <a onClick={() => router.push(`/users/usersManagement/update/${record.id}`)}>修改</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.handleResetPassword(record.id)}>重置密码</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.handleDelete(record.id)}>删除</a>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },

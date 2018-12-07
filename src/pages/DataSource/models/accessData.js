@@ -358,14 +358,15 @@ export default {
           });
         } else {
           yield put({
-            type: 'setTreeList',
+            // type: 'setTreeList',
+            type: 'setTreeData',
             payload: {
               params: {
                 addr: payload.connectParams.addr,
                 port: payload.connectParams.port,
                 username: payload.connectParams.username,
                 password: payload.connectParams.password,
-                path: '/',
+                // path: '/',
               },
               type: 'create',
               treeType,

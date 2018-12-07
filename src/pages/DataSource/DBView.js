@@ -97,7 +97,7 @@ class DBView extends Component {
       modelName: '浏览',
       modelTitle: '数据',
       modelUnit: '行',
-      totals: dataList.totalCounts,
+      totals: dataList.totalCounts || 0,
     });
   };
 

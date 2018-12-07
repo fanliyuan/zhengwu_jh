@@ -18,12 +18,10 @@ export default {
           type: 'queryList',
           payload: response.result,
         });
-        if (payload.page) {
-          yield put({
-            type: 'savePage',
-            payload: payload.page,
-          });
-        }
+        yield put({
+          type: 'setPage',
+          payload,
+        });
       }
     },
     *getSourceClassfiyList({ payload }, { call, put }) {
@@ -53,7 +51,7 @@ export default {
     setPage(state, { payload }) {
       return {
         ...state,
-        page: payload,
+        page: payload.pageNum,
       };
     },
   },

@@ -183,6 +183,10 @@ class AddUser extends PureComponent {
                   message: formatMessage({ id: 'validation.addUser.password.required' }),
                 },
                 {
+                  pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,24}$/,
+                  message: formatMessage({ id: 'validation.addUser.password.pattern' }),
+                },
+                {
                   min: 6,
                   message: formatMessage({ id: 'validation.addUser.password.min' }),
                 },
@@ -191,7 +195,7 @@ class AddUser extends PureComponent {
                   message: formatMessage({ id: 'validation.addUser.password.max' }),
                 },
               ],
-            })(<Input type="password" autoComplete="new-password" />)}
+            })(<Input type="password" autoComplete="new-password" maxLength="24" />)}
             <a style={{ marginRight: 10 }} onClick={() => this.random()}>
               随机生成
             </a>
@@ -205,6 +209,10 @@ class AddUser extends PureComponent {
               {
                 required: true,
                 message: formatMessage({ id: 'validation.addUser.name.required' }),
+              },
+              {
+                pattern: /^((?![0-9]).)*$/,
+                message: formatMessage({ id: 'validation.addUser.name.pattern' }),
               },
               {
                 max: 20,
@@ -228,6 +236,17 @@ class AddUser extends PureComponent {
               {
                 max: 11,
                 message: formatMessage({ id: 'validation.addUser.phone.max' }),
+              },
+            ],
+          })(<Input />)}
+        </FormItem>
+        <FormItem {...formItemLayout} label={<FormattedMessage id="form.addUser.email.label" />}>
+          {getFieldDecorator('email', {
+            initialValue: params.email,
+            rules: [
+              {
+                type: 'email',
+                message: formatMessage({ id: 'validation.addUser.email.type' }),
               },
             ],
           })(<Input />)}
