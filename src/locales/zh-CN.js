@@ -417,4 +417,5 @@ export default {
   'menu.subscribe.dbview': '数据(表)',
   'menu.data.infoSource': '信息资源',
   'menu.subscribe.infoSource': '订阅详情',
+  'menu.subscribe.assessLogs': '审核日志',
 };

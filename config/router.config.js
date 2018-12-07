@@ -370,6 +370,13 @@ export default [
             authority: 'user',
             hideInMenu: true,
           },
+          {
+            path: 'assessLogs/:id',
+            name: 'assessLogs',
+            component: './Subscription/AssessLogs',
+            authority: 'user',
+            hideInMenu: true,
+          },
         ],
       },
       // 监控告警

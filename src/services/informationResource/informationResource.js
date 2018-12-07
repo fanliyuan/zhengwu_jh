@@ -102,3 +102,16 @@ export async function getResourceDetail(params) {
 export async function getInfoItems(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/info?${stringify(params.query)}`);
 }
+
+// 发布方订阅审核列表
+export async function getSubAuthList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditList?${stringify(params)}`);
+}
+
+// 发布方订阅审核
+export async function setSubAuth(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/subscribeAudit`, {
+    method: 'POST',
+    body: params,
+  });
+}
