@@ -23,3 +23,11 @@ export async function getAllNode() {
 export async function getResourceDetails(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/resourceDetails?${stringify(params)}`);
 }
+
+// 订阅操作
+export async function subscribe(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/subscribe`, {
+    method: 'POST',
+    body: params,
+  });
+}

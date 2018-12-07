@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Modal, Table, Divider, Tabs } from 'antd';
+import { Card, Form, Modal, Table, Divider, Tabs, Input } from 'antd';
 import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './SourceCatalog.less';
 
+const FormItem = Form.Item;
 const { TabPane } = Tabs;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
@@ -15,7 +16,9 @@ let formTime;
 @connect(({ sourceCatalog, loading }) => ({
   sourceCatalog,
   loading: loading.effects['sourceCatalog/fetch'],
+  confirmLoading: loading.effects['sourceCatalog/subscribe'],
 }))
+@Form.create()
 class SourceCatalog extends Component {
   columns = [
     {
@@ -106,20 +109,22 @@ class SourceCatalog extends Component {
         <Fragment>
           {record.orderStatus === '未订阅' && (
             <Fragment>
-              <a onClick={() => this.handleOrder(record.resourceId)}>订阅</a>
+              <a onClick={() => this.handleOrder(record)}>订阅</a>
               <Divider type="vertical" />
             </Fragment>
           )}
           {record.orderStatus === '已拒绝' && (
             <Fragment>
-              <a onClick={() => this.handleOrder(record.resourceId)}>重新订阅</a>
+              <a onClick={() => this.handleOrder(record)}>重新订阅</a>
               <Divider type="vertical" />
             </Fragment>
           )}
           <a
             onClick={() =>
               router.push(
-                `/data/infoSource/${record.dataType}/${record.mountResourceId}/${record.resourceId}`
+                `/data/management/infoSource/${record.dataType}/${record.mountResourceId}/${
+                  record.resourceId
+                }`
               )
             }
           >
@@ -129,6 +134,11 @@ class SourceCatalog extends Component {
       ),
     },
   ];
+
+  state = {
+    visible: false,
+    record: {},
+  };
 
   componentDidMount() {
     let fields;
@@ -165,6 +175,67 @@ class SourceCatalog extends Component {
     const { route } = this.props;
     sessionStorage.setItem('currentList', route.name);
   }
+
+  handleOrder = record => {
+    this.setState({
+      visible: true,
+      record,
+    });
+  };
+
+  handleOk = e => {
+    e.preventDefault();
+    const { dispatch, form } = this.props;
+    const { record } = this.state;
+    const values = {
+      ...paramsPage,
+      ...formValues,
+      ...formTime,
+    };
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const params = {
+        catalogId: record.typeId,
+        dataType: record.dataType,
+        directoryName: record.resourceProjectCatalogType,
+        dsID: record.resourceId,
+        dsName: record.resourceName,
+        mountResourceId: record.mountResourceId,
+        publishInstitution: record.resourceProviderName,
+        publisherID: record.nodeId,
+        subscribeName: fieldsValue.subscribeName,
+        subscriptionAuth: record.subscriptionAuth,
+        synchronizationType: record.synchronizationType,
+      };
+      dispatch({
+        type: 'sourceCatalog/subscribe',
+        payload: {
+          values,
+          item: {
+            ...params,
+          },
+        },
+        callback: res => {
+          if (res.code < 300) {
+            setTimeout(() => {
+              this.setState({
+                visible: false,
+                record: {},
+              });
+            }, 20);
+          }
+        },
+      });
+    });
+  };
+
+  handleCancel = e => {
+    e.preventDefault();
+    this.setState({
+      visible: false,
+      record: {},
+    });
+  };
 
   handleSearch = (fieldsForm, paramsTime) => {
     const { dispatch } = this.props;
@@ -210,6 +281,49 @@ class SourceCatalog extends Component {
       },
     });
   };
+
+  renderOrderForm(record) {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+    const typeArr = record.resourceProjectCatalogType.split('-');
+    const subName = typeArr[typeArr.length - 1];
+    return (
+      <Form onSubmit={this.handleOk} style={{ marginTop: 8 }}>
+        <FormItem {...formItemLayout} label="订阅名称">
+          {getFieldDecorator('subscribeName', {
+            initialValue: `${record.resourceProviderName}：${subName}`,
+            rules: [
+              {
+                max: 50,
+                message: '订阅名称不能超过50个字符！',
+              },
+              {
+                required: true,
+                message: '请填写订阅名称！',
+              },
+            ],
+          })(<Input />)}
+        </FormItem>
+        <FormItem {...formItemLayout} label="订阅名称">
+          {getFieldDecorator('synchronizationType', {
+            initialValue: record.synchronizationType,
+          })(<span>{record.synchronizationType}</span>)}
+        </FormItem>
+      </Form>
+    );
+  }
 
   renderForm() {
     const {
@@ -268,7 +382,7 @@ class SourceCatalog extends Component {
           data: [
             {
               type: 'Select',
-              prop: 'nodeName',
+              prop: 'switchNodeName',
               label: '发布节点',
               typeOptions: {
                 placeholder: '请选择发布节点',
@@ -327,7 +441,10 @@ class SourceCatalog extends Component {
     const {
       sourceCatalog: { dataList, page },
       loading,
+      confirmLoading,
     } = this.props;
+    const { visible, record } = this.state;
+    const keyArr = Object.keys(record);
     const paginationProps = {
       showQuickJumper: true,
       total: dataList.total,
@@ -358,6 +475,17 @@ class SourceCatalog extends Component {
                   locale={locale}
                 />
               </div>
+              <Modal
+                title="信息资源订阅"
+                visible={visible}
+                onOk={this.handleOk}
+                onCancel={this.handleCancel}
+                width={520}
+                maskClosable={false}
+                confirmLoading={confirmLoading}
+              >
+                {keyArr.length > 0 && this.renderOrderForm(record)}
+              </Modal>
             </TabPane>
             <TabPane tab="API资源" key="2" disabled>
               内容暂未开放

@@ -1,5 +1,7 @@
-import { getResourceList, getAllNode } from '@/services/subscription/index';
+import { getResourceList, getAllNode, subscribe } from '@/services/subscription/index';
 import { getSourceClassfiyList } from '@/services/informationResource/informationResource';
+
+import { message } from 'antd';
 
 export default {
   namespace: 'sourceCatalog',
@@ -41,6 +43,19 @@ export default {
           type: 'saveNodes',
           payload: response.result,
         });
+      }
+    },
+    *subscribe({ payload, callback }, { call, put }) {
+      const response = yield call(subscribe, payload.item);
+      callback(response);
+      if (response && response.code < 300) {
+        message.success(response.message);
+        yield put({
+          type: 'fetch',
+          payload: payload.values,
+        });
+      } else {
+        message.error(response.message);
       }
     },
   },
