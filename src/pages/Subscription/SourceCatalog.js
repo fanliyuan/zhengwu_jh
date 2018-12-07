@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Modal, Table, Divider, Tabs } from 'antd';
+import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
@@ -115,7 +116,15 @@ class SourceCatalog extends Component {
               <Divider type="vertical" />
             </Fragment>
           )}
-          <a onClick={() => this.handleResource(record.resourceId)}>信息资源</a>
+          <a
+            onClick={() =>
+              router.push(
+                `/data/infoSource/${record.dataType}/${record.mountResourceId}/${record.resourceId}`
+              )
+            }
+          >
+            信息资源
+          </a>
         </Fragment>
       ),
     },
@@ -136,6 +145,9 @@ class SourceCatalog extends Component {
         value: ``,
       });
     }
+    dispatch({
+      type: 'sourceCatalog/getNodes',
+    });
     dispatch({
       type: 'sourceCatalog/fetch',
       payload: {
@@ -201,8 +213,20 @@ class SourceCatalog extends Component {
 
   renderForm() {
     const {
-      sourceCatalog: { sourceClassfiyList },
+      sourceCatalog: { sourceClassfiyList, pubNodes },
     } = this.props;
+    const nodes = [
+      {
+        key: '全部',
+        value: '',
+      },
+    ];
+    pubNodes.map(item =>
+      nodes.push({
+        key: item.nodeName,
+        value: item.nodeName,
+      })
+    );
     const formData = {
       md: 8,
       lg: 24,
@@ -242,6 +266,15 @@ class SourceCatalog extends Component {
         {
           key: 2,
           data: [
+            {
+              type: 'Select',
+              prop: 'nodeName',
+              label: '发布节点',
+              typeOptions: {
+                placeholder: '请选择发布节点',
+              },
+              options: nodes,
+            },
             {
               type: 'Select',
               prop: 'status',

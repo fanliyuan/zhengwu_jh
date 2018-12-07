@@ -22,7 +22,7 @@ import styles from './DataSourceManagement.less';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const resetParamsPage = { pageNum: 1, pageSize: 10 };
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
@@ -102,9 +102,7 @@ class TableList extends PureComponent {
               <Fragment>
                 <a
                   onClick={() =>
-                    router.push(
-                      `/data/management/infoSource/${record.type}/${record.id}/${record.resourceId}`
-                    )
+                    router.push(`/data/infoSource/${record.type}/${record.id}/${record.resourceId}`)
                   }
                 >
                   信息资源

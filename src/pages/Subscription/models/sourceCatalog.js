@@ -1,4 +1,4 @@
-import { getResourceList } from '@/services/subscription/index';
+import { getResourceList, getAllNode } from '@/services/subscription/index';
 import { getSourceClassfiyList } from '@/services/informationResource/informationResource';
 
 export default {
@@ -7,6 +7,7 @@ export default {
   state: {
     dataList: {},
     sourceClassfiyList: [],
+    pubNodes: [],
     page: 1,
   },
 
@@ -33,6 +34,15 @@ export default {
         });
       }
     },
+    *getNodes({ payload }, { call, put }) {
+      const response = yield call(getAllNode, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveNodes',
+          payload: response.result,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -46,6 +56,12 @@ export default {
       return {
         ...state,
         sourceClassfiyList: payload,
+      };
+    },
+    saveNodes(state, { payload }) {
+      return {
+        ...state,
+        pubNodes: payload,
       };
     },
     setPage(state, { payload }) {
