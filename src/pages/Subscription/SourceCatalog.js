@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Modal, Table, Divider, Tabs } from 'antd';
+import router from 'umi/router';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import FilterRowForm from '@/components/FilterRowForm';
 
@@ -115,7 +116,15 @@ class SourceCatalog extends Component {
               <Divider type="vertical" />
             </Fragment>
           )}
-          <a onClick={() => this.handleResource(record.resourceId)}>信息资源</a>
+          <a
+            onClick={() =>
+              router.push(
+                `/data/infoSource/${record.dataType}/${record.mountResourceId}/${record.resourceId}`
+              )
+            }
+          >
+            信息资源
+          </a>
         </Fragment>
       ),
     },

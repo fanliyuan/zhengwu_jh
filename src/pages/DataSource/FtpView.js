@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Table, Button, Form, Input } from 'antd';
+import { Row, Col, Table, Button, Form, Input, DatePicker } from 'antd';
+import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataFileInfo from '@/components/DataFileInfo';
 import styles from './DataSourceManagement.less';
 
+const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 let formValues;
+let formTime;
 
 @connect(({ ftpView, loading }) => ({
   ftpView,
@@ -86,6 +89,7 @@ class FtpView extends Component {
         id: match.params.id,
         query: {
           ...paramsPage,
+          ...formTime,
           ...formValues,
         },
         page: pageNum,
@@ -101,11 +105,22 @@ class FtpView extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const fieldsForm = fieldsValue;
+      let paramsTime = {};
+      if (fieldsForm.date) {
+        paramsTime = {
+          beginTime: moment(fieldsForm.date[0]).format('YYYY-MM-DD'),
+          endTime: moment(fieldsForm.date[1]).format('YYYY-MM-DD'),
+        };
+        formTime = paramsTime;
+        delete fieldsForm.date;
+      }
+
       formValues = fieldsForm;
 
       const values = {
         ...fieldsForm,
         ...paramsPage,
+        ...paramsTime,
       };
 
       dispatch({
@@ -126,6 +141,7 @@ class FtpView extends Component {
     const { form, dispatch, match } = this.props;
     form.resetFields();
     formValues = {};
+    formTime = {};
     const paramsPage = { pageNum: 1, pageSize: 10 };
     dispatch({
       type: 'ftpView/getFtpList',
@@ -140,6 +156,22 @@ class FtpView extends Component {
     this.resetSelectedIds();
   };
 
+  setFileSize = size => {
+    if (size === null || size === 0) {
+      return '0 Bytes';
+    }
+    const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const srcSize = parseFloat(size);
+    const index = Math.floor(Math.log(srcSize) / Math.log(1024));
+    let powNum = 1;
+    for (let i = 0, len = index; i < len; i += 1) {
+      powNum *= 1024;
+    }
+    let newSize = srcSize / powNum;
+    newSize = newSize.toFixed(2);
+    return newSize + unitArr[index];
+  };
+
   renderForm() {
     const {
       form: { getFieldDecorator },
@@ -150,6 +182,13 @@ class FtpView extends Component {
           <Col md={8} sm={24}>
             <FormItem label="文件名称">
               {getFieldDecorator('name')(<Input maxLength="50" placeholder="请输入文件名称" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="更新时间">
+              {getFieldDecorator('date')(
+                <RangePicker style={{ width: '100%' }} placeholder={['开始时间', '结束时间']} />
+              )}
             </FormItem>
           </Col>
         </Row>
@@ -184,6 +223,17 @@ class FtpView extends Component {
         title: '文件相对路径',
         dataIndex: 'path',
         align: 'center',
+      },
+      {
+        title: '文件大小',
+        dataIndex: 'size',
+        align: 'center',
+        render: text => this.setFileSize(parseInt(text, 10)),
+      },
+      {
+        title: '最近更新时间',
+        align: 'center',
+        dataIndex: 'time',
       },
     ];
     const {

@@ -32,6 +32,7 @@ const { TextArea } = Input;
 const { DirectoryTree } = Tree;
 const { TreeNode } = Tree;
 const { Dragger } = Upload;
+const tree = [];
 
 @connect(({ accessData, loading }) => ({
   accessData,
@@ -927,10 +928,36 @@ class AccessDataInfo extends PureComponent {
     );
   };
 
+  deepTree = treeList => {
+    for (let i = 0, len = treeList.length; i < len; i += 1) {
+      tree.push(treeList[i]);
+      if (treeList[i].ftpFileList !== '') {
+        this.deepTree(treeList[i].ftpFileList);
+      }
+    }
+  };
+
   renderSyncTree = treeList => {
+    this.deepTree(treeList);
     const {
-      accessData: { checkedKeys },
+      accessData: { checkedKeys, params },
     } = this.props;
+    params.ftpfileAddDtoList.map(item => {
+      for (let i = 0, len = tree.length; i < len; i += 1) {
+        if (`${tree[i].path}${tree[i].name}` === `${item.path}${item.name}`) {
+          Object.defineProperty(item, 'size', {
+            value: tree[i].size,
+            enumerable: true,
+          });
+          Object.defineProperty(item, 'time', {
+            value: tree[i].time,
+            enumerable: true,
+          });
+          break;
+        }
+      }
+      return false;
+    });
     return (
       <DirectoryTree
         className={styles.tree}

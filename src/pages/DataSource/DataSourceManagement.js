@@ -102,9 +102,7 @@ class TableList extends PureComponent {
               <Fragment>
                 <a
                   onClick={() =>
-                    router.push(
-                      `/data/management/infoSource/${record.type}/${record.id}/${record.resourceId}`
-                    )
+                    router.push(`/data/infoSource/${record.type}/${record.id}/${record.resourceId}`)
                   }
                 >
                   信息资源
