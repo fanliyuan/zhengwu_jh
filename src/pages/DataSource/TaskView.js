@@ -148,6 +148,7 @@ class TaskView extends Component {
   render() {
     let dType;
     let dataBaseInfo;
+    let fileName;
     const {
       location,
       match,
@@ -247,6 +248,7 @@ class TaskView extends Component {
       dType = basicInfo.datasourceDetailDto.type;
     }
     if (match.params.type === 'db') {
+      fileName = '数据库文件大小';
       dataBaseInfo = {
         dataBaseName: basicInfo.dbName,
         dataBaseType: dType,
@@ -260,6 +262,7 @@ class TaskView extends Component {
         describe: basicInfo.describe,
       };
     } else {
+      fileName = '文件大小';
       dataBaseInfo = {
         dataType: dType,
         name: basicInfo.name,
@@ -292,7 +295,8 @@ class TaskView extends Component {
         value: syncInfo.lastSyncTime,
       },
       {
-        title: '数据库文件大小',
+        title: `${fileName}`,
+        setSize: true,
         value: syncInfo.dataFileSize,
       },
       {
@@ -323,14 +327,14 @@ class TaskView extends Component {
                   itemLayout="horizontal"
                   dataSource={syncDatas}
                   renderItem={item => {
-                    if (item.title !== '查看数据' && item.title !== '数据库文件大小') {
+                    if (item.title !== '查看数据' && !item.setSize) {
                       return (
                         <List.Item style={{ borderBottom: 'none' }} key={item.title}>
                           {item.title}：{item.value}
                         </List.Item>
                       );
                     }
-                    if (item.title === '数据库文件大小') {
+                    if (item.setSize) {
                       return (
                         <List.Item style={{ borderBottom: 'none' }} key={item.title}>
                           {item.title}：{this.setFileSize(parseInt(item.value, 10))}
