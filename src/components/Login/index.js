@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Tabs } from 'antd';
-import Crypto from '@/components/crypto';
 import classNames from 'classnames';
 import LoginItem from './LoginItem';
 import LoginTab from './LoginTab';
@@ -78,9 +77,6 @@ class Login extends Component {
     const { form, onSubmit } = this.props;
     const activeFileds = active[type];
     form.validateFields(activeFileds, { force: true }, (err, values) => {
-      Object.defineProperty(values, 'password', {
-        value: Crypto.Encrypt(values.password),
-      });
       onSubmit(err, values);
     });
   };
