@@ -25,6 +25,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const resetParamsPage = { pageNum: 1, pageSize: 10 };
 let paramsPage = { pageNum: 1, pageSize: 10 };
+let mount = { mount: true };
 let formValues;
 let formTime;
 
@@ -226,6 +227,7 @@ class TableList extends PureComponent {
       paramsPage = { pageNum: 1, pageSize: 10 };
       formValues = {};
       formTime = {};
+      mount = { mount: true };
     } else {
       if (formTime !== undefined && formValues !== undefined) {
         if (formTime.beginTime) {
@@ -245,6 +247,7 @@ class TableList extends PureComponent {
         ...paramsPage,
         ...formValues,
         ...formTime,
+        ...mount,
       },
     });
   }
@@ -259,6 +262,7 @@ class TableList extends PureComponent {
     form.resetFields();
     formValues = {};
     formTime = {};
+    mount = { mount: true };
     paramsPage = { pageNum: 1, pageSize: 10 };
     dispatch({
       type: 'dataSourceManagement/fetch',
@@ -294,6 +298,7 @@ class TableList extends PureComponent {
         ...fieldsForm,
         ...paramsPage,
         ...paramsTime,
+        ...mount,
       };
 
       dispatch({
@@ -332,6 +337,7 @@ class TableList extends PureComponent {
               ...fieldsForm,
               ...resetParamsPage,
               ...paramsTime,
+              ...mount,
             };
 
             dispatch({
@@ -392,6 +398,7 @@ class TableList extends PureComponent {
               ...fieldsForm,
               ...paramsPage,
               ...paramsTime,
+              ...mount,
             };
 
             dispatch({
@@ -424,6 +431,7 @@ class TableList extends PureComponent {
         ...paramsPage,
         ...formValues,
         ...formTime,
+        ...mount,
       },
     });
   };
