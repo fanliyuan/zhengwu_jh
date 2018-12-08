@@ -192,9 +192,14 @@ export default class SourceManagement extends Component {
   //   dispatch(routerRedux.push('/dataSourceManagement/task'))
   // }
 
-  handleEdit = () => {
+  handleEdit = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push('/informationResource/addDirectory'));
+    dispatch(
+      routerRedux.push({
+        pathname: '/informationResource/newMenu/one',
+        state: { editId: id },
+      })
+    );
   };
 
   handleCatalog = row => {
@@ -432,7 +437,7 @@ export default class SourceManagement extends Component {
           if (+row.status === -1) {
             return (
               <div>
-                <span className={styles.clickBtn} onClick={that.handleEdit}>
+                <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
                   修改
                 </span>
                 <Popconfirm
@@ -467,7 +472,7 @@ export default class SourceManagement extends Component {
                 <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
                   共享开放
                 </span>
-                <span className={styles.clickBtn} onClick={that.handleEdit}>
+                <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
                   修改
                 </span>
                 <Popconfirm

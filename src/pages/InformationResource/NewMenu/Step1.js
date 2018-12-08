@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-03 14:41:25
+ * @Last Modified time: 2018-12-08 15:52:59
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -36,6 +36,7 @@ const formItemLayout = {
   },
 };
 let isSameMsg;
+let resouceDetailById = {};
 
 @connect(({ informationResource }) => ({
   informationResource,
@@ -45,6 +46,7 @@ export default class Step1 extends PureComponent {
   state = {
     data: {
       infoName: '',
+      code: '',
       infoSummary: '',
       classify: '',
       providerName: '',
@@ -54,6 +56,7 @@ export default class Step1 extends PureComponent {
       updateCycle: '',
       updateTime: '',
       relatedCode: '',
+      typeId: '',
     },
     // disabled: true,
     selectCode: '',
@@ -62,7 +65,38 @@ export default class Step1 extends PureComponent {
     xmId: -1,
     startValue: null,
     endValue: new Date(),
+    resourceRouteId: -1,
+    edit: false,
   };
+
+  componentWillReceiveProps(nextProps) {
+    const { edit } = this.state;
+    if (resouceDetailById && resouceDetailById.typeName && edit) {
+      const { data } = this.state;
+      const classifyData = resouceDetailById.typeName.split('-');
+      const formatData = resouceDetailById.format.split('-');
+      const relCode =
+        resouceDetailById.code &&
+        resouceDetailById.code.slice(0, resouceDetailById.code.lastIndexOf('/'));
+      this.setState({
+        data: {
+          ...data,
+          infoName: resouceDetailById.name,
+          infoSummary: resouceDetailById.summary,
+          classify: classifyData,
+          providerName: resouceDetailById.providerName,
+          providerCode: resouceDetailById.providerNo,
+          innerDepartmentName: resouceDetailById.providerDept,
+          infoType: formatData,
+          code: relCode,
+          typeId: resouceDetailById.typeId,
+          updateCycle: resouceDetailById.updateCycle,
+          updateTime: moment(resouceDetailById.publishTime),
+          relatedCode: resouceDetailById.relateCode ? resouceDetailById.relateCode : '',
+        },
+      });
+    }
+  }
 
   componentDidMount() {
     // if (this.props.location.pathname !== '/dataSourceManagement/checkMenu/one') {
@@ -70,6 +104,7 @@ export default class Step1 extends PureComponent {
     //   disabled: false,
     // });
     // }
+    resouceDetailById = {};
     const { dispatch } = this.props;
     dispatch({
       type: 'informationResource/getClassfiyList',
@@ -77,10 +112,11 @@ export default class Step1 extends PureComponent {
     const sessionData =
       sessionStorage.getItem('routeData') && JSON.parse(sessionStorage.getItem('routeData'));
     if (sessionData) {
-      console.log(sessionData);
       const { data } = this.state;
       const classifyData = sessionData.typeName.split('-');
       const formatData = sessionData.format.split('-');
+      const relCode =
+        sessionData.code && sessionData.code.slice(0, sessionData.code.lastIndexOf('/'));
       this.setState({
         data: {
           ...data,
@@ -91,6 +127,8 @@ export default class Step1 extends PureComponent {
           providerCode: sessionData.providerNo,
           innerDepartmentName: sessionData.providerDept,
           infoType: formatData,
+          typeId: sessionData.typeId,
+          code: relCode,
           updateCycle: sessionData.updateCycle,
           updateTime: moment(sessionData.publishTime),
           relatedCode: sessionData.relateCode ? sessionData.relateCode : '',
@@ -100,6 +138,17 @@ export default class Step1 extends PureComponent {
     sessionStorage.removeItem('itemData');
     sessionStorage.setItem('isBack', false);
     sessionStorage.setItem('inputType', '');
+    if (this.props.location.state && this.props.location.state.editId) {
+      resouceDetailById = {};
+      this.setState({
+        resourceRouteId: this.props.location.state.editId,
+        edit: true,
+      });
+      dispatch({
+        type: 'informationResource/getResourcesEdit',
+        payload: { id: this.props.location.state.editId },
+      });
+    }
   }
 
   // handleSubmit = e => {
@@ -200,20 +249,25 @@ export default class Step1 extends PureComponent {
         } else {
           times = '';
         }
-        const { selectCode, selectId } = this.state;
+        const {
+          selectCode,
+          selectId,
+          resourceRouteId,
+          data: { typeId, code },
+        } = this.state;
         const step1Data = {
           ...values,
           publishTime: times,
-          code: selectCode + '/',
+          code: (selectCode || code) + '/',
           format: values.format.join('-'),
           typeName: values.typeName.join('-'),
-          typeId: selectId,
+          typeId: selectId || typeId,
         };
         sessionStorage.setItem('routeData', JSON.stringify(step1Data));
         dispatch(
           routerRedux.push({
             pathname: '/informationResource/newMenu/two',
-            state: { routeData: { ...step1Data } },
+            state: { routeData: { ...step1Data }, resourceId: resourceRouteId },
           })
         );
       }
@@ -306,10 +360,10 @@ export default class Step1 extends PureComponent {
     const {
       form: { getFieldDecorator, validateFields },
       dispatch,
-      informationResource: { classfiyList, sameMsg },
+      informationResource: { classfiyList, sameMsg, resourceDetail },
     } = this.props;
     isSameMsg = sameMsg;
-    // console.log(classfiyList)
+    resouceDetailById = resourceDetail;
     const { data, isNext, startValue } = this.state;
 
     const onValidateForm = () => {

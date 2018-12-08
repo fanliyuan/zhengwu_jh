@@ -13,6 +13,7 @@ import {
   getConnectList,
   getConnectFileList,
   saveMountData,
+  getResourceItems,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -25,12 +26,13 @@ export default {
     pagination: {},
     sameMsg: false,
     openData: {},
-    DBInfo: {},
+    DBInfo: {}, // 这个我也不知道有啥用，先放着吧
     resoutceDetail: {},
     connectList: [],
     connectPagination: {},
     connectFileList: [],
     connectFilePagination: {},
+    itemList: [],
     // forEditFile:[],
   },
 
@@ -120,6 +122,36 @@ export default {
         if (+response.code === 202) {
           message.success(response.message);
           // yield put(routerRedux.push('/informationResource/sourceManagement'));
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *getResourcesEdit({ payload }, { call, put }) {
+      const response = yield call(getResourceDetails, payload);
+      try {
+        if (+response.code === 200) {
+          yield put({
+            type: 'getResourceDetail',
+            payload: response.result.data,
+          });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *reWriteItemList({ payload }, { call, put }) {
+      const response = yield call(getResourceItems, payload);
+      try {
+        if (+response.code === 200) {
+          yield put({
+            type: 'getItemList',
+            payload: response.result.datas,
+          });
         } else {
           message.error(response.message);
         }
@@ -280,6 +312,12 @@ export default {
         connectFileList: payload.list,
         connectFilePagination: payload.pagination,
         // forEditFile:payload.forEdit,
+      };
+    },
+    getItemList(state, { payload }) {
+      return {
+        ...state,
+        itemList: payload,
       };
     },
   },

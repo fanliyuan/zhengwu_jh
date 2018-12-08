@@ -42,6 +42,11 @@ export async function getResourceDetails(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`);
 }
 
+// 修改时回填信息项
+export async function getResourceItems(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}/info`);
+}
+
 // 得到要挂接数据的列表
 export async function getConnectList(params) {
   return request(`/api/api/v2/zhengwu/swap/datas?${stringify(params)}`);

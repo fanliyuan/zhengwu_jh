@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-27 14:49:28
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-04 11:19:15
+ * @Last Modified time: 2018-12-08 11:40:16
  * @Description: 这个页面值得研究
  */
 import React, { Component } from 'react';
@@ -21,6 +21,8 @@ import {
   Form,
   Checkbox,
   Icon,
+  Popconfirm,
+  Select,
 } from 'antd';
 import moment from 'moment';
 // import Cookies from 'js-cookie'
@@ -30,51 +32,107 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 // import arrImage from '../../assets/arrow.png'
 
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const FormItem = Form.Item;
 const EditableContext = React.createContext();
+
 const EditableRow = ({ form, index, ...props }) => (
   <EditableContext.Provider value={form}>
     <tr {...props} />
   </EditableContext.Provider>
 );
+
 const EditableFormRow = Form.create()(EditableRow);
+
 class EditableCell extends React.Component {
-  getInput = initialValue => {
-    if (this.props.filedType === 'select') {
-      return <Checkbox defaultChecked={initialValue} />;
+  state = {
+    editing: false,
+  };
+
+  componentDidMount() {
+    if (this.props.editable) {
+      document.addEventListener('click', this.handleClickOutside, true);
     }
-    return <Input className={styles.input} />;
+  }
+
+  componentWillUnmount() {
+    if (this.props.editable) {
+      document.removeEventListener('click', this.handleClickOutside, true);
+    }
+  }
+
+  toggleEdit = () => {
+    const editing = !this.state.editing;
+    this.setState({ editing }, () => {
+      if (editing) {
+        this.input.focus();
+      }
+    });
+  };
+
+  handleClickOutside = e => {
+    const { editing } = this.state;
+    if (editing && this.cell !== e.target && !this.cell.contains(e.target)) {
+      this.save();
+    }
+  };
+
+  save = () => {
+    const { record, handleSave } = this.props;
+    this.form.validateFields((error, values) => {
+      if (error) {
+        return;
+      }
+      this.toggleEdit();
+      handleSave({ ...record, ...values });
+    });
   };
 
   render() {
-    const { editing, dataIndex, title, filedType, record, index, ...restProps } = this.props;
-
+    const { editing } = this.state;
+    const { editable, dataIndex, title, record, index, handleSave, ...restProps } = this.props;
     return (
-      <EditableContext.Consumer>
-        {form => {
-          const { getFieldDecorator } = form;
-          return (
-            <td {...restProps}>
-              {editing ? (
-                <FormItem>
-                  {getFieldDecorator(dataIndex, {
+      <td ref={node => (this.cell = node)} {...restProps}>
+        {editable ? (
+          <EditableContext.Consumer>
+            {form => {
+              this.form = form;
+              return editing ? (
+                <FormItem style={{ margin: 0 }}>
+                  {form.getFieldDecorator(dataIndex, {
                     rules: [
                       {
                         required: true,
-                        message: `${title}必填!`,
+                        message: `${title} is required.`,
                       },
                     ],
-                    initialValue: record[dataIndex] || 1,
-                  })(this.getInput(record[dataIndex]))}
+                    initialValue: record[dataIndex],
+                  })(
+                    // <Input
+                    //   ref={node => (this.input = node)}
+                    //   onPressEnter={this.save}
+                    // />
+                    <Select onChange={this.save} ref={node => (this.input = node)}>
+                      <Option>rewrewr</Option>
+                    </Select>
+                  )}
                 </FormItem>
               ) : (
-                restProps.children
-              )}
-            </td>
-          );
-        }}
-      </EditableContext.Consumer>
+                <div
+                  className="editable-cell-value-wrap"
+                  style={{ paddingRight: 24 }}
+                  onClick={this.toggleEdit}
+                >
+                  {restProps.children}
+                </div>
+              );
+            }}
+          </EditableContext.Consumer>
+        ) : (
+          restProps.children
+        )}
+      </td>
     );
   }
 }
@@ -84,636 +142,120 @@ class EditableCell extends React.Component {
   loading: loading.models.informationResource,
 }))
 export default class ResourceConnectionData extends Component {
-  state = {
-    ItemConnect: true,
-    visible1: false,
-    visible2: false,
-    // isNodeOperator: false,
-    resourceInfo: {},
-  };
+  constructor(props) {
+    super(props);
+    this.columns = [
+      {
+        title: 'name',
+        dataIndex: 'name',
+        width: '30%',
+        editable: true,
+      },
+      {
+        title: 'age',
+        dataIndex: 'age',
+      },
+      {
+        title: 'address',
+        dataIndex: 'address',
+      },
+      {
+        title: 'operation',
+        dataIndex: 'operation',
+        render: (text, record) =>
+          this.state.dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
+              <a href="javascript:;">Delete</a>
+            </Popconfirm>
+          ) : null,
+      },
+    ];
 
-  componentDidMount() {
-    const { state: { resourceInfo = {} } = {} } = this.props.history.location;
-    this.setState({
-      // isNodeOperator: Cookies.get('antd-pro-authority') === 'operator-n',
-      resourceInfo,
-    });
-    // this.props.dispatch({
-    //   type: 'sourceManagement/getDBInfo',
-    //   payload: {
-    //     params: {
-    //       id: resourceInfo.mountResourceId,
-    //       // id: 'db28',
-    //     },
-    //   },
-    // })
+    this.state = {
+      dataSource: [
+        {
+          key: '0',
+          name: 'Edward King 0',
+          age: '32',
+          address: 'London, Park Lane no. 0',
+        },
+        {
+          key: '1',
+          name: 'Edward King 1',
+          age: '32',
+          address: 'London, Park Lane no. 1',
+        },
+      ],
+      count: 2,
+    };
   }
 
-  isEditing = record => {
-    return record.key === this.state.editingKey;
+  handleDelete = key => {
+    const dataSource = [...this.state.dataSource];
+    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
   };
 
-  goToDetail = row => {
-    this.props.dispatch(
-      routerRedux.push({
-        pathname: `/dataSourceManagement/fileSourceDetail/${row.id}`,
-        state: row,
-      })
-    );
-  };
-
-  handleConnect = () => {
+  handleAdd = () => {
+    const { count, dataSource } = this.state;
+    const newData = {
+      key: count,
+      name: `Edward King ${count}`,
+      age: 32,
+      address: `London, Park Lane no. ${count}`,
+    };
     this.setState({
-      ItemConnect: true,
+      dataSource: [...dataSource, newData],
+      count: count + 1,
     });
   };
 
-  handleClearConnect = () => {
-    this.setState({
-      ItemConnect: false,
+  handleSave = row => {
+    const newData = [...this.state.dataSource];
+    const index = newData.findIndex(item => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
     });
-  };
-
-  handleSave = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'));
-  };
-
-  handleBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'));
-  };
-
-  // handleSizeChange = e => {
-  //   // this.setState({ target: e.target.value })
-  //   if (e.target.value === 'a1') {
-  //     this.setState({
-  //       ItemConnect: true,
-  //       // active:true,
-  //       // active1:false,
-  //     })
-  //   } else {
-  //     this.setState({
-  //       ItemConnect: false,
-  //       // active:false,
-  //       // active1:true,
-  //     })
-  //   }
-  // }
-
-  showModal1 = () => {
-    this.setState({
-      visible1: true,
-    });
-  };
-
-  showModal2 = () => {
-    this.setState({
-      visible2: true,
-    });
-  };
-
-  handleOk1 = () => {
-    this.setState({
-      visible1: false,
-    });
-  };
-
-  handleOk2 = () => {
-    this.setState({
-      visible2: false,
-    });
-  };
-
-  handleCancel1 = () => {
-    this.setState({
-      visible1: false,
-    });
-  };
-
-  handleCancel2 = () => {
-    this.setState({
-      visible2: false,
-    });
+    this.setState({ dataSource: newData });
   };
 
   render() {
-    const {
-      ItemConnect,
-      visible1,
-      visible2,
-      resourceInfo: { typeId, resourceName, createTime, resourceProviderName },
-    } = this.state; // eslint-disable-line
-    const pagination = false;
-    const {
-      informationResource: {
-        DBInfo: { name, value: { structAddDtoList = [], tableName } = {} } = {},
-      },
-    } = this.props;
-    structAddDtoList.forEach((item, index) => {
-      item.tableName = tableName;
-    }); // eslint-disable-line
-    const columns = [
-      {
-        title: '信息编码',
-        dataIndex: 'infoCode',
-      },
-      {
-        title: '信息名称',
-        dataIndex: 'infoName',
-      },
-      {
-        title: '数据类型',
-        dataIndex: 'dataTypes',
-      },
-      {
-        title: '数据长度',
-        dataIndex: 'dataSize',
-      },
-    ];
-    columns.forEach(item => {
-      item.align = 'center';
-    });
-    const columns1 = [
-      {
-        title: '表名称',
-        dataIndex: 'tableName',
-      },
-      {
-        title: '字段',
-        dataIndex: 'columnName',
-      },
-      {
-        title: '类型',
-        dataIndex: 'columnType',
-      },
-      {
-        title: '说明',
-        dataIndex: 'note',
-      },
-    ];
-    // if (isNodeOperator) {
-    columns1.push({
-      title: '操作',
-      render() {
-        return <a>删除</a>;
-      },
-    });
-    // }
-    columns1.forEach(item => {
-      item.align = 'center';
-    });
-    const columnsModal1 = [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-        render(text) {
-          return (
-            <div>
-              <input type="radio" name="mo1" />
-              <span style={{ marginLeft: 10 }}>{text}</span>
-            </div>
-          );
-        },
-      },
-      // {
-      //   title: 'ID',
-      //   dataIndex: '',
-      // },
-      {
-        title: '资源名称',
-        dataIndex: 'sourceName',
-      },
-      {
-        title: '数据类型',
-        dataIndex: 'dataType',
-      },
-      {
-        title: '应用系统名称',
-        dataIndex: 'systemName',
-      },
-      {
-        title: '注册时间',
-        dataIndex: 'registerTime',
-        render(text) {
-          return moment(text).format('lll');
-        },
-      },
-    ];
-    const listModal1 = [
-      {
-        id: 0,
-        sourceName: '城市低保标准',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-      {
-        id: 1,
-        sourceName: '农村低保准备',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-      {
-        id: 2,
-        sourceName: '人口统计',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-    ];
-    const columnsModal2 = [
-      {
-        title: '序号',
-        dataIndex: 'id',
-      },
-      {
-        title: '表名称',
-        dataIndex: 'tableName',
-      },
-      {
-        title: '中文标注',
-        dataIndex: 'chineseLabel',
-      },
-      {
-        title: '操作',
-        render() {
-          return (
-            <div>
-              <a>结构</a>
-            </div>
-          );
-        },
-      },
-    ];
-    columnsModal2.forEach(item => (item.align = 'center')); // eslint-disable-line
-    const listModal2 = [
-      {
-        id: 0,
-        tableName: 'dig_user',
-        chineseLabel: '用户表',
-      },
-      {
-        id: 1,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 2,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 3,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 4,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 5,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 6,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 7,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 8,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 9,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 10,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 11,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 12,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 13,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-      {
-        id: 14,
-        tableName: 'dig_order',
-        chineseLabel: '订单表',
-      },
-    ];
-    const columns2 = [
-      // {
-      //   title: '序号',
-      //   dataIndex: 'id',
-      // },
-      // {
-      //   title: '主键',
-      //   dataIndex: 'isMainKey',
-      //   render: text => {
-      //     return <span>{text === 1 ? '是' : ''}</span>
-      //   },
-      // },
-      {
-        title: '字段名称',
-        dataIndex: 'filedName',
-      },
-      {
-        title: '数据类型',
-        dataIndex: 'dataType',
-      },
-      {
-        title: '中文标注',
-        dataIndex: 'chineseLabel',
-      },
-      {
-        title: '是否是主键',
-        dataIndex: 'isQueryKey',
-        editable: true,
-        isSelect: true,
-        width: 96,
-      },
-      {
-        title: '是否是外键',
-        dataIndex: 'isFroginKey',
-        editable: true,
-        isSelect: true,
-        width: 96,
-      },
-      {
-        title: '外键所在表',
-        dataIndex: 'tableKey',
-        editable: true,
-        width: 157,
-      },
-      // {
-      //   title: '外键对应字段',
-      //   dataIndex: 'fieldKey',
-      //   editable: true,
-      //   width: 157,
-      // },
-    ];
-    columns2.forEach(item => (item.align = 'center')); // eslint-disable-line
-    const columns3 = columns2.map(item => {
-      if (!item.editable) {
-        return item;
-      }
-      return {
-        ...item,
-        onCell: record => ({
-          record,
-          dataIndex: item.dataIndex,
-          title: item.title,
-          filedType: item.isSelect ? 'select' : 'input',
-          editing: this.isEditing(record),
-        }),
-      };
-    });
-    const list3 = [
-      {
-        id: 0,
-        chineseLabel: '标注1',
-        isMainKey: 1,
-        isQueryKey: 1,
-      },
-      {
-        id: 1,
-        chineseLabel: '标注2',
-        isMainKey: 0,
-      },
-    ];
-
+    const { dataSource } = this.state;
     const components = {
       body: {
         row: EditableFormRow,
         cell: EditableCell,
       },
     };
-
-    const arrowColumns = [
-      {
-        dataIndex: 'key',
-        render: () => {
-          return (
-            <Divider dashed orientation="right" className={styles.divider}>
-              <Icon type="right" />
-            </Divider>
-          );
-        },
-      },
-    ];
-
+    const columns = this.columns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave: this.handleSave,
+        }),
+      };
+    });
     return (
-      <PageHeaderLayout>
-        <div className="btncls clearfix">
-          <Button onClick={this.handleBack} className="fr mr40">
-            返回
-          </Button>
-          {/* {isNodeOperator && ( */}
-          <Button type="primary" className="fr mr40" onClick={this.handleSave}>
-            保存
-          </Button>
-          {/* )} */}
-        </div>
-        <Card>
-          <div className={styles.form}>
-            <h3>
-              目录编码:
-              <span> {typeId}</span>
-              名称:
-              <span> {resourceName}</span>
-              提供方:
-              <span> {resourceProviderName}</span>
-              创建时间:
-              <span> {moment(createTime).format('lll')}</span>
-            </h3>
-            <Divider />
-          </div>
-          <div style={{ marginBottom: 15 }}>
-            <div style={{ display: 'inline-block', marginRight: 20 }}>
-              <h3>
-                挂接资源名称&nbsp;:&nbsp;
-                <span>{name}</span>
-              </h3>
-            </div>
-            {/* {isNodeOperator && ( */}
-            <div style={{ display: 'inline-block' }}>
-              <span className={styles.linkBtn} onClick={this.showModal1}>
-                去选择
-              </span>
-            </div>
-            {/* )} */}
-          </div>
-          {/* {isNodeOperator && ( */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ display: 'inline-block', marginRight: 20 }}>
-              <h3>挂接资源检索关系设置&nbsp;:&nbsp;</h3>
-            </div>
-            <div style={{ display: 'inline-block' }}>
-              <span className={styles.linkBtn} onClick={this.showModal2}>
-                去选择
-              </span>
-            </div>
-          </div>
-          {/* )} */}
-          {/* <Row style={{ marginBottom: 20 }}>
-            <Col span={4}>
-              <Input placeholder="信息编码" />
-            </Col>
-            <Col span={4} offset={1}>
-              <Input placeholder="信息名称" />
-            </Col>
-            <Col span={4} offset={1}>
-              <Button type="primary">搜索</Button>
-            </Col>
-          </Row> */}
-          <div>
-            {/* 这张表暂时没实现 */}
-            <Table
-              columns={columns}
-              dataSource={[]}
-              pagination={
-                pagination && {
-                  ...pagination,
-                  showQuickJumper: true,
-                  showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
-                }
-              }
-              rowKey="columnName"
-              bordered
-              className={styles.table}
-            />
-            <Table
-              dataSource={structAddDtoList}
-              title={() => (
-                <span>
-                  {1 ? (
-                    <span className="operate clearfix">
-                      <a className="fl">自动映射</a>
-                      <a className="fr">清除映射</a>
-                    </span>
-                  ) : (
-                    <span className="operate clearfix">
-                      <span className="fl" style={{ cursor: 'no-drop', color: 'silver' }}>
-                        自动映射
-                      </span>
-                      <span className="fr" style={{ cursor: 'no-drop', color: 'silver' }}>
-                        清除映射
-                      </span>
-                    </span>
-                  )}
-                </span>
-              )}
-              columns={arrowColumns}
-              className={styles.arrow}
-              pagination={false}
-              rowKey="id"
-            />
-            <Table
-              columns={columns1}
-              dataSource={structAddDtoList}
-              pagination={
-                pagination && {
-                  ...pagination,
-                  showQuickJumper: true,
-                  showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
-                }
-              }
-              rowKey="id"
-              bordered
-              className={styles.table}
-            />
-          </div>
-          <Modal
-            title="选择要挂接的资源"
-            visible={visible1}
-            onOk={this.handleOk1}
-            onCancel={this.handleCancel1}
-            width={900}
-          >
-            <Row style={{ marginBottom: 20 }}>
-              <Col span={5}>
-                <Input placeholder="资源名称" />
-              </Col>
-              <Col span={5} offset={1}>
-                <Input placeholder="应用系统名称" />
-              </Col>
-              <Col span={5} offset={1}>
-                <RangePicker />
-              </Col>
-              <Col span={5} offset={1}>
-                <Button type="primary">搜索</Button>
-              </Col>
-            </Row>
-            <Table
-              columns={columnsModal1}
-              dataSource={listModal1}
-              pagination={
-                pagination && {
-                  ...pagination,
-                  showQuickJumper: true,
-                  showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
-                }
-              }
-              rowKey="id"
-              bordered
-            />
-          </Modal>
-          <Modal
-            title="检索关系设置"
-            visible={visible2}
-            onOk={this.handleOk2}
-            onCancel={this.handleCancel2}
-            width={900}
-          >
-            <div>
-              <h3>
-                数据表 共<span className={styles.spe}>32</span>张
-              </h3>
-              <Table columns={columnsModal2} dataSource={listModal2} rowKey="id" bordered />
-            </div>
-            <div>
-              <h3>
-                数据项 共<span className={styles.spe}>32</span>行
-              </h3>
-              <Table
-                columns={columns3}
-                dataSource={list3}
-                rowKey="id"
-                bordered
-                components={components}
-                className={styles.table}
-              />
-            </div>
-          </Modal>
-        </Card>
-      </PageHeaderLayout>
+      <div>
+        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+          Add a row
+        </Button>
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
+          columns={columns}
+        />
+      </div>
     );
   }
 }

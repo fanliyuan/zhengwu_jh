@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-04 18:07:51
+ * @Last Modified time: 2018-12-08 14:41:06
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -37,6 +37,7 @@ const { Step } = Steps;
 const { Option } = Select;
 // const TabPane = Tabs.TabPane
 let keyId = 1;
+let rewriteItem = [];
 const modalList = [
   {
     id: 3,
@@ -84,6 +85,19 @@ export default class Step2 extends PureComponent {
     isAgain: false,
   };
 
+  componentWillReceiveProps(nextProps) {
+    if (rewriteItem) {
+      const { tableData, routeData } = this.state;
+      rewriteItem.forEach(item => {
+        item.key = keyId++;
+      });
+      this.setState({
+        tableData: rewriteItem,
+        routeData: { ...routeData, infoAddDtoList: rewriteItem },
+      });
+    }
+  }
+
   componentDidMount() {
     // if (this.props.location.pathname === '/dataSourceManagement/newMenu/two') {
     // console.log("ceshi",this.props.location.state)
@@ -120,6 +134,13 @@ export default class Step2 extends PureComponent {
           },
         });
       }
+    }
+    if (this.props.location.state && this.props.location.state.resourceId) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'informationResource/reWriteItemList',
+        payload: { id: this.props.location.state.resourceId },
+      });
     }
     // else {
     //   this.setState({
@@ -283,7 +304,9 @@ export default class Step2 extends PureComponent {
     // const { form: { getFieldDecorator, validateFields }, dispatch } = this.props
     const {
       form: { getFieldDecorator, getFieldValue },
+      informationResource: { itemList },
     } = this.props;
+    rewriteItem = itemList;
     const {
       data,
       tableData,
