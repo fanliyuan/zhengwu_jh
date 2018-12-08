@@ -18,15 +18,26 @@ const { TextArea } = Input;
 const { Description } = DescriptionList;
 
 // 审核状态
-const statusObject = {
-  '-1': '待审核',
-  '0': '已拒绝',
-  '1': '已通过',
-  '10': '修改已拒绝',
-  '-11': '修改待审核',
-  '20': '删除已拒绝',
-  '-21': '删除待审核',
-};
+// const statusObject = {
+//   'all': '全部',
+//   '-1': '待审核',
+//   '0': '已拒绝',
+//   '1': '已通过',
+//   '10': '修改已拒绝',
+//   '-11': '修改待审核',
+//   '20': '删除已拒绝',
+//   '-21': '删除待审核',
+// }
+const statusArray = [
+  { value: 'all', label: '全部' },
+  { value: '-1', label: '待审核' },
+  { value: '0', label: '已拒绝' },
+  { value: '1', label: '已通过' },
+  { value: '10', label: '修改已拒绝' },
+  { value: '-11', label: '修改待审核' },
+  { value: '20', label: '删除已拒绝' },
+  { value: '-21', label: '删除待审核' },
+];
 const classNameObject = {
   '-1': 'blue',
   '0': 'red',
@@ -36,7 +47,7 @@ const classNameObject = {
   '20': 'red',
   '-21': 'blue',
 };
-const statusData = Object.entries(statusObject);
+// const statusData = Object.entries(statusObject);
 
 @connect(({ assess, accessData, loading }) => ({
   assess,
@@ -85,9 +96,9 @@ export default class Assess extends Component {
           placeholder: '审核状态',
           allowClear: true,
         },
-        children: statusData.map(item => (
-          <Option value={item[0]} key={item[0]}>
-            {item[1]}
+        children: statusArray.map(item => (
+          <Option value={item.value} key={item.value}>
+            {item.label}
           </Option>
         )),
       },
@@ -156,7 +167,11 @@ export default class Assess extends Component {
       title: '审核状态',
       render(text) {
         // return statusData.find(item => item.value === text).label
-        return <span className={classNameObject[text]}>{statusObject[text]}</span>;
+        return (
+          <span className={classNameObject[text]}>
+            {statusArray.find(item => +item.value === text).label}
+          </span>
+        );
       },
     },
     {
@@ -556,6 +571,9 @@ export default class Assess extends Component {
     if (queryData.time && queryData.time.length > 0) {
       queryData.beginTime = queryData.time[0].format().substr(0, 10);
       queryData.endTime = queryData.time[1].format().substr(0, 10);
+    }
+    if (queryData.status === 'all') {
+      delete queryData.status;
     }
     delete queryData.time;
     this.props.dispatch({

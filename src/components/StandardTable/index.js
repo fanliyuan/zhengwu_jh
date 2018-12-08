@@ -1,3 +1,10 @@
+/*
+ * @Author: ChouEric
+ * @Date: 2018-12-07 11:09:17
+ * @Last Modified by: ChouEric
+ * @Last Modified time: 2018-12-07 11:17:35
+ * @Description: 此组件经过修改,可以适应 项目需求, 也可以再改造
+ */
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Alert } from 'antd';
 import styles from './index.less';
@@ -24,17 +31,17 @@ class StandardTable extends PureComponent {
     };
   }
 
-  static getDerivedStateFromProps(nextProps) {
-    // clean state
-    if (nextProps.selectedRows.length === 0) {
-      const needTotalList = initTotalList(nextProps.columns);
-      return {
-        selectedRowKeys: [],
-        needTotalList,
-      };
-    }
-    return null;
-  }
+  // static getDerivedStateFromProps(nextProps) {
+  //   // clean state
+  //   if (nextProps.selectedRows.length === 0) {
+  //     const needTotalList = initTotalList(nextProps.columns);
+  //     return {
+  //       selectedRowKeys: [],
+  //       needTotalList,
+  //     };
+  //   }
+  //   return null;
+  // }
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     let { needTotalList } = this.state;
@@ -64,15 +71,22 @@ class StandardTable extends PureComponent {
   render() {
     const { selectedRowKeys, needTotalList } = this.state;
     const {
-      data: { list, pagination },
+      dataSource: list,
+      pagination,
       loading,
+      bordered,
       columns,
       rowKey,
+      showSelect = null,
     } = this.props;
 
     const paginationProps = {
-      showSizeChanger: true,
+      // showSizeChanger: true, // 显示改变分页大小
       showQuickJumper: true,
+      hideOnSinglePage: true,
+      showTotal(total) {
+        return `共 ${Math.ceil(total / 10)}页 / ${total} 条数据`;
+      },
       ...pagination,
     };
 
@@ -86,7 +100,7 @@ class StandardTable extends PureComponent {
 
     return (
       <div className={styles.standardTable}>
-        <div className={styles.tableAlert}>
+        {/* <div className={styles.tableAlert}>
           <Alert
             message={
               <Fragment>
@@ -108,11 +122,12 @@ class StandardTable extends PureComponent {
             type="info"
             showIcon
           />
-        </div>
+        </div> */}
         <Table
           loading={loading}
+          bordered={bordered}
           rowKey={rowKey || 'key'}
-          rowSelection={rowSelection}
+          rowSelection={showSelect && rowSelection}
           dataSource={list}
           columns={columns}
           pagination={paginationProps}

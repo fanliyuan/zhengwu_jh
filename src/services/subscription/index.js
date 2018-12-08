@@ -31,3 +31,28 @@ export async function subscribe(params) {
     body: params,
   });
 }
+// 获取订阅列表
+export async function getSubList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/subscribeList?${stringify(params)}`);
+}
+
+// 停止订阅的 采集
+export async function stopSubTask(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/stop`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 启动订阅的 采集
+export async function runSubTask(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/run`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 获取 审核日志列表
+export async function getAssessLogs(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/reviewLog?${stringify(params)}`);
+}

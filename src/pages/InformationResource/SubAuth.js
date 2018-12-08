@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
+import { connect } from 'dva';
 import { Select, Table, Modal, Radio, Input, Popconfirm } from 'antd';
 import { Bind, Throttle } from 'lodash-decorators';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import StandardTable from '@/components/StandardTable';
 import SearchForm from '@/components/SearchForm';
 import DataTypeSelectOption from '@/components/DataTypeSelectOption';
 import ModalRadio from '@/components/ModalRadio';
@@ -22,23 +24,24 @@ const statusChildren = status.map(item => (
   </Option>
 ));
 
+@connect(({ subAuth, loading }) => ({ subAuth, loading: loading.models.subAuth }))
 export default class SubAuth extends Component {
   formOptions = {
     formData: [
       {
-        name: 'infoSrcName',
+        name: 'dsName',
         typeOptions: {
           maxLength: 50,
           placeholder: '信息资源名称',
         },
       },
-      {
-        name: 'mountDataName',
-        typeOptions: {
-          maxLength: 50,
-          placeholder: '关联数据名称',
-        },
-      },
+      // {
+      //   name: 'mountDataName',
+      //   typeOptions: {
+      //     maxLength: 50,
+      //     placeholder: '关联数据名称',
+      //   },
+      // },
       {
         name: 'dataType',
         type: 'Select',
@@ -47,20 +50,20 @@ export default class SubAuth extends Component {
         },
         children: DataTypeSelectOption,
       },
-      {
-        name: 'subNode',
-        type: 'Select',
-        typeOptions: {
-          placeholder: '订阅节点',
-        },
-        children: [],
-      },
+      // {
+      //   name: 'subNode',
+      //   type: 'Select',
+      //   typeOptions: {
+      //     placeholder: '订阅节点',
+      //   },
+      //   children: [],
+      // },
       {
         name: 'subTime',
         type: 'RangePicker',
       },
       {
-        name: 'status',
+        name: 'subscribeStatus',
         type: 'Select',
         typeOptions: {
           placeholder: '审核状态',
@@ -72,7 +75,7 @@ export default class SubAuth extends Component {
   };
   columns = [
     {
-      dataIndex: 'id',
+      dataIndex: 'index',
       title: '序号',
     },
     {
@@ -103,9 +106,9 @@ export default class SubAuth extends Component {
             <a className="mr16" onClick={this.handleGoView.bind(this, row)}>
               查看
             </a>
-            {row.authStatus === -1 ? (
+            {row.subscribeStatus === -1 ? (
               <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
-            ) : row.authStatus === undefined ? (
+            ) : row.subscribeStatus === 11111 ? (
               <Popconfirm title="请确认取消授权" onConfirm={this.cancelAuth.bind(this, row)}>
                 <a>取消授权</a>
               </Popconfirm>
@@ -119,17 +122,24 @@ export default class SubAuth extends Component {
   ];
 
   state = {
-    authStatus: '1',
+    row: {},
     modalVisible: false,
+    pagination: { pageSize: 10, pageNum: 1 },
+    queryData: {},
   };
+
+  componentDidMount() {
+    this.handleSearch();
+  }
 
   handleGoView = row => {
     console.log(row);
   };
 
-  handleAuthModalShow = () => {
+  handleAuthModalShow = row => {
     this.setState({
       modalVisible: true,
+      row: { ...row },
     });
   };
 
@@ -140,7 +150,17 @@ export default class SubAuth extends Component {
   };
 
   onOk = value => {
-    console.log(value);
+    const { dsID, subID, subscriberID } = this.state.row;
+    this.props.dispatch({
+      type: 'subAuth/subscribeAudit',
+      payload: {
+        codeReply: value.subscribeStatus,
+        reason: value.reason,
+        dsID,
+        subID,
+        subscriberID,
+      },
+    });
   };
 
   cancelAuth = row => {
@@ -149,41 +169,45 @@ export default class SubAuth extends Component {
 
   @Bind()
   @Throttle(1000)
-  handleSearch(queryData, resetPage = false) {
-    console.log(queryData);
+  handleSearch(queryData = {}, resetPage = false) {
+    const pagination = resetPage ? { pageSize: 10, pageNum: 1 } : this.state.pagination;
+    this.setState({
+      queryData: {
+        ...queryData,
+      },
+    });
+    const { dispatch } = this.props;
+    if (queryData.subTime && queryData.subTime.length > 0) {
+      queryData.beginTime = queryData.subTime[0].format().substr(0, 10);
+      queryData.endTime = queryData.subTime[1].format().substr(0, 10);
+    }
+    delete queryData.subTime;
+    dispatch({
+      type: 'subAuth/getSubAuthList',
+      payload: {
+        ...pagination,
+        ...queryData,
+      },
+    });
   }
 
   render() {
     const { modalVisible } = this.state;
-    const pagination = {};
-    const dataSource = [
-      {
-        id: 1,
-        infoSrcName: '无名子',
-      },
-      {
-        id: 2,
-        infoSrcName: '无名子',
-      },
-    ];
-    const paginationProps = {
-      ...pagination,
-      showQuickJumper: true,
-      hideOnSinglePage: true,
-      showTotal(total) {
-        return `共 ${Math.ceil(total / 10)}页 / ${total}条 数据`;
-      },
-    };
+    const {
+      subAuth: { dataList, pagination },
+      loading,
+    } = this.props;
     return (
       <PageHeaderWrapper>
         <div className="content_layout">
           <SearchForm formOptions={this.formOptions} />
-          <Table
+          <StandardTable
+            loading={loading}
             columns={this.columns}
-            dataSource={dataSource}
-            pagination={paginationProps}
+            dataSource={dataList}
+            pagination={pagination}
             bordered
-            rowKey="id"
+            rowKey="index"
           />
           <ModalRadio visible={modalVisible} onCancel={this.handleAuthModalHide} onOk={this.onOk} />
         </div>
