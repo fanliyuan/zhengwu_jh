@@ -31,6 +31,7 @@ import {
   initFileListCurrent,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
+import Crypto from '@/components/crypto';
 
 function initDbParams() {
   return {

@@ -6,6 +6,7 @@ import {
   viewDataSource,
 } from '@/services/dataSource/dataSource';
 import { message, notification } from 'antd';
+import Crypto from '@/components/crypto';
 
 function initParams() {
   return {
@@ -44,6 +45,9 @@ export default {
           sftp: 'ftp',
           file: 'file',
         };
+        Object.defineProperty(response.result.data, 'password', {
+          value: Crypto.Decrypt(response.result.data.password),
+        });
         const dataType = typeData[type];
         yield put({
           type: 'updateParams',
@@ -74,7 +78,7 @@ export default {
         addr: payloads.params.ip,
         port: payloads.params.port,
         username: payloads.params.username,
-        password: payloads.params.password,
+        password: Crypto.Encrypt(payloads.params.password),
       });
       message.destroy();
       if (response.code >= 300) {
@@ -102,6 +106,11 @@ export default {
     },
     *submit({ payload }, { call, put }) {
       let callbackApi;
+      if (payload.password && payload.password !== '') {
+        Object.defineProperty(payload, 'password', {
+          value: Crypto.Encrypt(payload.password),
+        });
+      }
       if (payload.id) {
         callbackApi = updateDataSource;
       } else {
