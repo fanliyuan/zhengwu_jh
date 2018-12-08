@@ -202,6 +202,14 @@ export default class SourceManagement extends Component {
     );
   };
 
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/deleteResources',
+      payload: { id: id },
+    });
+  };
+
   handleCatalog = row => {
     const { dispatch } = this.props;
     // dispatch(routerRedux.push('/dataSourceManagement/catalog'))
@@ -236,6 +244,11 @@ export default class SourceManagement extends Component {
   handleInput = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push('/informationResource/inputDirectory'));
+  };
+
+  handleCheckLog = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/informationResource/audit/auditLog/${id}`));
   };
 
   handleClassfiy = val => {
@@ -442,7 +455,7 @@ export default class SourceManagement extends Component {
                 </span>
                 <Popconfirm
                   title={`确认删除${row.name}?`}
-                  onConfirm={() => message.info('删除成功')}
+                  onConfirm={() => this.handleDelete(row.id)}
                 >
                   <a>删除</a>
                 </Popconfirm>
@@ -451,10 +464,12 @@ export default class SourceManagement extends Component {
           } else if (+row.status === 0) {
             return (
               <div>
-                <span className={styles.clickBtn}>审核日志</span>
+                <span className={styles.clickBtn} onClick={this.handleCheckLog.bind(null, row.id)}>
+                  审核日志
+                </span>
                 <Popconfirm
                   title={`确认删除${row.name}?`}
-                  onConfirm={() => message.info('删除成功')}
+                  onConfirm={() => this.handleDelete(row.id)}
                 >
                   <a>删除</a>
                 </Popconfirm>
@@ -477,7 +492,7 @@ export default class SourceManagement extends Component {
                 </span>
                 <Popconfirm
                   title={`确认删除${row.name}?`}
-                  onConfirm={() => message.info('删除成功')}
+                  onConfirm={() => this.handleDelete(row.id)}
                 >
                   <a>删除</a>
                 </Popconfirm>

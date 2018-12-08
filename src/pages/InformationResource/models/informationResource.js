@@ -14,6 +14,8 @@ import {
   getConnectFileList,
   saveMountData,
   getResourceItems,
+  deleteresource,
+  updateResource,
 } from '@/services/informationResource/informationResource';
 
 // const { getSourceList, getDBInfo } = apis
@@ -56,6 +58,36 @@ export default {
         if (+response.code === 201) {
           message.success(response.message);
           yield put(routerRedux.push('/informationResource/sourceManagement'));
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *editResources({ payload }, { call, put }) {
+      const response = yield call(updateResource, payload);
+      try {
+        if (+response.code === 201) {
+          message.success(response.message);
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log(error); //eslint-disable-line
+      }
+    },
+    *deleteResources({ payload }, { call, put }) {
+      let response = yield call(deleteresource, payload);
+      response = JSON.parse(response);
+      try {
+        if (+response.code === 201) {
+          message.success(response.message);
+          yield put({
+            type: 'getResourceList',
+            payload: { pageNum: 1, pageSize: 10, mount: false },
+          });
         } else {
           message.error(response.message);
         }

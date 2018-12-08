@@ -115,7 +115,7 @@ export default [
             name: 'auditLog',
             hideInMenu: true,
             component: './InformationResource/ResourceAuditLog',
-            authority: ['assessor'],
+            authority: ['assessor', 'user'],
           },
           {
             path: '/informationResource/subscriptionLicense',

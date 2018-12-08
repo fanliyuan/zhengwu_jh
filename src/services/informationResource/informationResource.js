@@ -14,6 +14,14 @@ export async function addResource(params) {
   });
 }
 
+// 更新资源
+export async function updateResource(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`, {
+    method: 'PUT',
+    body: params.resourceEditDto,
+  });
+}
+
 // 查询资源列表
 export async function getResourceLists(params) {
   return request(`/api/api/v2/zhengwu/swap/resources?${stringify(params)}`);
@@ -69,13 +77,13 @@ export async function saveMountData(params) {
   });
 }
 
-// // 删除数据源
-// export async function deleteDataSource(params) {
-//   return request(`/api/api/v2/zhengwu/swap/datasource/${params.id}`, {
-//     method: 'DELETE',
-//     body: params,
-//   });
-// }
+// 删除资源
+export async function deleteresource(params) {
+  return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`, {
+    method: 'DELETE',
+    body: params,
+  });
+}
 
 // // 修改数据源
 // export async function updateDataSource(params) {

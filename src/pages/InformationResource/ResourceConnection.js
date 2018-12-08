@@ -119,7 +119,7 @@ export default class ResourceConnection extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'informationResource/getConnectListss',
-      payload: { pageNum: 1, pageSize: 10, status: 1 },
+      payload: { pageNum: 1, pageSize: 10, status: 1, mount: false },
     });
   };
 
@@ -144,6 +144,7 @@ export default class ResourceConnection extends Component {
         beginTime: startTimes ? startTimes : undefined,
         endTime: endTimes ? endTimes : undefined,
         status: 1,
+        mount: false,
       },
     });
   };
