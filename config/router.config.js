@@ -219,6 +219,13 @@ export default [
             component: './InformationResource/SubAuth',
             authority: 'user',
           },
+          {
+            path: 'viewAuth/:dataType/:resourceId/:mountId/:subId',
+            name: 'viewAuth',
+            component: './InformationResource/ViewAuth',
+            authority: 'user',
+            hideInMenu: true,
+          },
         ],
       },
       // 数据发布管理
@@ -296,7 +303,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/data/infoSource/:type/:id/:sourceId',
+            path: '/data/infoSource/:type/:id/:resourceId',
             name: 'infoSource',
             component: './DataSource/InfoSource',
             audit: 'user',

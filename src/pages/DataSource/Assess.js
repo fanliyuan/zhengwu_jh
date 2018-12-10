@@ -576,6 +576,7 @@ export default class Assess extends Component {
       delete queryData.status;
     }
     delete queryData.time;
+    queryData.mount = true;
     this.props.dispatch({
       type: 'assess/getAssessList',
       payload: {

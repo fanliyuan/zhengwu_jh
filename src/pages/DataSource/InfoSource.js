@@ -17,23 +17,34 @@ export default class InfoSource extends Component {
       },
     },
   ];
+
+  state = {
+    entry: 'pub',
+  };
   infoSourceData = window.location.hash.split('?')[0].split('/');
   resourceId = this.infoSourceData.pop() || 0;
   id = this.infoSourceData.pop() || 0;
   type = this.infoSourceData.pop() || 'db';
   entry = window.location.hash.startsWith('#/data/management/infoSource') ? 'pub' : 'sub';
   componentDidMount() {
+    const {
+      match: {
+        params: { type, id, resourceId },
+      },
+      route,
+    } = this.props;
+    const entry = route.name === 'subInfoSrc' ? 'sub' : 'pub';
     this.props.dispatch({
       type: 'infoSource/getInfoSrcDetail',
       payload: {
-        path: this.resourceId,
+        path: resourceId,
       },
     });
     this.props.dispatch({
       type: 'infoSource/getRefDetail',
       payload: {
-        type: this.type,
-        id: this.id,
+        type,
+        id,
       },
     });
   }
@@ -41,6 +52,7 @@ export default class InfoSource extends Component {
     const {
       infoSource: { infoSourceDetail, refDetail },
     } = this.props;
+    const { entry } = this.state;
     const {
       dataTitle,
       dataType,
@@ -55,7 +67,7 @@ export default class InfoSource extends Component {
     return (
       <PageHeaderWrapper buttonList={this.buttonList}>
         <div className="content_layout">
-          {this.entry === 'sub' && (
+          {entry === 'sub' && (
             <Fragment>
               <span className="colon">状态</span>
               <span className="mr16">未订阅</span>
