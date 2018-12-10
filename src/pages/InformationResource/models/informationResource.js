@@ -36,6 +36,7 @@ export default {
     connectFilePagination: {},
     itemList: [],
     connectItemList: [],
+    resourceDetail: {},
     // forEditFile:[],
   },
 

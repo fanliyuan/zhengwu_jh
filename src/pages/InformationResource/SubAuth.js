@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import router from 'umi/router';
 import { Select, Table, Modal, Radio, Input, Popconfirm } from 'antd';
 import { Bind, Throttle } from 'lodash-decorators';
 
@@ -14,6 +15,7 @@ const { Group } = Radio;
 const { TextAera } = Input;
 
 const status = [
+  { value: 'all', label: '全部' },
   { value: '-1', label: '待审核' },
   { value: '0', label: '已拒绝' },
   { value: '1', label: '已通过' },
@@ -75,15 +77,15 @@ export default class SubAuth extends Component {
   };
   columns = [
     {
-      dataIndex: 'index',
+      dataIndex: 'id',
       title: '序号',
     },
     {
-      dataIndex: 'infoSrcName',
+      dataIndex: 'dsName',
       title: '信息资源名称',
     },
     {
-      dataIndex: 'mountDataName',
+      dataIndex: 'mountResourceName',
       title: '关联数据名称',
     },
     {
@@ -108,7 +110,7 @@ export default class SubAuth extends Component {
             </a>
             {row.subscribeStatus === -1 ? (
               <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
-            ) : row.subscribeStatus === 11111 ? (
+            ) : row.subscribeStatus === 1 ? (
               <Popconfirm title="请确认取消授权" onConfirm={this.cancelAuth.bind(this, row)}>
                 <a>取消授权</a>
               </Popconfirm>
@@ -133,7 +135,8 @@ export default class SubAuth extends Component {
   }
 
   handleGoView = row => {
-    console.log(row);
+    // 信息资源id 关联数据id 订阅id
+    router.push(`viewAuth/${row.dataType}/${row.dsId || 0}/${row.mountId}/${row.subId}`);
   };
 
   handleAuthModalShow = row => {
@@ -181,6 +184,9 @@ export default class SubAuth extends Component {
       queryData.beginTime = queryData.subTime[0].format().substr(0, 10);
       queryData.endTime = queryData.subTime[1].format().substr(0, 10);
     }
+    if (queryData.subscribeStatus && queryData.subscribeStatus === 'all') {
+      delete queryData.subscribeStatus;
+    }
     delete queryData.subTime;
     dispatch({
       type: 'subAuth/getSubAuthList',
@@ -207,7 +213,7 @@ export default class SubAuth extends Component {
             dataSource={dataList}
             pagination={pagination}
             bordered
-            rowKey="index"
+            rowKey="id"
           />
           <ModalRadio visible={modalVisible} onCancel={this.handleAuthModalHide} onOk={this.onOk} />
         </div>
