@@ -149,12 +149,14 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *submitOpenShare({ payload }, { call }) {
+    *submitOpenShare({ payload }, { call, put }) {
       const response = yield call(updateOpenData, payload);
       try {
         if (+response.code === 202) {
           message.success(response.message);
-          // yield put(routerRedux.push('/informationResource/sourceManagement'));
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
+        } else if (+response.code === 201) {
+          yield put(routerRedux.push('/informationResource/sourceManagement'));
         } else {
           message.error(response.message);
         }
@@ -207,10 +209,10 @@ export default {
                   type1: 'ftpfile',
                 },
               });
-              yield put({
-                type: 'getResourceDetail',
-                payload: response.result.data,
-              });
+              // yield put({
+              //   type: 'getResourceDetail',
+              //   payload: response.result.data,
+              // });
             } else if (response.result.data.mountType === 'file') {
               yield put({
                 type: 'getFileList',
@@ -221,11 +223,11 @@ export default {
                   type1: 'file',
                 },
               });
-              yield put({
-                type: 'getResourceDetail',
-                payload: response.result.data,
-              });
-            } else if (response.result.data.mountType === 'mysql') {
+              // yield put({
+              //   type: 'getResourceDetail',
+              //   payload: response.result.data,
+              // });
+            } else if (response.result.data.mountType === 'db') {
               yield put({
                 type: 'getFileList',
                 payload: {
@@ -235,20 +237,28 @@ export default {
                   type1: 'struct',
                 },
               });
-              yield put({
-                type: 'getResourceDetail',
-                payload: response.result.data,
-              });
-              yield put({
-                type: 'reWriteItemList',
-                payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
-              });
-              yield put({
-                type: 'getConnectItemList',
-                payload: response.result.data,
-              });
             }
+            yield put({
+              type: 'getResourceDetail',
+              payload: response.result.data,
+            });
+            // yield put({
+            //   type: 'reWriteItemList',
+            //   payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
+            // });
+            // yield put({
+            //   type: 'getConnectItemList',
+            //   payload: response.result.data,
+            // });
           }
+          yield put({
+            type: 'reWriteItemList',
+            payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
+          });
+          // yield put({
+          //   type: 'getConnectItemList',
+          //   payload: response.result.data,
+          // });
         } else {
           message.error(response.message);
         }

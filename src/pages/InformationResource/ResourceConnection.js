@@ -24,7 +24,8 @@ const { RangePicker } = DatePicker;
 const { isMoment } = moment;
 let initialData = [];
 let enableEditFile = [];
-let resourceDetailData;
+// let resourceDetailData;
+let resourceItemDetail = [];
 @connect(({ informationResource, loading }) => ({
   informationResource,
   loading: loading.models.informationResource,
@@ -48,7 +49,8 @@ export default class ResourceConnection extends Component {
     endTimes: '',
     connectTime: [],
     chooseName: '',
-    chooseId: -1,
+    chooseId: '',
+    chooseId1: '',
     zcName: '',
     zcId: -1,
     zcType: '',
@@ -63,6 +65,7 @@ export default class ResourceConnection extends Component {
     this.setState({
       fileListData: [],
     });
+    const resourceDetailData = nextProps.informationResource.resourceDetail;
     if (resourceDetailData) {
       this.setState({
         initialType: resourceDetailData.mountType,
@@ -80,7 +83,7 @@ export default class ResourceConnection extends Component {
         initialData = [...arr];
         this.setState({
           fileListData: [...arr],
-          chooseId: resourceDetailData.mountId,
+          chooseId1: resourceDetailData.mountId,
         });
       }
     }
@@ -127,7 +130,7 @@ export default class ResourceConnection extends Component {
     this.setState({
       zcName: row.name,
       zcId: row.id,
-      zcType: row.dataType,
+      zcType: row.type,
     });
   };
 
@@ -242,7 +245,7 @@ export default class ResourceConnection extends Component {
       this.setState({
         fileListData: [...enableEditFile],
       });
-    } else if (zcType === 'mysql') {
+    } else if (zcType === 'db') {
       await dispatch({
         type: 'informationResource/getFileList',
         payload: {
@@ -300,14 +303,27 @@ export default class ResourceConnection extends Component {
   };
 
   handleSaveMountData = () => {
-    const { routeId, fileListData, chooseId, dataTypes, initialType } = this.state;
+    const { routeId, fileListData, chooseId, dataTypes, initialType, chooseId1 } = this.state;
     const { dispatch } = this.props;
     const ids = fileListData.map(item => {
       return item.id;
     });
     let arr = {};
-    for (let i = 0; i < ids.length; i++) {
-      arr[i] = ids[i];
+    if (dataTypes === 'db' || (!dataTypes && initialType === 'db')) {
+      if (resourceItemDetail.length <= ids.length) {
+        resourceItemDetail.forEach((item, j) => {
+          const i = item.id;
+          arr[i] = ids[j];
+        });
+      } else {
+        ids.forEach((item, j) => {
+          arr[resourceItemDetail[j].id] = item;
+        });
+      }
+    } else {
+      for (let i = 0; i < ids.length; i++) {
+        arr[i] = ids[i];
+      }
     }
     dispatch({
       type: 'informationResource/saveMountData',
@@ -315,7 +331,7 @@ export default class ResourceConnection extends Component {
         id: routeId,
         resourceMountDto: {
           infoItemIdMap: arr,
-          itemId: chooseId,
+          itemId: chooseId ? chooseId : chooseId1,
           type: dataTypes ? dataTypes : initialType,
         },
       },
@@ -366,11 +382,13 @@ export default class ResourceConnection extends Component {
         connectPagination,
         connectFileList,
         connectFilePagination,
+        itemList,
       },
     } = this.props;
     enableEditFile = [...connectFileList];
     // initialData = [...connectFileList]
-    resourceDetailData = resourceDetail;
+    // resourceDetailData = resourceDetail;
+    resourceItemDetail = itemList;
     const {
       visible1,
       visible2,
@@ -382,6 +400,7 @@ export default class ResourceConnection extends Component {
       initialType,
       dataTypes,
     } = this.state;
+    // console.log(dataTypes)
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
       {
@@ -432,15 +451,15 @@ export default class ResourceConnection extends Component {
     const columnsLeft = [
       {
         title: '信息项名称',
-        dataIndex: 'columnName',
+        dataIndex: 'name',
       },
       {
         title: '数据类型',
-        dataIndex: 'columnType',
+        dataIndex: 'dataType',
       },
       {
         title: '数据长度',
-        dataIndex: 'note',
+        dataIndex: 'dataLength',
       },
     ];
     columnsLeft.forEach(item => {
@@ -690,11 +709,12 @@ export default class ResourceConnection extends Component {
                 className={styles.linkBtn}
                 style={{
                   marginLeft: 20,
-                  display:
-                    dataTypes !== 'mysql'
-                      ? initialType !== 'mysql'
-                        ? 'inline-block'
-                        : 'none'
+                  display: !dataTypes
+                    ? initialType !== 'db'
+                      ? 'inline-block'
+                      : 'none'
+                    : dataTypes !== 'db'
+                      ? 'inline-block'
                       : 'none',
                 }}
                 onClick={this.handleResetFile}
@@ -725,10 +745,12 @@ export default class ResourceConnection extends Component {
           {/* </div> */}
           <div>
             <Row>
-              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 0 : 12) : 12}>
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
+              >
                 <Table
                   columns={columnsLeft}
-                  dataSource={fileListData}
+                  dataSource={itemList}
                   pagination={
                     connectFilePagination && {
                       ...connectFilePagination,
@@ -744,7 +766,12 @@ export default class ResourceConnection extends Component {
                   onChange={this.handleFileTableChange}
                 />
               </Col>
-              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 0 : 12) : 12}>
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 0 : 2) : dataTypes !== 'db' ? 0 : 2}
+              />
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
+              >
                 <Table
                   columns={columnsr}
                   dataSource={fileListData}
@@ -763,7 +790,9 @@ export default class ResourceConnection extends Component {
                   onChange={this.handleFileTableChange}
                 />
               </Col>
-              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 24 : 0) : 0}>
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 24 : 0) : dataTypes !== 'db' ? 24 : 0}
+              >
                 <Table
                   columns={columns}
                   dataSource={fileListData}

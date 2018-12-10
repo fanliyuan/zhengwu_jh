@@ -1,10 +1,21 @@
 import React, { Component } from 'react';
-import { Input, Card, Form, Button, Cascader, Radio, Checkbox, Select, message } from 'antd';
+import {
+  Input,
+  Card,
+  Form,
+  Button,
+  Cascader,
+  Radio,
+  Checkbox,
+  Select,
+  message,
+  Divider,
+} from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
-// import styles from './OpenShare.less';
+import styles from './OpenShare.less';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
@@ -18,6 +29,7 @@ const CheckboxGroup = Checkbox.Group;
 export default class OpenShare extends Component {
   state = {
     id: -1,
+    isExpandOrFolder: true,
   };
 
   componentDidMount() {
@@ -32,6 +44,10 @@ export default class OpenShare extends Component {
     this.setState({
       id: this.props.location.state && +this.props.location.state.openId,
     });
+    dispatch({
+      type: 'informationResource/getResourcesEdit',
+      payload: { id: this.props.location.state && +this.props.location.state.openId },
+    });
   }
 
   setInputs = () => {
@@ -39,6 +55,13 @@ export default class OpenShare extends Component {
     const { minutes, hours, day, month, week } = this.state;
     const timeInfo = [minutes, hours, day, month, week];
     setFieldValue('setTime', timeInfo);
+  };
+
+  isFolderOrExpand = () => {
+    const { isExpandOrFolder } = this.state;
+    this.setState({
+      isExpandOrFolder: !isExpandOrFolder,
+    });
   };
 
   handleSubmit = e => {
@@ -56,7 +79,7 @@ export default class OpenShare extends Component {
           timeSet: '',
           open: +values.open === 1 ? true : false,
           share: +values.share === 1 ? true : false,
-          opendoorType: values.openType === '开放门户分类' ? '' : values.openType,
+          // opendoorType: values.openType === '开放门户分类' ? '' : values.openType,
           subscribeLicense: +values.subscribeLicense === 1 ? true : false,
         };
         this.props.dispatch({
@@ -83,8 +106,9 @@ export default class OpenShare extends Component {
   render() {
     const {
       form: { getFieldDecorator },
-      informationResource: { openData },
+      informationResource: { openData, resourceDetail },
     } = this.props;
+    const { isExpandOrFolder } = this.state;
     const plainOptions = ['交换域1', '交换域2', '交换域3'];
     const formItemLayout = {
       labelCol: {
@@ -169,6 +193,32 @@ export default class OpenShare extends Component {
     return (
       <PageHeaderLayout>
         <Card>
+          <div className={styles.form}>
+            <h3>
+              信息资源代码:
+              <span> {resourceDetail && resourceDetail.code}</span>
+              信息资源名称:
+              <span> {resourceDetail && resourceDetail.name}</span>
+              信息资源提供方:
+              <span> {resourceDetail && resourceDetail.providerDept}</span>
+              发布时间:
+              <span> {resourceDetail && resourceDetail.shareTime}</span>
+            </h3>
+            <h3 style={{ display: isExpandOrFolder ? 'none' : 'block' }}>
+              提供方代码:
+              <span> {resourceDetail && resourceDetail.providerNo}</span>
+              信息属性分类:
+              <span> {resourceDetail && resourceDetail.typeName}</span>
+              信息资源格式:
+              <span> {resourceDetail && resourceDetail.format}</span>
+              信息资源摘要:
+              <span> {resourceDetail && resourceDetail.summary}</span>
+            </h3>
+            <Button style={{ marginLeft: 10 }} onClick={this.isFolderOrExpand}>
+              {isExpandOrFolder ? '展开' : '收起'}
+            </Button>
+            <Divider />
+          </div>
           <Form onSubmit={this.handleSubmit}>
             <FormItem label="是否开放" {...formItemLayout}>
               {getFieldDecorator('open', {
@@ -184,7 +234,7 @@ export default class OpenShare extends Component {
                 <span style={{marginRight:10,marginLeft:10}}>开放门户分类：</span>
               } */}
             </FormItem>
-            <FormItem label="开放门户分类" {...formItemLayout}>
+            {/* <FormItem label="开放门户分类" {...formItemLayout}>
               {getFieldDecorator('openType', {
                 initialValue:
                   openData && openData.opendoorType ? openData.opendoorType : '开放门户分类',
@@ -193,7 +243,7 @@ export default class OpenShare extends Component {
                   {updateTimeOption}
                 </Select>
               )}
-            </FormItem>
+            </FormItem> */}
             <FormItem label="是否共享" {...formItemLayout}>
               {getFieldDecorator('share', {
                 initialValue: openData && openData.share ? 1 : 0,
