@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-10 11:06:32
+ * @Last Modified time: 2018-12-10 18:16:54
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -66,7 +66,7 @@ export default class Step1 extends PureComponent {
     xmId: -1,
     startValue: null,
     endValue: new Date(),
-    resourceRouteId: -1,
+    resourceRouteId: '',
     edit: false,
   };
 
