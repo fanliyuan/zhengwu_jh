@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-08 17:55:52
+ * @Last Modified time: 2018-12-09 17:54:12
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -38,6 +38,7 @@ const { Option } = Select;
 // const TabPane = Tabs.TabPane
 let keyId = 1;
 let rewriteItem = [];
+// let step2Arr = [];
 const modalList = [
   {
     id: 3,
@@ -84,6 +85,7 @@ export default class Step2 extends PureComponent {
     isEnable: false,
     isAgain: false,
     editId: '',
+    step2Arr: [],
   };
 
   componentWillReceiveProps(nextProps) {
@@ -96,18 +98,25 @@ export default class Step2 extends PureComponent {
         tableData: rewriteItem,
         routeData: { ...routeData, infoAddDtoList: rewriteItem },
       });
+      console.log(rewriteItem);
     }
   }
 
   componentDidMount() {
+    this.setState({
+      step2Arr: [],
+    });
+    // step2Arr = [];
     // if (this.props.location.pathname === '/dataSourceManagement/newMenu/two') {
     // console.log("ceshi",this.props.location.state)
     const sessionData =
       sessionStorage.getItem('routeData') && JSON.parse(sessionStorage.getItem('routeData'));
-    const isBack = sessionStorage.getItem('isBack');
+    // const isBack = sessionStorage.getItem('isBack');
     if (
-      (!this.props.location.state || !this.props.location.state.routeData) &&
-      isBack === 'false'
+      !this.props.location.state ||
+      !this.props.location.state.routeData
+      //  &&
+      // isBack === 'false'
     ) {
       sessionStorage.removeItem('routeData');
       this.props.dispatch(routerRedux.push('/informationResource/newMenu/one'));
@@ -117,24 +126,24 @@ export default class Step2 extends PureComponent {
       this.setState({
         routeData: sessionData,
       });
-      if (sessionStorage.getItem('itemData')) {
-        // const { tableData } = this.state
-        const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
-        const { data } = this.state;
-        this.setState({
-          data: {
-            ...data,
-            method: 2,
-          },
-          isAgain: true,
-          // disabled: false,
-          tableData: JSON.parse(sessionStorage.getItem('itemData')),
-          routeData: {
-            ...sessionData,
-            infoAddDtoList: JSON.parse(sessionStorage.getItem('itemData')),
-          },
-        });
-      }
+      // if (sessionStorage.getItem('itemData')) {
+      //   // const { tableData } = this.state
+      //   const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
+      //   const { data } = this.state;
+      //   this.setState({
+      //     data: {
+      //       ...data,
+      //       method: 2,
+      //     },
+      //     isAgain: true,
+      //     // disabled: false,
+      //     tableData: JSON.parse(sessionStorage.getItem('itemData')),
+      //     routeData: {
+      //       ...sessionData,
+      //       infoAddDtoList: JSON.parse(sessionStorage.getItem('itemData')),
+      //     },
+      //   });
+      // }
     }
     if (this.props.location.state && this.props.location.state.resourceId) {
       const { dispatch } = this.props;
@@ -153,7 +162,7 @@ export default class Step2 extends PureComponent {
     //   });
     //   // sessionStorage.setItem('routeData', JSON.stringify(this.props.location.state.routeData));
     // }
-    sessionStorage.setItem('isBack', false);
+    // sessionStorage.setItem('isBack', false);
   }
 
   onChange = val => {
@@ -178,24 +187,42 @@ export default class Step2 extends PureComponent {
 
   methodChange = e => {
     if (+e.target.value === 2) {
-      this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
+      // this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
       sessionStorage.setItem('inputType', 2);
-      this.setState({
-        isAgain: false,
-        tableData: [],
-      });
-    } else if (+e.target.value === 1) {
-      sessionStorage.setItem('inputType', '');
-      sessionStorage.setItem('itemData', '');
       const { data } = this.state;
       this.setState({
         isAgain: false,
+        // tableData: [],
         data: {
           ...data,
-          method: 1,
+          method: 2,
         },
-        tableData: [],
       });
+    } else if (+e.target.value === 1) {
+      sessionStorage.setItem('inputType', '');
+      if (sessionStorage.getItem('itemData')) {
+        sessionStorage.setItem('itemData', '');
+        const { data } = this.state;
+        this.setState({
+          isAgain: false,
+          data: {
+            ...data,
+            method: 1,
+          },
+          tableData: [],
+        });
+      } else {
+        const { data, tableData, routeData } = this.state;
+        this.setState({
+          isAgain: false,
+          data: {
+            ...data,
+            method: 1,
+          },
+          tableData,
+          routeData: { ...routeData, infoAddDtoList: tableData },
+        });
+      }
     }
   };
 
@@ -255,12 +282,12 @@ export default class Step2 extends PureComponent {
       if (!errors) {
         const { tableData, routeData } = this.state;
         values.key = keyId;
-        let arr = tableData;
-        arr.push(values);
+        let arr1 = tableData;
+        arr1.push(values);
         this.setState({
-          tableData: arr,
+          tableData: arr1,
           addVisible: false,
-          routeData: { ...routeData, infoAddDtoList: arr },
+          routeData: { ...routeData, infoAddDtoList: arr1 },
         });
         resetFields();
         keyId++;
@@ -298,8 +325,16 @@ export default class Step2 extends PureComponent {
   };
 
   handleInputAgain = () => {
-    this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
+    // this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
     sessionStorage.setItem('inputType', 2);
+    // step2Arr = []
+    const { data } = this.state;
+    this.setState({
+      ...data,
+      method: 2,
+      isAgain: false,
+      step2Arr: [],
+    });
   };
 
   handleOpenConditionChange = e => {
@@ -316,6 +351,62 @@ export default class Step2 extends PureComponent {
 
   handleNameChange = e => {
     this.checkLength(e.target.value, 50);
+  };
+
+  handleBackBtn = () => {
+    const { step2Arr } = this.state;
+    if (step2Arr.length === 0) {
+      if (!sessionStorage.getItem('itemData')) {
+        sessionStorage.setItem('itemData', '');
+      }
+    } else {
+      let zcArr = step2Arr;
+      for (let i = 0; i < zcArr.length; i += 1) {
+        zcArr[i].key = i;
+      }
+      this.setState({
+        step2Arr: zcArr,
+      });
+      sessionStorage.setItem('itemData', JSON.stringify(zcArr));
+      // const { tableData } = this.state
+      const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
+      const { data, routeData } = this.state;
+      this.setState({
+        data: {
+          ...data,
+          method: 2,
+        },
+        isAgain: true,
+        // disabled: false,
+        tableData: JSON.parse(sessionStorage.getItem('itemData')),
+        routeData: {
+          ...routeData,
+          infoAddDtoList: JSON.parse(sessionStorage.getItem('itemData')),
+        },
+      });
+    }
+    // sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
+  };
+  handleFileChange = info => {
+    const { step2Arr } = this.state;
+    if (info.file.status !== 'uploading') {
+      // console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      sessionStorage.setItem('itemData', '');
+      if (info.file.response) {
+        if (+info.file.response.code === 200) {
+          message.success(`${info.file.name} 导入成功`);
+          this.setState({
+            step2Arr: step2Arr.concat(info.file.response.result.datas),
+          });
+        } else {
+          message.error(`${info.file.response.message}`);
+        }
+      }
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.response.message}`);
+    }
   };
 
   render() {
@@ -336,6 +427,7 @@ export default class Step2 extends PureComponent {
       // disabled,
       isEnable,
       isAgain,
+      // step2Arr,
     } = this.state;
     const columns = [
       {
@@ -494,6 +586,18 @@ export default class Step2 extends PureComponent {
       );
     });
 
+    const props = {
+      name: 'file',
+      action: '/api/api/v2/zhengwu/swap/resource/info/import',
+      // headers: {
+      //   authorization: 'authorization-text',
+      // },
+      data: {
+        method: 'post',
+      },
+      onChange: info => this.handleFileChange(info),
+    };
+
     return (
       <PageHeaderLayout>
         <Card>
@@ -516,7 +620,11 @@ export default class Step2 extends PureComponent {
                 重新导入
               </Button>
             </Item>
-            <Item label="信息项" {...formItemLayout2}>
+            <Item
+              label="信息项"
+              {...formItemLayout2}
+              style={{ display: +data.method === 2 ? (isAgain ? 'block' : 'none') : 'block' }}
+            >
               <TableForm
                 value={tableData}
                 onChange={val => this.onChange(val)}
@@ -525,7 +633,37 @@ export default class Step2 extends PureComponent {
               />
             </Item>
           </Form>
-          <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              display: +data.method === 2 ? (isAgain ? 'none' : 'block') : 'none',
+              textAlign: 'center',
+            }}
+          >
+            <h3 style={{ textAlign: 'center' }}>
+              请{' '}
+              <a
+                className={styles.aBtn}
+                href="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
+                download="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
+              >
+                下载模板{' '}
+              </a>
+              按格式填写信息资源项内容后导入
+            </h3>
+            <Upload className={styles.infos} {...props}>
+              <span>导入信息项: </span>
+              <Button type="primary"> 选取文件</Button>
+            </Upload>
+            <Button type="primary" onClick={this.handleBackBtn} style={{ marginTop: 20 }}>
+              提交
+            </Button>
+          </div>
+          <div
+            style={{
+              textAlign: 'center',
+              display: +data.method === 2 ? (isAgain ? 'block' : 'none') : 'block',
+            }}
+          >
             <Popconfirm
               title="返回填写信息资源内容页面，当前信息将不会被保存，是否返回？"
               onConfirm={this.goBack}

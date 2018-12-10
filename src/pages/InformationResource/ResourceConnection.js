@@ -242,6 +242,20 @@ export default class ResourceConnection extends Component {
       this.setState({
         fileListData: [...enableEditFile],
       });
+    } else if (zcType === 'mysql') {
+      await dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: zcId,
+          pagination: { pageNum: 1, pageSize: 10 },
+          type: 'db',
+          type1: 'struct',
+        },
+      });
+      initialData = [...enableEditFile];
+      this.setState({
+        fileListData: [...enableEditFile],
+      });
     }
   };
 
@@ -365,6 +379,8 @@ export default class ResourceConnection extends Component {
       connectTime,
       fileListData,
       isExpandOrFolder,
+      initialType,
+      dataTypes,
     } = this.state;
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
@@ -411,6 +427,40 @@ export default class ResourceConnection extends Component {
     });
     // }
     columns.forEach(item => {
+      item.align = 'center';
+    });
+    const columnsLeft = [
+      {
+        title: '信息项名称',
+        dataIndex: 'columnName',
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'columnType',
+      },
+      {
+        title: '数据长度',
+        dataIndex: 'note',
+      },
+    ];
+    columnsLeft.forEach(item => {
+      item.align = 'center';
+    });
+    const columnsr = [
+      {
+        title: '字段',
+        dataIndex: 'columnName',
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'columnType',
+      },
+      {
+        title: '说明',
+        dataIndex: 'note',
+      },
+    ];
+    columnsr.forEach(item => {
       item.align = 'center';
     });
     const list = [
@@ -620,7 +670,7 @@ export default class ResourceConnection extends Component {
               <span> {resourceDetail && resourceDetail.summary}</span>
             </h3>
             <Button style={{ marginLeft: 10 }} onClick={this.isFolderOrExpand}>
-              {isExpandOrFolder ? '查看更多' : '收起'}
+              {isExpandOrFolder ? '展开' : '收起'}
             </Button>
             <Divider />
           </div>
@@ -638,7 +688,15 @@ export default class ResourceConnection extends Component {
               </span>
               <span
                 className={styles.linkBtn}
-                style={{ marginLeft: 20 }}
+                style={{
+                  marginLeft: 20,
+                  display:
+                    dataTypes !== 'mysql'
+                      ? initialType !== 'mysql'
+                        ? 'inline-block'
+                        : 'none'
+                      : 'none',
+                }}
                 onClick={this.handleResetFile}
               >
                 重载文件
@@ -666,21 +724,65 @@ export default class ResourceConnection extends Component {
           {/* )} */}
           {/* </div> */}
           <div>
-            <Table
-              columns={columns}
-              dataSource={fileListData}
-              pagination={
-                connectFilePagination && {
-                  ...connectFilePagination,
-                  showQuickJumper: true,
-                  showTotal: total =>
-                    `共 ${Math.ceil(total / connectFilePagination.pageSize)}页 / ${total}条 数据`,
-                }
-              }
-              rowKey="id"
-              bordered
-              onChange={this.handleFileTableChange}
-            />
+            <Row>
+              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 0 : 12) : 12}>
+                <Table
+                  columns={columnsLeft}
+                  dataSource={fileListData}
+                  pagination={
+                    connectFilePagination && {
+                      ...connectFilePagination,
+                      showQuickJumper: true,
+                      showTotal: total =>
+                        `共 ${Math.ceil(
+                          total / connectFilePagination.pageSize
+                        )}页 / ${total}条 数据`,
+                    }
+                  }
+                  rowKey="id"
+                  bordered
+                  onChange={this.handleFileTableChange}
+                />
+              </Col>
+              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 0 : 12) : 12}>
+                <Table
+                  columns={columnsr}
+                  dataSource={fileListData}
+                  pagination={
+                    connectFilePagination && {
+                      ...connectFilePagination,
+                      showQuickJumper: true,
+                      showTotal: total =>
+                        `共 ${Math.ceil(
+                          total / connectFilePagination.pageSize
+                        )}页 / ${total}条 数据`,
+                    }
+                  }
+                  rowKey="id"
+                  bordered
+                  onChange={this.handleFileTableChange}
+                />
+              </Col>
+              <Col span={dataTypes !== 'mysql' ? (initialType !== 'mysql' ? 24 : 0) : 0}>
+                <Table
+                  columns={columns}
+                  dataSource={fileListData}
+                  pagination={
+                    connectFilePagination && {
+                      ...connectFilePagination,
+                      showQuickJumper: true,
+                      showTotal: total =>
+                        `共 ${Math.ceil(
+                          total / connectFilePagination.pageSize
+                        )}页 / ${total}条 数据`,
+                    }
+                  }
+                  rowKey="id"
+                  bordered
+                  onChange={this.handleFileTableChange}
+                />
+              </Col>
+            </Row>
             <Button type="primary" style={{ marginTop: 20 }} onClick={this.handleSaveMountData}>
               保存
             </Button>

@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-08 15:52:59
+ * @Last Modified time: 2018-12-09 17:53:24
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -27,6 +27,7 @@ import moment from 'moment';
 const { Item } = Form;
 const { Option } = Select;
 const { Step } = Steps;
+let rewriteItem = [];
 const formItemLayout = {
   labelCol: {
     span: 7,
@@ -136,7 +137,7 @@ export default class Step1 extends PureComponent {
       });
     }
     sessionStorage.removeItem('itemData');
-    sessionStorage.setItem('isBack', false);
+    // sessionStorage.setItem('isBack', false);
     sessionStorage.setItem('inputType', '');
     if (this.props.location.state && this.props.location.state.editId) {
       resouceDetailById = {};

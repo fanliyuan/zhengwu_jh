@@ -35,6 +35,7 @@ export default {
     connectFileList: [],
     connectFilePagination: {},
     itemList: [],
+    connectItemList: [],
     // forEditFile:[],
   },
 
@@ -206,6 +207,10 @@ export default {
                   type1: 'ftpfile',
                 },
               });
+              yield put({
+                type: 'getResourceDetail',
+                payload: response.result.data,
+              });
             } else if (response.result.data.mountType === 'file') {
               yield put({
                 type: 'getFileList',
@@ -216,12 +221,34 @@ export default {
                   type1: 'file',
                 },
               });
+              yield put({
+                type: 'getResourceDetail',
+                payload: response.result.data,
+              });
+            } else if (response.result.data.mountType === 'mysql') {
+              yield put({
+                type: 'getFileList',
+                payload: {
+                  id: response.result.data.mountId,
+                  pagination: { pageNum: 1, pageSize: 10 },
+                  type: 'db',
+                  type1: 'struct',
+                },
+              });
+              yield put({
+                type: 'getResourceDetail',
+                payload: response.result.data,
+              });
+              yield put({
+                type: 'reWriteItemList',
+                payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
+              });
+              yield put({
+                type: 'getConnectItemList',
+                payload: response.result.data,
+              });
             }
           }
-          yield put({
-            type: 'getResourceDetail',
-            payload: response.result.data,
-          });
         } else {
           message.error(response.message);
         }
@@ -350,6 +377,12 @@ export default {
       return {
         ...state,
         itemList: payload,
+      };
+    },
+    getConnectItemList(state, { payload }) {
+      return {
+        ...state,
+        connectItemList: payload,
       };
     },
   },
