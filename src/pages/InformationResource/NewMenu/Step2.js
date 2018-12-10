@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-09 17:54:12
+ * @Last Modified time: 2018-12-10 11:49:08
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
 */
 import React, { PureComponent, Fragment } from 'react';
@@ -37,7 +37,7 @@ const { Step } = Steps;
 const { Option } = Select;
 // const TabPane = Tabs.TabPane
 let keyId = 1;
-let rewriteItem = [];
+// let rewriteItem = [];
 // let step2Arr = [];
 const modalList = [
   {
@@ -86,20 +86,31 @@ export default class Step2 extends PureComponent {
     isAgain: false,
     editId: '',
     step2Arr: [],
+    // fileList:[],
   };
 
   componentWillReceiveProps(nextProps) {
-    if (rewriteItem) {
+    if (nextProps.informationResource.itemList) {
+      const nextItemList = nextProps.informationResource.itemList;
       const { tableData, routeData } = this.state;
-      rewriteItem.forEach(item => {
+      nextItemList.forEach(item => {
         item.key = keyId++;
       });
       this.setState({
-        tableData: rewriteItem,
-        routeData: { ...routeData, infoAddDtoList: rewriteItem },
+        tableData: nextItemList,
+        routeData: { ...routeData, infoAddDtoList: nextItemList },
       });
-      console.log(rewriteItem);
     }
+    // if (rewriteItem) {
+    //   const { tableData, routeData } = this.state;
+    //   rewriteItem.forEach(item => {
+    //     item.key = keyId++;
+    //   });
+    //   this.setState({
+    //     tableData: rewriteItem,
+    //     routeData: { ...routeData, infoAddDtoList: rewriteItem },
+    //   });
+    // }
   }
 
   componentDidMount() {
@@ -192,6 +203,7 @@ export default class Step2 extends PureComponent {
       const { data } = this.state;
       this.setState({
         isAgain: false,
+        step2Arr: [],
         // tableData: [],
         data: {
           ...data,
@@ -409,13 +421,36 @@ export default class Step2 extends PureComponent {
     }
   };
 
+  handleRemoveChange = info => {
+    if (info.response) {
+      if (+info.response.code === 200) {
+        // this.setState({
+        //   step2Arr: step2Arr.concat(info.file.response.result.datas),
+        // });
+        console.log(info.response.result.datas);
+        const { step2Arr } = this.state;
+        const deleteArr = info.response.result.datas;
+        let dataIndexs = [];
+        deleteArr.forEach(item => {
+          dataIndexs.push(step2Arr.indexOf(item));
+        });
+        dataIndexs.forEach(item => {
+          step2Arr.item = undefined;
+        });
+        this.setState({
+          step2Arr,
+        });
+      }
+    }
+  };
+
   render() {
     // const { form: { getFieldDecorator, validateFields }, dispatch } = this.props
     const {
       form: { getFieldDecorator, getFieldValue },
       informationResource: { itemList },
     } = this.props;
-    rewriteItem = itemList;
+    // rewriteItem = itemList;
     const {
       data,
       tableData,
@@ -427,6 +462,7 @@ export default class Step2 extends PureComponent {
       // disabled,
       isEnable,
       isAgain,
+      // fileList,
       // step2Arr,
     } = this.state;
     const columns = [
@@ -596,6 +632,8 @@ export default class Step2 extends PureComponent {
         method: 'post',
       },
       onChange: info => this.handleFileChange(info),
+      onRemove: info => this.handleRemoveChange(info),
+      // fileList,
     };
 
     return (

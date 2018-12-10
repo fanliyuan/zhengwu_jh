@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-09 17:53:24
+ * @Last Modified time: 2018-12-10 11:06:32
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -37,7 +37,7 @@ const formItemLayout = {
   },
 };
 let isSameMsg;
-let resouceDetailById = {};
+// let resouceDetailById = {};
 
 @connect(({ informationResource }) => ({
   informationResource,
@@ -72,31 +72,56 @@ export default class Step1 extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const { edit } = this.state;
-    if (resouceDetailById && resouceDetailById.typeName && edit) {
+    const detail = nextProps.informationResource.resourceDetail;
+    if (detail && detail.typeName && edit) {
       const { data } = this.state;
-      const classifyData = resouceDetailById.typeName.split('-');
-      const formatData = resouceDetailById.format.split('-');
-      const relCode =
-        resouceDetailById.code &&
-        resouceDetailById.code.slice(0, resouceDetailById.code.lastIndexOf('/'));
+      const classifyData = detail.typeName.split('-');
+      const formatData = detail.format.split('-');
+      const relCode = detail.code && detail.code.slice(0, detail.code.lastIndexOf('/'));
       this.setState({
         data: {
           ...data,
-          infoName: resouceDetailById.name,
-          infoSummary: resouceDetailById.summary,
+          infoName: detail.name,
+          infoSummary: detail.summary,
           classify: classifyData,
-          providerName: resouceDetailById.providerName,
-          providerCode: resouceDetailById.providerNo,
-          innerDepartmentName: resouceDetailById.providerDept,
+          providerName: detail.providerName,
+          providerCode: detail.providerNo,
+          innerDepartmentName: detail.providerDept,
           infoType: formatData,
           code: relCode,
-          typeId: resouceDetailById.typeId,
-          updateCycle: resouceDetailById.updateCycle,
-          updateTime: moment(resouceDetailById.publishTime),
-          relatedCode: resouceDetailById.relateCode ? resouceDetailById.relateCode : '',
+          typeId: detail.typeId,
+          updateCycle: detail.updateCycle,
+          updateTime: moment(detail.publishTime),
+          relatedCode: detail.relateCode ? detail.relateCode : '',
         },
       });
     }
+    // const { edit } = this.state;
+    // if (resouceDetailById && resouceDetailById.typeName && edit) {
+    //   const { data } = this.state;
+    //   const classifyData = resouceDetailById.typeName.split('-');
+    //   const formatData = resouceDetailById.format.split('-');
+    //   const relCode =
+    //     resouceDetailById.code &&
+    //     resouceDetailById.code.slice(0, resouceDetailById.code.lastIndexOf('/'));
+    //   this.setState({
+    //     data: {
+    //       ...data,
+    //       infoName: resouceDetailById.name,
+    //       infoSummary: resouceDetailById.summary,
+    //       classify: classifyData,
+    //       providerName: resouceDetailById.providerName,
+    //       providerCode: resouceDetailById.providerNo,
+    //       innerDepartmentName: resouceDetailById.providerDept,
+    //       infoType: formatData,
+    //       code: relCode,
+    //       typeId: resouceDetailById.typeId,
+    //       updateCycle: resouceDetailById.updateCycle,
+    //       updateTime: moment(resouceDetailById.publishTime),
+    //       relatedCode: resouceDetailById.relateCode ? resouceDetailById.relateCode : '',
+    //     },
+    //   });
+    // }
   }
 
   componentDidMount() {
@@ -105,7 +130,7 @@ export default class Step1 extends PureComponent {
     //   disabled: false,
     // });
     // }
-    resouceDetailById = {};
+    // resouceDetailById = {};
     const { dispatch } = this.props;
     dispatch({
       type: 'informationResource/getClassfiyList',
@@ -140,7 +165,7 @@ export default class Step1 extends PureComponent {
     // sessionStorage.setItem('isBack', false);
     sessionStorage.setItem('inputType', '');
     if (this.props.location.state && this.props.location.state.editId) {
-      resouceDetailById = {};
+      // resouceDetailById = {};
       this.setState({
         resourceRouteId: this.props.location.state.editId,
         edit: true,
@@ -364,7 +389,7 @@ export default class Step1 extends PureComponent {
       informationResource: { classfiyList, sameMsg, resourceDetail },
     } = this.props;
     isSameMsg = sameMsg;
-    resouceDetailById = resourceDetail;
+    // resouceDetailById = resourceDetail;
     const { data, isNext, startValue } = this.state;
 
     const onValidateForm = () => {
