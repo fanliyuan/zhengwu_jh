@@ -37,7 +37,7 @@ export default {
         if (payload.page) {
           yield put({
             type: 'savePage',
-            payload: payload.page,
+            payload: payload,
           });
         }
       }
@@ -130,7 +130,7 @@ export default {
     savePage(state, { payload }) {
       return {
         ...state,
-        page: payload,
+        page: payload.pageNum,
       };
     },
     resetAuditLog(state) {
