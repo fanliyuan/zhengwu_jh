@@ -34,10 +34,10 @@ export default {
           type: 'saveDataList',
           payload: response.result,
         });
-        if (payload.page) {
+        if (payload.pageNum) {
           yield put({
             type: 'savePage',
-            payload: payload.page,
+            payload,
           });
         }
       }
@@ -130,7 +130,7 @@ export default {
     savePage(state, { payload }) {
       return {
         ...state,
-        page: payload,
+        page: payload.pageNum,
       };
     },
     resetAuditLog(state) {
