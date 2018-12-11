@@ -379,12 +379,12 @@ export default class ResourceConnection extends Component {
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
       informationResource: {
-        resourceDetail,
+        resourceDetail, // 页面头部 资源的详情
         connectList,
         connectPagination,
         connectFileList,
         connectFilePagination,
-        itemList,
+        itemList, // 左边的表格的数据
       },
     } = this.props;
     enableEditFile = [...connectFileList];

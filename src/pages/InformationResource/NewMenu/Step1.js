@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-11 11:13:10
+ * @Last Modified time: 2018-12-11 16:06:07
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -77,7 +77,7 @@ export default class Step1 extends PureComponent {
       const { data } = this.state;
       const classifyData = detail.typeName.split('-');
       const formatData = detail.format.split('-');
-      const relCode = detail.code && detail.code.slice(0, detail.code.lastIndexOf('/'));
+      const relCode = detail.code; // && detail.code;.slice(0, detail.code.lastIndexOf('/'))
       this.setState({
         data: {
           ...data,
@@ -141,8 +141,7 @@ export default class Step1 extends PureComponent {
       const { data } = this.state;
       const classifyData = sessionData.typeName.split('-');
       const formatData = sessionData.format.split('-');
-      const relCode =
-        sessionData.code && sessionData.code.slice(0, sessionData.code.lastIndexOf('/'));
+      const relCode = sessionData.code; // && sessionData.code.slice(0, sessionData.code.lastIndexOf('/'));
       this.setState({
         data: {
           ...data,
@@ -281,14 +280,29 @@ export default class Step1 extends PureComponent {
           resourceRouteId,
           data: { typeId, code },
         } = this.state;
-        const step1Data = {
-          ...values,
-          publishTime: times,
-          code: (selectCode || code) + '/',
-          format: values.format.join('-'),
-          typeName: values.typeName.join('-'),
-          typeId: selectId || typeId,
-        };
+        let step1Data = {};
+        const sessionData =
+          sessionStorage.getItem('routeData') && JSON.parse(sessionStorage.getItem('routeData'));
+        const rC = code.slice(code.lastIndexOf('/') + 1);
+        if (resourceRouteId || sessionData) {
+          step1Data = {
+            ...values,
+            publishTime: times,
+            code: selectCode ? selectCode + '/' + rC : code,
+            format: values.format.join('-'),
+            typeName: values.typeName.join('-'),
+            typeId: selectId || typeId,
+          };
+        } else {
+          step1Data = {
+            ...values,
+            publishTime: times,
+            code: selectCode ? selectCode + '/' : code,
+            format: values.format.join('-'),
+            typeName: values.typeName.join('-'),
+            typeId: selectId || typeId,
+          };
+        }
         sessionStorage.setItem('routeData', JSON.stringify(step1Data));
         dispatch(
           routerRedux.push({
