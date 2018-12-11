@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: fly
- * @Last Modified time: 2018-12-10 18:16:54
+ * @Last Modified time: 2018-12-11 11:13:10
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -500,6 +500,10 @@ export default class Step1 extends PureComponent {
           {
             value: '2-8',
             label: 'db2',
+          },
+          {
+            value: '2-9',
+            label: 'mysql',
           },
         ],
       },
