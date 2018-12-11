@@ -100,11 +100,11 @@ class AddUser extends PureComponent {
     } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (values.status) {
+        if (values.status === true) {
           Object.defineProperty(values, 'status', {
             value: 2,
           });
-        } else {
+        } else if (!values.status) {
           Object.defineProperty(values, 'status', {
             value: 1,
           });

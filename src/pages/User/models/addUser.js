@@ -9,7 +9,7 @@ function initAddParams() {
     name: '',
     phone: '',
     email: '',
-    status: 2,
+    status: 1,
   };
 }
 
