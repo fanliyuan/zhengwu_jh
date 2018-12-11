@@ -201,6 +201,7 @@ class SourceCatalog extends Component {
         dsID: record.resourceId,
         dsName: record.resourceName,
         mountResourceId: record.mountResourceId,
+        mountResourceName: record.mountResourceName,
         publishInstitution: record.nodeName,
         publisherID: record.nodeId,
         subscribeName: fieldsValue.subscribeName,
