@@ -34,10 +34,10 @@ export default {
           type: 'saveDataList',
           payload: response.result,
         });
-        if (payload.page) {
+        if (payload.pageNum) {
           yield put({
             type: 'savePage',
-            payload: payload,
+            payload,
           });
         }
       }
