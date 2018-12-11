@@ -49,6 +49,7 @@ export default class ResourceConnection extends Component {
     endTimes: '',
     connectTime: [],
     chooseName: '',
+    chooseName1: '',
     chooseId: '',
     chooseId1: '',
     zcName: '',
@@ -69,6 +70,7 @@ export default class ResourceConnection extends Component {
     if (resourceDetailData) {
       this.setState({
         initialType: resourceDetailData.mountType,
+        chooseName1: resourceDetailData.mountName,
       });
       if (resourceDetailData.mount) {
         let arr = [];
@@ -399,6 +401,8 @@ export default class ResourceConnection extends Component {
       isExpandOrFolder,
       initialType,
       dataTypes,
+      chooseName,
+      chooseName1,
     } = this.state;
     // console.log(dataTypes)
     const pagination = { pageSize: 10, current: 1 };
@@ -697,7 +701,7 @@ export default class ResourceConnection extends Component {
             <div style={{ display: 'inline-block', marginRight: 20 }}>
               <h3>
                 关联数据名称:
-                <span style={{ marginLeft: 10 }}>城市低保标准</span>
+                <span style={{ marginLeft: 10 }}>{chooseName ? chooseName : chooseName1}</span>
               </h3>
             </div>
             {/* {isNodeOperator && ( */}
