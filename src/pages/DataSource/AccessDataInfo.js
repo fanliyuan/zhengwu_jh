@@ -433,7 +433,7 @@ class AccessDataInfo extends PureComponent {
   handleSelectColumn = (record, selected) => {
     const { structAddDtoList } = this.state;
     let pri;
-    switch (record.pri) {
+    switch (record.indices) {
       case 'PRI':
         pri = true;
         break;
@@ -647,6 +647,15 @@ class AccessDataInfo extends PureComponent {
     this.setState({
       page: current,
     });
+  };
+
+  deepTree = treeList => {
+    for (let i = 0, len = treeList.length; i < len; i += 1) {
+      tree.push(treeList[i]);
+      if (treeList[i].ftpFileList !== '') {
+        this.deepTree(treeList[i].ftpFileList);
+      }
+    }
   };
 
   renderDbForm() {
@@ -926,15 +935,6 @@ class AccessDataInfo extends PureComponent {
         {this.renderTreeNodes(treeList)}
       </DirectoryTree>
     );
-  };
-
-  deepTree = treeList => {
-    for (let i = 0, len = treeList.length; i < len; i += 1) {
-      tree.push(treeList[i]);
-      if (treeList[i].ftpFileList !== '') {
-        this.deepTree(treeList[i].ftpFileList);
-      }
-    }
   };
 
   renderSyncTree = treeList => {
