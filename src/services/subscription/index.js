@@ -24,6 +24,13 @@ export async function getResourceDetails(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/resourceDetails?${stringify(params)}`);
 }
 
+// 数据详细信息
+export async function resourceBeanEntityInfo(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/resourceBazaar/resourceBeanEntityInfo?${stringify(params)}`
+  );
+}
+
 // 订阅操作
 export async function subscribe(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/subscribe`, {

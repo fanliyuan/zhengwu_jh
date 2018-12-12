@@ -1,5 +1,6 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Card } from 'antd';
+import router from 'umi/router';
 import DescriptionList from '@/components/DescriptionList';
 import Ellipsis from '@/components/Ellipsis';
 
@@ -23,6 +24,15 @@ export default class ViewCard extends PureComponent {
                   <Description term={item.key} key={item.key} style={{ width: '100%' }}>
                     <Ellipsis lines={item.lines} fullWidthRecognition tooltip>
                       {item.value}
+                    </Ellipsis>
+                  </Description>
+                );
+              }
+              if (item.link) {
+                return (
+                  <Description term={item.key} key={item.key}>
+                    <Ellipsis lines={1} fullWidthRecognition>
+                      <a onClick={() => router.push(`${item.href}`)}>{item.value}</a>
                     </Ellipsis>
                   </Description>
                 );

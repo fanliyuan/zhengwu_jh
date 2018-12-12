@@ -352,6 +352,13 @@ export default [
             authority: ['user'],
           },
           {
+            path: '/subscribe/sourceCatalog/infoResource/:resourceId/:mountResourceId',
+            name: 'infoResource',
+            component: './Subscription/InfoResource',
+            authority: ['user'],
+            hideInMenu: true,
+          },
+          {
             path: '/subscribe/management',
             name: 'management',
             component: './Subscription/SubManagement',

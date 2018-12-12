@@ -122,8 +122,8 @@ class SourceCatalog extends Component {
           <a
             onClick={() =>
               router.push(
-                `/data/management/infoSource/${record.dataType}/${record.mountResourceId}/${
-                  record.resourceId
+                `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
+                  record.mountResourceId
                 }`
               )
             }
