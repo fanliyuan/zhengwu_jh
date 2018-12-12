@@ -128,3 +128,10 @@ export async function setSubAuth(params) {
     body: params,
   });
 }
+
+// 发布方审核详情
+export async function getSubAuthDetail(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/resourceBazaar/subscribeAuditDetail?${stringify(params)}`
+  );
+}

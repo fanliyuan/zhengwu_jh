@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { message } from 'antd';
 
 import { getSubList, stopSubTask, runSubTask, getAssessLogs } from '@/services/subscription';
@@ -23,7 +24,7 @@ export default {
       }
       let res;
       let dataList = [];
-      let pagination = {};
+      const pagination = {};
       try {
         res = yield call(getSubList, params);
         if (+res.code === 200) {
@@ -31,7 +32,7 @@ export default {
           pagination.total = res.result.totalCounts;
         }
       } catch (error) {
-        // eslint-disable-nextline
+        // eslint-disable-next-line
         console.log(error);
       } finally {
         yield put({
@@ -52,7 +53,10 @@ export default {
             type: 'getSubList',
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
     },
     *stopSubTask({ payload: params }, { call, put }) {
       try {
@@ -63,14 +67,19 @@ export default {
             type: 'getSubList',
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
     },
     *getAssessLogs({ payload: params }, { call, put }) {
-      let assessLogs = [];
+      let assessLogs = {};
       try {
         const res = yield call(getAssessLogs, params);
         assessLogs = res.result.datas;
       } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
       } finally {
         yield put({
           type: 'saveAssessLogs',

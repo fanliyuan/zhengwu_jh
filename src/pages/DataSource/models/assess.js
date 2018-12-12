@@ -1,5 +1,11 @@
 import { message } from 'antd';
 
+import {
+  getAssessList,
+  assessData,
+  getAssessLog,
+} from '@/services/sourceManagement/sourceManagement';
+
 const statusObject = {
   '-1': '待审核',
   '0': '已拒绝',
@@ -9,12 +15,6 @@ const statusObject = {
   '20': '删除已拒绝',
   '21': '删除已通过',
 };
-
-import {
-  getAssessList,
-  assessData,
-  getAssessLog,
-} from '@/services/sourceManagement/sourceManagement';
 
 export default {
   namespace: 'assess',
@@ -38,12 +38,14 @@ export default {
           },
         });
       } else {
+        // eslint-disable-next-line
         payload.params = yield select(state => state.assess.queryData);
       }
       try {
         const res = yield call(getAssessList, payload.params);
         if (res.code === 200) {
           assessList = res.result.datas;
+          // eslint-disable-next-line
           assessList.forEach((item, index) => (item.index = index));
           pagination = {
             total: res.result.totalCounts,

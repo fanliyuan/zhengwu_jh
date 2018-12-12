@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
-import { Table, Select, Modal, Button, Radio, Input, Card, Divider } from 'antd';
+import { Table, Select, Modal, Radio, Input, Card, Divider, Icon } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Bind, Throttle } from 'lodash-decorators';
@@ -7,12 +8,12 @@ import { Bind, Throttle } from 'lodash-decorators';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import SearchForm from '@/components/SearchForm';
-import KeyValue from '@/components/KeyValue';
+// import KeyValue from '@/components/KeyValue';
 import DescriptionList from '@/components/DescriptionList';
 import DataTypeSelectOption from '@/components/DataTypeSelectOption';
 import styles from './Assess.less';
 
-const { Option, OptGroup } = Select;
+const { Option } = Select;
 const { Group } = Radio;
 const { TextArea } = Input;
 const { Description } = DescriptionList;
@@ -31,12 +32,12 @@ const { Description } = DescriptionList;
 const statusArray = [
   { value: 'all', label: '全部' },
   { value: '-1', label: '待审核' },
-  { value: '0', label: '已拒绝' },
-  { value: '1', label: '已通过' },
-  { value: '10', label: '修改已拒绝' },
   { value: '-11', label: '修改待审核' },
-  { value: '20', label: '删除已拒绝' },
   { value: '-21', label: '删除待审核' },
+  { value: '0', label: '已拒绝' },
+  { value: '10', label: '修改已拒绝' },
+  { value: '20', label: '删除已拒绝' },
+  { value: '1', label: '已通过' },
 ];
 const classNameObject = {
   '-1': 'blue',
@@ -56,7 +57,7 @@ const classNameObject = {
   loadingTable: loading.effects['accessData/getCurrentdetail'],
   loadingStruct: loading.effects['accessData/getCurrentList'],
 }))
-export default class Assess extends Component {
+class Assess extends Component {
   formOptions = {
     formData: [
       {
@@ -132,7 +133,7 @@ export default class Assess extends Component {
       width: '400px',
       render(text) {
         return (
-          <Ellipsis tooltip={true} lines={1}>
+          <Ellipsis tooltip lines={1}>
             {text}
           </Ellipsis>
         );
@@ -148,7 +149,7 @@ export default class Assess extends Component {
       width: '200px',
       render(text) {
         return (
-          <Ellipsis tooltip={true} lines={1}>
+          <Ellipsis tooltip lines={1}>
             {text || '暂无'}
           </Ellipsis>
         );
@@ -180,7 +181,7 @@ export default class Assess extends Component {
         // 这下面复杂的判断,不是我的本意
         let index = 1;
         let showData = true;
-        let isCurOption = true;
+        let isCurOption = true; // eslint-disable-line
         if (row.status === -1) {
           index = 0;
           isCurOption = false;
@@ -209,7 +210,7 @@ export default class Assess extends Component {
           return (
             <a
               className="mr16"
-              onClick={this['handle' + item].bind(this, row, showData)}
+              onClick={this[`handle${item}`].bind(this, row, showData)}
               key={item}
             >
               {this.operationsObject[item]}
@@ -229,8 +230,8 @@ export default class Assess extends Component {
     assessVisible: false,
     status: 1,
     rejectReason: '',
-    hasSetCurrent: false,
-    currentConfig: [1, -11, 10],
+    // hasSetCurrent: false,
+    // currentConfig: [1, -11, 10],
   };
 
   componentDidMount() {
@@ -259,6 +260,7 @@ export default class Assess extends Component {
     );
   };
 
+  // eslint-disable-next-line
   handleview = (row, showData, isCurOption) => {
     const { dispatch } = this.props;
     const { type } = row;
@@ -295,11 +297,13 @@ export default class Assess extends Component {
   };
 
   handleAssessOk = () => {
+    // eslint-disable-next-line
     let { status, type, rejectReason, dataId, row } = this.state;
+    const { dispatch } = this.props;
     if (status === 1) {
       status = 1;
     } else {
-      switch (this.state.row.status) {
+      switch (row.status) {
         case -1:
           status = 0;
           break;
@@ -312,7 +316,7 @@ export default class Assess extends Component {
       }
     }
     // 这里发送 审核请求
-    this.props.dispatch({
+    dispatch({
       type: 'assess/assessData',
       payload: {
         id: dataId,
@@ -369,7 +373,7 @@ export default class Assess extends Component {
   };
 
   renderDbInfo = showData => {
-    console.log('表格');
+    console.log('表格'); // eslint-disable-line
     const {
       loadingTable,
       loadingStruct,
@@ -461,7 +465,7 @@ export default class Assess extends Component {
       loadingTable,
       accessData: { currentDetail, currentSync, currentList },
     } = this.props;
-    console.log(currentDetail, currentSync, currentList);
+    console.log(currentDetail, currentSync, currentList); // eslint-disable-line
     const tableColumn = [
       {
         title: '文件名称',
@@ -527,7 +531,7 @@ export default class Assess extends Component {
       {
         title: '文件大小',
         dataIndex: 'size',
-        render: text => this.setFileSize(parseInt(text)),
+        render: text => this.setFileSize(parseInt(text, 10)),
       },
       {
         title: '最近更新时间',
@@ -564,7 +568,9 @@ export default class Assess extends Component {
   @Bind()
   @Throttle(1000)
   handleSearch(queryData = {}, resetPage = false) {
+    // eslint-disable-next-line
     const pagination = resetPage ? { pageNum: 1, pageSize: 10 } : this.state.pagination;
+    const { dispatch } = this.props;
     this.setState({
       queryData,
     });
@@ -577,7 +583,7 @@ export default class Assess extends Component {
     }
     delete queryData.time;
     queryData.mount = true;
-    this.props.dispatch({
+    dispatch({
       type: 'assess/getAssessList',
       payload: {
         params: {
@@ -593,7 +599,7 @@ export default class Assess extends Component {
       assess: { assessList, pagination },
       loading,
     } = this.props;
-    const { assessVisible, status, rejectReason } = this.state;
+    const { assessVisible, status } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       hideOnSinglePage: true,
@@ -642,3 +648,4 @@ export default class Assess extends Component {
     );
   }
 }
+export default Assess;

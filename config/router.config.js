@@ -220,7 +220,7 @@ export default [
             authority: 'user',
           },
           {
-            path: 'viewAuth/:dataType/:resourceId/:mountId/:subId',
+            path: 'viewAuth/:dataType/:resourceId/:mountId/:subId/:subscriberId',
             name: 'viewAuth',
             component: './InformationResource/ViewAuth',
             authority: 'user',

@@ -1,6 +1,10 @@
 import { message } from 'antd';
 
-import { getSubAuthList, setSubAuth } from '@/services/informationResource/informationResource';
+import {
+  getSubAuthList,
+  setSubAuth,
+  getSubAuthDetail,
+} from '@/services/informationResource/informationResource';
 import {
   viewDbDetail,
   viewFileDetail,
@@ -15,6 +19,7 @@ export default {
     queryData: {},
     pagination: {},
     refDetail: {},
+    subAuthDetail: {},
   },
   effects: {
     *getSubAuthList({ payload: params }, { call, put }, select) {
@@ -24,10 +29,11 @@ export default {
           payload: params,
         });
       } else {
+        // eslint-disable-next-line
         params = yield select(state => state.subAuth.queryData);
       }
       let dataList = [];
-      let pagination = {};
+      const pagination = {};
       try {
         const res = yield call(getSubAuthList, params);
         if (+res.code === 200) {
@@ -35,7 +41,7 @@ export default {
           pagination.total = res.result.totalCounts;
         }
       } catch (error) {
-        console.log(error);
+        console.log(error); // eslint-disable-line
         pagination.total = 0;
       } finally {
         yield put({
@@ -99,7 +105,7 @@ export default {
           insertTime,
           dataSize,
           updateTime,
-          dataPubMode: syncMode + '-' + syncRate + '-' + timeSet,
+          dataPubMode: `${syncMode}-${syncRate}-${timeSet}`,
           dataId: dataId || payload.id || 0,
         };
         yield put({
@@ -111,6 +117,22 @@ export default {
       } catch (error) {
         // eslint-disable-next-line
         console.log(error);
+      }
+    },
+    *getSubAuthDetail({ payload }, { call, put }) {
+      let subAuthDetail = {};
+      try {
+        const res = yield call(getSubAuthDetail, payload);
+        if (res.code === 200) {
+          subAuthDetail = res.result.datas;
+        }
+      } catch (error) {
+        console.log(error); // eslint-disable-line
+      } finally {
+        yield put({
+          type: 'saveSubAuthDetail',
+          payload: subAuthDetail,
+        });
       }
     },
   },
@@ -142,6 +164,12 @@ export default {
       return {
         ...state,
         refDetail,
+      };
+    },
+    saveSubAuthDetail(state, { payload: subAuthDetail }) {
+      return {
+        ...state,
+        subAuthDetail,
       };
     },
   },

@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/label-has-for */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Divider } from 'antd';
@@ -5,6 +8,17 @@ import { Row, Col, Divider } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import InfoResource from '@/components/InfoResource';
 import styles from './ViewAuth.less';
+
+const statusArray = [
+  { value: 'all', label: '全部' },
+  { value: '-1', label: '待审核' },
+  { value: '-11', label: '修改待审核' },
+  { value: '-21', label: '删除待审核' },
+  { value: '0', label: '已拒绝' },
+  { value: '10', label: '修改已拒绝' },
+  { value: '20', label: '删除已拒绝' },
+  { value: '1', label: '已通过' },
+];
 
 @connect(({ informationResource, subAuth }) => ({ informationResource, subAuth }))
 export default class ViewAuth extends Component {
@@ -20,30 +34,39 @@ export default class ViewAuth extends Component {
   componentDidMount() {
     const {
       match: {
-        params: { resourceId, mountId, subId, dataType },
+        params: { resourceId, mountId, subId, dataType, subscriberId: subscriberID },
       },
+      dispatch,
     } = this.props;
-    this.props.dispatch({
+    dispatch({
       type: 'informationResource/getResources',
-      payload: { id: 51 || resourceId },
+      payload: { id: resourceId || 51 },
     });
-    // this.props.dispatch({
-    //   type: 'subAuth/getRefDetail',
-    //   payload: {
-    //     type: dataType,
-    //     id: mountId,
-    //   }
-    // })
+    dispatch({
+      type: 'subAuth/getRefDetail',
+      payload: {
+        type: dataType,
+        id: mountId,
+      },
+    });
+    dispatch({
+      type: 'subAuth/getSubAuthDetail',
+      payload: {
+        dsID: resourceId,
+        subID: subId,
+        subscriberID,
+      },
+    });
   }
 
   goView = info => {
-    console.log(info);
+    console.log(info); // eslint-disable-line
   };
 
   render() {
     const {
       informationResource: { resourceDetail },
-      subAuth: { refDetail },
+      subAuth: { refDetail, subAuthDetail },
     } = this.props;
     const infoResource = {
       infoSrcCode: resourceDetail.code,
@@ -75,13 +98,13 @@ export default class ViewAuth extends Component {
       updateTime,
       dataId,
     } = refDetail;
-    const subDataInfo = {
-      subNodeName: '石家庄市民政部',
-      subDeptName: '石家庄市民政部',
-      subTime: '2018-06-08 10:11:10',
-      authState: '已拒绝 张三  2018-06-08 10:11:10',
-      rejectReason: '你是谁?',
-    };
+    // const subDataInfo = {
+    //   subNodeName: '石家庄市民政部',
+    //   subDeptName: '石家庄市民政部',
+    //   subTime: '2018-06-08 10:11:10',
+    //   authState: '已拒绝 张三  2018-06-08 10:11:10',
+    //   rejectReason: '你是谁?',
+    // };
     return (
       <PageHeaderWrapper buttonList={this.buttonList}>
         <div className="content_layout">
@@ -128,24 +151,32 @@ export default class ViewAuth extends Component {
               <ul>
                 <li>
                   <label className="colon">订阅节点</label>
-                  <span>{subDataInfo.subNodeName}</span>
+                  <span>{subAuthDetail.node}</span>
                 </li>
                 <li>
                   <label className="colon">订阅机构</label>
-                  <span>{subDataInfo.subDeptName}</span>
+                  <span>{subAuthDetail.subscribeInstitution}</span>
                 </li>
                 <li>
                   <label className="colon">订阅时间</label>
-                  <span>{subDataInfo.subTime}</span>
+                  <span>{subAuthDetail.subTime}</span>
                 </li>
                 <li>
                   <label className="colon">授权状态</label>
-                  <span>{subDataInfo.authState}</span>
+                  <span>
+                    {`${
+                      statusArray.find(item => +item.value === +subAuthDetail.status)
+                        ? statusArray.find(item => +item.value === +subAuthDetail.status).label
+                        : ''
+                    } sfdasfd ${'1233'}`}
+                  </span>
                 </li>
-                <li>
-                  <label className="colon">拒绝原因</label>
-                  <span>{subDataInfo.rejectReason}</span>
-                </li>
+                {subAuthDetail.status % 10 === 0 && (
+                  <li>
+                    <label className="colon">拒绝原因</label>
+                    <span>{subAuthDetail.reviewReason}</span>
+                  </li>
+                )}
               </ul>
             </Col>
           </Row>

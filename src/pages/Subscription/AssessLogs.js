@@ -3,7 +3,6 @@ import { Table } from 'antd';
 import { connect } from 'dva';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import { render } from 'react-dom';
 
 const statusObject = {
   '-1': '待审核',
@@ -41,6 +40,7 @@ export default class AssessLogs extends Component {
       title: '审核时间',
     },
   ];
+
   buttonList = [
     {
       text: '返回',

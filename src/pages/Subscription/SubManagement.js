@@ -2,14 +2,14 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-07 21:17:17
+ * @Last Modified time: 2018-12-12 16:09:33
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Tabs, Select, Button, Popconfirm } from 'antd';
-import { Bind, Throttle, Debounce } from 'lodash-decorators';
+import { Bind, Throttle } from 'lodash-decorators';
 
 import PageHeader from '@/components/PageHeaderWrapper';
 import SearchForm from '@/components/SearchForm';
@@ -81,6 +81,7 @@ export default class SubManagement extends Component {
     ],
     searchHandler: this.handleSearch,
   };
+
   hasColumn = [
     {
       dataIndex: 'id',
@@ -122,27 +123,26 @@ export default class SubManagement extends Component {
     },
     {
       title: '操作',
-      render: (_, row) => {
-        return (
-          <Fragment>
-            {row.runStatus === 1 ? (
-              <Popconfirm title="请确认是否停止订阅?" onConfirm={this.handleStop.bind(this, [row])}>
-                <a className="mr16">停止</a>
-              </Popconfirm>
-            ) : (
-              <Popconfirm title="请确认是否启动订阅" onConfirm={this.handleStart.bind(this, [row])}>
-                <a className="mr16">启动</a>{' '}
-              </Popconfirm>
-            )}
-            {/* <Popconfirm title="请确认取消订阅?" onConfirm={this.handleCancelSub.bind(this, row)}>
+      render: (_, row) => (
+        <Fragment>
+          {row.runStatus === 1 ? (
+            <Popconfirm title="请确认是否停止订阅?" onConfirm={() => this.handleStop(row)}>
+              <a className="mr16">停止</a>
+            </Popconfirm>
+          ) : (
+            <Popconfirm title="请确认是否启动订阅" onConfirm={() => this.handleStart(row)}>
+              <a className="mr16">启动</a>{' '}
+            </Popconfirm>
+          )}
+          {/* <Popconfirm title="请确认取消订阅?" onConfirm={this.handleCancelSub.bind(this, row)}>
               <a className="mr16">取消订阅</a>
             </Popconfirm> */}
-            <a onClick={this.goAssessLogs.bind(this, row)}>审核日志</a>
-          </Fragment>
-        );
-      },
+          <a onClick={this.goAssessLogs.bind(this, row)}>审核日志</a>
+        </Fragment>
+      ),
     },
   ];
+
   willColumn = [
     {
       dataIndex: 'id',
@@ -175,6 +175,7 @@ export default class SubManagement extends Component {
       // },
     },
   ];
+
   failColumn = [
     {
       dataIndex: 'id',
@@ -202,14 +203,12 @@ export default class SubManagement extends Component {
     // },
     {
       title: '操作',
-      render: (_, row) => {
-        return (
-          <Fragment>
-            {/* <a className="mr16">重新订阅</a> */}
-            <a onClick={this.goAssessLogs.bind(this, row)}>审核日志</a>
-          </Fragment>
-        );
-      },
+      render: (_, row) => (
+        <Fragment>
+          {/* <a className="mr16">重新订阅</a> */}
+          <a onClick={this.goAssessLogs.bind(this, row)}>审核日志</a>
+        </Fragment>
+      ),
     },
   ];
 
@@ -232,45 +231,49 @@ export default class SubManagement extends Component {
           pageSize,
         },
       },
-      this.handleSearch
+      () => {
+        const { queryData } = this.state;
+        this.handleSearch(queryData);
+      }
     );
   };
 
   handleSelectRows = selectedRows => {
-    console.log(selectedRows);
     this.setState({
       selectedRows,
     });
   };
 
   handleStop = rows => {
+    const { dispatch } = this.props;
     const payload = rows.map(item => ({
       dataType: item.dataType,
       dsID: item.dsId,
       mountResourceId: item.mountResourceId,
       subscriberID: item.subscriberId,
     }));
-    this.props.dispatch({
+    dispatch({
       type: 'subManagement/stopSubTask',
       payload,
     });
   };
 
   handleStart = rows => {
+    const { dispatch } = this.props;
     const payload = rows.map(item => ({
       dataType: item.dataType,
       dsID: item.dsId,
       mountResourceId: item.mountResourceId,
       subscriberID: item.subscriberId,
     }));
-    this.props.dispatch({
+    dispatch({
       type: 'subManagement/stopSubTask',
       payload,
     });
   };
 
   handleCancelSub = row => {
-    console.log(row);
+    console.log(row); // eslint-disable-line
   };
 
   goAssessLogs = row => {
@@ -290,9 +293,11 @@ export default class SubManagement extends Component {
 
   @Bind()
   @Throttle(1000)
-  handleSearch(queryData = {}, pageReset = false) {
-    const { key } = this.state;
-    const pagination = pageReset ? { pageSize: 10, pageNum: 1 } : this.state.pagination;
+  handleSearch(query = {}, pageReset = false) {
+    const queryData = query;
+    const { key, pagination: pagi } = this.state;
+    const { dispatch } = this.props;
+    const pagination = pageReset ? { pageSize: 10, pageNum: 1 } : pagi;
     if (queryData.runStatus === -999) {
       queryData.runStatus = undefined;
     }
@@ -300,7 +305,7 @@ export default class SubManagement extends Component {
     this.setState({
       queryData: { ...queryData },
     });
-    this.props.dispatch({
+    dispatch({
       type: 'subManagement/getSubList',
       payload: {
         ...queryData,
@@ -324,15 +329,12 @@ export default class SubManagement extends Component {
               <div className="mb16">
                 {selectedRows.length > 0 ? (
                   <Fragment>
-                    <Popconfirm
-                      title="将启动所选"
-                      onConfirm={this.handleStart.bind(this, selectedRows)}
-                    >
+                    <Popconfirm title="将启动所选" onConfirm={() => this.handleStart(selectedRows)}>
                       <Button className="mr16">启动</Button>
                     </Popconfirm>
                     <Popconfirm
                       title="将停止所选"
-                      onConfirm={this.handleStop.bind(this, selectedRows)}
+                      onConfirm={() => this.handleStop(this, selectedRows)}
                     >
                       <Button type="danger">停止</Button>
                     </Popconfirm>

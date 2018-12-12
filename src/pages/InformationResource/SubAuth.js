@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -75,6 +77,7 @@ export default class SubAuth extends Component {
     ],
     searchHandler: this.handleSearch,
   };
+
   columns = [
     {
       dataIndex: 'id',
@@ -102,24 +105,22 @@ export default class SubAuth extends Component {
     },
     {
       title: '操作',
-      render: (_, row) => {
-        return (
-          <Fragment>
-            <a className="mr16" onClick={this.handleGoView.bind(this, row)}>
-              查看
-            </a>
-            {row.subscribeStatus === -1 ? (
-              <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
-            ) : row.subscribeStatus === 1 ? (
-              <Popconfirm title="请确认取消授权" onConfirm={this.cancelAuth.bind(this, row)}>
-                <a>取消授权</a>
-              </Popconfirm>
-            ) : (
-              ''
-            )}
-          </Fragment>
-        );
-      },
+      render: (_, row) => (
+        <Fragment>
+          <a className="mr16" onClick={this.handleGoView.bind(this, row)}>
+            查看
+          </a>
+          {row.subscribeStatus === -1 ? (
+            <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
+          ) : row.subscribeStatus === 1 ? (
+            <Popconfirm title="请确认取消授权" onConfirm={() => this.cancelAuth(row)}>
+              <a>取消授权</a>
+            </Popconfirm>
+          ) : (
+            ''
+          )}
+        </Fragment>
+      ),
     },
   ];
 
@@ -134,9 +135,24 @@ export default class SubAuth extends Component {
     this.handleSearch();
   }
 
+  tableChange = pagination => {
+    this.setState(
+      {
+        pagination,
+      },
+      () => {
+        const { queryData } = this.state;
+        this.handleSearch(queryData);
+      }
+    );
+  };
+
   handleGoView = row => {
-    // 信息资源id 关联数据id 订阅id
-    router.push(`viewAuth/${row.dataType}/${row.dsId || 0}/${row.mountId}/${row.subId}`);
+    // 信息资源id 关联数据id 订阅id  subscriberID
+    router.push(
+      `viewAuth/${row.dataType || 'db'}/${row.dsId || 0}/${row.mountId || 0}/${row.subId ||
+        0}/${row.subscriberId || 0}`
+    );
   };
 
   handleAuthModalShow = row => {
@@ -153,8 +169,11 @@ export default class SubAuth extends Component {
   };
 
   onOk = value => {
-    const { dsID, subID, subscriberID } = this.state.row;
-    this.props.dispatch({
+    const {
+      row: { dsID, subID, subscriberID },
+    } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
       type: 'subAuth/subscribeAudit',
       payload: {
         codeReply: value.subscribeStatus,
@@ -167,12 +186,13 @@ export default class SubAuth extends Component {
   };
 
   cancelAuth = row => {
-    console.log('取消授权', row);
+    console.log('取消授权', row); // eslint-disable-line
   };
 
   @Bind()
   @Throttle(1000)
   handleSearch(queryData = {}, resetPage = false) {
+    // eslint-disable-next-line
     const pagination = resetPage ? { pageSize: 10, pageNum: 1 } : this.state.pagination;
     this.setState({
       queryData: {
@@ -212,6 +232,7 @@ export default class SubAuth extends Component {
             columns={this.columns}
             dataSource={dataList}
             pagination={pagination}
+            onChange={this.tableChange}
             bordered
             rowKey="id"
           />
