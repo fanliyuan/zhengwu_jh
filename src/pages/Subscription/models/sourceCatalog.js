@@ -48,7 +48,7 @@ export default {
     *subscribe({ payload, callback }, { call, put }) {
       const response = yield call(subscribe, payload.item);
       callback(response);
-      if (response && response.code < 300) {
+      if (response && response.code < 300 && response.code >= 0) {
         message.success(response.message);
         yield put({
           type: 'fetch',

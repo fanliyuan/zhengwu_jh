@@ -237,7 +237,7 @@ class SourceCatalog extends Component {
           },
         },
         callback: res => {
-          if (res.code < 300) {
+          if (res.code < 300 && res.code >= 0) {
             setTimeout(() => {
               this.setState({
                 visible: false,
