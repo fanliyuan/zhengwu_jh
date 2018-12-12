@@ -85,9 +85,9 @@ class SourceCatalog extends Component {
       render: text => {
         switch (text) {
           case '0':
-            return <span style={{ color: '#5cadff' }}>不需要</span>;
+            return <span style={{ color: '#5cadff' }}>是</span>;
           case '1':
-            return <span style={{ color: '#ed4014' }}>需要</span>;
+            return <span style={{ color: '#ed4014' }}>否</span>;
           default:
             return <span>授权码错误</span>;
         }
