@@ -195,6 +195,7 @@ class SourceCatalog extends Component {
 
   handleOk = e => {
     e.preventDefault();
+    let dataType;
     const { dispatch, form } = this.props;
     const { record } = this.state;
     const values = {
@@ -202,11 +203,20 @@ class SourceCatalog extends Component {
       ...formValues,
       ...formTime,
     };
+    if (record.mountResourceId.indexOf('db') !== -1) {
+      dataType = `db`;
+    } else if (record.mountResourceId.indexOf('ftp') !== -1) {
+      dataType = `ftp`;
+    } else if (record.mountResourceId.indexOf('file') !== -1) {
+      dataType = `file`;
+    } else {
+      dataType = '';
+    }
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const params = {
         catalogId: record.typeId,
-        dataType: record.dataType,
+        dataType,
         directoryName: record.resourceProjectCatalogType,
         dsID: record.resourceId,
         dsName: record.resourceName,
