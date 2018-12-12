@@ -176,12 +176,12 @@ class InfoResource extends Component {
           key: '更新时间',
           value: dataDetail.value.updateTime,
         },
-        {
-          key: '数据查看',
-          link: true,
-          href: path,
-          value: '查看',
-        },
+        // {
+        //   key: '数据查看',
+        //   link: true,
+        //   href: path,
+        //   value: '查看',
+        // },
       ],
     };
     return <ViewCard data={viewData} />;

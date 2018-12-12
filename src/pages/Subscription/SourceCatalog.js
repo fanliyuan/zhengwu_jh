@@ -318,13 +318,11 @@ class SourceCatalog extends Component {
         md: { span: 10 },
       },
     };
-    const typeArr = record.resourceProjectCatalogType.split('-');
-    const subName = typeArr[typeArr.length - 1];
     return (
       <Form onSubmit={this.handleOk} style={{ marginTop: 8 }}>
         <FormItem {...formItemLayout} label="订阅名称">
           {getFieldDecorator('subscribeName', {
-            initialValue: `${record.resourceProviderName}：${subName}`,
+            initialValue: `${record.resourceProviderName}：${record.resourceName}`,
             rules: [
               {
                 max: 50,

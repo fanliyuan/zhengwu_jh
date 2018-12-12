@@ -8,7 +8,6 @@ import DataBaseInfo from '@/components/DataBaseInfo';
 import DataFileInfo from '@/components/DataFileInfo';
 
 const { TabPane } = Tabs;
-console.log(window);
 
 @connect(({ taskView, loading }) => ({
   taskView,
@@ -25,7 +24,6 @@ class TaskView extends Component {
   }
 
   componentDidMount() {
-    console.log(this.prop);
     const { dispatch, match } = this.props;
     if (match.params.type === 'db') {
       this.setState({
