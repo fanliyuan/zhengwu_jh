@@ -317,7 +317,7 @@ class SourceCatalog extends Component {
             ],
           })(<Input />)}
         </FormItem>
-        <FormItem {...formItemLayout} label="订阅名称">
+        <FormItem {...formItemLayout} label="同步模式">
           {getFieldDecorator('synchronizationType', {
             initialValue: record.synchronizationType,
           })(<span>{record.synchronizationType}</span>)}
