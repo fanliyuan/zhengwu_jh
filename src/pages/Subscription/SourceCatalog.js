@@ -49,9 +49,19 @@ class SourceCatalog extends Component {
     {
       title: '关联数据类型',
       align: 'center',
-      dataIndex: 'dataType',
+      dataIndex: 'mountResourceId',
       render: text => {
-        switch (text) {
+        let dataType;
+        if (text.indexOf('db') !== -1) {
+          dataType = `db`;
+        } else if (text.indexOf('ftp') !== -1) {
+          dataType = `ftp`;
+        } else if (text.indexOf('file') !== -1) {
+          dataType = `file`;
+        } else {
+          dataType = '';
+        }
+        switch (dataType) {
           case 'db':
             return <span>数据库</span>;
           case 'file':
