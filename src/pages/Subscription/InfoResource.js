@@ -12,6 +12,7 @@ import ViewCard from '@/components/ViewCard';
 class InfoResource extends Component {
   componentDidMount() {
     const { dispatch, match } = this.props;
+    console.log(this.props);
     dispatch({
       type: 'infoResource/getResourceDetail',
       payload: {
@@ -126,20 +127,19 @@ class InfoResource extends Component {
   }
 
   renderViewCardData() {
-    let path;
+    // let path;
     const {
       infoResource: { dataDetail },
-      match,
     } = this.props;
-    if (match.params.mountResourceId.indexOf('db') !== -1) {
-      path = `/data/management/dbview/${match.params.id}`;
-    } else if (match.params.mountResourceId.indexOf('ftp') !== -1) {
-      path = `/data/management/ftpview/${match.params.id}`;
-    } else if (match.params.mountResourceId.indexOf('file') !== -1) {
-      path = `/data/management/fileview/${match.params.id}`;
-    } else {
-      path = '';
-    }
+    // if (match.params.mountResourceId.indexOf('db') !== -1) {
+    //   path = `/data/management/dbview/${match.params.id}`;
+    // } else if (match.params.mountResourceId.indexOf('ftp') !== -1) {
+    //   path = `/data/management/ftpview/${match.params.id}`;
+    // } else if (match.params.mountResourceId.indexOf('file') !== -1) {
+    //   path = `/data/management/fileview/${match.params.id}`;
+    // } else {
+    //   path = '';
+    // }
     const viewData = {
       title: '关联数据详情',
       col: 3,
