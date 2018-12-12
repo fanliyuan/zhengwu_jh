@@ -17,6 +17,7 @@ export default class ViewCard extends PureComponent {
             col={data.col}
             title={data.title}
             style={{ marginBottom: 32 }}
+            titlestyle={{ fontWeight: 'bold' }}
           >
             {data.data.map(item => {
               if (item.fullWidth) {
