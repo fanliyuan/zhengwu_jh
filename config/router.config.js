@@ -355,6 +355,13 @@ export default [
             hideInMenu: true,
           },
           {
+            path: '/subscribe/dataManagement/subInfoResource/:resourceId/:mountResourceId',
+            name: 'subInfoResource',
+            component: './Subscription/InfoResource',
+            authority: ['user'],
+            hideInMenu: true,
+          },
+          {
             path: '/subscribe/management',
             name: 'management',
             component: './Subscription/SubManagement',
@@ -367,17 +374,17 @@ export default [
             authority: ['user'],
           },
           {
-            path: 'subDetailFile',
+            path: '/subscribe/dataManagement/subDetailFile',
             name: 'subDetailFile',
             component: './Subscription/SubDetailFile',
-            authority: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {
-            path: 'subDetailDataBase',
+            path: '/subscribe/dataManagement/subDetailDataBase/:id/:mountResourceId',
             name: 'subDetailDataBase',
             component: './Subscription/SubDetailDataBase',
-            authority: 'user',
+            authority: ['user'],
             hideInMenu: true,
           },
           {

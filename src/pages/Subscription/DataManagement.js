@@ -16,7 +16,8 @@ let formTimeFile;
 
 @connect(({ dataManagement, loading }) => ({
   dataManagement,
-  loading: loading.models.dataManagement,
+  loadingDb: loading.effects['dbView/getDBList'],
+  loadingFile: loading.effects['dbView/getFileList'],
 }))
 class DataManagement extends Component {
   columns = [
@@ -66,7 +67,7 @@ class DataManagement extends Component {
           <a
             onClick={() =>
               router.push(
-                `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
+                `/subscribe/dataManagement/subInfoResource/${record.resourceId}/${
                   record.mountResourceId
                 }`
               )
@@ -75,7 +76,19 @@ class DataManagement extends Component {
             信息资源
           </a>
           <Divider type="vertical" />
-          {record.dataType === 0 && <a onClick={() => this.handleOrder(record)}>数据</a>}
+          {record.dataType === 0 && (
+            <a
+              onClick={() =>
+                router.push(
+                  `/subscribe/dataManagement/subDetailDataBase/${record.id}/${
+                    record.mountResourceId
+                  }`
+                )
+              }
+            >
+              数据
+            </a>
+          )}
           {record.dataType === 1 && <a onClick={() => this.handleOrder(record)}>文件</a>}
         </Fragment>
       ),
@@ -315,7 +328,8 @@ class DataManagement extends Component {
   render() {
     const {
       dataManagement: { dbList, fileList, pageDb, pageFile },
-      loading,
+      loadingDb,
+      loadingFile,
     } = this.props;
     const paginationProps = {
       showQuickJumper: true,
@@ -353,7 +367,7 @@ class DataManagement extends Component {
                   pagination={paginationProps}
                   dataSource={dbList.datas}
                   columns={this.columns}
-                  loading={loading}
+                  loading={loadingDb}
                   locale={locale}
                 />
               </div>
@@ -367,7 +381,7 @@ class DataManagement extends Component {
                   pagination={paginationPropsFile}
                   dataSource={fileList.datas}
                   columns={this.columns}
-                  loading={loading}
+                  loading={loadingFile}
                   locale={locale}
                 />
               </div>

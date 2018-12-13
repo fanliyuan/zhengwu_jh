@@ -212,6 +212,7 @@ export default {
   'menu.subscribe.management': '订阅管理',
   'menu.subscribe.dataManagement': '数据管理',
   'menu.subscribe.infoResource': '订阅查看',
+  'menu.subscribe.subInfoResource': '查看信息资源',
   'menu.monitor': '监控告警',
   'menu.monitor.nodes': '节点监控',
   'menu.monitor.channel': '通道监控',

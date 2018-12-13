@@ -68,3 +68,18 @@ export async function getAssessLogs(params) {
 export async function managementList(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/managementList?${stringify(params)}`);
 }
+
+// 数据库表列表
+export async function tableList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/tableList?${stringify(params)}`);
+}
+
+// 数据库表结构
+export async function tableStructureList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/tableStructureList?${stringify(params)}`);
+}
+
+// 数据库表数据
+export async function tableDataList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/tableDataList?${stringify(params)}`);
+}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Button, Card, Divider } from 'antd';
 
@@ -10,8 +10,17 @@ import ViewCard from '@/components/ViewCard';
   loading: loading.models.infoResource,
 }))
 class InfoResource extends Component {
+  state = {
+    visible: false,
+  };
+
   componentDidMount() {
-    const { dispatch, match } = this.props;
+    const { dispatch, match, route } = this.props;
+    if (route.name !== 'subInfoResource') {
+      this.setState({
+        visible: true,
+      });
+    }
     dispatch({
       type: 'infoResource/getResourceDetail',
       payload: {
@@ -191,6 +200,7 @@ class InfoResource extends Component {
       infoResource: { dataDetail, resourceDetail },
       loading,
     } = this.props;
+    const { visible } = this.state;
     const keyArr = Object.keys(dataDetail);
     const keyArrR = Object.keys(resourceDetail);
     const buttonList = (
@@ -203,11 +213,15 @@ class InfoResource extends Component {
     return (
       <PageHeaderWrapper action={buttonList}>
         <Card loading={loading} bordered={false}>
-          <span style={{ marginRight: 10 }}>状态：未订阅</span>
-          <Button type="primary" onClick={() => this.back()}>
-            立即订阅
-          </Button>
-          <Divider style={{ marginBottom: 10, marginTop: 20 }} />
+          {visible && (
+            <Fragment>
+              <span style={{ marginRight: 10 }}>状态：未订阅</span>
+              <Button type="primary" onClick={() => this.back()}>
+                立即订阅
+              </Button>
+              <Divider style={{ marginBottom: 10, marginTop: 20 }} />
+            </Fragment>
+          )}
           {keyArrR.length > 0 && this.renderViewCard()}
           <Divider style={{ marginBottom: 10, marginTop: 0 }} />
           {keyArr.length > 0 && this.renderViewCardData()}
