@@ -34,12 +34,14 @@ export default [
             path: '/dashboard/loginLog',
             name: 'loginLog',
             component: './Dashboard/Monitor',
+            hideInMenu: true,
           },
           {
             path: '/dashboard/systemNotice',
             name: 'systemNotice',
             component: './Dashboard/Workplace',
             authority: ['admin', 'security', 'user', 'assessor'],
+            hideInMenu: true,
           },
         ],
       },
@@ -393,6 +395,7 @@ export default [
         icon: 'desktop',
         path: '/monitor',
         authority: ['user'],
+        hideInMenu: true,
         routes: [
           {
             path: '/monitor/nodes',
@@ -427,6 +430,7 @@ export default [
         icon: 'pie-chart',
         path: '/statistics',
         authority: ['user'],
+        hideInMenu: true,
         routes: [
           {
             path: '/statistics/informationResources',
