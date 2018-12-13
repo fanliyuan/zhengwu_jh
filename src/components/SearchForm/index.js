@@ -30,6 +30,7 @@ export default class SearchForm extends Component {
       if (onChange) {
         onChange();
       } else {
+        // eslint-disable-next-line
         console.log(
           'onChange方法必须写,onChange是为了修改父组件中isChange的值为false,否则会造成死循环'
         ); // eslint-disable-line

@@ -118,12 +118,6 @@ export default [
             authority: ['assessor', 'user'],
           },
           {
-            path: '/informationResource/subscriptionLicense',
-            name: 'subscriptionLicense',
-            component: './Profile/AdvancedProfile',
-            authority: ['assessor'],
-          },
-          {
             path: 'sourceManagement',
             name: 'sourceManagement',
             component: './InformationResource/SourceManagement',
@@ -337,14 +331,14 @@ export default [
         name: 'subscribe',
         icon: 'link',
         path: '/subscribe',
-        authority: ['user', 'assessor'],
+        authority: ['user'],
         routes: [
-          {
-            path: '/subscribe/audit',
-            name: 'audit',
-            component: './Exception/403',
-            authority: ['assessor'],
-          },
+          // {
+          //   path: '/subscribe/audit',
+          //   name: 'audit',
+          //   component: './Exception/403',
+          //   authority: ['assessor'],
+          // },
           {
             path: '/subscribe/sourceCatalog',
             name: 'sourceCatalog',

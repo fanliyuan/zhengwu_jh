@@ -22,20 +22,20 @@ export default {
     subAuthDetail: {},
   },
   effects: {
-    *getSubAuthList({ payload: params }, { call, put }, select) {
-      if (params) {
+    *getSubAuthList({ payload }, { call, put, select }) {
+      if (payload && payload.params) {
         yield put({
           type: 'saveQueryData',
-          payload: params,
+          payload: payload.params,
         });
       } else {
         // eslint-disable-next-line
-        params = yield select(state => state.subAuth.queryData);
+        payload.params = yield select(state => state.subAuth.queryData);
       }
       let dataList = [];
       const pagination = {};
       try {
-        const res = yield call(getSubAuthList, params);
+        const res = yield call(getSubAuthList, payload.params);
         if (+res.code === 200) {
           dataList = res.result.datas;
           pagination.total = res.result.totalCounts;
@@ -60,6 +60,7 @@ export default {
           message.success(res.msg || '操作成功');
           yield put({
             type: 'getSubAuthList',
+            payload: {},
           });
         }
       } catch {

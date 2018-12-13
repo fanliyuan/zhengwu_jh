@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-12 16:09:33
+ * @Last Modified time: 2018-12-12 19:05:29
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
@@ -80,6 +80,7 @@ export default class SubManagement extends Component {
       },
     ],
     searchHandler: this.handleSearch,
+    resetHandler: this.resetHandler,
   };
 
   hasColumn = [
@@ -292,6 +293,16 @@ export default class SubManagement extends Component {
   };
 
   @Bind()
+  resetHandler() {
+    this.setState({
+      pagination: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  }
+
+  @Bind()
   @Throttle(1000)
   handleSearch(query = {}, pageReset = false) {
     const queryData = query;
@@ -320,6 +331,9 @@ export default class SubManagement extends Component {
       subManagement: { dataList, pagination },
       loading,
     } = this.props;
+    const {
+      pagination: { pageNum: current, pageSize },
+    } = this.state;
     return (
       <PageHeader>
         <div className="content_layout">
@@ -350,7 +364,7 @@ export default class SubManagement extends Component {
               </div>
               <StandardTable
                 loading={loading}
-                pagination={pagination}
+                pagination={{ ...pagination, pageSize, current }}
                 columns={this.hasColumn}
                 dataSource={dataList}
                 bordered
@@ -365,7 +379,7 @@ export default class SubManagement extends Component {
               <StandardTable
                 loading={loading}
                 dataSource={dataList}
-                pagination={pagination}
+                pagination={{ ...pagination, pageSize, current }}
                 columns={this.willColumn}
                 rowKey="id"
               />
@@ -375,7 +389,7 @@ export default class SubManagement extends Component {
               <StandardTable
                 loading={loading}
                 dataSource={dataList}
-                pagination={pagination}
+                pagination={{ ...pagination, pageSize, current }}
                 columns={this.failColumn}
                 rowKey="id"
               />

@@ -76,6 +76,7 @@ export default class SubAuth extends Component {
       },
     ],
     searchHandler: this.handleSearch,
+    resetHandler: this.resetHandler,
   };
 
   columns = [
@@ -96,7 +97,7 @@ export default class SubAuth extends Component {
       title: '数据类型',
     },
     {
-      dataIndex: 'subNode',
+      dataIndex: 'subscriberName',
       title: '订阅节点',
     },
     {
@@ -110,9 +111,9 @@ export default class SubAuth extends Component {
           <a className="mr16" onClick={this.handleGoView.bind(this, row)}>
             查看
           </a>
-          {row.subscribeStatus === -1 ? (
+          {row.subscriptionAuth === '1' ? (
             <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
-          ) : row.subscribeStatus === 1 ? (
+          ) : row.subscriptionAuth === 9999 ? (
             <Popconfirm title="请确认取消授权" onConfirm={() => this.cancelAuth(row)}>
               <a>取消授权</a>
             </Popconfirm>
@@ -135,10 +136,13 @@ export default class SubAuth extends Component {
     this.handleSearch();
   }
 
-  tableChange = pagination => {
+  tableChange = ({ current: pageNum, pageSize }) => {
     this.setState(
       {
-        pagination,
+        pagination: {
+          pageNum,
+          pageSize,
+        },
       },
       () => {
         const { queryData } = this.state;
@@ -170,13 +174,13 @@ export default class SubAuth extends Component {
 
   onOk = value => {
     const {
-      row: { dsID, subID, subscriberID },
+      row: { dsId: dsID, subId: subID, subscriberId: subscriberID },
     } = this.state;
     const { dispatch } = this.props;
     dispatch({
-      type: 'subAuth/subscribeAudit',
+      type: 'subAuth/setSubAuth',
       payload: {
-        codeReply: value.subscribeStatus,
+        codeReply: value.name,
         reason: value.reason,
         dsID,
         subID,
@@ -188,6 +192,16 @@ export default class SubAuth extends Component {
   cancelAuth = row => {
     console.log('取消授权', row); // eslint-disable-line
   };
+
+  @Bind()
+  resetHandler() {
+    this.setState({
+      pagination: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  }
 
   @Bind()
   @Throttle(1000)
@@ -211,27 +225,32 @@ export default class SubAuth extends Component {
     dispatch({
       type: 'subAuth/getSubAuthList',
       payload: {
-        ...pagination,
-        ...queryData,
+        params: {
+          ...pagination,
+          ...queryData,
+        },
       },
     });
   }
 
   render() {
-    const { modalVisible } = this.state;
+    const { modalVisible, isChanged } = this.state;
     const {
       subAuth: { dataList, pagination },
       loading,
     } = this.props;
+    const {
+      pagination: { pageSize, pageNum: current },
+    } = this.state;
     return (
       <PageHeaderWrapper>
         <div className="content_layout">
-          <SearchForm formOptions={this.formOptions} />
+          <SearchForm formOptions={this.formOptions} isChanged={isChanged} />
           <StandardTable
             loading={loading}
             columns={this.columns}
             dataSource={dataList}
-            pagination={pagination}
+            pagination={{ ...pagination, pageSize, current }}
             onChange={this.tableChange}
             bordered
             rowKey="id"
