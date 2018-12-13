@@ -204,8 +204,13 @@ class InfoResource extends Component {
     return (
       <PageHeaderWrapper action={buttonList}>
         <Card loading={loading} bordered={false}>
+          <span style={{ marginRight: 10 }}>状态：未订阅</span>
+          <Button type="primary" onClick={() => this.back()}>
+            立即订阅
+          </Button>
+          <Divider style={{ marginBottom: 10, marginTop: 20 }} />
           {keyArrR.length > 0 && this.renderViewCard()}
-          <Divider style={{ marginBottom: 32, marginTop: 0 }} />
+          <Divider style={{ marginBottom: 10, marginTop: 0 }} />
           {keyArr.length > 0 && this.renderViewCardData()}
         </Card>
       </PageHeaderWrapper>
