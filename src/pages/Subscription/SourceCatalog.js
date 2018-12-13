@@ -497,9 +497,6 @@ class SourceCatalog extends Component {
                 {keyArr.length > 0 && this.renderOrderForm(record)}
               </Modal>
             </TabPane>
-            <TabPane tab="API资源" key="2" disabled>
-              内容暂未开放
-            </TabPane>
           </Tabs>
         </Card>
       </PageHeaderWrapper>

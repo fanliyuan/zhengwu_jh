@@ -214,6 +214,7 @@ export default [
             name: 'subAuth',
             component: './InformationResource/SubAuth',
             authority: 'user',
+            hideInMenu: true,
           },
           {
             path: 'viewAuth/:dataType/:resourceId/:mountId/:subId/:subscriberId',
