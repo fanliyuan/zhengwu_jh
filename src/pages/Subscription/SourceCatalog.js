@@ -67,7 +67,7 @@ class SourceCatalog extends Component {
           case 'file':
             return <span>文件</span>;
           case 'ftp':
-            return <span>ftp</span>;
+            return <span>文件</span>;
           default:
             return <span>数据类型错误</span>;
         }

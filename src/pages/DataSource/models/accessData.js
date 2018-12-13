@@ -31,7 +31,7 @@ import {
   initFileListCurrent,
 } from '@/services/dataSource/dataSource';
 import { notification, message } from 'antd';
-import Crypto from '@/components/crypto';
+// import Crypto from '@/components/crypto';
 
 function initDbParams() {
   return {
@@ -341,6 +341,8 @@ export default {
               alias,
             },
           });
+        } else {
+          message.error(response.message);
         }
       } else if (payload.dataType === 'ftp') {
         if (payload.getAllTree) {

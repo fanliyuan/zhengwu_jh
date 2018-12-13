@@ -95,6 +95,7 @@ class AccessDataInfo extends PureComponent {
     this.state = {
       visible: false,
       hasReceiveFiles: false,
+      hasSetRowKeys: false,
       page: 1,
       modalTitle: '',
       dbName: '',
@@ -192,8 +193,11 @@ class AccessDataInfo extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { route } = this.props;
-    const { hasReceiveFiles } = this.state;
+    const { route, dataType } = this.props;
+    const {
+      accessData: { params },
+    } = nextProps;
+    const { hasReceiveFiles, hasSetRowKeys, selectedTableRowKeys, selectedRowKeys } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
       if (fileAddDtoList && fileAddDtoList.length > 0) {
@@ -224,6 +228,17 @@ class AccessDataInfo extends PureComponent {
           hasReceiveFiles: true,
         });
       }
+    }
+    if (route.name === 'managementUpdate' && !hasSetRowKeys && dataType === 'db') {
+      if (selectedTableRowKeys.length < 1 && params.tableName !== '') {
+        selectedTableRowKeys.push(params.tableName);
+      }
+      if (selectedRowKeys.length < 1 && params.structAddDtoList.length > 0) {
+        params.structAddDtoList.map(item => selectedRowKeys.push(item.columnName));
+      }
+      this.setState({
+        hasSetRowKeys: true,
+      });
     }
   }
 
@@ -1257,7 +1272,7 @@ class AccessDataInfo extends PureComponent {
       dataType,
       loadingTable,
       loadingColumn,
-      accessData: { tableList, columnList, params },
+      accessData: { tableList, columnList },
     } = this.props;
     const { selectedRowKeys, selectedTableRowKeys, page, modalTitle, visible } = this.state;
     const rowSelection = {
@@ -1280,14 +1295,6 @@ class AccessDataInfo extends PureComponent {
     const okButtonProps = { disabled };
     const tableLength = `数据表 共${tableList.length}张`;
     const columnLength = `数据项 共${columnList.length}项`;
-    if (dataType === 'db') {
-      if (selectedTableRowKeys.length < 1 && params.tableName !== '' && visible) {
-        selectedTableRowKeys.push(params.tableName);
-      }
-      if (selectedRowKeys.length < 1 && params.structAddDtoList.length > 0 && visible) {
-        params.structAddDtoList.map(item => selectedRowKeys.push(item.columnName));
-      }
-    }
     return (
       <Card bordered={false}>
         {(() => {
