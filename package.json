@@ -1,7 +1,7 @@
 {
-  "name": "ant-design-pro",
+  "name": "zwjh-switchNode-front",
   "version": "2.1.0",
-  "description": "An out-of-box UI solution for enterprise applications",
+  "description": "政务共享交换开放系统交换节点--基于antdp2.1.0",
   "private": true,
   "scripts": {
     "presite": "node ./scripts/generateMock.js && cd functions && npm install",
