@@ -29,6 +29,7 @@ const checkStatus = response => {
       .json()
       .then(data => {
         if (data.code === 401) {
+          notification.destroy();
           notification.error({
             message: `请求错误`,
             description: data.message,

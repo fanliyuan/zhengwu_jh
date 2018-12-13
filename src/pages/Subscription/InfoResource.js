@@ -12,7 +12,6 @@ import ViewCard from '@/components/ViewCard';
 class InfoResource extends Component {
   componentDidMount() {
     const { dispatch, match } = this.props;
-    console.log(this.props);
     dispatch({
       type: 'infoResource/getResourceDetail',
       payload: {

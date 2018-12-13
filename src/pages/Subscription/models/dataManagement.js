@@ -1,58 +1,67 @@
+import { managementList, getAllNode } from '@/services/subscription';
+import { getSourceClassfiyList } from '@/services/informationResource/informationResource';
+
 import { message } from 'antd';
-import { getDBList, getFileList } from '@/services/subscription';
-import { stat } from 'fs';
 
 export default {
   namespace: 'dataManagement',
 
   state: {
-    DBList: [],
-    FileList: [],
+    dbList: {},
+    fileList: {},
+    sourceClassfiyList: [],
+    pubNodes: [],
+    pageDb: 1,
+    pageFile: 1,
   },
 
   effects: {
     *getDBList({ payload }, { call, put }) {
-      let response;
-      try {
-        response = yield call(getDBList, payload);
-        const { datas, total = 0, pageSize = 10, pageNum: current = 1 } = response.result;
-        const pagination = total > pageSize ? { total, pageSize, current } : false;
-        if (+response.code === 0) {
-          yield put({
-            type: 'saveDbList',
-            payload: datas,
-          });
-        } else {
-          throw response.msg;
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          // eslint-disable-next-line\
-          console.log(error);
-        } else {
-          message.error(error || '操作失败');
-        }
+      const response = yield call(managementList, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveDbList',
+          payload: response.result,
+        });
+        yield put({
+          type: 'setPage',
+          payload,
+        });
       }
     },
     *getFileList({ payload }, { call, put }) {
-      const res = yield call(getFileList, payload);
-      try {
-        const { result: { datas } = {} } = res;
-        if (+res.code === 0) {
-          yield put({
-            type: 'saveFileList',
-            payload: datas,
-          });
-        } else {
-          throw res.msg;
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          // eslint-disable-next-line
-          console.log(error);
-        } else {
-          message.error(error || '操作失败');
-        }
+      const response = yield call(managementList, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveFileList',
+          payload: response.result,
+        });
+        yield put({
+          type: 'setPageFile',
+          payload,
+        });
+      }
+    },
+    *getSourceClassfiyList({ payload }, { call, put }) {
+      const response = yield call(getSourceClassfiyList, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveSourceClassfiyList',
+          payload: response.result,
+        });
+      } else {
+        message.error(response.message);
+      }
+    },
+    *getNodes({ payload }, { call, put }) {
+      const response = yield call(getAllNode, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveNodes',
+          payload: response.result,
+        });
+      } else {
+        message.error(response.message);
       }
     },
   },
@@ -60,13 +69,37 @@ export default {
     saveDbList(state, { payload }) {
       return {
         ...state,
-        DBList: payload,
+        dbList: payload,
       };
     },
     saveFileList(state, { payload }) {
       return {
         ...state,
-        FileList: payload,
+        fileList: payload,
+      };
+    },
+    saveSourceClassfiyList(state, { payload }) {
+      return {
+        ...state,
+        sourceClassfiyList: payload,
+      };
+    },
+    saveNodes(state, { payload }) {
+      return {
+        ...state,
+        pubNodes: payload,
+      };
+    },
+    setPage(state, { payload }) {
+      return {
+        ...state,
+        pageDb: payload.pageNum,
+      };
+    },
+    setPageFile(state, { payload }) {
+      return {
+        ...state,
+        pageFile: payload.pageNum,
       };
     },
   },

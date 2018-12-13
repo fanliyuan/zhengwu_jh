@@ -1,367 +1,382 @@
-import React, { Component } from 'react';
-import { Tabs, Form, Input, Select, DatePicker, Cascader, Button, Table } from 'antd';
+import React, { Component, Fragment } from 'react';
+import { Tabs, Table, Divider, Card } from 'antd';
 import router from 'umi/router';
-import { Throttle, Bind } from 'lodash-decorators';
 import { connect } from 'dva';
-
-import { getTableFakeData } from '@/utils/utils';
-import PageHeader from '@/components/PageHeaderWrapper';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import FilterRowForm from '@/components/FilterRowForm';
 import styles from './DataManagement.less';
 
-@connect(({ dataManagement }) => ({
+const { TabPane } = Tabs;
+let paramsPage = { pageNum: 1, pageSize: 10 };
+let formValues;
+let formTime;
+let paramsPageFile = { pageNum: 1, pageSize: 10 };
+let formValuesFile;
+let formTimeFile;
+
+@connect(({ dataManagement, loading }) => ({
   dataManagement,
+  loading: loading.models.dataManagement,
 }))
-export default class DataManagement extends Component {
-  state = {
-    searchDataDB: {},
-    searchDataFile: {},
-  };
+class DataManagement extends Component {
+  columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      render: (text, record, index) => {
+        const { dataManagement } = this.props;
+        return `${index + 1 + (dataManagement.pageDb - 1) * 10}`;
+      },
+    },
+    {
+      title: '订阅名称',
+      align: 'center',
+      dataIndex: 'subscribeName',
+    },
+    {
+      title: '信息资源名称',
+      align: 'center',
+      dataIndex: 'dsName',
+    },
+    {
+      title: '数据条数',
+      align: 'center',
+      dataIndex: 'dataNum',
+    },
+    {
+      title: '资源属性分类',
+      align: 'center',
+      dataIndex: 'directoryName',
+    },
+    {
+      title: '发布节点',
+      align: 'center',
+      dataIndex: 'node',
+    },
+    {
+      title: '最近更新时间',
+      align: 'center',
+      dataIndex: 'updateTime',
+    },
+    {
+      title: '操作',
+      align: 'center',
+      render: (text, record) => (
+        <Fragment>
+          <a
+            onClick={() =>
+              router.push(
+                `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
+                  record.mountResourceId
+                }`
+              )
+            }
+          >
+            信息资源
+          </a>
+          <Divider type="vertical" />
+          {record.dataType === 0 && <a onClick={() => this.handleOrder(record)}>数据</a>}
+          {record.dataType === 1 && <a onClick={() => this.handleOrder(record)}>文件</a>}
+        </Fragment>
+      ),
+    },
+  ];
 
   componentDidMount() {
-    this.handelSearch(0);
-  }
-
-  @Bind()
-  tabChange(key) {
-    if (key === 'file') {
-      this.handelSearch(1);
+    let fields;
+    let fieldsFile;
+    const routeName = sessionStorage.getItem('currentList');
+    const { dispatch, route } = this.props;
+    if (routeName && routeName !== route.name) {
+      paramsPage = { pageNum: 1, pageSize: 10 };
+      formValues = {};
+      formTime = {};
+      paramsPageFile = { pageNum: 1, pageSize: 10 };
+      formValuesFile = {};
+      formTimeFile = {};
+      fields = { ...formValues };
+      fieldsFile = { ...formValuesFile };
     } else {
-      this.handelSearch(0);
-    }
-  }
-
-  subIdChangeDB = e => {
-    const { searchDataDB } = this.state;
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        subId: e.target.value || '',
-      },
-    });
-  };
-
-  subIdChangeFile = e => {
-    const { searchDataFile } = this.state;
-    this.setState({
-      searchDataFile: {
-        ...searchDataFile,
-        subId: e.target.value || '',
-      },
-    });
-  };
-
-  infoSrcTitleChangeDB = e => {
-    const { searchDataDB } = this.state;
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        infoSrcTitle: e.target.value || '',
-      },
-    });
-  };
-
-  infoSrcTitleChangeFile = e => {
-    const { searchDataFile } = this.state;
-    this.setState({
-      searchDataFile: {
-        ...searchDataFile,
-        infoSrcTitle: e.target.value || '',
-      },
-    });
-  };
-
-  srcAttrClassifyChange = val => {
-    const { searchDataDB } = this.state;
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        srcAttrClassify: val.pop(),
-      },
-    });
-  };
-
-  srcAttrClassifyChangeFile = val => {
-    const { searchDataDB } = this.state;
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        srcAttrClassify: val.pop(),
-      },
-    });
-  };
-
-  pubNodeChangeDB = val => {
-    const { searchDataDB } = this.state;
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        pubNode: val.pop(),
-      },
-    });
-  };
-
-  pubNodeChangeFile = val => {
-    const { searchDataFile } = this.state;
-    this.setState({
-      searchDataFile: {
-        ...searchDataFile,
-        pubNode: val.pop(),
-      },
-    });
-  };
-
-  dateChangeDB = time => {
-    const { searchDataDB } = this.state;
-    console.log(time[0].format().substr(0, 10), time[1].format().substr(0, 10));
-    this.setState({
-      searchDataDB: {
-        ...searchDataDB,
-        time: [time[0].format().substr(0, 10), time[1].format().substr(0, 10)],
-      },
-    });
-  };
-
-  dateChangeFile = time => {
-    const { searchDataFile } = this.state;
-    console.log(time[0].format().substr(0, 10), time[1].format().substr(0, 10));
-    this.setState({
-      searchDataFile: {
-        ...searchDataFile,
-        time: [time[0].format().substr(0, 10), time[1].format().substr(0, 10)],
-      },
-    });
-  };
-
-  // Bind绑定this ; Throttle节流阀
-  @Bind()
-  @Throttle(500)
-  handelSearch(flag = 0) {
-    const { searchDataDB, searchDataFile } = this.state;
-    // console.log(subId, infoSrcTitle, srcAttrClassify, pubNode, time)
-    if (flag === 0) {
-      this.props.dispatch({
-        type: 'dataManagement/getDBList',
-        payload: {
-          ...searchDataDB,
-        },
+      fields = { ...formValues };
+      fieldsFile = { ...formValuesFile };
+      Object.defineProperty(fields, 'date', {
+        value: ``,
       });
-    } else {
-      this.props.dispatch({
-        type: 'dataManagement/getFileList',
-        payload: {
-          ...searchDataFile,
-        },
+      Object.defineProperty(fieldsFile, 'date', {
+        value: ``,
       });
     }
+    dispatch({
+      type: 'dataManagement/getNodes',
+    });
+    dispatch({
+      type: 'dataManagement/getSourceClassfiyList',
+    });
+    dispatch({
+      type: 'dataManagement/getDBList',
+      payload: {
+        ...paramsPage,
+        ...fields,
+        ...formTime,
+        dataType: 0,
+      },
+    });
+    dispatch({
+      type: 'dataManagement/getFileList',
+      payload: {
+        ...paramsPageFile,
+        ...fieldsFile,
+        ...formTimeFile,
+        dataType: 1,
+      },
+    });
   }
 
-  goToInfoSrcItem = row => {
-    alert(row);
-  };
+  componentWillUnmount() {
+    const { route } = this.props;
+    sessionStorage.setItem('currentList', route.name);
+  }
 
-  goToSubFileDetail = row => {
-    router.push('subDetailFile', {
-      payload: row,
+  handleSearch = (fieldsForm, paramsTime) => {
+    const { dispatch } = this.props;
+    paramsPage = { pageNum: 1, pageSize: 10 };
+    const fields = fieldsForm;
+    Object.defineProperty(fields, 'date', {
+      value: ``,
+    });
+    if (fields.catalogId) {
+      Object.defineProperty(fields, 'catalogId', {
+        value: fields.catalogId[3],
+        enumerable: true,
+      });
+    }
+    formValues = { ...fieldsForm };
+    formTime = paramsTime;
+    const values = {
+      ...fields,
+      ...paramsPage,
+      ...paramsTime,
+      dataType: 0,
+    };
+    dispatch({
+      type: 'dataManagement/getDBList',
+      payload: values,
     });
   };
 
-  goToSubDBDetail = row => {
-    router.push('subDetailDataBase', {
-      payload: row,
+  handleSearchFile = (fieldsForm, paramsTime) => {
+    const { dispatch } = this.props;
+    paramsPageFile = { pageNum: 1, pageSize: 10 };
+    const fields = fieldsForm;
+    Object.defineProperty(fields, 'date', {
+      value: ``,
+    });
+    if (fields.catalogId) {
+      Object.defineProperty(fields, 'catalogId', {
+        value: fields.catalogId[3],
+        enumerable: true,
+      });
+    }
+    formValuesFile = { ...fieldsForm };
+    formTimeFile = paramsTime;
+    const values = {
+      ...fields,
+      ...paramsPageFile,
+      ...paramsTime,
+      dataType: 1,
+    };
+    dispatch({
+      type: 'dataManagement/getFileList',
+      payload: values,
     });
   };
+
+  changePage = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    paramsPage = { pageNum, pageSize };
+    dispatch({
+      type: 'dataManagement/getDBList',
+      payload: {
+        ...paramsPage,
+        ...formValues,
+        ...formTime,
+        dataType: 0,
+      },
+    });
+  };
+
+  changePageFile = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    paramsPageFile = { pageNum, pageSize };
+    dispatch({
+      type: 'dataManagement/getFileList',
+      payload: {
+        ...paramsPageFile,
+        ...formValuesFile,
+        ...formTimeFile,
+        dataType: 1,
+      },
+    });
+  };
+
+  renderForm(type) {
+    let actions;
+    let data;
+    const {
+      dataManagement: { sourceClassfiyList, pubNodes },
+    } = this.props;
+    const nodes = [
+      {
+        key: '全部',
+        value: '',
+      },
+    ];
+    pubNodes.map(item =>
+      nodes.push({
+        key: item.nodeName,
+        value: item.nodeName,
+      })
+    );
+    const formData = {
+      md: 8,
+      lg: 24,
+      xl: 48,
+      data: [
+        {
+          key: 1,
+          data: [
+            {
+              prop: 'subscribeName',
+              label: '订阅名称',
+              typeOptions: {
+                placeholder: '请输入订阅名称',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'dsName',
+              label: '信息资源名称',
+              typeOptions: {
+                placeholder: '请输入信息资源名称',
+                maxLength: 50,
+              },
+            },
+            {
+              type: 'Cascader',
+              prop: 'catalogId',
+              label: '资源属性分类',
+              typeOptions: {
+                options: sourceClassfiyList,
+                fieldNames: { label: 'name', value: 'id' },
+                placeholder: '请选择资源属性分类',
+              },
+            },
+          ],
+        },
+        {
+          key: 2,
+          data: [
+            {
+              type: 'Select',
+              prop: 'node',
+              label: '发布节点',
+              typeOptions: {
+                placeholder: '请选择发布节点',
+              },
+              options: nodes,
+            },
+            {
+              type: 'RangePicker',
+              prop: 'date',
+              label: '最近更新时间',
+            },
+          ],
+        },
+      ],
+    };
+    if (type === 'db') {
+      actions = {
+        handleSearch: this.handleSearch,
+      };
+      data = {
+        ...formValues,
+      };
+    } else {
+      actions = {
+        handleSearch: this.handleSearchFile,
+      };
+      data = {
+        ...formValuesFile,
+      };
+    }
+    return <FilterRowForm formData={formData} actions={actions} data={data} />;
+  }
 
   render() {
     const {
-      dataManagement: { DBList },
+      dataManagement: { dbList, fileList, pageDb, pageFile },
+      loading,
     } = this.props;
-    const options = [
-      {
-        value: 'hebei',
-        label: '河北',
-        children: [
-          { value: 'hengshui', label: '衡水' },
-          { value: 'shijiazhuang', label: '石家庄' },
-        ],
-      },
-      {
-        value: 'hunan',
-        label: '湖南',
-        children: [{ value: 'shaoyang', label: '邵阳' }, { value: '株洲', label: '株洲' }],
-      },
-    ];
-    const seletctData = [{ value: 0, label: '选择1' }, { value: 1, label: '选择2' }];
-    const SelectOption = seletctData.map(item => (
-      <Select.Option value={item.value} key={item.value}>
-        {item.label}
-      </Select.Option>
-    ));
-    const columns = [
-      {
-        dataIndex: 'id',
-        title: '序号',
-      },
-      {
-        dataIndex: 'subTitle',
-        title: '订阅名称',
-      },
-      {
-        title: '信息资源名称',
-      },
-      {
-        title: '数据大小',
-      },
-      {
-        title: '资源属性分类',
-      },
-      {
-        title: '发布节点',
-      },
-      {
-        title: '更新时间',
-      },
-      {
-        title: '操作',
-        render: (val, row) => {
-          return (
-            <div>
-              <a className="mr16" onClick={this.goToInfoSrcItem.bind(null, row)}>
-                信息资源项
-              </a>
-              <a onClick={this.goToSubFileDetail.bind(null, row)}>文件</a>
-            </div>
-          );
-        },
-      },
-    ];
-    columns.forEach(item => (item.align = 'center'));
-    const columnDB = [
-      {
-        dataIndex: 'id',
-        title: '序号',
-      },
-      {
-        dataIndex: 'subName',
-        title: '订阅名称',
-      },
-      {
-        title: '信息资源名称',
-      },
-      {
-        title: '数据条数',
-      },
-      {
-        title: '资源属性分类',
-      },
-      {
-        title: '发布节点',
-      },
-      {
-        title: '最近更新时间',
-      },
-      {
-        title: '操作',
-        render: (text, row) => {
-          return (
-            <div>
-              <a className="mr16">信息资源</a>
-              <a onClick={this.goToSubDBDetail.bind(null, row)}>数据</a>
-            </div>
-          );
-        },
-      },
-    ];
-    columnDB.forEach(item => (item.align = 'center'));
-    const dataSource = getTableFakeData(columns);
-    // const dataSourceDB = getTableFakeData(columnDB)
-    const pagination = {
+    const paginationProps = {
       showQuickJumper: true,
-      hideOnSinglePage: true,
+      total: dbList.totalCounts,
+      current: pageDb,
+      onChange: this.changePage,
+      pageSize: 10,
       showTotal(total) {
-        return `共 ${Math.ceil(total / 10)}页 / ${total}条 数据`;
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
       },
     };
+    const paginationPropsFile = {
+      showQuickJumper: true,
+      total: fileList.totalCounts,
+      current: pageFile,
+      onChange: this.changePageFile,
+      pageSize: 10,
+      showTotal(total) {
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
+      },
+    };
+    const locale = {
+      emptyText: '很遗憾，没有搜索到匹配的文件',
+    };
     return (
-      <PageHeader>
-        <div className="content_layout">
-          <Tabs defaultActiveKey="db" onChange={this.tabChange}>
-            <Tabs.TabPane tab="数据库" key="db">
-              <Form className="mb16">
-                <Input className="mr16 w150" onChange={this.subIdChangeDB} placeholder="订阅名称" />
-                <Input
-                  className="mr16 w150"
-                  onChange={this.infoSrcTitleChangeDB}
-                  placeholder="信息资源名称"
+      <PageHeaderWrapper>
+        <Card bordered={false}>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="数据库" key="1">
+              <div className={styles.tableList}>
+                <div className={styles.tableListForm}>{this.renderForm('db')}</div>
+                <Table
+                  rowKey="id"
+                  bordered
+                  pagination={paginationProps}
+                  dataSource={dbList.datas}
+                  columns={this.columns}
+                  loading={loading}
+                  locale={locale}
                 />
-                <Cascader
-                  className="mr16 w150"
-                  options={options}
-                  displayRender={labels => labels.pop()}
-                  onChange={this.srcAttrClassifyChange}
-                  placeholder="资源属性分类"
+              </div>
+            </TabPane>
+            <TabPane tab="文件" key="2">
+              <div className={styles.tableList}>
+                <div className={styles.tableListForm}>{this.renderForm('file')}</div>
+                <Table
+                  rowKey="id"
+                  bordered
+                  pagination={paginationPropsFile}
+                  dataSource={fileList.datas}
+                  columns={this.columns}
+                  loading={loading}
+                  locale={locale}
                 />
-                <Select
-                  className="mr16 w150"
-                  onChange={this.pubNodeChangeDB}
-                  placeholder="发布节点"
-                >
-                  {SelectOption}
-                </Select>
-                <DatePicker.RangePicker onChange={this.dateChangeDB} className="mr16 w220" />
-                <Button type="primary" icon="search" onClick={this.handelSearch.bind(null, 0)}>
-                  搜索
-                </Button>
-              </Form>
-              <Table
-                columns={columnDB}
-                dataSource={DBList}
-                pagination={pagination}
-                bordered
-                rowKey="id"
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="文件" key="file">
-              <Form className="mb16">
-                <Input
-                  className="mr16 w150"
-                  onChange={this.subIdChangeFile}
-                  placeholder="订阅名称"
-                />
-                <Input
-                  className="mr16 w150"
-                  onChange={this.infoSrcTitleChangeFile}
-                  placeholder="信息资源名称"
-                />
-                <Cascader
-                  className="mr16 w150"
-                  options={options}
-                  displayRender={labels => labels.pop()}
-                  onChange={this.srcAttrClassifyChangeFile}
-                  placeholder="资源属性分类"
-                />
-                <Select
-                  className="mr16 w150"
-                  onChange={this.pubNodeChangeFile}
-                  placeholder="发布节点"
-                >
-                  {SelectOption}
-                </Select>
-                <DatePicker.RangePicker onChange={this.dateChangeFile} className="mr16 w220" />
-                <Button type="primary" icon="search" onClick={this.handelSearch.bind(null, 1)}>
-                  搜索
-                </Button>
-              </Form>
-              <Table
-                columns={columns}
-                dataSource={dataSource}
-                pagination={pagination}
-                bordered
-                rowKey="id"
-              />
-            </Tabs.TabPane>
+              </div>
+            </TabPane>
           </Tabs>
-        </div>
-      </PageHeader>
+        </Card>
+      </PageHeaderWrapper>
     );
   }
 }
+
+export default DataManagement;
