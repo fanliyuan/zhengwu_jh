@@ -63,3 +63,8 @@ export async function runSubTask(params) {
 export async function getAssessLogs(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/reviewLog?${stringify(params)}`);
 }
+
+// 资源管理列表
+export async function managementList(params) {
+  return request(`/api/api/v2/zhengwu/swap/resourceBazaar/managementList?${stringify(params)}`);
+}
