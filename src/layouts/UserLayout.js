@@ -36,19 +36,6 @@ class UserLayout extends React.PureComponent {
           <SelectLang />
         </div>
         <div className={styles.content}>
-          <Tooltip
-            title={
-              <div>
-                <div>节点管理员 : admin</div>
-                <div>节点安全员 : security</div>
-                <div>节点审计员 : auditor</div>
-                <div>节点审核员 : assessor</div>
-                <div>节点操作员 : user</div>
-              </div>
-            }
-          >
-            <Icon type="question-circle-o" />
-          </Tooltip>
           <div className={styles.top}>
             <div className={styles.header}>
               <Link to="/">
