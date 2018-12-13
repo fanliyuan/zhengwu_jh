@@ -111,7 +111,7 @@ export default class SubAuth extends Component {
           <a className="mr16" onClick={this.handleGoView.bind(this, row)}>
             查看
           </a>
-          {row.subscriptionAuth === '1' ? (
+          {row.status === -1 ? (
             <a onClick={this.handleAuthModalShow.bind(this, row)}>授权</a>
           ) : row.subscriptionAuth === 9999 ? (
             <Popconfirm title="请确认取消授权" onConfirm={() => this.cancelAuth(row)}>
@@ -204,7 +204,7 @@ export default class SubAuth extends Component {
   }
 
   @Bind()
-  @Throttle(1000)
+  @Throttle(300, { trailing: false })
   handleSearch(queryData = {}, resetPage = false) {
     // eslint-disable-next-line
     const pagination = resetPage ? { pageSize: 10, pageNum: 1 } : this.state.pagination;

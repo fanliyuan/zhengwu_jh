@@ -566,7 +566,7 @@ class Assess extends Component {
   };
 
   @Bind()
-  @Throttle(1000)
+  @Throttle(300, { trailing: false })
   handleSearch(queryData = {}, resetPage = false) {
     // eslint-disable-next-line
     const pagination = resetPage ? { pageNum: 1, pageSize: 10 } : this.state.pagination;

@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-12 19:05:29
+ * @Last Modified time: 2018-12-13 15:21:01
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
@@ -303,19 +303,24 @@ export default class SubManagement extends Component {
   }
 
   @Bind()
-  @Throttle(1000)
+  @Throttle(300, { trailing: false })
   handleSearch(query = {}, pageReset = false) {
     const queryData = query;
     const { key, pagination: pagi } = this.state;
+    this.setState({
+      queryData: { ...queryData },
+    });
     const { dispatch } = this.props;
     const pagination = pageReset ? { pageSize: 10, pageNum: 1 } : pagi;
     if (queryData.runStatus === -999) {
       queryData.runStatus = undefined;
     }
+    if (queryData.time && queryData.time.length > 0) {
+      queryData.beginTime = queryData.time[0].format().substr(0, 10);
+      queryData.endTime = queryData.time[1].format().substr(0, 10);
+    }
+    delete queryData.time;
     queryData.status = key === 'has' ? 1 : key === 'fail' ? 0 : -1;
-    this.setState({
-      queryData: { ...queryData },
-    });
     dispatch({
       type: 'subManagement/getSubList',
       payload: {

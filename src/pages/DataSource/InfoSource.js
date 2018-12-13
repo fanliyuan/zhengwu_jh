@@ -21,26 +21,26 @@ export default class InfoSource extends Component {
   state = {
     entry: 'pub',
   };
-  infoSourceData = window.location.hash.split('?')[0].split('/');
-  resourceId = this.infoSourceData.pop() || 0;
-  id = this.infoSourceData.pop() || 0;
-  type = this.infoSourceData.pop() || 'db';
-  entry = window.location.hash.startsWith('#/data/management/infoSource') ? 'pub' : 'sub';
+
   componentDidMount() {
     const {
       match: {
         params: { type, id, resourceId },
       },
       route,
+      dispatch,
     } = this.props;
     const entry = route.name === 'subInfoSrc' ? 'sub' : 'pub';
-    this.props.dispatch({
+    this.setState({
+      entry,
+    });
+    dispatch({
       type: 'infoSource/getInfoSrcDetail',
       payload: {
         path: resourceId,
       },
     });
-    this.props.dispatch({
+    dispatch({
       type: 'infoSource/getRefDetail',
       payload: {
         type,
@@ -48,6 +48,7 @@ export default class InfoSource extends Component {
       },
     });
   }
+
   render() {
     const {
       infoSource: { infoSourceDetail, refDetail },
@@ -57,12 +58,12 @@ export default class InfoSource extends Component {
       dataTitle,
       dataType,
       dataSize,
-      dataNdoe,
-      dataDepartment,
+      dataNdoe, // eslint-disable-line
+      dataDepartment, // eslint-disable-line
       dataPubMode,
       insertTime,
       updateTime,
-      dataId,
+      dataId, // eslint-disable-line
     } = refDetail;
     return (
       <PageHeaderWrapper buttonList={this.buttonList}>
