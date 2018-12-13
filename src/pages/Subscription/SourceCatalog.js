@@ -53,24 +53,15 @@ class SourceCatalog extends Component {
       render: text => {
         let dataType;
         if (text.indexOf('db') !== -1) {
-          dataType = `db`;
+          dataType = `数据库`;
         } else if (text.indexOf('ftp') !== -1) {
-          dataType = `ftp`;
+          dataType = `文件`;
         } else if (text.indexOf('file') !== -1) {
-          dataType = `file`;
+          dataType = `文件`;
         } else {
-          dataType = '';
+          dataType = `数据类型错误`;
         }
-        switch (dataType) {
-          case 'db':
-            return <span>数据库</span>;
-          case 'file':
-            return <span>文件</span>;
-          case 'ftp':
-            return <span>文件</span>;
-          default:
-            return <span>数据类型错误</span>;
-        }
+        return dataType;
       },
     },
     {
