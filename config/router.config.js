@@ -28,7 +28,7 @@ export default [
           {
             path: '/dashboard/analysis',
             name: 'analysis',
-            component: './Dashboard/Analysis',
+            component: './Dashboard/PlatformOverview',
           },
           {
             path: '/dashboard/loginLog',
