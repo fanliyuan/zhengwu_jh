@@ -433,7 +433,7 @@ class SourceCatalog extends Component {
             {
               type: 'RangePicker',
               prop: 'date',
-              label: '发布日期',
+              label: '共享时间',
             },
           ],
         },
