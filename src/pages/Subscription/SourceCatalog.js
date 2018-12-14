@@ -211,6 +211,7 @@ class SourceCatalog extends Component {
         directoryName: record.resourceProjectCatalogType,
         dsID: record.resourceId,
         dsName: record.resourceName,
+        kafkaTopic: record.kafkaTopic,
         mountResourceId: record.mountResourceId,
         mountResourceName: record.mountResourceName,
         publishInstitution: record.nodeName,
