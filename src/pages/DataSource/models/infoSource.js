@@ -79,7 +79,7 @@ export default {
             } = {},
           } = {},
         } = res;
-        const taskDetail = yield call(getSyncBasic, { dataType: type, id: payload.id });
+        const taskDetail = yield call(getSyncBasic, { dataType: dataType, id: payload.id });
         const {
           result: {
             data: {

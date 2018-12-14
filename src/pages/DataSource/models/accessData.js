@@ -747,6 +747,24 @@ export default {
         });
       }
     },
+    *getWillDetail({ payload }, { call, put }) {
+      let callbackApi;
+      const { dataType } = payload;
+      if (dataType === 'db') {
+        callbackApi = viewDbDetail;
+      } else if (dataType === 'ftp') {
+        callbackApi = viewFtpDetail;
+      } else {
+        callbackApi = viewFileDetail;
+      }
+      const response = yield call(callbackApi, payload.id);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'updateCurrentDetail',
+          payload: response.result.data,
+        });
+      }
+    },
   },
 
   reducers: {
