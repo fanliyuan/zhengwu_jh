@@ -264,9 +264,13 @@ class TableList extends PureComponent {
     formTime = {};
     mount = { mount: true };
     paramsPage = { pageNum: 1, pageSize: 10 };
+    const values = {
+      ...mount,
+      ...resetParamsPage,
+    };
     dispatch({
       type: 'dataSourceManagement/fetch',
-      payload: resetParamsPage,
+      payload: values,
     });
   };
 
