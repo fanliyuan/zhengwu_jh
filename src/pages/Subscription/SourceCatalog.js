@@ -211,6 +211,7 @@ class SourceCatalog extends Component {
         directoryName: record.resourceProjectCatalogType,
         dsID: record.resourceId,
         dsName: record.resourceName,
+        kafkaTopic: record.kafkaTopic,
         mountResourceId: record.mountResourceId,
         mountResourceName: record.mountResourceName,
         publishInstitution: record.nodeName,
@@ -432,7 +433,7 @@ class SourceCatalog extends Component {
             {
               type: 'RangePicker',
               prop: 'date',
-              label: '发布日期',
+              label: '共享时间',
             },
           ],
         },
