@@ -1,4 +1,3 @@
-import { stringify } from 'qs';
 import request from '@/utils/request';
 
 export async function fakeAccountLogin(params) {
@@ -6,4 +5,8 @@ export async function fakeAccountLogin(params) {
     method: 'POST',
     body: params,
   });
+}
+
+export async function loginOut() {
+  return request(`/api/logout1`);
 }
