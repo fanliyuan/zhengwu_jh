@@ -8,7 +8,7 @@ import {
   Checkbox,
   DatePicker,
   Popconfirm,
-  message,
+  // message,
   Cascader,
 } from 'antd';
 import moment from 'moment';
@@ -22,7 +22,7 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { isMoment } = moment;
-@connect(({ informationResource, loading }) => ({
+@connect(({ informationResource }) => ({
   informationResource,
   // loading:loading.effects.
 }))
@@ -127,7 +127,8 @@ export default class SourceManagement extends Component {
       if (isMoment(item)) {
         return item.format('YYYY-MM-DD');
       } else {
-        return '';
+        // eslint-disable-line
+        return ''; // eslint-disable-line
       }
     });
     this.setState({
@@ -151,19 +152,20 @@ export default class SourceManagement extends Component {
     const {
       queryData: { name, code, beginTime, endTime, mount, status, typeId },
     } = this.state;
-    this.props.dispatch({
+    const { dispatch } = this.props;
+    dispatch({
       type: 'informationResource/getResourceList',
       payload: {
         // body: {
         pageSize: pageSize || 10,
         pageNum: current || 1,
-        name: name ? name : undefined,
-        code: code ? code : undefined,
-        beginTime: beginTime ? beginTime : undefined,
-        endTime: endTime ? endTime : undefined,
+        name: name || undefined,
+        code: code || undefined,
+        beginTime: beginTime || undefined,
+        endTime: endTime || undefined,
         mount,
         status: +status === -2 ? undefined : +status,
-        typeId: typeId ? typeId : undefined,
+        typeId: typeId || undefined,
         // },
       },
     });
@@ -206,12 +208,12 @@ export default class SourceManagement extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'informationResource/deleteResources',
-      payload: { id: id },
+      payload: { id },
     });
   };
 
-  handleCatalog = row => {
-    const { dispatch } = this.props;
+  handleCatalog = () => {
+    // const { dispatch } = this.props;
     // dispatch(routerRedux.push('/dataSourceManagement/catalog'))
     // dispatch(routerRedux.push('/dataSourceManagement/viewDirectory', { resourceId: row.resourceId }))
   };
@@ -257,7 +259,7 @@ export default class SourceManagement extends Component {
     if (val.length === 0) {
       ids = '';
     } else if (val.length === 1) {
-      ids = val[0];
+      ids = val[0]; // eslint-disable-line
     } else {
       ids = val.join('-');
     }
@@ -295,8 +297,8 @@ export default class SourceManagement extends Component {
     const {
       informationResource: { resourceList, pagination, classfiyList },
     } = this.props;
-    const parentNodeList = [];
-    const dataList = [];
+    // const parentNodeList = [];
+    // const dataList = [];
     // const pagination = false;
     // const options = [
     //   {
@@ -328,17 +330,17 @@ export default class SourceManagement extends Component {
     //     ],
     //   },
     // ]
-    const data = [
-      { value: '', id: -1, label: '资源属性分类' },
-      { value: '数据库', id: 0, label: '数据库' },
-      { value: '文件', id: 1, label: '文件' },
-      { value: 'FTP', id: 2, label: 'FTP' },
-    ];
-    const selectData = data.map(item => (
-      <Option value={item.value} key={item.id} title={item.label}>
-        {item.label}
-      </Option>
-    ));
+    // const data = [
+    //   { value: '', id: -1, label: '资源属性分类' },
+    //   { value: '数据库', id: 0, label: '数据库' },
+    //   { value: '文件', id: 1, label: '文件' },
+    //   { value: 'FTP', id: 2, label: 'FTP' },
+    // ];
+    // const selectData = data.map(item => (
+    //   <Option value={item.value} key={item.id} title={item.label}>
+    //     {item.label}
+    //   </Option>
+    // ));
     // const data1 = [{ value: '0', id: 0, label: '节点' }, { value: '1', id: 1, label: '节点1' }]
     // const selectData1 = data1.map(item => {
     //   return (
@@ -385,9 +387,7 @@ export default class SourceManagement extends Component {
       {
         title: '资源属性分类',
         dataIndex: 'typeName',
-        render: text => {
-          return text.slice(text.lastIndexOf('-') + 1);
-        },
+        render: text => text.slice(text.lastIndexOf('-') + 1),
       },
       // {
       //   title: '数据类型',
@@ -418,9 +418,7 @@ export default class SourceManagement extends Component {
       {
         title: '数据已关联',
         dataIndex: 'mount',
-        render: text => {
-          return text ? '是' : '否';
-        },
+        render: text => (text ? '是' : '否'),
       },
       {
         title: '信息项',
@@ -434,7 +432,10 @@ export default class SourceManagement extends Component {
         title: '审核状态',
         dataIndex: 'status',
         render(text) {
-          switch (+text) {
+          //eslint-disable-line
+          switch (
+            +text //eslint-disable-line
+          ) {
             case -1:
               return '待审核';
             case 0:
@@ -461,7 +462,8 @@ export default class SourceManagement extends Component {
                 </Popconfirm>
               </div>
             );
-          } else if (+row.status === 0) {
+          }
+          if (+row.status === 0) {
             return (
               <div>
                 <span className={styles.clickBtn} onClick={this.handleCheckLog.bind(null, row.id)}>
@@ -475,35 +477,34 @@ export default class SourceManagement extends Component {
                 </Popconfirm>
               </div>
             );
-          } else {
-            return (
-              <div>
-                <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
-                  查看
-                </span>
-                <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
-                  关联数据
-                </span>
-                <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
-                  共享开放
-                </span>
-                <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
-                  修改
-                </span>
-                <Popconfirm
-                  title={`确认删除${row.name}?`}
-                  onConfirm={() => this.handleDelete(row.id)}
-                >
-                  <a>删除</a>
-                </Popconfirm>
-              </div>
-            );
           }
+          return (
+            <div>
+              <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
+                查看
+              </span>
+              <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
+                关联数据
+              </span>
+              <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
+                共享开放
+              </span>
+              <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
+                修改
+              </span>
+              <Popconfirm
+                title={`确认删除${row.name}?`}
+                onConfirm={() => this.handleDelete(row.id)}
+              >
+                <a style={{ display: row.mount ? 'none' : 'inine-block' }}>删除</a>
+              </Popconfirm>
+            </div>
+          );
         },
       },
     ];
     columns.forEach(item => {
-      item.align = 'center';
+      item.align = 'center'; // eslint-disable-line
     });
     // const list = [
     //   {
@@ -543,14 +544,14 @@ export default class SourceManagement extends Component {
     //     status: '2',
     //   },
     // ];
-    const rowSelection = {
-      // onChange: selectedRows => {
-      // },
-      // getCheckboxProps: record => ({
-      //   disabled: record.name === 'Disabled User',
-      //   name: record.name,
-      // }),
-    };
+    // const rowSelection = {
+    // onChange: selectedRows => {
+    // },
+    // getCheckboxProps: record => ({
+    //   disabled: record.name === 'Disabled User',
+    //   name: record.name,
+    // }),
+    // };
     // if (!isNodeOperator) {
     //   rowSelection = null
     //   columns.splice(2,0,{
@@ -560,7 +561,7 @@ export default class SourceManagement extends Component {
     //   })
     // }
     const {
-      queryData: { name, code, beginTime, endTime, mount, status, typeId },
+      queryData: { name, code, mount, status }, // beginTime, endTime,, typeId
       classfiyValue,
       timeValue,
     } = this.state;
