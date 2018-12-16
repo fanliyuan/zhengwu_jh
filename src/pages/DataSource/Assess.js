@@ -354,7 +354,6 @@ class Assess extends Component {
         } else {
           index = 4;
         }
-        index = 0;
         return this.operationsData[index].map(item => {
           if (item === 'infoResource' && !row.resourceId) {
             return (
