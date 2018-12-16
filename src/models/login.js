@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin } from '@/services/login/login';
+import { fakeAccountLogin, loginOut } from '@/services/login/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
@@ -52,24 +52,27 @@ export default {
     //   yield call(getFakeCaptcha, payload);
     // },
 
-    *logout(_, { put }) {
-      yield put({
-        type: 'changeLoginStatus',
-        payload: {
-          status: false,
-          currentAuthority: 'guest',
-        },
-      });
-      reloadAuthorized();
-      localStorage.setItem('currentUser', '');
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            // redirect: window.location.href,
-          }),
-        })
-      );
+    *logout(_, { call, put }) {
+      const response = yield call(loginOut);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {
+            status: false,
+            currentAuthority: 'guest',
+          },
+        });
+        reloadAuthorized();
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              // redirect: window.location.href,
+            }),
+          })
+        );
+        localStorage.setItem('currentUser', '');
+      }
     },
   },
 
