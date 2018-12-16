@@ -254,7 +254,7 @@ export default {
           }
           yield put({
             type: 'reWriteItemList',
-            payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
+            payload: { id: payload.id }, // , pageNum: 1, pageSize: 10
           });
           // yield put({
           //   type: 'getConnectItemList',
@@ -291,8 +291,8 @@ export default {
           const pagination =
             response.result.totalCounts > 9
               ? {
-                  current: response.result.number + 1,
-                  pageSize: response.result.size,
+                  current: payload.pageNum,
+                  pageSize: payload.pageSize,
                   total: response.result.totalCounts,
                 }
               : false;

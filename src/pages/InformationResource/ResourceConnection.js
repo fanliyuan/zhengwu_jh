@@ -201,6 +201,54 @@ export default class ResourceConnection extends Component {
     });
   };
 
+  handleFile1TableChange = pagination => {
+    const { dispatch } = this.props;
+    const { initialType, chooseId1 } = this.state;
+    if (initialType === 'ftp') {
+      dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: chooseId1,
+          pagination: { pageNum: pagination.current, pageSize: pagination.pageSize },
+          type: 'ftp',
+          type1: 'ftpfile',
+        },
+      });
+      // yield put({
+      //   type: 'getResourceDetail',
+      //   payload: response.result.data,
+      // });
+    } else if (initialType === 'file') {
+      dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: chooseId1,
+          pagination: { pageNum: pagination.current, pageSize: pagination.pageSize },
+          type: 'file',
+          type1: 'file',
+        },
+      });
+      // yield put({
+      //   type: 'getResourceDetail',
+      //   payload: response.result.data,
+      // });
+    } else if (initialType === 'db') {
+      dispatch({
+        type: 'informationResource/getFileList',
+        payload: {
+          id: chooseId1,
+          pagination: { pageNum: pagination.current, pageSize: pagination.pageSize },
+          type: 'db',
+          type1: 'struct',
+        },
+      });
+    }
+    // dispatch({
+    //   type: 'informationResource/',
+    //   payload: { id: routeId, pageNum: pagination.current, pageSize: pagination.pageSize },
+    // });
+  };
+
   showModal2 = () => {
     this.setState({
       visible2: true,
@@ -755,19 +803,19 @@ export default class ResourceConnection extends Component {
                 <Table
                   columns={columnsLeft}
                   dataSource={itemList}
-                  pagination={
-                    connectFilePagination && {
-                      ...connectFilePagination,
-                      showQuickJumper: true,
-                      showTotal: total =>
-                        `共 ${Math.ceil(
-                          total / connectFilePagination.pageSize
-                        )}页 / ${total}条 数据`,
-                    }
-                  }
+                  // pagination={
+                  //   connectFilePagination && {
+                  //     ...connectFilePagination,
+                  //     showQuickJumper: true,
+                  //     showTotal: total =>
+                  //       `共 ${Math.ceil(
+                  //         total / connectFilePagination.pageSize
+                  //       )}页 / ${total}条 数据`,
+                  //   }
+                  // }
                   rowKey="id"
                   bordered
-                  onChange={this.handleFileTableChange}
+                  // onChange={this.handleFile1TableChange}
                 />
               </Col>
               <Col
@@ -791,7 +839,7 @@ export default class ResourceConnection extends Component {
                   }
                   rowKey="id"
                   bordered
-                  onChange={this.handleFileTableChange}
+                  // onChange={this.handleFile1TableChange}
                 />
               </Col>
               <Col

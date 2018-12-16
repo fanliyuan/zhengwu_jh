@@ -31,6 +31,8 @@ export default class InputDirectory extends Component {
               this.setState({
                 isEnable: true,
               });
+            } else if (+info.file.response.code === 201) {
+              message.success(`${info.file.response.message}`);
             } else {
               message.error(`${info.file.response.message}`);
             }
