@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-13 15:21:01
+ * @Last Modified time: 2018-12-16 16:33:09
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
@@ -86,30 +86,37 @@ export default class SubManagement extends Component {
   hasColumn = [
     {
       dataIndex: 'id',
+      align: 'center',
       title: '序号',
     },
     {
       dataIndex: 'subscribeName',
+      align: 'center',
       title: '订阅名称',
     },
     {
       dataIndex: 'subscriber',
+      align: 'center',
       title: '订阅申请人',
     },
     {
       dataIndex: 'subscribeTime',
+      align: 'center',
       title: '订阅时间',
     },
     {
       dataIndex: 'dsName',
+      align: 'center',
       title: '信息资源名称',
     },
-    // {
-    //   dataIndex: 'pubNode',
-    //   title: '发布节点',
-    // },
+    {
+      dataIndex: 'publishInstitution',
+      align: 'center',
+      title: '发布节点',
+    },
     {
       dataIndex: 'runStatus',
+      align: 'center',
       title: '运行状态',
       render(text) {
         switch (text) {
@@ -126,13 +133,13 @@ export default class SubManagement extends Component {
       title: '操作',
       render: (_, row) => (
         <Fragment>
-          {row.runStatus === 1 ? (
-            <Popconfirm title="请确认是否停止订阅?" onConfirm={() => this.handleStop(row)}>
-              <a className="mr16">停止</a>
+          {row.runStatus === 0 ? (
+            <Popconfirm title="请确认是否启动订阅" onConfirm={() => this.handleStart([row])}>
+              <a className="mr16">启动</a>{' '}
             </Popconfirm>
           ) : (
-            <Popconfirm title="请确认是否启动订阅" onConfirm={() => this.handleStart(row)}>
-              <a className="mr16">启动</a>{' '}
+            <Popconfirm title="请确认是否停止订阅?" onConfirm={() => this.handleStop([row])}>
+              <a className="mr16">停止</a>
             </Popconfirm>
           )}
           {/* <Popconfirm title="请确认取消订阅?" onConfirm={this.handleCancelSub.bind(this, row)}>
@@ -147,28 +154,34 @@ export default class SubManagement extends Component {
   willColumn = [
     {
       dataIndex: 'id',
+      align: 'center',
       title: '序号',
     },
     {
       dataIndex: 'subscribeName',
+      align: 'center',
       title: '订阅名称',
     },
     {
       dataIndex: 'subscriber',
+      align: 'center',
       title: '订阅申请人',
     },
     {
       dataIndex: 'subscribeTime',
+      align: 'center',
       title: '订阅时间',
     },
     {
       dataIndex: 'dsName',
+      align: 'center',
       title: '信息资源名称',
     },
-    // {
-    //   dataIndex: 'pubNode',
-    //   title: '发布节点',
-    // },
+    {
+      dataIndex: 'publishInstitution',
+      align: 'center',
+      title: '发布节点',
+    },
     {
       title: '操作',
       // render(_, row) {
@@ -180,28 +193,34 @@ export default class SubManagement extends Component {
   failColumn = [
     {
       dataIndex: 'id',
+      align: 'center',
       title: '序号',
     },
     {
       dataIndex: 'subscribeName',
+      align: 'center',
       title: '订阅名称',
     },
     {
       dataIndex: 'subscriber',
+      align: 'center',
       title: '订阅申请人',
     },
     {
       dataIndex: 'subscribeTime',
+      align: 'center',
       title: '订阅时间',
     },
     {
       dataIndex: 'dsName',
+      align: 'center',
       title: '信息资源名称',
     },
-    // {
-    //   dataIndex: 'pubNode',
-    //   title: '发布节点',
-    // },
+    {
+      dataIndex: 'publishInstitution',
+      align: 'center',
+      title: '发布节点',
+    },
     {
       title: '操作',
       render: (_, row) => (
@@ -252,6 +271,7 @@ export default class SubManagement extends Component {
       dsID: item.dsId,
       mountResourceId: item.mountResourceId,
       subscriberID: item.subscriberId,
+      kafkaTopic: item.kafkaTopic,
     }));
     dispatch({
       type: 'subManagement/stopSubTask',
@@ -266,9 +286,10 @@ export default class SubManagement extends Component {
       dsID: item.dsId,
       mountResourceId: item.mountResourceId,
       subscriberID: item.subscriberId,
+      kafkaTopic: item.kafkaTopic,
     }));
     dispatch({
-      type: 'subManagement/stopSubTask',
+      type: 'subManagement/startSubTask',
       payload,
     });
   };
@@ -351,10 +372,7 @@ export default class SubManagement extends Component {
                     <Popconfirm title="将启动所选" onConfirm={() => this.handleStart(selectedRows)}>
                       <Button className="mr16">启动</Button>
                     </Popconfirm>
-                    <Popconfirm
-                      title="将停止所选"
-                      onConfirm={() => this.handleStop(this, selectedRows)}
-                    >
+                    <Popconfirm title="将停止所选" onConfirm={() => this.handleStop(selectedRows)}>
                       <Button type="danger">停止</Button>
                     </Popconfirm>
                   </Fragment>
@@ -387,6 +405,7 @@ export default class SubManagement extends Component {
                 pagination={{ ...pagination, pageSize, current }}
                 columns={this.willColumn}
                 rowKey="id"
+                bordered
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="订阅失败" key="fail">
@@ -397,6 +416,7 @@ export default class SubManagement extends Component {
                 pagination={{ ...pagination, pageSize, current }}
                 columns={this.failColumn}
                 rowKey="id"
+                bordered
               />
             </Tabs.TabPane>
           </Tabs>

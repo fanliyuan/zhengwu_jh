@@ -314,8 +314,8 @@ class Assess extends Component {
       },
     },
     {
-      dataIndex: 'applyTime', // applyTime updateTime
-      title: '提交时间',
+      dataIndex: 'createTime', // applyTime updateTime
+      title: '申请时间',
     },
     // {
     //   dataIndex: 'audit',

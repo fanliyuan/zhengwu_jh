@@ -72,6 +72,20 @@ export default {
         console.log(error);
       }
     },
+    *startSubTask({ payload: params }, { call, put }) {
+      try {
+        const res = yield call(runSubTask, params);
+        if (+res.code === 200) {
+          message.success(res.msg || '启动成功');
+          yield put({
+            type: 'getSubList',
+          });
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
+    },
     *getAssessLogs({ payload: params }, { call, put }) {
       let assessLogs = {};
       try {
