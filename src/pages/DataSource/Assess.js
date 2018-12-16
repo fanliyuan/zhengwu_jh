@@ -1,6 +1,7 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable no-param-reassign */
-import React, { Component, Fragment } from 'react';
-import { Table, Select, Modal, Radio, Input, Card, Divider, Icon } from 'antd';
+import React, { Component, Fragment, PureComponent } from 'react';
+import { Table, Select, Modal, Radio, Input, Card, Divider, Icon, Spin } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Bind, Throttle } from 'lodash-decorators';
@@ -48,7 +49,162 @@ const classNameObject = {
   '20': 'red',
   '-21': 'blue',
 };
-// const statusData = Object.entries(statusObject);
+
+// 接入数据配置组件
+class ResuoceInfo extends PureComponent {
+  render() {
+    const {
+      dataType,
+      loadingConfig,
+      loadingTable,
+      loadingStruct,
+      currentDetail = {},
+      currentSync = {},
+      currentList = {},
+      syncVisible = false,
+      listVisible = false,
+    } = this.props;
+
+    const dbColumn = [
+      {
+        title: '表名称',
+        dataIndex: 'tableName',
+        align: 'center',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'tableNote',
+        align: 'center',
+      },
+    ];
+    const structColumn = [
+      {
+        title: '主键',
+        dataIndex: 'primaryKey',
+        render: text => {
+          if (text) {
+            return <Icon style={{ color: '#fb9a03' }} type="key" theme="outlined" />;
+          }
+          return '';
+        },
+      },
+      {
+        title: '字段名称',
+        dataIndex: 'columnName',
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'columnType',
+      },
+      {
+        title: '中文标注',
+        dataIndex: 'note',
+      },
+    ];
+    const ftpColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件相对路径',
+        dataIndex: 'path',
+      },
+    ];
+    const fileColumn = [
+      {
+        title: '文件名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '文件类型',
+        dataIndex: 'type',
+      },
+      {
+        title: '文件相对路径',
+        dataIndex: 'path',
+      },
+    ];
+
+    const tableList = [currentDetail];
+
+    return (
+      <Fragment>
+        <Spin spinning={loadingConfig}>
+          <DescriptionList size="large" title="基础信息" style={{ marginBottom: 32 }}>
+            <Description term="数据名称">{currentDetail.name}</Description>
+            <Description term="文件所属单位">{currentDetail.createUnit}</Description>
+            <Description term="数据描述">{currentDetail.describe}</Description>
+            <Description term="负责人姓名">{currentDetail.dutyName}</Description>
+            <Description term="负责人手机号">{currentDetail.dutyPhone}</Description>
+            <Description term="负责人职位">{currentDetail.dutyPosition}</Description>
+          </DescriptionList>
+          {syncVisible && (
+            <Fragment>
+              <Divider />
+              <DescriptionList size="large" title="同步信息" style={{ marginBottom: 32 }}>
+                <Description term="同步模式">{currentSync.syncMode}</Description>
+                <Description term="同步频率">{currentSync.syncRate}</Description>
+                <Description term="定时设置">每{currentSync.timeSet}</Description>
+                <Description term="自动停止">{currentSync.stopNum}次</Description>
+              </DescriptionList>
+            </Fragment>
+          )}
+          {listVisible &&
+            (dataType === 'db' ? (
+              <Fragment>
+                <Divider style={{ marginBottom: 32 }} />
+                <div className={styles.title}>表信息</div>
+                <Table
+                  style={{ marginBottom: 24 }}
+                  loading={loadingTable}
+                  dataSource={tableList}
+                  columns={dbColumn}
+                  rowKey="id"
+                />
+                <div className={styles.title}>结构信息</div>
+                <Table
+                  style={{ marginBottom: 16 }}
+                  loading={loadingStruct}
+                  dataSource={currentList}
+                  columns={structColumn}
+                  rowKey="id"
+                />
+              </Fragment>
+            ) : dataType === 'ftp' ? (
+              <Fragment>
+                <Divider style={{ marginBottom: 32 }} />
+                <div className={styles.title}>文件信息</div>
+                <Table
+                  style={{ marginBottom: 24 }}
+                  loading={loadingTable}
+                  dataSource={currentList}
+                  columns={ftpColumn}
+                  rowKey="id"
+                />
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Divider style={{ marginBottom: 32 }} />
+                <div className={styles.title}>文件信息</div>
+                <Table
+                  style={{ marginBottom: 24 }}
+                  loading={loadingTable}
+                  dataSource={currentList}
+                  columns={fileColumn}
+                  rowKey="id"
+                />
+              </Fragment>
+            ))}
+        </Spin>
+      </Fragment>
+    );
+  }
+}
 
 @connect(({ assess, accessData, loading }) => ({
   assess,
@@ -56,6 +212,8 @@ const classNameObject = {
   loading: loading.models.assess,
   loadingTable: loading.effects['accessData/getCurrentdetail'],
   loadingStruct: loading.effects['accessData/getCurrentList'],
+  loadingConfig:
+    loading.effects['accessData/getCurrentdetail'] || loading.effects['accessData/getCurrentSync'],
 }))
 class Assess extends Component {
   formOptions = {
@@ -156,7 +314,7 @@ class Assess extends Component {
       },
     },
     {
-      dataIndex: 'updateTime',
+      dataIndex: 'applyTime', // applyTime updateTime
       title: '提交时间',
     },
     // {
@@ -168,11 +326,8 @@ class Assess extends Component {
       title: '审核状态',
       render(text) {
         // return statusData.find(item => item.value === text).label
-        return (
-          <span className={classNameObject[text]}>
-            {statusArray.find(item => +item.value === text).label}
-          </span>
-        );
+        const status = statusArray.find(item => +item.value === text) || {};
+        return <span className={classNameObject[text]}>{status.label}</span>;
       },
     },
     {
@@ -210,7 +365,7 @@ class Assess extends Component {
           return (
             <a
               className="mr16"
-              onClick={this[`handle${item}`].bind(this, row, showData)}
+              onClick={this[`handle${item}`].bind(this, row, showData, isCurOption)}
               key={item}
             >
               {this.operationsObject[item]}
@@ -230,6 +385,10 @@ class Assess extends Component {
     assessVisible: false,
     status: 1,
     rejectReason: '',
+    modalVisible: false,
+    syncVisible: false,
+    listVisible: false,
+    dataType: 'db',
     // hasSetCurrent: false,
     // currentConfig: [1, -11, 10],
   };
@@ -262,22 +421,66 @@ class Assess extends Component {
 
   // eslint-disable-next-line
   handleview = (row, showData, isCurOption) => {
+    const { type: dataType } = row;
     const { dispatch } = this.props;
-    const { type } = row;
-    this.showCurrentConfig(row, showData);
-    dispatch({
-      type: 'accessData/getCurrentdetail',
-      payload: {
-        id: row.id,
-        type,
-      },
+    if (dataType !== 'file') {
+      dispatch({
+        type: 'accessData/getCurrentSync',
+        payload: {
+          id: row.id,
+          dataType,
+        },
+      });
+      this.setState({
+        syncVisible: true,
+      });
+    } else {
+      this.setState({
+        syncVisible: false,
+      });
+    }
+    if (isCurOption) {
+      dispatch({
+        type: 'accessData/getCurrentdetail',
+        payload: {
+          id: row.id,
+          dataType,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'accessData/getWillDetail',
+        payload: {
+          id: row.id,
+          dataType,
+        },
+      });
+    }
+    if (showData) {
+      this.setState({
+        listVisible: true,
+      });
+      dispatch({
+        type: 'accessData/getCurrentList',
+        payload: {
+          id: row.id,
+          dataType,
+        },
+      });
+    } else {
+      this.setState({
+        listVisible: false,
+      });
+    }
+    this.setState({
+      modalVisible: true,
+      dataType,
     });
-    dispatch({
-      type: 'accessData/getCurrentList',
-      payload: {
-        id: row.id,
-        type,
-      },
+  };
+
+  handleConfigCancel = () => {
+    this.setState({
+      modalVisible: false,
     });
   };
 
@@ -347,28 +550,6 @@ class Assess extends Component {
   reasonChange = e => {
     this.setState({
       rejectReason: e.target.value,
-    });
-  };
-
-  showCurrentConfig = (row, showData) => {
-    const { type: dataType } = row;
-    Modal.info({
-      title: '当前配置',
-      width: 900,
-      okText: '关闭',
-      maskClosable: false,
-      content: (() => {
-        switch (dataType) {
-          case 'db':
-            return this.renderDbInfo(showData);
-          case 'ftp':
-            return this.renderFtpInfo(showData);
-          case 'file':
-            return this.renderFileInfo(showData);
-          default:
-            return '';
-        }
-      })(),
     });
   };
 
@@ -598,8 +779,12 @@ class Assess extends Component {
     const {
       assess: { assessList, pagination },
       loading,
+      loadingConfig,
+      loadingTable,
+      loadingStruct,
+      accessData: { currentDetail, currentSync, currentList },
     } = this.props;
-    const { assessVisible, status } = this.state;
+    const { dataType, assessVisible, status, modalVisible, syncVisible, listVisible } = this.state;
     const paginationProps = {
       showQuickJumper: true,
       hideOnSinglePage: true,
@@ -613,6 +798,7 @@ class Assess extends Component {
         <div className="content_layout">
           <SearchForm formOptions={this.formOptions} />
           <Table
+            className={styles.table}
             loading={loading}
             columns={this.columns}
             dataSource={assessList}
@@ -642,6 +828,26 @@ class Assess extends Component {
                 <TextArea row={5} onChange={this.reasonChange} />
               </div>
             </div>
+          </Modal>
+          <Modal
+            width={900}
+            visible={modalVisible}
+            title="当前配置"
+            okButtonProps={{ hidden: true }}
+            cancelText="关闭"
+            onCancel={this.handleConfigCancel}
+          >
+            <ResuoceInfo
+              dataType={dataType}
+              currentDetail={currentDetail}
+              currentList={currentList}
+              currentSync={currentSync}
+              syncVisible={syncVisible}
+              listVisible={listVisible}
+              loadingConfig={loadingConfig}
+              loadingTable={loadingTable}
+              loadingStruct={loadingStruct}
+            />
           </Modal>
         </div>
       </PageHeaderWrapper>

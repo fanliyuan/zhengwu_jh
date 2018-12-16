@@ -35,8 +35,10 @@ const checkStatus = response => {
             description: data.message,
           });
           localStorage.setItem('antd-pro-authority', 'guest');
-          router.push(`/user/login?redirect=${window.location.href}`);
+          // router.push(`/user/login?redirect=${window.location.href}`);
+          router.push(`/user/login`);
         }
+        return true;
       });
     return response;
   }

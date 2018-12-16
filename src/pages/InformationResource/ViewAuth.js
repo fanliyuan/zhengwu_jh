@@ -34,7 +34,7 @@ export default class ViewAuth extends Component {
   componentDidMount() {
     const {
       match: {
-        params: { resourceId, mountId, subId, dataType, subscriberId: subscriberID },
+        params: { resourceId, mountId, subId, subscriberId: subscriberID },
       },
       dispatch,
     } = this.props;
@@ -42,13 +42,13 @@ export default class ViewAuth extends Component {
       type: 'informationResource/getResources',
       payload: { id: resourceId || 51 },
     });
-    dispatch({
-      type: 'subAuth/getRefDetail',
-      payload: {
-        type: dataType,
-        id: mountId,
-      },
-    });
+    // dispatch({
+    //   type: 'subAuth/getRefDetail',
+    //   payload: {
+    //     type: dataType,
+    //     id: mountId,
+    //   },
+    // });
     dispatch({
       type: 'subAuth/getSubAuthDetail',
       payload: {
@@ -66,7 +66,7 @@ export default class ViewAuth extends Component {
   render() {
     const {
       informationResource: { resourceDetail },
-      subAuth: { refDetail, subAuthDetail },
+      subAuth: { subAuthDetail },
     } = this.props;
     const infoResource = {
       infoSrcCode: resourceDetail.code,
@@ -78,33 +78,6 @@ export default class ViewAuth extends Component {
       infoSrcFormat: resourceDetail.format,
       infoSrcSummary: resourceDetail.summary,
     };
-    const connectDataInfo = {
-      dataTitle: '城市低保表',
-      dataType: 'MySQL',
-      dataNdoe: '石家庄市民政部',
-      createNodeName: '石家庄民政部',
-      appSysNname: '统计系统',
-      accessTime: '2018-06-08 10:11:10',
-      id: 1,
-    };
-    const {
-      dataTitle,
-      dataType,
-      dataSize,
-      dataNdoe,
-      dataDepartment,
-      dataPubMode,
-      insertTime,
-      updateTime,
-      dataId,
-    } = refDetail;
-    // const subDataInfo = {
-    //   subNodeName: '石家庄市民政部',
-    //   subDeptName: '石家庄市民政部',
-    //   subTime: '2018-06-08 10:11:10',
-    //   authState: '已拒绝 张三  2018-06-08 10:11:10',
-    //   rejectReason: '你是谁?',
-    // };
     return (
       <PageHeaderWrapper buttonList={this.buttonList}>
         <div className="content_layout">
@@ -116,31 +89,31 @@ export default class ViewAuth extends Component {
               <ul>
                 <li>
                   <label className="colon">数据名称</label>
-                  <span>{dataTitle}</span>
+                  <span>{subAuthDetail.name}</span>
                 </li>
                 <li>
                   <label className="colon">数据源类型</label>
-                  <span>{dataType}</span>
+                  <span>{subAuthDetail.mountType}</span>
                 </li>
                 <li>
                   <label className="colon">发布节点</label>
-                  <span>{dataNdoe}</span>
+                  <span>{subAuthDetail.node}</span>
                 </li>
                 <li>
                   <label className="colon">建库单位</label>
-                  <span>{connectDataInfo.createNodeName}</span>
+                  <span>{subAuthDetail.providerName}</span>
                 </li>
-                <li>
+                {/* <li>
                   <label className="colon">应用系统名称</label>
                   <span>{connectDataInfo.appSysNname}</span>
-                </li>
+                </li> */}
                 <li>
                   <label className="colon">接入时间</label>
-                  <span>{insertTime}</span>
+                  <span>{subAuthDetail.registerTime}</span>
                 </li>
                 <li>
                   <label className="colon">查看数据</label>
-                  <a className="disabled" onClick={this.goView.bind(this, connectDataInfo)}>
+                  <a className="disabled" onClick={this.goView.bind(this, 1)}>
                     查看
                   </a>
                 </li>
@@ -151,7 +124,7 @@ export default class ViewAuth extends Component {
               <ul>
                 <li>
                   <label className="colon">订阅节点</label>
-                  <span>{subAuthDetail.node}</span>
+                  <span>{subAuthDetail.subscriberName}</span>
                 </li>
                 <li>
                   <label className="colon">订阅机构</label>
@@ -167,8 +140,8 @@ export default class ViewAuth extends Component {
                     {`${
                       statusArray.find(item => +item.value === +subAuthDetail.status)
                         ? statusArray.find(item => +item.value === +subAuthDetail.status).label
-                        : ''
-                    } sfdasfd ${'1233'}`}
+                        : ' '
+                    } ${subAuthDetail.reviewer} ${subAuthDetail.reviewTime}`}
                   </span>
                 </li>
                 {subAuthDetail.status % 10 === 0 && (

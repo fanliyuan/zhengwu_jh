@@ -63,7 +63,8 @@ export default {
   proxy: {
     '/api': {
       target: 'http://cdyoue.com.cn:19181',
-      // target:'http://192.168.100.16:8000',
+      // target: 'http://124.152.158.55:1080',
+      // target:'http://172.16.0.191:8000',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },

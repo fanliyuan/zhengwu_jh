@@ -154,8 +154,7 @@ export default class SubAuth extends Component {
   handleGoView = row => {
     // 信息资源id 关联数据id 订阅id  subscriberID
     router.push(
-      `viewAuth/${row.dataType || 'db'}/${row.dsId || 0}/${row.mountId || 0}/${row.subId ||
-        0}/${row.subscriberId || 0}`
+      `viewAuth/${row.dsId || 0}/${row.mountId || 0}/${row.subId || 0}/${row.subscriberId || 0}`
     );
   };
 

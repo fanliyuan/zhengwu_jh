@@ -217,7 +217,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: 'viewAuth/:dataType/:resourceId/:mountId/:subId/:subscriberId',
+            path: 'viewAuth/:resourceId/:mountId/:subId/:subscriberId',
             name: 'viewAuth',
             component: './InformationResource/ViewAuth',
             authority: 'user',
