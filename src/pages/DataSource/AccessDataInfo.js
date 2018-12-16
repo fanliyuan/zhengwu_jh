@@ -100,7 +100,9 @@ class AccessDataInfo extends PureComponent {
       modalTitle: '',
       dbName: '',
       selectedRowKeys: [],
+      hasSelectedRowKeys: [],
       selectedTableRowKeys: [],
+      hasSelectedTableRowKeys: [],
       structAddDtoList: [],
       tableName: '',
       tableNote: '',
@@ -197,7 +199,14 @@ class AccessDataInfo extends PureComponent {
     const {
       accessData: { params },
     } = nextProps;
-    const { hasReceiveFiles, hasSetRowKeys, selectedTableRowKeys, selectedRowKeys } = this.state;
+    const {
+      hasReceiveFiles,
+      hasSetRowKeys,
+      selectedTableRowKeys,
+      selectedRowKeys,
+      hasSelectedRowKeys,
+      hasSelectedTableRowKeys,
+    } = this.state;
     if (route.name === 'managementUpdate' && !hasReceiveFiles) {
       const { fileAddDtoList } = nextProps.params;
       if (fileAddDtoList && fileAddDtoList.length > 0) {
@@ -232,9 +241,11 @@ class AccessDataInfo extends PureComponent {
     if (route.name === 'managementUpdate' && !hasSetRowKeys && dataType === 'db') {
       if (selectedTableRowKeys.length < 1 && params.tableName !== '') {
         selectedTableRowKeys.push(params.tableName);
+        hasSelectedTableRowKeys.push(params.tableName);
       }
       if (selectedRowKeys.length < 1 && params.structAddDtoList.length > 0) {
         params.structAddDtoList.map(item => selectedRowKeys.push(item.columnName));
+        params.structAddDtoList.map(item => hasSelectedRowKeys.push(item.columnName));
       }
       this.setState({
         hasSetRowKeys: true,
@@ -367,7 +378,13 @@ class AccessDataInfo extends PureComponent {
 
   handleOk = () => {
     const { dispatch } = this.props;
-    const { structAddDtoList, tableName, tableNote } = this.state;
+    const {
+      structAddDtoList,
+      tableName,
+      tableNote,
+      selectedRowKeys,
+      selectedTableRowKeys,
+    } = this.state;
     dispatch({
       type: 'accessData/resetTableColumnList',
     });
@@ -382,8 +399,8 @@ class AccessDataInfo extends PureComponent {
     this.setState({
       visible: false,
       page: 1,
-      selectedRowKeys: [],
-      selectedTableRowKeys: [],
+      hasSelectedRowKeys: [...selectedRowKeys],
+      hasSelectedTableRowKeys: [...selectedTableRowKeys],
       structAddDtoList: [],
       tableName: '',
       tableNote: '',
@@ -392,11 +409,12 @@ class AccessDataInfo extends PureComponent {
 
   handleCancel = () => {
     const { dispatch } = this.props;
+    const { hasSelectedRowKeys, hasSelectedTableRowKeys } = this.state;
     this.setState({
       visible: false,
       page: 1,
-      selectedRowKeys: [],
-      selectedTableRowKeys: [],
+      selectedRowKeys: [...hasSelectedRowKeys],
+      selectedTableRowKeys: [...hasSelectedTableRowKeys],
       structAddDtoList: [],
       tableName: '',
       tableNote: '',
