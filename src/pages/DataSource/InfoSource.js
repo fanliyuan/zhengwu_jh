@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from 'react';
-import { Divider, Button } from 'antd';
+import { Divider, Button, Card } from 'antd';
 import { connect } from 'dva';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import InfoSourceDetail from '@/components/InfoSourceDetail';
 import styles from './InfoSource.less';
 
-@connect(({ infoSource }) => ({ infoSource }))
+@connect(({ infoSource, loading }) => ({
+  infoSource,
+  infoSourceLoading: loading.effects['infoSource/getInfoSrcDetail'],
+  refDetailLoading: loading.effects['infoSource/getRefDetail'],
+}))
 export default class InfoSource extends Component {
   buttonList = [
     {
@@ -52,6 +56,8 @@ export default class InfoSource extends Component {
   render() {
     const {
       infoSource: { infoSourceDetail, refDetail },
+      refDetailLoading,
+      infoSourceLoading,
     } = this.props;
     const { entry } = this.state;
     const {
@@ -76,47 +82,51 @@ export default class InfoSource extends Component {
               <Divider />
             </Fragment>
           )}
-          <InfoSourceDetail infoSourceDetail={infoSourceDetail} />
+          <Card loading={infoSourceLoading} bordered={false}>
+            <InfoSourceDetail infoSourceDetail={infoSourceDetail} />
+          </Card>
           <Divider />
-          <div className={styles.refDBDetail}>
-            <h2>关联数据详情</h2>
-            <div>
-              <span className="colon">数据名称</span>
-              <span>{dataTitle}</span>
+          <Card loading={refDetailLoading} bordered={false}>
+            <div className={styles.refDBDetail}>
+              <h2>关联数据详情</h2>
+              <div>
+                <span className="colon">数据名称</span>
+                <span>{dataTitle}</span>
+              </div>
+              <div>
+                <span className="colon">数据类型</span>
+                <span>{dataType}</span>
+              </div>
+              <div>
+                <span className="colon">数据大小</span>
+                <span>{dataSize}</span>
+              </div>
+              {/* <div>
+                <span className='colon'>所属节点</span>
+                <span>{dataNdoe}</span>
+              </div>
+              <div>
+                <span className='colon'>所属机构</span>
+                <span>{dataDepartment}</span>
+              </div> */}
+              <div>
+                <span className="colon">发布模式</span>
+                <span>{dataPubMode}</span>
+              </div>
+              <div>
+                <span className="colon">接入时间</span>
+                <span>{insertTime}</span>
+              </div>
+              <div>
+                <span className="colon">更新时间</span>
+                <span>{updateTime}</span>
+              </div>
+              <div>
+                <span className="colon">查看数据</span>
+                <span>查看</span>
+              </div>
             </div>
-            <div>
-              <span className="colon">数据类型</span>
-              <span>{dataType}</span>
-            </div>
-            <div>
-              <span className="colon">数据大小</span>
-              <span>{dataSize}</span>
-            </div>
-            {/* <div>
-            <span className='colon'>所属节点</span>
-            <span>{dataNdoe}</span>
-          </div>
-          <div>
-            <span className='colon'>所属机构</span>
-            <span>{dataDepartment}</span>
-          </div> */}
-            <div>
-              <span className="colon">发布模式</span>
-              <span>{dataPubMode}</span>
-            </div>
-            <div>
-              <span className="colon">接入时间</span>
-              <span>{insertTime}</span>
-            </div>
-            <div>
-              <span className="colon">更新时间</span>
-              <span>{updateTime}</span>
-            </div>
-            <div>
-              <span className="colon">查看数据</span>
-              <span>查看</span>
-            </div>
-          </div>
+          </Card>
         </div>
       </PageHeaderWrapper>
     );

@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-16 16:33:09
+ * @Last Modified time: 2018-12-17 10:12:32
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
@@ -133,13 +133,13 @@ export default class SubManagement extends Component {
       title: '操作',
       render: (_, row) => (
         <Fragment>
-          {row.runStatus === 0 ? (
-            <Popconfirm title="请确认是否启动订阅" onConfirm={() => this.handleStart([row])}>
-              <a className="mr16">启动</a>{' '}
-            </Popconfirm>
-          ) : (
+          {row.runStatus === 1 ? (
             <Popconfirm title="请确认是否停止订阅?" onConfirm={() => this.handleStop([row])}>
               <a className="mr16">停止</a>
+            </Popconfirm>
+          ) : (
+            <Popconfirm title="请确认是否启动订阅" onConfirm={() => this.handleStart([row])}>
+              <a className="mr16">启动</a>{' '}
             </Popconfirm>
           )}
           {/* <Popconfirm title="请确认取消订阅?" onConfirm={this.handleCancelSub.bind(this, row)}>
