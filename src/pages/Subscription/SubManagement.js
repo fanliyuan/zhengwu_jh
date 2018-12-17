@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-17 10:12:32
+ * @Last Modified time: 2018-12-17 13:53:03
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
@@ -366,7 +366,7 @@ export default class SubManagement extends Component {
           <Tabs defaultActiveKey="has" onChange={this.handleTab}>
             <Tabs.TabPane tab="已订阅" key="has">
               <SearchForm formOptions={this.formOptions} />
-              <div className="mb16">
+              {/* <div className="mb16">
                 {selectedRows.length > 0 ? (
                   <Fragment>
                     <Popconfirm title="将启动所选" onConfirm={() => this.handleStart(selectedRows)}>
@@ -384,16 +384,16 @@ export default class SubManagement extends Component {
                     <Button disabled>停止</Button>
                   </Fragment>
                 )}
-              </div>
+              </div> */}
               <StandardTable
                 loading={loading}
                 pagination={{ ...pagination, pageSize, current }}
                 columns={this.hasColumn}
                 dataSource={dataList}
                 bordered
-                showSelect
+                // showSelect
                 onChange={this.handleTableChange}
-                onSelectRow={this.handleSelectRows}
+                // onSelectRow={this.handleSelectRows}
                 rowKey="id"
               />
             </Tabs.TabPane>
