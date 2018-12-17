@@ -8,6 +8,12 @@ import {
   getSyncBasic,
 } from '@/services/dataSource/dataSource';
 
+const typeObject = {
+  file: '文件',
+  db: '数据库',
+  ftp: 'FTP',
+};
+
 export default {
   namespace: 'infoSource',
   state: {
@@ -73,9 +79,10 @@ export default {
         const {
           result: {
             data: {
+              updateTime,
               name: dataTitle,
               id: dataId,
-              // type = 'ftp',
+              createTime: insertTime,
               datasourceDetailDto: { type: dataType } = {},
             } = {},
           } = {},
@@ -84,9 +91,9 @@ export default {
         const {
           result: {
             data: {
-              accessTime: insertTime,
+              // accessTime: insertTime,
               dataFileSize: dataSize,
-              lastSyncTime: updateTime,
+              // lastSyncTime: updateTime,
               syncMode,
               syncRate,
               timeSet,
@@ -95,11 +102,11 @@ export default {
         } = taskDetail;
         const refDetail = {
           dataTitle,
-          dataType,
+          dataType: typeObject[type],
           insertTime,
           dataSize,
           updateTime,
-          dataPubMode: `${syncMode}-${syncRate}-${timeSet}`,
+          dataPubMode: syncMode && syncRate && timeSet ? `${syncMode}-${syncRate}-${timeSet}` : '',
           dataId: dataId || payload.id || 0,
         };
         yield put({

@@ -97,10 +97,12 @@ export default class InfoSource extends Component {
                 <span className="colon">数据类型</span>
                 <span>{dataType}</span>
               </div>
-              <div>
-                <span className="colon">数据大小</span>
-                <span>{dataSize}</span>
-              </div>
+              {dataSize && (
+                <div>
+                  <span className="colon">数据大小</span>
+                  <span>{dataSize}</span>
+                </div>
+              )}
               {/* <div>
                 <span className='colon'>所属节点</span>
                 <span>{dataNdoe}</span>
@@ -109,10 +111,12 @@ export default class InfoSource extends Component {
                 <span className='colon'>所属机构</span>
                 <span>{dataDepartment}</span>
               </div> */}
-              <div>
-                <span className="colon">发布模式</span>
-                <span>{dataPubMode}</span>
-              </div>
+              {dataPubMode && (
+                <div>
+                  <span className="colon">发布模式</span>
+                  <span>{dataPubMode}</span>
+                </div>
+              )}
               <div>
                 <span className="colon">接入时间</span>
                 <span>{insertTime}</span>
