@@ -53,26 +53,24 @@ export default {
     // },
 
     *logout(_, { call, put }) {
-      const response = yield call(loginOut);
-      if (response && response.code < 300) {
-        yield put({
-          type: 'changeLoginStatus',
-          payload: {
-            status: false,
-            currentAuthority: 'guest',
-          },
-        });
-        reloadAuthorized();
-        yield put(
-          routerRedux.push({
-            pathname: '/user/login',
-            search: stringify({
-              // redirect: window.location.href,
-            }),
-          })
-        );
-        localStorage.setItem('currentUser', '');
-      }
+      yield call(loginOut);
+      yield put({
+        type: 'changeLoginStatus',
+        payload: {
+          status: false,
+          currentAuthority: 'guest',
+        },
+      });
+      reloadAuthorized();
+      yield put(
+        routerRedux.push({
+          pathname: '/user/login',
+          search: stringify({
+            // redirect: window.location.href,
+          }),
+        })
+      );
+      localStorage.setItem('currentUser', '');
     },
   },
 
