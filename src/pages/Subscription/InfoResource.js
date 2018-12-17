@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Button, Card, Divider } from 'antd';
+import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ViewCard from '@/components/ViewCard';
@@ -169,11 +170,11 @@ class InfoResource extends Component {
         },
         {
           key: '接入时间',
-          value: dataDetail.value.createTime,
+          value: moment(dataDetail.value.createTime).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
           key: '更新时间',
-          value: dataDetail.value.updateTime,
+          value: moment(dataDetail.value.updateTime).format('YYYY-MM-DD HH:mm:ss'),
         },
         // {
         //   key: '数据查看',
