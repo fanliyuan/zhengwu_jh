@@ -61,6 +61,7 @@ export default {
     },
     *getRefDetail({ payload }, { call, put }) {
       try {
+        const { type } = payload;
         let res;
         if (payload.type === 'db') {
           res = yield call(viewDbDetail, payload.id);
@@ -74,7 +75,7 @@ export default {
             data: {
               name: dataTitle,
               id: dataId,
-              type = 'ftp',
+              // type = 'ftp',
               datasourceDetailDto: { type: dataType } = {},
             } = {},
           } = {},
