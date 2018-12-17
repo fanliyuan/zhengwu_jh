@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Table, Button, Form, Input, DatePicker } from 'antd';
+import { Row, Col, Table, Button, Form, Input, DatePicker, message } from 'antd';
 import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -73,11 +73,31 @@ class FtpView extends Component {
   };
 
   handleDowloads = () => {
-    const { match } = this.props;
+    const { dispatch, match } = this.props;
     const { selectedIds } = this.state;
     const { id } = match.params;
     const query = selectedIds.join('%2C');
-    window.location.href = `/api/api/v2/zhengwu/swap/dataR/ftp/${id}/down?ids=${query}`;
+    return new Promise((resolve, reject) => {
+      dispatch({
+        type: 'ftpView/checkFiles',
+        payload: {
+          type: 'ftp',
+          id,
+          ids: query,
+        },
+        callback: res => {
+          if (res.code < 300) {
+            resolve(
+              (window.location.href = `/api/api/v2/zhengwu/swap/dataR/ftp/${id}/down?ids=${query}`)
+            );
+          } else {
+            reject(message.error(res.message));
+          }
+        },
+      });
+    }).catch(error => {
+      console.log(error);
+    });
   };
 
   changePage = (pageNum, pageSize) => {

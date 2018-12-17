@@ -227,6 +227,8 @@ class TableList extends PureComponent {
               },
             });
           });
+        }).catch(error => {
+          console.log(error);
         }),
     });
   };

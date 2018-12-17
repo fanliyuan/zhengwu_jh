@@ -164,6 +164,8 @@ class UsersManagement extends PureComponent {
               }
             },
           });
+        }).catch(error => {
+          console.log(error);
         }),
     });
   };
@@ -199,6 +201,8 @@ class UsersManagement extends PureComponent {
               }
             },
           });
+        }).catch(error => {
+          console.log(error);
         }),
     });
   };
@@ -234,6 +238,8 @@ class UsersManagement extends PureComponent {
               }
             },
           });
+        }).catch(error => {
+          console.log(error);
         }),
     });
   };
@@ -269,6 +275,8 @@ class UsersManagement extends PureComponent {
               }
             },
           });
+        }).catch(error => {
+          console.log(error);
         }),
     });
   };

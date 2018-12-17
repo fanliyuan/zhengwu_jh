@@ -619,6 +619,8 @@ class AccessDataInfo extends PureComponent {
       } else {
         resolve();
       }
+    }).catch(error => {
+      console.log(error);
     });
 
   addFileAddDtoList = info => {

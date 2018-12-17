@@ -1,4 +1,8 @@
-import { viewFtpDetailCurrent, initFtpListCurrent } from '@/services/dataSource/dataSource';
+import {
+  viewFtpDetailCurrent,
+  initFtpListCurrent,
+  checkFiles,
+} from '@/services/dataSource/dataSource';
 
 export default {
   namespace: 'ftpView',
@@ -33,6 +37,10 @@ export default {
           });
         }
       }
+    },
+    *checkFiles({ payload, callback }, { call }) {
+      const response = yield call(checkFiles, payload);
+      callback(response);
     },
   },
 
