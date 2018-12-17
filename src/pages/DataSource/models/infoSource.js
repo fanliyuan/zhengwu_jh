@@ -64,7 +64,7 @@ export default {
         let res;
         if (payload.type === 'db') {
           res = yield call(viewDbDetail, payload.id);
-        } else if (payload.dataType === 'file') {
+        } else if (payload.type === 'file') {
           res = yield call(viewFileDetail, payload.id);
         } else {
           res = yield call(viewFtpDetail, payload.id);
@@ -98,7 +98,7 @@ export default {
           insertTime,
           dataSize,
           updateTime,
-          dataPubMode: syncMode + '-' + syncRate + '-' + timeSet,
+          dataPubMode: `${syncMode}-${syncRate}-${timeSet}`,
           dataId: dataId || payload.id || 0,
         };
         yield put({
