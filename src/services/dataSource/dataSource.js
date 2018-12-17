@@ -306,3 +306,10 @@ export async function cancelData(params) {
     body: params,
   });
 }
+
+// 检测下载数据是否存在
+export async function checkFiles(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/dataR/${params.type}/${params.id}/check?ids=${params.ids}`
+  );
+}
