@@ -9,11 +9,12 @@ import logo from '../assets/logo.png';
 
 const links = [];
 
-const copyright = (
-  <Fragment>
-    Copyright <Icon type="copyright" /> www.youedata.cn,All Rights Reserved
-  </Fragment>
-);
+// const copyright = (
+//   <Fragment>
+//     Copyright <Icon type="copyright" /> www.youedata.cn,All Rights Reserved
+//   </Fragment>
+// );
+const copyright = '';
 
 class UserLayout extends React.PureComponent {
   // @TODO title
@@ -40,7 +41,7 @@ class UserLayout extends React.PureComponent {
                 <img alt="logo" className={styles.logo} src={logo} />
               </Link>
             </div>
-            <div className={styles.superTitle}>政务数据共享交换开放系统</div>
+            <div className={styles.superTitle}>数据共享交换开放系统</div>
           </div>
           {children}
         </div>

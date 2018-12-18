@@ -1,7 +1,7 @@
 {
   "name": "zwjh-switchNode-front",
   "version": "2.1.0",
-  "description": "政务共享交换开放系统交换节点--基于antdp2.1.0",
+  "description": "共享交换开放系统交换节点--基于antdp2.1.0",
   "private": true,
   "scripts": {
     "presite": "node ./scripts/generateMock.js && cd functions && npm install",

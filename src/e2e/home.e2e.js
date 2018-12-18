@@ -9,7 +9,7 @@ describe('Homepage', () => {
     await page.goto(BASE_URL, { waitUntil: 'networkidle2' });
     await page.waitForSelector('#logo h1');
     const text = await page.evaluate(() => document.body.innerHTML);
-    expect(text).toContain('<h1>政务共享交换开放系统</h1>');
+    expect(text).toContain('<h1>共享交换开放系统</h1>');
     await page.close();
     browser.close();
   });
