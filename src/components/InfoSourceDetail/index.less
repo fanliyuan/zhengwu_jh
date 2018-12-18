@@ -7,8 +7,15 @@ h2 {
     display: inline-block;
     width: 33%;
     line-height: 2.5;
-    &:last-child {
-      width: 100%;
-    }
+    // &:last-child {
+    //   width: 100%;
+    // }
+  }
+}
+.label {
+  display: table-cell;
+  white-space: nowrap;
+  & + div {
+    display: table-cell;
   }
 }

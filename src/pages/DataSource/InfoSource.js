@@ -4,6 +4,7 @@ import { connect } from 'dva';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import InfoSourceDetail from '@/components/InfoSourceDetail';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './InfoSource.less';
 
 @connect(({ infoSource, loading }) => ({
@@ -90,45 +91,81 @@ export default class InfoSource extends Component {
             <div className={styles.refDBDetail}>
               <h2>关联数据详情</h2>
               <div>
-                <span className="colon">数据名称</span>
-                <span>{dataTitle}</span>
+                <div className={`${styles.label} colon`}>数据名称</div>
+                <div>
+                  <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{dataTitle}</div>
+                  </Ellipsis>
+                </div>
               </div>
               <div>
-                <span className="colon">数据类型</span>
-                <span>{dataType}</span>
+                <div className={`${styles.label} colon`}>数据类型</div>
+                <div>
+                  <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{dataType}</div>
+                  </Ellipsis>
+                </div>
               </div>
               {dataSize && (
                 <div>
-                  <span className="colon">数据大小</span>
-                  <span>{dataSize}</span>
+                  <div className={`${styles.label} colon`}>数据大小</div>
+                  <div>
+                    <Ellipsis lines={1} fullWidthRecognition tooltip>
+                      <div>{dataSize}</div>
+                    </Ellipsis>
+                  </div>
                 </div>
               )}
               {/* <div>
-                <span className='colon'>所属节点</span>
-                <span>{dataNdoe}</span>
+                <div className={`${styles.label} colon`}>所属节点</div>
+                <div
+                <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{dataNdoe}</div>
+              </Ellipsis>>
+              </div>
               </div>
               <div>
-                <span className='colon'>所属机构</span>
-                <span>{dataDepartment}</span>
+                <div className={`${styles.label} colon`}>所属机构</div>
+                <div
+                <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{dataDepartment}</div>
+              </Ellipsis>>
+              </div>
               </div> */}
               {dataPubMode && (
                 <div>
-                  <span className="colon">发布模式</span>
-                  <span>{dataPubMode}</span>
+                  <div className={`${styles.label} colon`}>发布模式</div>
+                  <div>
+                    <Ellipsis lines={1} fullWidthRecognition tooltip>
+                      <div>{dataPubMode}</div>
+                    </Ellipsis>
+                  </div>
                 </div>
               )}
               <div>
-                <span className="colon">接入时间</span>
-                <span>{insertTime}</span>
+                <div className={`${styles.label} colon`}>接入时间</div>
+                <div>
+                  <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{insertTime}</div>
+                  </Ellipsis>
+                </div>
               </div>
               <div>
-                <span className="colon">更新时间</span>
-                <span>{updateTime}</span>
+                <div className={`${styles.label} colon`}>更新时间</div>
+                <div>
+                  <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>{updateTime}</div>
+                  </Ellipsis>
+                </div>
               </div>
-              <div>
-                <span className="colon">查看数据</span>
-                <span>查看</span>
-              </div>
+              {/* <div>
+                <div className={`${styles.label} colon`}>查看数据</div>
+                <div>
+                  <Ellipsis lines={1} fullWidthRecognition tooltip>
+                    <div>查看</div>
+                  </Ellipsis>
+                </div>
+              </div> */}
             </div>
           </Card>
         </div>
