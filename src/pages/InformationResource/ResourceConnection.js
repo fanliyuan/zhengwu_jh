@@ -13,6 +13,7 @@ import {
   DatePicker,
   Popconfirm,
   Select,
+  message,
 } from 'antd';
 import moment from 'moment';
 // import Cookies from 'js-cookie'
@@ -410,12 +411,30 @@ export default class ResourceConnection extends Component {
   handleCancelMount = () => {
     const { routeId } = this.state;
     const { dispatch } = this.props;
-    dispatch({
-      type: 'informationResource/saveMountData',
-      payload: {
-        id: routeId,
-        resourceMountDto: { infoItemIdMap: {}, itemId: null, type: '' },
-      },
+    return Modal.confirm({
+      title: '警告',
+      content: '是否解除关联？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () =>
+        new Promise((resolve, reject) => {
+          dispatch({
+            type: 'informationResource/saveMountData',
+            payload: {
+              id: routeId,
+              resourceMountDto: { infoItemIdMap: {}, itemId: null, type: '' },
+            },
+            callback: res => {
+              if (res.code < 300) {
+                resolve();
+              } else {
+                reject();
+              }
+            },
+          });
+        }).catch(error => {
+          console.log(error);
+        }),
     });
   };
 
@@ -448,6 +467,8 @@ export default class ResourceConnection extends Component {
   }
 
   render() {
+    let time = '';
+    let timeName = '';
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
       informationResource: {
@@ -481,7 +502,14 @@ export default class ResourceConnection extends Component {
       hasMounted,
       zcName,
     } = this.state;
-    // console.log(dataTypes)
+    if (dataTypes === 'ftp') {
+      time = 'time';
+      timeName = '挂接时间';
+    }
+    if (dataTypes === 'file') {
+      time = 'uploadTimeStr';
+      timeName = '接入时间';
+    }
     const pagination = { pageSize: 10, current: 1 };
     const columns = [
       {
@@ -504,11 +532,8 @@ export default class ResourceConnection extends Component {
         },
       },
       {
-        title: '挂接时间',
-        dataIndex: 'connectionTime',
-        render(text) {
-          return moment(text).format('lll');
-        },
+        title: timeName,
+        dataIndex: time,
       },
     ];
     // if (isNodeOperator) {
@@ -687,7 +712,6 @@ export default class ResourceConnection extends Component {
     );
     const disabled = zcName === '' ? 1 : 0;
     const okButtonProps = { disabled };
-    console.log(okButtonProps);
     return (
       <PageHeaderWrapper action={buttonList}>
         <div className="btncls">
