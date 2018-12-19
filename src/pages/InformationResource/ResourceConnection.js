@@ -94,6 +94,13 @@ export default class ResourceConnection extends Component {
     }
   }
 
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'informationResource/reset',
+    });
+  }
+
   handleSave = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push('/dataSourceManagement/catalogManagement'));
@@ -731,74 +738,76 @@ export default class ResourceConnection extends Component {
             )}
           </div>
           <div>
-            <Row>
-              <Col
-                span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
-              >
-                <Table
-                  columns={columnsLeft}
-                  dataSource={itemList}
-                  // pagination={
-                  //   connectFilePagination && {
-                  //     ...connectFilePagination,
-                  //     showQuickJumper: true,
-                  //     showTotal: total =>
-                  //       `共 ${Math.ceil(
-                  //         total / connectFilePagination.pageSize
-                  //       )}页 / ${total}条 数据`,
-                  //   }
-                  // }
-                  rowKey="id"
-                  bordered
-                  // onChange={this.handleFile1TableChange}
+            {resourceDetail.mount && (
+              <Row>
+                <Col
+                  span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
+                >
+                  <Table
+                    columns={columnsLeft}
+                    dataSource={itemList}
+                    // pagination={
+                    //   connectFilePagination && {
+                    //     ...connectFilePagination,
+                    //     showQuickJumper: true,
+                    //     showTotal: total =>
+                    //       `共 ${Math.ceil(
+                    //         total / connectFilePagination.pageSize
+                    //       )}页 / ${total}条 数据`,
+                    //   }
+                    // }
+                    rowKey="id"
+                    bordered
+                    // onChange={this.handleFile1TableChange}
+                  />
+                </Col>
+                <Col
+                  span={!dataTypes ? (initialType !== 'db' ? 0 : 2) : dataTypes !== 'db' ? 0 : 2}
                 />
-              </Col>
-              <Col
-                span={!dataTypes ? (initialType !== 'db' ? 0 : 2) : dataTypes !== 'db' ? 0 : 2}
-              />
-              <Col
-                span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
-              >
-                <Table
-                  columns={columnsr}
-                  dataSource={fileListData}
-                  pagination={
-                    connectFilePagination && {
-                      ...connectFilePagination,
-                      showQuickJumper: true,
-                      showTotal: total =>
-                        `共 ${Math.ceil(
-                          total / connectFilePagination.pageSize
-                        )}页 / ${total}条 数据`,
+                <Col
+                  span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
+                >
+                  <Table
+                    columns={columnsr}
+                    dataSource={fileListData}
+                    pagination={
+                      connectFilePagination && {
+                        ...connectFilePagination,
+                        showQuickJumper: true,
+                        showTotal: total =>
+                          `共 ${Math.ceil(
+                            total / connectFilePagination.pageSize
+                          )}页 / ${total}条 数据`,
+                      }
                     }
-                  }
-                  rowKey="id"
-                  bordered
-                  // onChange={this.handleFile1TableChange}
-                />
-              </Col>
-              <Col
-                span={!dataTypes ? (initialType !== 'db' ? 24 : 0) : dataTypes !== 'db' ? 24 : 0}
-              >
-                <Table
-                  columns={columns}
-                  dataSource={fileListData}
-                  pagination={
-                    connectFilePagination && {
-                      ...connectFilePagination,
-                      showQuickJumper: true,
-                      showTotal: total =>
-                        `共 ${Math.ceil(
-                          total / connectFilePagination.pageSize
-                        )}页 / ${total}条 数据`,
+                    rowKey="id"
+                    bordered
+                    // onChange={this.handleFile1TableChange}
+                  />
+                </Col>
+                <Col
+                  span={!dataTypes ? (initialType !== 'db' ? 24 : 0) : dataTypes !== 'db' ? 24 : 0}
+                >
+                  <Table
+                    columns={columns}
+                    dataSource={fileListData}
+                    pagination={
+                      connectFilePagination && {
+                        ...connectFilePagination,
+                        showQuickJumper: true,
+                        showTotal: total =>
+                          `共 ${Math.ceil(
+                            total / connectFilePagination.pageSize
+                          )}页 / ${total}条 数据`,
+                      }
                     }
-                  }
-                  rowKey="id"
-                  bordered
-                  onChange={this.handleFileTableChange}
-                />
-              </Col>
-            </Row>
+                    rowKey="id"
+                    bordered
+                    onChange={this.handleFileTableChange}
+                  />
+                </Col>
+              </Row>
+            )}
             <Button
               loading={loading}
               type="primary"

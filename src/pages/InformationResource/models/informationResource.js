@@ -396,5 +396,24 @@ export default {
         connectItemList: payload,
       };
     },
+    reset(state) {
+      return {
+        ...state,
+        classfiyList: [],
+        resourceList: [],
+        pagination: {},
+        sameMsg: false,
+        openData: {},
+        DBInfo: {},
+        resoutceDetail: {},
+        connectList: [],
+        connectPagination: {},
+        connectFileList: [],
+        connectFilePagination: {},
+        itemList: [],
+        connectItemList: [],
+        resourceDetail: {},
+      };
+    },
   },
 };
