@@ -90,12 +90,12 @@ export default class ResourceConnection extends Component {
     if (resourceDetailData) {
       this.setState({
         initialType: resourceDetailData.mountType,
-        dataTypes: resourceDetailData.mountType,
         chooseName1: resourceDetailData.mountName,
       });
       if (resourceDetailData.mount) {
         if (!hasSetMounted) {
           this.setState({
+            dataTypes: resourceDetailData.mountType,
             hasMounted: resourceDetailData.mount,
             hasSetMounted: true,
           });
@@ -138,7 +138,6 @@ export default class ResourceConnection extends Component {
   showModal1 = () => {
     this.setState({
       visible1: true,
-      dataTypes: '',
     });
     const { dispatch } = this.props;
     dispatch({
@@ -284,6 +283,8 @@ export default class ResourceConnection extends Component {
       dataTypes: zcType,
       visible1: false,
     });
+    console.log(this.props);
+    console.log(this.state);
     const { dispatch } = this.props;
     if (zcType === 'ftp') {
       await dispatch({
@@ -461,18 +462,16 @@ export default class ResourceConnection extends Component {
     let timeName = '';
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
+      loading,
       informationResource: {
         resourceDetail, // 页面头部 资源的详情
         connectList,
         connectPagination,
         connectFileList,
         connectFilePagination,
-        loading,
         itemList, // 左边的表格的数据
       },
     } = this.props;
-    console.log(this.props);
-    console.log(this.state);
     enableEditFile = [...connectFileList];
     // initialData = [...connectFileList]
     // resourceDetailData = resourceDetail;
@@ -790,6 +789,7 @@ export default class ResourceConnection extends Component {
                   <Table
                     columns={columnsLeft}
                     dataSource={itemList}
+                    loading={loading}
                     // pagination={
                     //   connectFilePagination && {
                     //     ...connectFilePagination,
@@ -814,6 +814,7 @@ export default class ResourceConnection extends Component {
                   <Table
                     columns={columnsr}
                     dataSource={fileListData}
+                    loading={loading}
                     pagination={
                       connectFilePagination && {
                         ...connectFilePagination,
@@ -835,6 +836,7 @@ export default class ResourceConnection extends Component {
                   <Table
                     columns={columns}
                     dataSource={fileListData}
+                    loading={loading}
                     pagination={
                       connectFilePagination && {
                         ...connectFilePagination,
@@ -907,6 +909,7 @@ export default class ResourceConnection extends Component {
             <Table
               columns={columnsModal1}
               dataSource={connectList}
+              loading={loading}
               onChange={this.handleConnectListChange}
               pagination={
                 connectPagination && {
