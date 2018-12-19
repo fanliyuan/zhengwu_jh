@@ -367,6 +367,7 @@ class ResourceAudit extends Component {
                 options: sourceClassfiyList,
                 fieldNames: { label: 'name', value: 'id' },
                 placeholder: '请选择资源属性分类',
+                changeOnSelect: true,
               },
             },
           ],
