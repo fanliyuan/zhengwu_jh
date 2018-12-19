@@ -1,9 +1,10 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
- * @Last Modified by: fly
- * @Last Modified time: 2018-12-10 11:49:08
+ * @Last Modified by: ChouEric
+ * @Last Modified time: 2018-12-19 17:32:41
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
+ *        12/19 废了很大心思解决bug 1009576
 */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
@@ -31,6 +32,7 @@ import {
 import TableForm from './TableForm';
 import styles from './index.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
+import { Bind, Debounce } from 'lodash-decorators';
 
 const { Item } = Form;
 const { Step } = Steps;
@@ -65,6 +67,15 @@ const modalList = [
 }))
 @Form.create()
 export default class Step2 extends PureComponent {
+  buttonList = [
+    {
+      text: '取消',
+      fn() {
+        window.history.back();
+      },
+    },
+  ];
+
   state = {
     data: {
       method: 1,
@@ -82,11 +93,11 @@ export default class Step2 extends PureComponent {
     // disabled: true,
     addVisible: false,
     routeData: {},
-    isEnable: false,
+    isEnable: true,
     isAgain: false,
     editId: '',
     step2Arr: [],
-    // fileList:[],
+    fileList: [],
   };
 
   componentWillReceiveProps(nextProps) {
@@ -197,6 +208,24 @@ export default class Step2 extends PureComponent {
   };
 
   methodChange = e => {
+    const tooltip =
+      +e.target.value === 1
+        ? '切换成手动添加, 当前信息项将不会保存, 是否切换?'
+        : '切换成模板导入, 当前信息项将不会保存, 是否切换?';
+    const that = this;
+    Modal.confirm({
+      title: '确认切换?',
+      content: tooltip,
+      maskClosable: true,
+      okText: '确定',
+      cancelText: '取消',
+      onOk() {
+        that.methodConfirm(e);
+      },
+    });
+  };
+
+  methodConfirm = e => {
     if (+e.target.value === 2) {
       // this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
       sessionStorage.setItem('inputType', 2);
@@ -325,6 +354,7 @@ export default class Step2 extends PureComponent {
       // setFieldsValue({
       //   name:getFieldValue('name').slice(0,i-1), //value.slice(0,i-1)
       // })
+      message.destroy();
       message.error(`输入长度不能超过${i}个字符`);
       this.setState({
         isEnable: true,
@@ -349,69 +379,94 @@ export default class Step2 extends PureComponent {
     });
   };
 
+  @Bind()
+  @Debounce(300)
+  isDisbaled() {
+    const {
+      form: { getFieldsError, isFieldTouched, getFieldValue },
+    } = this.props;
+    console.log(Object.values(getFieldsError()));
+    // console.log(isFieldTouched('dataType'))
+    this.setState({
+      isEnable:
+        Object.values(getFieldsError()).some(item => item) ||
+        !isFieldTouched('name') ||
+        !isFieldTouched('dataType') ||
+        !isFieldTouched('dataLength') ||
+        !isFieldTouched('shareType') ||
+        (getFieldValue('shareType') === '有条件共享' && !isFieldTouched('shareCondition')) ||
+        !isFieldTouched('shareMode') ||
+        !isFieldTouched('openType') ||
+        (getFieldValue('openType') === '是' && !isFieldTouched('openCondition')),
+    });
+  }
+
   handleOpenConditionChange = e => {
-    this.checkLength(e.target.value, 500);
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 500);
   };
 
   handleShareChange = e => {
-    this.checkLength(e.target.value, 50);
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 50);
   };
 
   handleLengthChange = val => {
-    this.checkLength(val + '', 50);
+    this.isDisbaled();
+    // this.checkLength(val + '', 50);
   };
 
   handleNameChange = e => {
-    this.checkLength(e.target.value, 50);
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 50)
   };
 
   handleBackBtn = () => {
-    const { step2Arr } = this.state;
-    if (step2Arr.length === 0) {
-      if (!sessionStorage.getItem('itemData')) {
-        sessionStorage.setItem('itemData', '');
+    let { step2Arr, fileList, data, routeData } = this.state;
+    if (fileList.length !== 0 && step2Arr.length === 0) {
+      const uploadData = sessionStorage.getItem('uploadData');
+      if (uploadData) {
+        step2Arr = JSON.parse(uploadData);
       }
     } else {
-      let zcArr = step2Arr;
-      for (let i = 0; i < zcArr.length; i += 1) {
-        zcArr[i].key = i;
-      }
-      this.setState({
-        step2Arr: zcArr,
-      });
-      sessionStorage.setItem('itemData', JSON.stringify(zcArr));
-      // const { tableData } = this.state
-      const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
-      const { data, routeData } = this.state;
-      this.setState({
-        data: {
-          ...data,
-          method: 2,
-        },
-        isAgain: true,
-        // disabled: false,
-        tableData: JSON.parse(sessionStorage.getItem('itemData')),
-        routeData: {
-          ...routeData,
-          infoAddDtoList: JSON.parse(sessionStorage.getItem('itemData')),
-        },
-      });
+      // let zcArr = step2Arr;
+      // for (let i = 0; i < zcArr.length; i += 1) {
+      //   zcArr[i].key = i;
+      // }
+      // this.setState({
+      //   step2Arr: zcArr,
+      // });
+      // sessionStorage.setItem('itemData', JSON.stringify(zcArr));
+      // // const { tableData } = this.state
+      // const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
     }
+    this.setState({
+      data: {
+        ...data,
+        method: 2,
+      },
+      isAgain: true,
+      // disabled: false,
+      tableData: step2Arr,
+      routeData: {
+        ...routeData,
+        infoAddDtoList: step2Arr,
+      },
+    });
     // sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
   };
+
   handleFileChange = info => {
-    const { step2Arr } = this.state;
-    if (info.file.status !== 'uploading') {
-      // console.log(info.file, info.fileList);
-    }
+    let { fileList } = info;
+    fileList = fileList.slice(-1);
     if (info.file.status === 'done') {
-      sessionStorage.setItem('itemData', '');
       if (info.file.response) {
         if (+info.file.response.code === 200) {
           message.success(`${info.file.name} 导入成功`);
           this.setState({
-            step2Arr: step2Arr.concat(info.file.response.result.datas),
+            step2Arr: info.file.response.result.datas,
           });
+          sessionStorage.setItem('uploadData', JSON.stringify(info.file.response.result.datas));
         } else {
           message.error(`${info.file.response.message}`);
         }
@@ -419,6 +474,7 @@ export default class Step2 extends PureComponent {
     } else if (info.file.status === 'error') {
       message.error(`${info.file.response.message}`);
     }
+    this.setState({ fileList });
   };
 
   handleRemoveChange = info => {
@@ -427,10 +483,10 @@ export default class Step2 extends PureComponent {
         // this.setState({
         //   step2Arr: step2Arr.concat(info.file.response.result.datas),
         // });
-        console.log(info.response.result.datas);
+        // console.log(info.response.result.datas);
         const { step2Arr } = this.state;
         const deleteArr = info.response.result.datas;
-        let dataIndexs = [];
+        const dataIndexs = [];
         deleteArr.forEach(item => {
           dataIndexs.push(step2Arr.indexOf(item));
         });
@@ -462,7 +518,7 @@ export default class Step2 extends PureComponent {
       // disabled,
       isEnable,
       isAgain,
-      // fileList,
+      fileList,
       // step2Arr,
     } = this.state;
     const columns = [
@@ -633,11 +689,11 @@ export default class Step2 extends PureComponent {
       },
       onChange: info => this.handleFileChange(info),
       onRemove: info => this.handleRemoveChange(info),
-      // fileList,
+      fileList,
     };
 
     return (
-      <PageHeaderLayout>
+      <PageHeaderLayout buttonList={this.buttonList}>
         <Card>
           <Steps current={1} className={styles.steps}>
             <Step title="填写信息资源内容" />
@@ -693,7 +749,7 @@ export default class Step2 extends PureComponent {
               <Button type="primary"> 选取文件</Button>
             </Upload>
             <Button type="primary" onClick={this.handleBackBtn} style={{ marginTop: 20 }}>
-              提交
+              确定
             </Button>
           </div>
           <div
@@ -713,7 +769,6 @@ export default class Step2 extends PureComponent {
             <Button type="primary" onClick={this.goForward}>
               提交
             </Button>
-            {/* )}*/}
           </div>
           <Button
             type="primary"
@@ -737,7 +792,13 @@ export default class Step2 extends PureComponent {
               <Item label="信息项名称" {...formItemLayout}>
                 {getFieldDecorator('name', {
                   initialValue: data.menuName,
-                  rules: [{ required: true, message: '请输入信息项名称' }],
+                  rules: [
+                    { required: true, message: '请输入信息项名称' },
+                    {
+                      max: 50,
+                      message: '输入不超过50个字符',
+                    },
+                  ],
                 })(
                   <Input
                     placeholder="信息项名称"
@@ -763,35 +824,37 @@ export default class Step2 extends PureComponent {
                   initialValue: data.classify,
                   rules: [{ required: true, message: '请选择共享类型' }],
                 })(
-                  <Select>
+                  <Select onChange={this.isDisbaled}>
                     <Option value="有条件共享">有条件共享</Option>
                     <Option value="无条件共享">无条件共享</Option>
                     <Option value="不予共享">不予共享</Option>
                   </Select>
                 )}
               </Item>
-              <Item
-                label="共享条件"
-                {...formItemLayout}
-                style={{ display: getFieldValue('shareType') === '有条件共享' ? 'block' : 'none' }}
-              >
-                {getFieldDecorator('shareCondition', {
-                  initialValue: data.desc,
-                  rules: [
-                    {
-                      required: getFieldValue('shareType') === '有条件共享' ? true : false,
-                      message: '请输入共享条件',
-                    },
-                  ],
-                })(
-                  <Input.TextArea
-                    placeholder="请输入共享条件"
-                    rows={4}
-                    // readOnly={disabled}
-                    onChange={this.handleShareChange}
-                  />
-                )}
-              </Item>
+              {getFieldValue('shareType') === '有条件共享' && (
+                <Item label="共享条件" {...formItemLayout}>
+                  {getFieldDecorator('shareCondition', {
+                    initialValue: data.desc,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入共享条件',
+                      },
+                      {
+                        max: 50,
+                        message: '输入不超过50个字符',
+                      },
+                    ],
+                  })(
+                    <Input.TextArea
+                      placeholder="请输入共享条件"
+                      rows={4}
+                      // readOnly={disabled}
+                      onChange={this.handleShareChange}
+                    />
+                  )}
+                </Item>
+              )}
               <Item label="共享方式" {...formItemLayout}>
                 {getFieldDecorator('shareMode', {
                   initialValue: data.formName,
@@ -808,37 +871,39 @@ export default class Step2 extends PureComponent {
               <Item label="是否向社会开放" {...formItemLayout}>
                 {getFieldDecorator('openType', {
                   initialValue: data.classify,
-                  rules: [{ required: true, message: '请选择共享类型' }],
+                  rules: [{ required: true, message: '请选择开放类型' }],
                 })(
-                  <Select>
+                  <Select onChange={this.isDisbaled}>
                     <Option value="是">是</Option>
                     <Option value="否">否</Option>
                     {/* <Option value="classify21">不予共享</Option> */}
                   </Select>
                 )}
               </Item>
-              <Item
-                label="开放条件"
-                {...formItemLayout}
-                style={{ display: getFieldValue('openType') === '是' ? 'block' : 'none' }}
-              >
-                {getFieldDecorator('openCondition', {
-                  initialValue: data.desc,
-                  rules: [
-                    {
-                      required: getFieldValue('openType') === '是' ? true : false,
-                      message: '请输入开放条件',
-                    },
-                  ],
-                })(
-                  <Input.TextArea
-                    placeholder="请输入开放条件"
-                    rows={4}
-                    // readOnly={disabled}
-                    onChange={this.handleOpenConditionChange}
-                  />
-                )}
-              </Item>
+              {getFieldValue('openType') === '是' && (
+                <Item label="开放条件" {...formItemLayout}>
+                  {getFieldDecorator('openCondition', {
+                    initialValue: data.desc,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入开放条件',
+                      },
+                      {
+                        max: 500,
+                        message: '输入不超过50个字符',
+                      },
+                    ],
+                  })(
+                    <Input.TextArea
+                      placeholder="请输入开放条件"
+                      rows={4}
+                      // readOnly={disabled}
+                      onChange={this.handleOpenConditionChange}
+                    />
+                  )}
+                </Item>
+              )}
             </Form>
           </Modal>
         </Card>

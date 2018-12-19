@@ -8,7 +8,7 @@ import {
   Checkbox,
   DatePicker,
   Popconfirm,
-  // message,
+  message,
   Cascader,
 } from 'antd';
 import moment from 'moment';
@@ -194,12 +194,13 @@ export default class SourceManagement extends Component {
   //   dispatch(routerRedux.push('/dataSourceManagement/task'))
   // }
 
-  handleEdit = id => {
+  handleEdit = row => {
     const { dispatch } = this.props;
+    if (row.mount) return !message.destroy() && message.error('数据已关联不可修改!');
     dispatch(
       routerRedux.push({
         pathname: '/informationResource/newMenu/one',
-        state: { editId: id },
+        state: { editId: row.id },
       })
     );
   };
@@ -451,7 +452,7 @@ export default class SourceManagement extends Component {
           if (+row.status === -1) {
             return (
               <div>
-                <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
+                <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row)}>
                   修改
                 </span>
                 <Popconfirm
@@ -483,13 +484,15 @@ export default class SourceManagement extends Component {
               <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
                 查看
               </span>
-              <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
-                关联数据
-              </span>
+              {row.mount && (
+                <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
+                  关联数据
+                </span>
+              )}
               <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
                 共享开放
               </span>
-              <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row.id)}>
+              <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row)}>
                 修改
               </span>
               <Popconfirm

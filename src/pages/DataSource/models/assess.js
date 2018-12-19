@@ -53,7 +53,7 @@ export default {
             pageSize: payload.params.pageSize,
           };
         } else {
-          throw res.msg;
+          message.error(res.msg || '未知错误,操作失败');
         }
       } catch (error) {
         // eslint-disable-next-line
@@ -83,6 +83,8 @@ export default {
           yield put({
             type: 'getAssessList',
           });
+        } else {
+          message.error(res.msg || '未知错误,操作失败');
         }
       } catch (error) {
         // eslint-disable-next-line
@@ -126,6 +128,8 @@ export default {
               value: res.result.datas[0].reason,
             });
           }
+        } else {
+          message.error(res.msg || '未知错误,操作失败');
         }
       } catch (error) {
         // eslint-disable-next-line

@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-05 14:01:01
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-15 17:23:22
+ * @Last Modified by: ChouEric
+ * @Last Modified time: 2018-12-19 17:29:49
 */
 import React, { PureComponent, Fragment } from 'react';
 import { Route, Redirect, Switch, Link } from 'dva/router';
@@ -15,6 +15,15 @@ import styles from './index.less';
 const { Step } = Steps;
 
 export default class NewMenu extends PureComponent {
+  buttonList = [
+    {
+      text: '取消',
+      fn() {
+        window.history.back();
+      },
+    },
+  ];
+
   getCurrentStep() {
     const {
       location: { pathname },
@@ -36,12 +45,12 @@ export default class NewMenu extends PureComponent {
     const { match, route } = this.props;
 
     return (
-      <PageHeaderLayout>
-        <div className="clearfix btncls">
+      <PageHeaderLayout buttonList={this.buttonList}>
+        {/* <div className="clearfix btncls">
           <Link to="/informationResource/management" className="fr mr40">
             <Button>返回</Button>
           </Link>
-        </div>
+        </div> */}
         <Card bordered={false}>
           <Fragment>
             <Steps current={this.getCurrentStep()} className={styles.steps}>

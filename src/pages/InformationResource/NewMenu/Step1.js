@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
- * @Last Modified by: fly
- * @Last Modified time: 2018-12-11 16:06:07
+ * @Last Modified by: ChouEric
+ * @Last Modified time: 2018-12-19 17:52:35
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -44,6 +44,15 @@ let isSameMsg;
 }))
 @Form.create()
 export default class Step1 extends PureComponent {
+  buttonList = [
+    {
+      text: '取消',
+      fn() {
+        window.history.back();
+      },
+    },
+  ];
+
   state = {
     data: {
       infoName: '',
@@ -579,7 +588,7 @@ export default class Step1 extends PureComponent {
       );
     });
     return (
-      <PageHeaderLayout>
+      <PageHeaderLayout buttonList={this.buttonList}>
         {/* <div className="clearfix btncls">
           <Link to="/informationResource/management" className="fr mr40">
             <Button>返回</Button>
@@ -688,7 +697,7 @@ export default class Step1 extends PureComponent {
             </Item>
             <Item label="发布日期" {...formItemLayout}>
               {getFieldDecorator('publishTime', {
-                initialValue: data.updateTime, //startValue,
+                initialValue: moment(+data.updateTime || Date.now()), // startValue,
                 rules: [{ required: true, message: '请输入名称' }],
               })(
                 <DatePicker disabledDate={this.disabledStartDate} onChange={this.onStartChange} />
@@ -700,7 +709,7 @@ export default class Step1 extends PureComponent {
                 // rules: [{ required: true, message: '请输入名称' }],
               })(<Input onChange={this.handleRelateCode} />)}
             </Item>
-            <div className="btnclsb">
+            <div className="btnclsb" style={{ textAlign: 'center' }}>
               {/* {!disabled ? (
                 <Button type="primary" onClick={onValidateForm}>
                   下一步
@@ -719,14 +728,14 @@ export default class Step1 extends PureComponent {
               >
                 下一步
               </Button>
-              <Link to="/informationResource/sourceManagement">
+              {/* <Link to="/informationResource/sourceManagement">
                 <Button
                   // type="primary"
                   style={{ marginLeft: 20 }}
                 >
                   取消
                 </Button>
-              </Link>
+              </Link> */}
             </div>
           </Form>
         </Card>
