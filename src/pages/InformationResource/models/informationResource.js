@@ -267,9 +267,8 @@ export default {
         console.log(error); //eslint-disable-line
       }
     },
-    *saveMountData({ payload, callback }, { call, put }) {
+    *saveMountData({ payload }, { call, put }) {
       const response = yield call(saveMountData, payload);
-      callback(response);
       try {
         if (+response.code === 201) {
           // yield put({

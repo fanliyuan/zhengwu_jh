@@ -417,23 +417,12 @@ export default class ResourceConnection extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () =>
-        new Promise((resolve, reject) => {
-          dispatch({
-            type: 'informationResource/saveMountData',
-            payload: {
-              id: routeId,
-              resourceMountDto: { infoItemIdMap: {}, itemId: null, type: '' },
-            },
-            callback: res => {
-              if (res.code < 300) {
-                resolve();
-              } else {
-                reject();
-              }
-            },
-          });
-        }).catch(error => {
-          console.log(error);
+        dispatch({
+          type: 'informationResource/saveMountData',
+          payload: {
+            id: routeId,
+            resourceMountDto: { infoItemIdMap: {}, itemId: null, type: '' },
+          },
         }),
     });
   };
