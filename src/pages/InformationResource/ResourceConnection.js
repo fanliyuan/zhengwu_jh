@@ -763,7 +763,7 @@ export default class ResourceConnection extends Component {
                 style={{ float: 'right' }}
                 onClick={this.handleCancelMount}
               >
-                取消关联
+                解除关联
               </span>
             )}
           </div>
@@ -859,6 +859,7 @@ export default class ResourceConnection extends Component {
               <Col span={5}>
                 <Input
                   placeholder="数据名称"
+                  maxLength="50"
                   value={connectName}
                   onChange={this.handleConnectName}
                 />
@@ -871,15 +872,19 @@ export default class ResourceConnection extends Component {
                 >
                   <Option value="">全部</Option>
                   <Option value="mysql">mysql</Option>
+                  <Option value="sqlserver">sqlserver</Option>
+                  <Option value="oracle">oracle</Option>
+                  <Option value="dm">dm</Option>
+                  <Option value="kingbase">kingbase</Option>
                   <Option value="ftp">ftp</Option>
                   <Option value="sftp">sftp</Option>
                   <Option value="file">文件</Option>
                 </Select>
               </Col>
-              <Col span={5} offset={1}>
+              <Col span={8} offset={1}>
                 <RangePicker onChange={this.handleConnectTimeChange} value={connectTime} />
               </Col>
-              <Col span={5} offset={1}>
+              <Col span={3} offset={1}>
                 <Button type="primary" onClick={this.handleSearch.bind(null, '')}>
                   搜索
                 </Button>
