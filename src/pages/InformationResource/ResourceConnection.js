@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Table, Button, Card, Divider, Row, Col, Modal, Input, DatePicker, Popconfirm } from 'antd';
+import {
+  Table,
+  Button,
+  Card,
+  Divider,
+  Row,
+  Col,
+  Modal,
+  Input,
+  DatePicker,
+  Popconfirm,
+  Select,
+} from 'antd';
 import moment from 'moment';
 // import Cookies from 'js-cookie'
 
@@ -10,6 +22,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 const { RangePicker } = DatePicker;
 const { isMoment } = moment;
+const { Option } = Select;
 let initialData = [];
 let enableEditFile = [];
 // let resourceDetailData;
@@ -164,9 +177,9 @@ export default class ResourceConnection extends Component {
     });
   };
 
-  handleConnectType = e => {
+  handleConnectType = value => {
     this.setState({
-      connectType: e.target.value,
+      connectType: value,
     });
   };
 
@@ -709,9 +722,9 @@ export default class ResourceConnection extends Component {
               信息资源摘要:
               <span> {resourceDetail && resourceDetail.summary}</span>
             </h3>
-            <Button style={{ marginLeft: 10 }} onClick={this.isFolderOrExpand}>
+            <a style={{ position: 'absolute', right: 35, top: 20 }} onClick={this.isFolderOrExpand}>
               {isExpandOrFolder ? '展开' : '收起'}
-            </Button>
+            </a>
             <Divider />
           </div>
           <div style={{ marginBottom: 15 }} className="clearfix">
@@ -835,7 +848,7 @@ export default class ResourceConnection extends Component {
             </Button>
           </div>
           <Modal
-            title="选择要挂接的数据"
+            title="选择要关联的数据"
             visible={visible1}
             onOk={this.handleOk1}
             onCancel={this.handleCancel1}
@@ -845,17 +858,23 @@ export default class ResourceConnection extends Component {
             <Row style={{ marginBottom: 20 }}>
               <Col span={5}>
                 <Input
-                  placeholder="资源名称"
+                  placeholder="数据名称"
                   value={connectName}
                   onChange={this.handleConnectName}
                 />
               </Col>
               <Col span={5} offset={1}>
-                <Input
-                  placeholder="数据源类型"
-                  value={connectType}
+                <Select
+                  style={{ width: '100%' }}
+                  placeholder="数据类型"
                   onChange={this.handleConnectType}
-                />
+                >
+                  <Option value="">全部</Option>
+                  <Option value="mysql">mysql</Option>
+                  <Option value="ftp">ftp</Option>
+                  <Option value="sftp">sftp</Option>
+                  <Option value="file">文件</Option>
+                </Select>
               </Col>
               <Col span={5} offset={1}>
                 <RangePicker onChange={this.handleConnectTimeChange} value={connectTime} />
