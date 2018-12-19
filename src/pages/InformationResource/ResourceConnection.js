@@ -1,24 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import {
-  Table,
-  Button,
-  Card,
-  Divider,
-  Row,
-  Col,
-  Modal,
-  Input,
-  DatePicker,
-  Popconfirm,
-  message,
-} from 'antd';
+import { Table, Button, Card, Divider, Row, Col, Modal, Input, DatePicker, Popconfirm } from 'antd';
 import moment from 'moment';
 // import Cookies from 'js-cookie'
 
 import styles from './ResourceConnection.less';
-import PageHeaderLayout from '@/components/PageHeaderWrapper';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 const { RangePicker } = DatePicker;
 const { isMoment } = moment;
@@ -62,35 +50,6 @@ export default class ResourceConnection extends Component {
     initialType: '',
   };
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      fileListData: [],
-    });
-    const resourceDetailData = nextProps.informationResource.resourceDetail;
-    if (resourceDetailData) {
-      this.setState({
-        initialType: resourceDetailData.mountType,
-        chooseName1: resourceDetailData.mountName,
-      });
-      if (resourceDetailData.mount) {
-        let arr = [];
-        initialData = [];
-        for (let val in resourceDetailData.mountInfoItemIdMap) {
-          enableEditFile.forEach((item, i) => {
-            if (+resourceDetailData.mountInfoItemIdMap[val] === +item.id) {
-              arr.push(item);
-            }
-          });
-        }
-        initialData = [...arr];
-        this.setState({
-          fileListData: [...arr],
-          chooseId1: resourceDetailData.mountId,
-        });
-      }
-    }
-  }
-
   componentDidMount() {
     const {
       dispatch,
@@ -104,6 +63,35 @@ export default class ResourceConnection extends Component {
       routeId: state ? state.routeId : '',
       fileListData: [],
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      fileListData: [],
+    });
+    const resourceDetailData = nextProps.informationResource.resourceDetail;
+    if (resourceDetailData) {
+      this.setState({
+        initialType: resourceDetailData.mountType,
+        chooseName1: resourceDetailData.mountName,
+      });
+      if (resourceDetailData.mount) {
+        const arr = [];
+        initialData = [];
+        for (const val in resourceDetailData.mountInfoItemIdMap) {
+          enableEditFile.forEach(item => {
+            if (+resourceDetailData.mountInfoItemIdMap[val] === +item.id) {
+              arr.push(item);
+            }
+          });
+        }
+        initialData = [...arr];
+        this.setState({
+          fileListData: [...arr],
+          chooseId1: resourceDetailData.mountId,
+        });
+      }
+    }
   }
 
   handleSave = () => {
@@ -358,7 +346,7 @@ export default class ResourceConnection extends Component {
     const ids = fileListData.map(item => {
       return item.id;
     });
-    let arr = {};
+    const arr = {};
     if (dataTypes === 'db' || (!dataTypes && initialType === 'db')) {
       if (resourceItemDetail.length <= ids.length) {
         resourceItemDetail.forEach((item, j) => {
@@ -371,7 +359,7 @@ export default class ResourceConnection extends Component {
         });
       }
     } else {
-      for (let i = 0; i < ids.length; i++) {
+      for (let i = 0; i < ids.length; i += 1) {
         arr[i] = ids[i];
       }
     }
@@ -423,6 +411,11 @@ export default class ResourceConnection extends Component {
     });
   };
 
+  back() {
+    const { history } = this.props;
+    history.goBack();
+  }
+
   render() {
     // const { resourceVisible, resourceFileVisible, confirmLoading, confirmFileLoading } = this.state;
     const {
@@ -432,9 +425,11 @@ export default class ResourceConnection extends Component {
         connectPagination,
         connectFileList,
         connectFilePagination,
+        loading,
         itemList, // 左边的表格的数据
       },
     } = this.props;
+    console.log(this.props);
     enableEditFile = [...connectFileList];
     // initialData = [...connectFileList]
     // resourceDetailData = resourceDetail;
@@ -498,7 +493,9 @@ export default class ResourceConnection extends Component {
     });
     // }
     columns.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
     const columnsLeft = [
       {
@@ -515,7 +512,9 @@ export default class ResourceConnection extends Component {
       },
     ];
     columnsLeft.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
     const columnsr = [
       {
@@ -532,31 +531,10 @@ export default class ResourceConnection extends Component {
       },
     ];
     columnsr.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
-    const list = [
-      {
-        id: 0,
-        fileName: '城市低保标准表(各市第1季度).xlsx',
-        types: 'Zip',
-        fileSize: '1.38MB',
-        connectionTime: 342323333,
-      },
-      {
-        id: 1,
-        fileName: '农村低保标准表(各地第1季度).json',
-        types: 'json',
-        fileSize: '0.12MB',
-        connectionTime: 3423233,
-      },
-      {
-        id: 2,
-        fileName: '人口普查数据.xml',
-        types: 'jpeg',
-        fileSize: '1.56MB',
-        connectionTime: 34223233,
-      },
-    ];
     const columns1 = [
       {
         title: '表名称',
@@ -582,7 +560,9 @@ export default class ResourceConnection extends Component {
       },
     ];
     columns1.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
     const columnsModal1 = [
       {
@@ -618,7 +598,9 @@ export default class ResourceConnection extends Component {
       },
     ];
     columnsModal1.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
     const columnsModal2 = [
       {
@@ -658,56 +640,19 @@ export default class ResourceConnection extends Component {
       },
     ];
     columnsModal2.forEach(item => {
-      item.align = 'center';
+      Object.defineProperty(item, 'align', {
+        value: `center`,
+      });
     });
-    const listModal1 = [
-      {
-        id: 0,
-        sourceName: '城市低保标准',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-      {
-        id: 1,
-        sourceName: '农村低保准备',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-      {
-        id: 2,
-        sourceName: '人口统计',
-        dataType: '文件',
-        systemName: '统计系统',
-        registerTime: 451233554,
-      },
-    ];
-    const listModal2 = [
-      {
-        fileName: '城市低保标准表(各市第7季度).xlsx',
-        type: 'Zip',
-        fileSize: '1.38MB',
-        uploader: '张三',
-        uploadTime: 4512211,
-      },
-      {
-        fileName: '农村低保标准表(各地第1季度).json',
-        type: 'json',
-        fileSize: '0.12MB',
-        uploader: '李四',
-        uploadTime: 4512211,
-      },
-      {
-        fileName: '人口普查数据.xml',
-        type: 'jpeg',
-        fileSize: '1.56MB',
-        uploader: '王五',
-        uploadTime: 4512211,
-      },
-    ];
+    const buttonList = (
+      <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Button type="primary" onClick={() => this.back()}>
+          返回
+        </Button>
+      </div>
+    );
     return (
-      <PageHeaderLayout>
+      <PageHeaderWrapper action={buttonList}>
         <div className="btncls">
           <Button onClick={this.handleBack} className="fr mr40">
             返回
@@ -752,49 +697,39 @@ export default class ResourceConnection extends Component {
                 <span style={{ marginLeft: 10 }}>{chooseName ? chooseName : chooseName1}</span>
               </h3>
             </div>
-            {/* {isNodeOperator && ( */}
             <div style={{ display: 'inline-block' }}>
               <span className={styles.linkBtn} onClick={this.showModal1}>
                 去选择
               </span>
+              {resourceDetail.mount && (
+                <span
+                  className={styles.linkBtn}
+                  style={{
+                    marginLeft: 20,
+                    display: !dataTypes
+                      ? initialType !== 'db'
+                        ? 'inline-block'
+                        : 'none'
+                      : dataTypes !== 'db'
+                        ? 'inline-block'
+                        : 'none',
+                  }}
+                  onClick={this.handleResetFile}
+                >
+                  重载文件
+                </span>
+              )}
+            </div>
+            {resourceDetail.mount && (
               <span
                 className={styles.linkBtn}
-                style={{
-                  marginLeft: 20,
-                  display: !dataTypes
-                    ? initialType !== 'db'
-                      ? 'inline-block'
-                      : 'none'
-                    : dataTypes !== 'db'
-                      ? 'inline-block'
-                      : 'none',
-                }}
-                onClick={this.handleResetFile}
+                style={{ float: 'right' }}
+                onClick={this.handleCancelMount}
               >
-                重载文件
+                取消关联
               </span>
-            </div>
-            <span
-              className={styles.linkBtn}
-              style={{ float: 'right' }}
-              onClick={this.handleCancelMount}
-            >
-              取消关联
-            </span>
-            {/* )} */}
+            )}
           </div>
-          {/* <div style={{ marginBottom: 20 }}>
-            <div style={{ display: 'inline-block', marginRight: 20 }}>
-              <h3>挂接资源检索关系设置:</h3>
-            </div>
-            {/* {isNodeOperator && ( */}
-          {/* <div style={{ display: 'inline-block' }}>
-                <span className={styles.linkBtn} onClick={this.showModal2}>
-                  去选择
-                </span>
-              </div> */}
-          {/* )} */}
-          {/* </div> */}
           <div>
             <Row>
               <Col
@@ -864,7 +799,12 @@ export default class ResourceConnection extends Component {
                 />
               </Col>
             </Row>
-            <Button type="primary" style={{ marginTop: 20 }} onClick={this.handleSaveMountData}>
+            <Button
+              loading={loading}
+              type="primary"
+              style={{ marginTop: 20 }}
+              onClick={this.handleSaveMountData}
+            >
               保存
             </Button>
           </div>
@@ -915,30 +855,8 @@ export default class ResourceConnection extends Component {
               bordered
             />
           </Modal>
-          {/* <Modal
-            title="选择要挂接的数据"
-            visible={visible2}
-            onOk={this.handleOk2}
-            onCancel={this.handleCancel2}
-            width={900}
-          >
-            <Table
-              columns={columnsModal2}
-              dataSource={listModal2}
-              pagination={
-                pagination && {
-                  ...pagination,
-                  showQuickJumper: true,
-                  showTotal: total =>
-                    `共 ${Math.ceil(total / pagination.pageSize)}页 / ${total}条 数据`,
-                }
-              }
-              rowKey="id"
-              bordered
-            />
-          </Modal> */}
         </Card>
-      </PageHeaderLayout>
+      </PageHeaderWrapper>
     );
   }
 }

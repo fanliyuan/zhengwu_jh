@@ -239,10 +239,6 @@ export default {
                 },
               });
             }
-            yield put({
-              type: 'getResourceDetail',
-              payload: response.result.data,
-            });
             // yield put({
             //   type: 'reWriteItemList',
             //   payload: { id: payload.id, pageNum: 1, pageSzie: 10 },
@@ -252,6 +248,10 @@ export default {
             //   payload: response.result.data,
             // });
           }
+          yield put({
+            type: 'getResourceDetail',
+            payload: response.result.data,
+          });
           yield put({
             type: 'reWriteItemList',
             payload: { id: payload.id }, // , pageNum: 1, pageSize: 10
