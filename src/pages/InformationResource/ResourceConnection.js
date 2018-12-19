@@ -48,6 +48,8 @@ export default class ResourceConnection extends Component {
     isExpandOrFolder: true,
     dataTypes: '',
     initialType: '',
+    hasMounted: '',
+    hasSetMounted: false,
   };
 
   componentDidMount() {
@@ -66,6 +68,7 @@ export default class ResourceConnection extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { hasSetMounted } = this.state;
     this.setState({
       fileListData: [],
     });
@@ -76,6 +79,12 @@ export default class ResourceConnection extends Component {
         chooseName1: resourceDetailData.mountName,
       });
       if (resourceDetailData.mount) {
+        if (!hasSetMounted) {
+          this.setState({
+            hasMounted: resourceDetailData.mount,
+            hasSetMounted: true,
+          });
+        }
         const arr = [];
         initialData = [];
         for (const val in resourceDetailData.mountInfoItemIdMap) {
@@ -165,9 +174,8 @@ export default class ResourceConnection extends Component {
     const timeArr = val.map(item => {
       if (isMoment(item)) {
         return item.format('YYYY-MM-DD');
-      } else {
-        return '';
       }
+      return '';
     });
     this.setState({
       startTimes: timeArr[0] ? timeArr[0] : undefined,
@@ -275,6 +283,7 @@ export default class ResourceConnection extends Component {
       initialData = [...enableEditFile];
       this.setState({
         fileListData: [...enableEditFile],
+        hasMounted: true,
       });
     } else if (zcType === 'file') {
       await dispatch({
@@ -289,6 +298,7 @@ export default class ResourceConnection extends Component {
       initialData = [...enableEditFile];
       this.setState({
         fileListData: [...enableEditFile],
+        hasMounted: true,
       });
     } else if (zcType === 'db') {
       await dispatch({
@@ -303,6 +313,7 @@ export default class ResourceConnection extends Component {
       initialData = [...enableEditFile];
       this.setState({
         fileListData: [...enableEditFile],
+        hasMounted: true,
       });
     }
   };
@@ -437,6 +448,7 @@ export default class ResourceConnection extends Component {
       },
     } = this.props;
     console.log(this.props);
+    console.log(this.state);
     enableEditFile = [...connectFileList];
     // initialData = [...connectFileList]
     // resourceDetailData = resourceDetail;
@@ -453,6 +465,8 @@ export default class ResourceConnection extends Component {
       dataTypes,
       chooseName,
       chooseName1,
+      hasMounted,
+      zcName,
     } = this.state;
     // console.log(dataTypes)
     const pagination = { pageSize: 10, current: 1 };
@@ -658,6 +672,9 @@ export default class ResourceConnection extends Component {
         </Button>
       </div>
     );
+    const disabled = zcName === '' ? 1 : 0;
+    const okButtonProps = { disabled };
+    console.log(okButtonProps);
     return (
       <PageHeaderWrapper action={buttonList}>
         <div className="btncls">
@@ -708,7 +725,7 @@ export default class ResourceConnection extends Component {
               <span className={styles.linkBtn} onClick={this.showModal1}>
                 去选择
               </span>
-              {resourceDetail.mount && (
+              {hasMounted && (
                 <span
                   className={styles.linkBtn}
                   style={{
@@ -727,7 +744,7 @@ export default class ResourceConnection extends Component {
                 </span>
               )}
             </div>
-            {resourceDetail.mount && (
+            {hasMounted && (
               <span
                 className={styles.linkBtn}
                 style={{ float: 'right' }}
@@ -738,7 +755,7 @@ export default class ResourceConnection extends Component {
             )}
           </div>
           <div>
-            {resourceDetail.mount && (
+            {hasMounted && (
               <Row>
                 <Col
                   span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
@@ -823,6 +840,7 @@ export default class ResourceConnection extends Component {
             onOk={this.handleOk1}
             onCancel={this.handleCancel1}
             width={900}
+            okButtonProps={okButtonProps}
           >
             <Row style={{ marginBottom: 20 }}>
               <Col span={5}>
