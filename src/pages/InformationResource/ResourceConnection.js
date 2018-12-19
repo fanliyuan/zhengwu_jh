@@ -90,6 +90,7 @@ export default class ResourceConnection extends Component {
     if (resourceDetailData) {
       this.setState({
         initialType: resourceDetailData.mountType,
+        dataTypes: resourceDetailData.mountType,
         chooseName1: resourceDetailData.mountName,
       });
       if (resourceDetailData.mount) {
