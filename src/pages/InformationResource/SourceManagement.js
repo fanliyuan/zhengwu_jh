@@ -481,26 +481,32 @@ export default class SourceManagement extends Component {
           }
           return (
             <div>
-              <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
-                查看
-              </span>
-              {row.mount && (
+              {row.ck && (
+                <span className={styles.clickBtn} onClick={() => that.handleSource(row.id)}>
+                  查看
+                </span>
+              )}
+              {row.glsj && (
                 <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
                   关联数据
                 </span>
               )}
-              <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
-                共享开放
-              </span>
+              {row.gxkf && (
+                <span className={styles.clickBtn} onClick={that.handleOpen.bind(null, row.id)}>
+                  共享开放
+                </span>
+              )}
               <span className={styles.clickBtn} onClick={that.handleEdit.bind(null, row)}>
                 修改
               </span>
-              <Popconfirm
-                title={`确认删除${row.name}?`}
-                onConfirm={() => this.handleDelete(row.id)}
-              >
-                <a style={{ display: row.mount ? 'none' : 'inine-block' }}>删除</a>
-              </Popconfirm>
+              {row.sc && (
+                <Popconfirm
+                  title={`确认删除${row.name}?`}
+                  onConfirm={() => this.handleDelete(row.id)}
+                >
+                  <a style={{ display: row.mount ? 'none' : 'inine-block' }}>删除</a>
+                </Popconfirm>
+              )}
             </div>
           );
         },
