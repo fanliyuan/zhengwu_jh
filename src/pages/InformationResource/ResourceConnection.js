@@ -283,8 +283,6 @@ export default class ResourceConnection extends Component {
       dataTypes: zcType,
       visible1: false,
     });
-    console.log(this.props);
-    console.log(this.state);
     const { dispatch } = this.props;
     if (zcType === 'ftp') {
       await dispatch({
