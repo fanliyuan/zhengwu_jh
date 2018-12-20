@@ -2,13 +2,13 @@
  * @Author: ChouEric
  * @Date: 2018-11-01 15:49:34
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-18 10:32:57
+ * @Last Modified time: 2018-12-20 13:15:29
  * @Description: 使用了公共表格组件
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Select, Button, Popconfirm } from 'antd';
+import { Tabs, Select, Popconfirm } from 'antd';
 import { Bind, Throttle } from 'lodash-decorators';
 
 import PageHeader from '@/components/PageHeaderWrapper';
@@ -17,72 +17,6 @@ import StandardTable from '@/components/StandardTable';
 
 @connect(({ subManagement, loading }) => ({ subManagement, loading: loading.models.subManagement }))
 export default class SubManagement extends Component {
-  formOptions = {
-    formData: [
-      {
-        name: 'subscribeName',
-        typeOptions: {
-          maxLength: 50,
-          placeholder: '订阅名称',
-        },
-      },
-      {
-        name: 'dsName',
-        typeOptions: {
-          maxLength: 50,
-          placeholder: '信息资源名称',
-        },
-      },
-      // {
-      //   name: 'pubNode',
-      //   type: 'Cascader',
-      //   typeOptions: {
-      //     placeholder: '发布节点',
-      //     options: [
-      //       {
-      //         key: 1,
-      //         label: '全部节点',
-      //         value: 1,
-      //         children: [
-      //           {
-      //             key: 2,
-      //             label: '所有节点',
-      //             value: 2,
-      //           },
-      //         ],
-      //       },
-      //     ],
-      //     displayRender(value) {
-      //       return [...value].pop();
-      //     },
-      //   },
-      // },
-      {
-        name: 'runStatus',
-        type: 'Select',
-        typeOptions: {
-          placeholder: '运行状态',
-        },
-        children: [
-          { value: -999, label: '全部状态' },
-          { value: 1, label: '运行' },
-          { value: 0, label: '停止' },
-          { value: 2, label: '已连接' },
-        ].map(item => (
-          <Select.Option value={item.value} key={item.value}>
-            {item.label}
-          </Select.Option>
-        )),
-      },
-      {
-        name: 'time',
-        type: 'RangePicker',
-      },
-    ],
-    searchHandler: this.handleSearch,
-    resetHandler: this.resetHandler,
-  };
-
   hasColumn = [
     {
       dataIndex: 'id',
@@ -236,11 +170,15 @@ export default class SubManagement extends Component {
     key: 'has',
     queryData: {},
     pagination: { pageSize: 10, pageNum: 1 },
-    selectedRows: [],
+    // selectedRows: [],
   };
 
   componentDidMount() {
+    const { dispatch } = this.props;
     this.handleSearch();
+    dispatch({
+      type: 'subManagement/getAllNode',
+    });
   }
 
   handleTableChange = ({ current: pageNum, pageSize }) => {
@@ -258,11 +196,11 @@ export default class SubManagement extends Component {
     );
   };
 
-  handleSelectRows = selectedRows => {
-    this.setState({
-      selectedRows,
-    });
-  };
+  // handleSelectRows = selectedRows => {
+  //   this.setState({
+  //     selectedRows,
+  //   });
+  // };
 
   handleStop = rows => {
     const { dispatch } = this.props;
@@ -352,20 +290,126 @@ export default class SubManagement extends Component {
   }
 
   render() {
-    const { selectedRows } = this.state;
+    // const { selectedRows } = this.state;
     const {
-      subManagement: { dataList, pagination },
+      subManagement: { dataList, pagination, nodeList },
       loading,
     } = this.props;
     const {
       pagination: { pageNum: current, pageSize },
     } = this.state;
+    const formOptions = {
+      formData: [
+        {
+          name: 'subscribeName',
+          typeOptions: {
+            maxLength: 50,
+            placeholder: '订阅名称',
+          },
+        },
+        {
+          name: 'dsName',
+          typeOptions: {
+            maxLength: 50,
+            placeholder: '信息资源名称',
+          },
+        },
+        {
+          name: 'publishInstitution',
+          type: 'Select',
+          typeOptions: {
+            placeholder: '发布节点',
+          },
+          children: nodeList.map(item => (
+            <Select.Option value={item.nodeName} key={item.nodeName} title={item.nodeName}>
+              {item.nodeName}
+            </Select.Option>
+          )),
+        },
+        {
+          name: 'runStatus',
+          type: 'Select',
+          typeOptions: {
+            placeholder: '运行状态',
+          },
+          children: [
+            { value: -999, label: '全部状态' },
+            { value: 1, label: '运行' },
+            { value: 0, label: '停止' },
+            { value: 2, label: '已连接' },
+          ].map(item => (
+            <Select.Option value={item.value} key={item.value}>
+              {item.label}
+            </Select.Option>
+          )),
+        },
+        {
+          name: 'time',
+          type: 'RangePicker',
+        },
+      ],
+      searchHandler: this.handleSearch,
+      resetHandler: this.resetHandler,
+    };
+    const formOptionsWithoutType = {
+      formData: [
+        {
+          name: 'subscribeName',
+          typeOptions: {
+            maxLength: 50,
+            placeholder: '订阅名称',
+          },
+        },
+        {
+          name: 'dsName',
+          typeOptions: {
+            maxLength: 50,
+            placeholder: '信息资源名称',
+          },
+        },
+        {
+          name: 'publishInstitution',
+          type: 'Select',
+          typeOptions: {
+            placeholder: '发布节点',
+          },
+          children: nodeList.map(item => (
+            <Select.Option value={item.nodeName} key={item.nodeName} title={item.nodeName}>
+              {item.nodeName}
+            </Select.Option>
+          )),
+        },
+        // {
+        //   name: 'runStatus',
+        //   type: 'Select',
+        //   typeOptions: {
+        //     placeholder: '运行状态',
+        //   },
+        //   children: [
+        //     { value: -999, label: '全部状态' },
+        //     { value: 1, label: '运行' },
+        //     { value: 0, label: '停止' },
+        //     { value: 2, label: '已连接' },
+        //   ].map(item => (
+        //     <Select.Option value={item.value} key={item.value}>
+        //       {item.label}
+        //     </Select.Option>
+        //   )),
+        // },
+        {
+          name: 'time',
+          type: 'RangePicker',
+        },
+      ],
+      searchHandler: this.handleSearch,
+      resetHandler: this.resetHandler,
+    };
     return (
       <PageHeader>
         <div className="content_layout">
           <Tabs defaultActiveKey="has" onChange={this.handleTab}>
             <Tabs.TabPane tab="已订阅" key="has">
-              <SearchForm formOptions={this.formOptions} />
+              <SearchForm formOptions={formOptions} />
               {/* <div className="mb16">
                 {selectedRows.length > 0 ? (
                   <Fragment>
@@ -398,7 +442,7 @@ export default class SubManagement extends Component {
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="待审核" key="will">
-              <SearchForm formOptions={this.formOptions} />
+              <SearchForm formOptions={formOptionsWithoutType} />
               <StandardTable
                 loading={loading}
                 dataSource={dataList}
@@ -409,7 +453,7 @@ export default class SubManagement extends Component {
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="订阅失败" key="fail">
-              <SearchForm formOptions={this.formOptions} />
+              <SearchForm formOptions={formOptionsWithoutType} />
               <StandardTable
                 loading={loading}
                 dataSource={dataList}

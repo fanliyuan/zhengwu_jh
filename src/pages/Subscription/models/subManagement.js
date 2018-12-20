@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { message } from 'antd';
 
-import { getSubList, stopSubTask, runSubTask, getAssessLogs } from '@/services/subscription';
+import {
+  getSubList,
+  stopSubTask,
+  runSubTask,
+  getAssessLogs,
+  getAllNode,
+} from '@/services/subscription';
 
 export default {
   namespace: 'subManagement',
@@ -10,6 +16,7 @@ export default {
     dataList: [],
     pagination: {},
     assessLogs: [],
+    nodeList: [],
   },
 
   effects: {
@@ -101,6 +108,30 @@ export default {
         });
       }
     },
+    *getAllNode(_, { call, put }) {
+      let response;
+      let dataList = [];
+      try {
+        response = yield call(getAllNode);
+        // eslint-disable-next-line
+        // const { datas, total = 0, pageSize = 10, pageNum: current = 1 } = response.result
+        // const pagination = {total, pageSize, current}
+        if (+response.code === 200) {
+          dataList = response.result;
+        } else {
+          throw response.msg;
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          // eslint-disable-next-line
+          console.log(error);
+        } else {
+          message.error(error || '操作失败');
+        }
+      } finally {
+        yield put({ type: 'saveNodeList', payload: dataList });
+      }
+    },
   },
 
   reducers: {
@@ -126,6 +157,12 @@ export default {
       return {
         ...state,
         assessLogs,
+      };
+    },
+    saveNodeList(state, { payload: nodeList }) {
+      return {
+        ...state,
+        nodeList,
       };
     },
   },
