@@ -541,6 +541,7 @@ export default class ResourceConnection extends Component {
     columns.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const columnsLeft = [
@@ -560,6 +561,7 @@ export default class ResourceConnection extends Component {
     columnsLeft.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const columnsr = [
@@ -579,6 +581,7 @@ export default class ResourceConnection extends Component {
     columnsr.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const columns1 = [
@@ -608,6 +611,7 @@ export default class ResourceConnection extends Component {
     columns1.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const columnsModal1 = [
@@ -646,6 +650,7 @@ export default class ResourceConnection extends Component {
     columnsModal1.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const columnsModal2 = [
@@ -688,6 +693,7 @@ export default class ResourceConnection extends Component {
     columnsModal2.forEach(item => {
       Object.defineProperty(item, 'align', {
         value: `center`,
+        enumerable: true,
       });
     });
     const buttonList = (
