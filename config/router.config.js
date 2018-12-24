@@ -154,6 +154,13 @@ export default [
             authority: ['user'],
           },
           {
+            path: 'newMenu/three',
+            name: 'newMenuThree',
+            hideInMenu: true,
+            component: './InformationResource/NewMenu/Step3',
+            authority: ['user'],
+          },
+          {
             path: 'editMenu/one',
             name: 'editMenuOne',
             hideInMenu: true,

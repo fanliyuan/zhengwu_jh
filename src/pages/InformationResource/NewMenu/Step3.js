@@ -1,42 +1,57 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:38
- * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-19 17:32:42
+ * @Last Modified by: fly
+ * @Last Modified time: 2018-12-24 13:32:27
 */
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
+import { Card } from 'antd';
 // import { routerRedux } from 'dva/router'
 import Result from '@/components/Result';
+import router from 'umi/router';
+import { Link } from 'dva/router';
+import PageHeaderLayout from '@/components/PageHeaderWrapper';
 
 // import styles from './index.less'
 
 // const { Item } = Form
 
 export default class Step3 extends PureComponent {
+  buttonList = [
+    {
+      text: '取消',
+      fn() {
+        router.push('/informationResource/sourceManagement');
+      },
+    },
+  ];
   state = {
     show: true,
   };
 
   componentDidMount = () => {
-    this.setState({
-      // show: this.props.location.state.show,
-      show: '',
-    });
+    const { dispatch } = this.props;
+    setTimeout(() => {
+      router.push('/informationResource/sourceManagement');
+    }, 10000);
   };
 
   render() {
     const { show } = this.state;
     return (
-      <Fragment>
-        <Result type="success" title="新增成功" />
-        {show && (
-          <div style={{ textAlign: 'center' }}>
-            <p>目录建立成功！“目录信息项与城市低保表”资源数据项映射成功!</p>
-            <p>请去设置资源表检索关系，否则将无法共享或交换数据。</p>
-            <a>去设置</a>
-          </div>
-        )}
-      </Fragment>
+      <PageHeaderLayout buttonList={this.buttonList}>
+        <Card bordered={false}>
+          <Result type="success" title="资源配置创建成功，请等待审核结果！" />
+          {show && (
+            <div style={{ textAlign: 'center' }}>
+              <p>
+                页面将在 10秒 之后跳转到资源页面{' '}
+                <Link to="/informationResource/sourceManagement">立即跳转</Link>
+              </p>
+            </div>
+          )}
+        </Card>
+      </PageHeaderLayout>
     );
   }
 }

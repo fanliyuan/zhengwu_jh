@@ -59,8 +59,8 @@ export default {
       const response = yield call(addResource, payload);
       try {
         if (+response.code === 201) {
-          message.success(response.message);
-          yield put(routerRedux.push('/informationResource/sourceManagement'));
+          // message.success(response.message);
+          yield put(routerRedux.push('/informationResource/newMenu/three'));
           yield put({
             type: 'saveStep1Data',
             payload: {},
