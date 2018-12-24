@@ -187,7 +187,7 @@ export default {
       try {
         if (+response.code === 200) {
           const {
-            infoAddDtoList,
+            code,
             name,
             format,
             providerDept,
@@ -200,6 +200,7 @@ export default {
             updateCycle,
           } = response.result.data;
           const step1Data = {
+            code,
             name,
             providerDept,
             providerName,

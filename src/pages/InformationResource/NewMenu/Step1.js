@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
- * @Last Modified by: fly
- * @Last Modified time: 2018-12-24 11:54:01
+ * @Last Modified by: ChouEric
+ * @Last Modified time: 2018-12-24 14:12:28
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -28,13 +28,24 @@ const formItemLayout = {
   },
 };
 
-const typeId = [];
+let typeId = [];
 function getTreeId(treeArr = [], [...arr]) {
-  for (const item of treeArr) {
+  for (let item of treeArr) {
     if (item.name === arr[0]) {
       arr.shift();
       typeId.push(item.id);
       getTreeId(item.children, arr);
+      return false;
+    }
+  }
+}
+let code = '';
+function getTreeCode(treeArr = [], [...arr]) {
+  for (let item of treeArr) {
+    if (item.name === arr[0]) {
+      arr.shift();
+      code = code + item.code;
+      getTreeCode(item.children, arr);
       return false;
     }
   }
@@ -63,6 +74,10 @@ export default class Step1 extends PureComponent {
   };
 
   componentDidMount() {
+    window.onbeforeunload = () => {
+      // confirm('刷新页面将使当前数据丢失,并且返回列表页')
+      return '刷新页面将使当前数据丢失,并且返回列表页';
+    };
     const {
       dispatch,
       location: { pathname, state: { editId, back } = {} },
@@ -74,6 +89,10 @@ export default class Step1 extends PureComponent {
     if (editId && pathname === '/informationResource/editMenu/one' && !back) {
       dispatch({
         type: 'informationResource/getResourcesEdit',
+        payload: { id: editId },
+      });
+      dispatch({
+        type: 'informationResource/reWriteItemList',
         payload: { id: editId },
       });
     } else if (pathname === '/informationResource/editMenu/one' && !editId) {
@@ -113,6 +132,10 @@ export default class Step1 extends PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    window.onbeforeunload = () => {};
+  }
+
   handleCancel = () => {};
 
   handleCheckName = async () => {
@@ -121,10 +144,13 @@ export default class Step1 extends PureComponent {
       dispatch,
       informationResource: { sameMsg },
     } = this.props;
-    await dispatch({
-      type: 'informationResource/isNameSame',
-      payload: { typeId: -1, name: getFieldValue('name') },
-    });
+    const name = getFieldValue('name');
+    if (name) {
+      await dispatch({
+        type: 'informationResource/isNameSame',
+        payload: { typeId: -1, name },
+      });
+    }
     if (sameMsg) {
       message.error('资源名称重名，请重新填写');
       this.setState({
@@ -144,14 +170,28 @@ export default class Step1 extends PureComponent {
       dispatch,
       location: { pathname, state: { editId, fileList = [] } = {} },
     } = this.props;
+    let {
+      informationResource: {
+        step1Data: { code: itemCode },
+        classfiyList,
+      },
+    } = this.props;
     // eslint-disable-next-line
     validateFields((errors, values) => {
       if (errors) {
         message.error('请检查输入');
       } else {
+        getTreeCode(classfiyList, values.typeName);
         values.typeName = values.typeName.join('-');
         values.format = values.format.join('-');
         values.publishTime = values.publishTime.format('YYYY-MM-DD');
+        if (editId) {
+          itemCode = itemCode.split('/').pop() || '';
+          values.code = `${code}/${itemCode}`;
+        } else {
+          values.code = code;
+        }
+        code = '';
         dispatch({
           type: 'informationResource/saveStep1Data',
           payload: values,

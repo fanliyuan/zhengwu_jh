@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-22 23:38:35
+ * @Last Modified time: 2018-12-24 14:25:50
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
  *        12/19 废了很大心思解决bug 1009576
 */
@@ -110,6 +110,10 @@ export default class Step2 extends PureComponent {
   };
 
   componentDidMount() {
+    window.onbeforeunload = () => {
+      // confirm('刷新页面将使当前数据丢失,并且返回列表页')
+      return '刷新页面将使当前数据丢失,并且返回列表页';
+    };
     const {
       informationResource: { step1Data, step2Data },
       dispatch,
@@ -153,6 +157,10 @@ export default class Step2 extends PureComponent {
     //     routeData: { ...routeData, infoAddDtoList: rewriteItem },
     //   });
     // }
+  }
+
+  componentWillUnmount() {
+    window.onbeforeunload = () => {};
   }
 
   handleReset = () => {
@@ -227,15 +235,13 @@ export default class Step2 extends PureComponent {
     step1Data.typeId = [...typeId].join('-');
     typeId = [];
     if (editId) {
-      step2Data.id = editId;
+      // step2Data.id = editId;
       dispatch({
         type: 'informationResource/editResources',
         payload: {
           body: {
             ...step1Data,
-            infoEditDtoList: {
-              ...step2Data,
-            },
+            infoEditDtoList: [...step2Data],
           },
           id: editId,
         },
@@ -262,6 +268,7 @@ export default class Step2 extends PureComponent {
         // eslint-disable-next-line
         values.index = step2Data.length;
         values.key = step2Data.length;
+        values.id = 0;
         step2Data.push(values);
         this.setState({
           addVisible: false,
@@ -303,7 +310,7 @@ export default class Step2 extends PureComponent {
     if (info.file.status === 'done') {
       if (info.file.response) {
         if (+info.file.response.code === 200) {
-          console.log(fileList);
+          // console.log(fileList);
           message.success(`${info.file.name} 导入成功`);
           const {
             informationResource: { step2Data },
@@ -328,6 +335,7 @@ export default class Step2 extends PureComponent {
             const index = step2Data.length + i;
             uploadIndexArr.push(index);
             item.index = index; // eslint-disable-line
+            item.id = 0;
             item.uid = [...fileList].pop().uid; // eslint-disable-line
           });
           dispatch({
