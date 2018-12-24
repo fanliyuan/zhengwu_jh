@@ -1,8 +1,8 @@
 /*
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
- * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-24 09:49:42
+ * @Last Modified by: fly
+ * @Last Modified time: 2018-12-24 10:58:44
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -58,6 +58,8 @@ export default class Step1 extends PureComponent {
   state = {
     resourceRouteId: '',
     nextDisable: false,
+    startValue: null,
+    endValue: new Date(),
   };
 
   componentDidMount() {
