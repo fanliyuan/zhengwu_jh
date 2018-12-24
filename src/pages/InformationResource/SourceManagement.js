@@ -53,8 +53,6 @@ export default class SourceManagement extends Component {
     dispatch({
       type: 'informationResource/getClassfiyList',
     });
-    sessionStorage.removeItem('routeData');
-    // this.searchHandle({});
   }
 
   nameChange = e => {
@@ -196,10 +194,14 @@ export default class SourceManagement extends Component {
 
   handleEdit = row => {
     const { dispatch } = this.props;
-    if (row.mount) return !message.destroy() && message.error('数据已关联不可修改!');
+    message.destroy();
+    if (row.mount) {
+      message.error('数据已关联不可修改!');
+      return;
+    }
     dispatch(
       routerRedux.push({
-        pathname: '/informationResource/newMenu/one',
+        pathname: '/informationResource/editMenu/one',
         state: { editId: row.id },
       })
     );
@@ -229,10 +231,10 @@ export default class SourceManagement extends Component {
     );
   };
 
-  // handleAdd = () => {
-  //   const { dispatch } = this.props;
-  //   dispatch(routerRedux.push('/informationResource/newMenu/one'));
-  // };
+  handleAdd = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push('/informationResource/newMenu/one'));
+  };
 
   handleOpen = id => {
     const { dispatch } = this.props;
@@ -631,16 +633,14 @@ export default class SourceManagement extends Component {
             </Button>
           </div>
           <div className={styles.createBtn}>
-            <Link to="/informationResource/newMenu/one" style={{ color: 'white' }}>
-              <Button
-                icon="plus"
-                type="primary"
-                // onClick={this.handleAdd}
-                style={{ marginRight: '20px' }}
-              >
-                新建
-              </Button>
-            </Link>
+            <Button
+              icon="plus"
+              type="primary"
+              onClick={this.handleAdd}
+              style={{ marginRight: '20px' }}
+            >
+              新建
+            </Button>
             <Button type="primary" onClick={this.handleInput}>
               导入
             </Button>

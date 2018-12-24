@@ -34,9 +34,10 @@ export default {
     connectPagination: {},
     connectFileList: [],
     connectFilePagination: {},
-    itemList: [],
     connectItemList: [],
     resourceDetail: {},
+    step1Data: {},
+    step2Data: [],
     // forEditFile:[],
   },
 
@@ -60,6 +61,14 @@ export default {
         if (+response.code === 201) {
           message.success(response.message);
           yield put(routerRedux.push('/informationResource/sourceManagement'));
+          yield put({
+            type: 'saveStep1Data',
+            payload: {},
+          });
+          yield put({
+            type: 'saveStep2Data',
+            payload: [],
+          });
         } else {
           message.error(response.message);
         }
@@ -73,6 +82,14 @@ export default {
         if (+response.code === 201) {
           message.success(response.message);
           yield put(routerRedux.push('/informationResource/sourceManagement'));
+          yield put({
+            type: 'saveStep1Data',
+            payload: {},
+          });
+          yield put({
+            type: 'saveStep2Data',
+            payload: [],
+          });
         } else {
           message.error(response.message);
         }
@@ -169,9 +186,38 @@ export default {
       const response = yield call(getResourceDetails, payload);
       try {
         if (+response.code === 200) {
+          const {
+            infoAddDtoList,
+            name,
+            format,
+            providerDept,
+            providerName,
+            providerNo,
+            publishTime,
+            relateCode,
+            summary,
+            typeName,
+            updateCycle,
+          } = response.result.data;
+          const step1Data = {
+            name,
+            providerDept,
+            providerName,
+            providerNo,
+            relateCode,
+            summary,
+            updateCycle,
+            format,
+            typeName,
+            publishTime,
+          };
           yield put({
             type: 'getResourceDetail',
             payload: response.result.data,
+          });
+          yield put({
+            type: 'saveStep1Data',
+            payload: step1Data,
           });
         } else {
           message.error(response.message);
@@ -184,8 +230,12 @@ export default {
       const response = yield call(getResourceItems, payload);
       try {
         if (+response.code === 200) {
+          response.result.datas.forEach((item, index) => {
+            item.index = index;
+            item.key = index;
+          });
           yield put({
-            type: 'getItemList',
+            type: 'saveStep2Data',
             payload: response.result.datas,
           });
         } else {
@@ -367,6 +417,18 @@ export default {
       return {
         ...state,
         resourceDetail: payload,
+      };
+    },
+    saveStep1Data(state, { payload: step1Data }) {
+      return {
+        ...state,
+        step1Data,
+      };
+    },
+    saveStep2Data(state, { payload: step2Data }) {
+      return {
+        ...state,
+        step2Data,
       };
     },
     getConnectLists(state, { payload }) {

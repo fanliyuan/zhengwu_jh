@@ -2,11 +2,12 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 17:20:24
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-19 15:14:05
+ * @Last Modified time: 2018-12-22 22:53:23
  * @描述: 这里要做到和表单验证一样的效果,很复杂.暂时不实现,只做简单的验证;
 */
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Input, Popconfirm, Divider, Tooltip, Select, InputNumber } from 'antd';
+import { Table, Input, Popconfirm, Divider, Tooltip, Select, InputNumber, message } from 'antd';
+import cloneDeep from 'lodash/cloneDeep';
 
 // eslint-disable-next-line
 import styles from './index.less';
@@ -56,6 +57,9 @@ export default class TableForm extends PureComponent {
 
   // 这里是表格单元格的编辑功能
   handleFieldChang = (value, dataIndex, key) => {
+    const newData = cloneDeep(this.state.data);
+    const row = this.getRowByKey(key, newData);
+    const { shareCondition, openCondition } = row;
     switch (dataIndex) {
       case 'name':
         this.setState({
@@ -64,12 +68,22 @@ export default class TableForm extends PureComponent {
         break;
       case 'dataLength':
         this.setState({
-          dataLengthError: Number.isInteger(value) && value > 0,
+          dataLengthError: !Number.isInteger(value) && value > 0,
+        });
+        break;
+      case 'shareType':
+        this.setState({
+          shareConditionError: value === '有条件共享' && shareCondition.length < 1,
         });
         break;
       case 'shareCondition':
         this.setState({
           shareConditionError: value.length > 50 || value.length < 1,
+        });
+        break;
+      case 'openType':
+        this.setState({
+          openConditionError: value === '是' && openCondition.length < 1,
         });
         break;
       case 'openCondition':
@@ -80,10 +94,8 @@ export default class TableForm extends PureComponent {
       default:
         break;
     }
-    const newData = JSON.parse(JSON.stringify(this.state.data));
-    const row = this.getRowByKey(key, newData);
     if (row) {
-      row[dataIndex] = value.trim();
+      row[dataIndex] = value;
       this.setState({
         data: newData,
       });
@@ -92,7 +104,7 @@ export default class TableForm extends PureComponent {
 
   toggleEditable = (e, key) => {
     e.preventDefault();
-    const newData = JSON.parse(JSON.stringify(this.state.data));
+    const newData = cloneDeep(this.state.data);
     // console.log(newData)
     const target = this.getRowByKey(key, newData);
     // console.log("target",target)
@@ -125,6 +137,24 @@ export default class TableForm extends PureComponent {
       //   });
       //   return false;
       // }
+      // console.log(this.props.value.filter(item => item.name === row.name))
+      if (this.props.value.find(item => item.name === row.name && row.key !== item.key)) {
+        message.destroy();
+        message.error('信息项名称重复,请检查后重试!');
+        return;
+      }
+      const { shareConditionError, openConditionError } = this.state;
+      if (
+        !row.name.trim() ||
+        !Number.isInteger(+row.dataLength) ||
+        row.dataLength < 0 ||
+        (row.shareType === '有条件共享' && shareConditionError) ||
+        (row.openType === '是' && openConditionError)
+      ) {
+        message.destroy();
+        message.error('输入有误,请检查后重试!');
+        return;
+      }
       delete row.isNew;
       this.toggleEditable(e, key);
       this.props.onChange(this.state.data);
@@ -157,10 +187,10 @@ export default class TableForm extends PureComponent {
   }
 
   render() {
-    const { disabled = false } = this.props;
+    const { disabled = false, ...props } = this.props;
     const {
       data,
-      loading,
+      // loading,
       enAble,
       nameError,
       dataTypeError,
@@ -185,13 +215,11 @@ export default class TableForm extends PureComponent {
       { id: 11, label: '浮点型F', value: 'F' },
       { id: 12, label: '自定义' },
     ];
-    const dataTypeOption = dataType.map(item => {
-      return (
-        <Select.Option value={item.label} key={item.id}>
-          {item.label}
-        </Select.Option>
-      );
-    });
+    const dataTypeOption = dataType.map(item => (
+      <Select.Option value={item.label} key={item.id} title={item.label}>
+        {item.label}
+      </Select.Option>
+    ));
     const shareType = [
       { id: 1, label: '共享平台' },
       { id: 2, label: '邮件' },
@@ -200,13 +228,11 @@ export default class TableForm extends PureComponent {
       { id: 5, label: '介质交换（电子文档）' },
       { id: 6, label: '自定义' },
     ];
-    const shareTypeOption = shareType.map(item => {
-      return (
-        <Select.Option value={item.label} key={item.id}>
-          {item.label}
-        </Select.Option>
-      );
-    });
+    const shareTypeOption = shareType.map(item => (
+      <Select.Option value={item.label} key={item.id} title={item.label}>
+        {item.label}
+      </Select.Option>
+    ));
     const columns = [
       {
         title: '信息项名称',
@@ -237,7 +263,12 @@ export default class TableForm extends PureComponent {
             return (
               <Tooltip title={text || ''}>
                 <div className={dataTypeError ? 'has-error' : ''}>
-                  <Select value={text}>{dataTypeOption}</Select>
+                  <Select
+                    value={text}
+                    onChange={value => this.handleFieldChang(value, 'dataType', row.key)}
+                  >
+                    {dataTypeOption}
+                  </Select>
                 </div>
               </Tooltip>
             );
@@ -297,9 +328,14 @@ export default class TableForm extends PureComponent {
           if (row.editable) {
             return (
               <Tooltip title={text || ''}>
-                <div className={shareConditionError ? 'has-error' : ''}>
+                <div
+                  className={
+                    shareConditionError && row.shareType === '有条件共享' ? 'has-error' : ''
+                  }
+                >
                   <Input
                     value={text}
+                    disabled={row.shareType !== '有条件共享'}
                     onChange={e => this.handleFieldChang(e.target.value, 'shareCondition', row.key)}
                   />
                 </div>
@@ -362,9 +398,10 @@ export default class TableForm extends PureComponent {
           if (row.editable) {
             return (
               <Tooltip title={text || ''}>
-                <div className={openConditionError ? 'has-error' : ''}>
+                <div className={openConditionError && row.openType === '是' ? 'has-error' : ''}>
                   <Input
                     value={text}
+                    disabled={row.openType !== '是'}
                     onChange={e => this.handleFieldChang(e.target.value, 'openCondition', row.key)}
                   />
                 </div>
@@ -385,7 +422,7 @@ export default class TableForm extends PureComponent {
             if (row.isNew) {
               return (
                 <span>
-                  <a onClick={e => this.saveRow(e, row.key)}>添加</a>
+                  {/* <a onClick={e => this.saveRow(e, row.key)}>添加</a> */}
                   <Divider type="vertical" />
                   <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(row.key)}>
                     <a>删除</a>
@@ -420,7 +457,13 @@ export default class TableForm extends PureComponent {
     // const { loading } = this.props
     return (
       <Fragment>
-        <Table columns={columns} dataSource={data} loading={loading} bordered pagination={false} />
+        <Table
+          columns={columns}
+          dataSource={data}
+          // loading={loading}
+          bordered
+          {...props}
+        />
       </Fragment>
     );
   }

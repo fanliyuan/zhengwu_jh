@@ -2,11 +2,11 @@
  * @Author: ChouEric
  * @Date: 2018-07-05 16:45:01
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-19 17:32:41
+ * @Last Modified time: 2018-12-22 23:38:35
  * @描述: 这个页面的上传应该是 上传完数据,然后后台处理,返回给前台,前台再核对,确认
  *        12/19 废了很大心思解决bug 1009576
 */
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import {
@@ -16,23 +16,23 @@ import {
   Radio,
   Input,
   Select,
-  Table,
-  Cascader,
-  DatePicker,
   Upload,
-  Icon,
   Card,
   Steps,
   message,
   InputNumber,
   Popconfirm,
-  // Tabs,
 } from 'antd';
+import router from 'umi/router';
+import isEmpty from 'lodash/isEmpty';
+import intersectionBy from 'lodash/intersectionBy';
+import cloneDeep from 'lodash/cloneDeep';
 
+import { Bind, Debounce, Throttle } from 'lodash-decorators';
 import TableForm from './TableForm';
 import styles from './index.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
-import { Bind, Debounce } from 'lodash-decorators';
+import SearchForm from '@/components/SearchForm';
 
 const { Item } = Form;
 const { Step } = Steps;
@@ -41,29 +41,22 @@ const { Option } = Select;
 let keyId = 1;
 // let rewriteItem = [];
 // let step2Arr = [];
-const modalList = [
-  {
-    id: 3,
-    name: '城市低保标准表',
-    type: 'MySQL',
-    applicationName: '统计系统',
-  },
-  {
-    id: 2,
-    name: '人口统计表',
-    type: 'MySQL',
-    applicationName: '统计系统',
-  },
-  {
-    id: 1,
-    name: '农村低保标准表',
-    type: 'MySQL',
-    applicationName: '统计系统',
-  },
-];
 
-@connect(({ informationResource }) => ({
+let typeId = [];
+function getTreeId(treeArr = [], [...arr]) {
+  for (const item of treeArr) {
+    if (item.name === arr[0]) {
+      arr.shift();
+      typeId.push(item.id);
+      getTreeId(item.children, arr);
+      return false;
+    }
+  }
+}
+
+@connect(({ informationResource, loading }) => ({
   informationResource,
+  loading: loading.effects['informationResource/reWriteItemList'],
 }))
 @Form.create()
 export default class Step2 extends PureComponent {
@@ -71,10 +64,23 @@ export default class Step2 extends PureComponent {
     {
       text: '取消',
       fn() {
-        window.history.back();
+        router.push('/informationResource/sourceManagement');
       },
     },
   ];
+
+  formOptions = {
+    formData: [
+      {
+        name: 'infoSourceName',
+        typeOption: {
+          placeholder: '信息项名称',
+        },
+      },
+    ],
+    searchHandler: this.handleSearch,
+    resetHandler: this.handleReset,
+  };
 
   state = {
     data: {
@@ -98,7 +104,32 @@ export default class Step2 extends PureComponent {
     editId: '',
     step2Arr: [],
     fileList: [],
+    step1Data: {},
+    step2Data: [],
+    uploadIndexArr: [],
   };
+
+  componentDidMount() {
+    const {
+      informationResource: { step1Data, step2Data },
+      dispatch,
+      location: { state: { editId, fileList = [] } = {} },
+    } = this.props;
+    if (isEmpty(step1Data)) {
+      router.push({
+        pathname: '/informationResource/newMenu/one',
+      });
+    }
+    if (editId && isEmpty(step2Data)) {
+      dispatch({
+        type: 'informationResource/reWriteItemList',
+        payload: { id: editId },
+      });
+    }
+    this.setState({
+      fileList,
+    });
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.informationResource.itemList) {
@@ -124,72 +155,34 @@ export default class Step2 extends PureComponent {
     // }
   }
 
-  componentDidMount() {
+  handleReset = () => {
+    const {
+      dispatch,
+      location: { state: { editId } = {}, pathname },
+    } = this.props;
     this.setState({
-      step2Arr: [],
+      fileList: [],
     });
-    // step2Arr = [];
-    // if (this.props.location.pathname === '/dataSourceManagement/newMenu/two') {
-    // console.log("ceshi",this.props.location.state)
-    const sessionData =
-      sessionStorage.getItem('routeData') && JSON.parse(sessionStorage.getItem('routeData'));
-    // const isBack = sessionStorage.getItem('isBack');
-    if (
-      !this.props.location.state ||
-      !this.props.location.state.routeData
-      //  &&
-      // isBack === 'false'
-    ) {
-      sessionStorage.removeItem('routeData');
-      this.props.dispatch(routerRedux.push('/informationResource/newMenu/one'));
-      return;
-    }
-    if (sessionData) {
-      this.setState({
-        routeData: sessionData,
-      });
-      // if (sessionStorage.getItem('itemData')) {
-      //   // const { tableData } = this.state
-      //   const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
-      //   const { data } = this.state;
-      //   this.setState({
-      //     data: {
-      //       ...data,
-      //       method: 2,
-      //     },
-      //     isAgain: true,
-      //     // disabled: false,
-      //     tableData: JSON.parse(sessionStorage.getItem('itemData')),
-      //     routeData: {
-      //       ...sessionData,
-      //       infoAddDtoList: JSON.parse(sessionStorage.getItem('itemData')),
-      //     },
-      //   });
-      // }
-    }
-    if (this.props.location.state && this.props.location.state.resourceId) {
-      const { dispatch } = this.props;
-      this.setState({
-        editId: this.props.location.state.resourceId,
-      });
+    if (pathname === '/informationResource/editMenu/two') {
       dispatch({
         type: 'informationResource/reWriteItemList',
-        payload: { id: this.props.location.state.resourceId },
+        payload: { id: editId },
+      });
+    } else {
+      dispatch({
+        type: 'informationResource/saveStep2Data',
+        payload: [],
       });
     }
-    // else {
-    //   this.setState({
-    //     // disabled: false,
-    //     routeData: this.props.location.state ? this.props.location.state.routeData : '',
-    //   });
-    //   // sessionStorage.setItem('routeData', JSON.stringify(this.props.location.state.routeData));
-    // }
-    // sessionStorage.setItem('isBack', false);
-  }
+  };
 
   onChange = val => {
-    this.setState({
-      tableData: val,
+    const { dispatch } = this.props;
+    const step1Data = cloneDeep(val);
+    step1Data.forEach(item => delete item.editable);
+    dispatch({
+      type: 'informationResource/saveStep2Data',
+      payload: val,
     });
   };
 
@@ -207,175 +200,159 @@ export default class Step2 extends PureComponent {
     });
   };
 
-  methodChange = e => {
-    const tooltip =
-      +e.target.value === 1
-        ? '切换成手动添加, 当前信息项将不会保存, 是否切换?'
-        : '切换成模板导入, 当前信息项将不会保存, 是否切换?';
-    const that = this;
-    Modal.confirm({
-      title: '确认切换?',
-      content: tooltip,
-      maskClosable: true,
-      okText: '确定',
-      cancelText: '取消',
-      onOk() {
-        that.methodConfirm(e);
+  goBack = () => {
+    const {
+      location: { pathname, state: { editId = '' } = {} },
+    } = this.props;
+    const { fileList } = this.state;
+    router.push({
+      pathname: pathname.replace(/two$/, 'one'),
+      state: {
+        editId,
+        back: true,
+        fileList,
       },
     });
   };
 
-  methodConfirm = e => {
-    if (+e.target.value === 2) {
-      // this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
-      sessionStorage.setItem('inputType', 2);
-      const { data } = this.state;
-      this.setState({
-        isAgain: false,
-        step2Arr: [],
-        // tableData: [],
-        data: {
-          ...data,
-          method: 2,
+  goForward = () => {
+    const {
+      dispatch,
+      location: { state: { editId } = {} },
+    } = this.props;
+    const {
+      informationResource: { step1Data, step2Data, classfiyList },
+    } = this.props;
+    getTreeId(classfiyList, step1Data.typeName.split('-'));
+    step1Data.typeId = [...typeId].join('-');
+    typeId = [];
+    if (editId) {
+      step2Data.id = editId;
+      dispatch({
+        type: 'informationResource/editResources',
+        payload: {
+          body: {
+            ...step1Data,
+            infoEditDtoList: {
+              ...step2Data,
+            },
+          },
+          id: editId,
         },
       });
-    } else if (+e.target.value === 1) {
-      sessionStorage.setItem('inputType', '');
-      if (sessionStorage.getItem('itemData')) {
-        sessionStorage.setItem('itemData', '');
-        const { data } = this.state;
-        this.setState({
-          isAgain: false,
-          data: {
-            ...data,
-            method: 1,
-          },
-          tableData: [],
-        });
-      } else {
-        const { data, tableData, routeData } = this.state;
-        this.setState({
-          isAgain: false,
-          data: {
-            ...data,
-            method: 1,
-          },
-          tableData,
-          routeData: { ...routeData, infoAddDtoList: tableData },
-        });
-      }
-    }
-  };
-
-  goBack = () => {
-    // if (!this.state.disabled) {
-    //   this.props.dispatch(routerRedux.push('/dataSourceManagement/newMenu/one'));
-    // } else {
-    //   this.props.dispatch(routerRedux.push('/dataSourceManagement/checkMenu/one'));
-    // }
-    this.props.dispatch(routerRedux.push('/informationResource/newMenu/one'));
-  };
-
-  goForward = () => {
-    const { dispatch } = this.props;
-    const { routeData, tableData, editId } = this.state;
-    if (!routeData.infoAddDtoList || tableData.length <= 0) {
-      message.error('信息项必填');
     } else {
-      if (editId) {
-        const newTableData = tableData.forEach(item => {
-          if (!item.id) {
-            item.id = 0;
-          }
-        });
-        let newRouteData = { ...routeData };
-        newRouteData.infoAddDtoList = undefined;
-        dispatch({
-          type: 'informationResource/editResources',
-          payload: { resourceEditDto: { ...newRouteData, infoEditDtoList: tableData }, id: editId },
-        });
-      } else {
-        dispatch({
-          type: 'informationResource/addResources',
-          payload: { ...routeData, infoAddDtoList: tableData },
-        });
-      }
+      dispatch({
+        type: 'informationResource/addResources',
+        payload: { ...step1Data, infoAddDtoList: step2Data },
+      });
     }
   };
-
-  // handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   this.props.form.validateFieldsAndScroll((err, values) => {
-  //     if(!err){
-  //       console.log(values)
-  //       this.setState({
-  //         tableData:values,
-  //       })
-  //     }
-  //   });
-  // }
 
   handleModalOk = () => {
     const {
       form: { validateFields, resetFields },
+      informationResource: { step2Data },
     } = this.props;
+    // eslint-disable-next-line
     validateFields((errors, values) => {
       if (!errors) {
-        const { tableData, routeData } = this.state;
-        values.key = keyId;
-        let arr1 = tableData;
-        arr1.push(values);
+        if (step2Data.some(item => item.name === values.name)) {
+          return message.error('信息项名称不能重复,请检查!');
+        }
+        // eslint-disable-next-line
+        values.index = step2Data.length;
+        values.key = step2Data.length;
+        step2Data.push(values);
         this.setState({
-          tableData: arr1,
           addVisible: false,
-          routeData: { ...routeData, infoAddDtoList: arr1 },
         });
-        resetFields();
-        keyId++;
       }
-      // console.log(values.values())
-      // if(values.values()){
-      //   message.error("输入框不能为空")
-      //   return
-      // }
     });
   };
 
   handleDataChange = val => {
     const { routeData } = this.state;
     this.setState({
-      routeData: { ...routeData, infoAddDtoList: val ? val : [] },
+      routeData: { ...routeData, infoAddDtoList: val || [] },
     });
   };
 
-  checkLength = (value, i) => {
-    // const { form:{ getFieldValue, setFieldsValue } } = this.props
-    if (value.length > i) {
-      // setFieldsValue({
-      //   name:getFieldValue('name').slice(0,i-1), //value.slice(0,i-1)
-      // })
-      message.destroy();
-      message.error(`输入长度不能超过${i}个字符`);
-      this.setState({
-        isEnable: true,
-      });
-    } else {
-      this.setState({
-        isEnable: false,
-      });
-    }
+  handleOpenConditionChange = e => {
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 500);
   };
 
-  handleInputAgain = () => {
-    // this.props.dispatch(routerRedux.push('/informationResource/inputDirectoryitem'));
-    sessionStorage.setItem('inputType', 2);
-    // step2Arr = []
-    const { data } = this.state;
-    this.setState({
-      ...data,
-      method: 2,
-      isAgain: false,
-      step2Arr: [],
+  handleShareChange = () => {
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 50);
+  };
+
+  handleLengthChange = () => {
+    this.isDisbaled();
+    // this.checkLength(val + '', 50);
+  };
+
+  handleNameChange = () => {
+    this.isDisbaled();
+    // this.checkLength(e.target.value, 50)
+  };
+
+  handleFileChange = info => {
+    const { fileList } = info;
+    // fileList = fileList.slice(-1);
+    if (info.file.status === 'done') {
+      if (info.file.response) {
+        if (+info.file.response.code === 200) {
+          console.log(fileList);
+          message.success(`${info.file.name} 导入成功`);
+          const {
+            informationResource: { step2Data },
+            dispatch,
+          } = this.props;
+          const { uploadIndexArr } = this.state;
+          const uploadData = Array.isArray(info.file.response.result.datas)
+            ? info.file.response.result.datas
+            : [];
+          if (intersectionBy(step2Data, uploadData, 'name').length > 0) {
+            message.destroy();
+            const result = [...fileList];
+            result.pop();
+            this.setState({
+              fileList: result,
+            });
+            return message.error('上传的数据和已有数据的信息项名称重复,请检查后重新上传');
+          }
+          // const uid = [...fileList].pop().uid
+          // console.log(uploadData)
+          uploadData.forEach((item, i) => {
+            const index = step2Data.length + i;
+            uploadIndexArr.push(index);
+            item.index = index; // eslint-disable-line
+            item.uid = [...fileList].pop().uid; // eslint-disable-line
+          });
+          dispatch({
+            type: 'informationResource/saveStep2Data',
+            payload: [...step2Data, ...uploadData],
+          });
+          // sessionStorage.setItem('uploadData', JSON.stringify(info.file.response.result.datas));
+        } else {
+          message.error(`${info.file.response.message}`);
+        }
+      }
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.response.message}`);
+    }
+    this.setState({ fileList });
+  };
+
+  handleRemoveChange = file => {
+    const {
+      informationResource: { step2Data },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'informationResource/saveStep2Data',
+      payload: step2Data.filter(item => item.uid !== file.uid),
     });
   };
 
@@ -385,7 +362,7 @@ export default class Step2 extends PureComponent {
     const {
       form: { getFieldsError, isFieldTouched, getFieldValue },
     } = this.props;
-    console.log(Object.values(getFieldsError()));
+    // console.log(Object.values(getFieldsError()));
     // console.log(isFieldTouched('dataType'))
     this.setState({
       isEnable:
@@ -401,110 +378,25 @@ export default class Step2 extends PureComponent {
     });
   }
 
-  handleOpenConditionChange = e => {
-    this.isDisbaled();
-    // this.checkLength(e.target.value, 500);
-  };
-
-  handleShareChange = e => {
-    this.isDisbaled();
-    // this.checkLength(e.target.value, 50);
-  };
-
-  handleLengthChange = val => {
-    this.isDisbaled();
-    // this.checkLength(val + '', 50);
-  };
-
-  handleNameChange = e => {
-    this.isDisbaled();
-    // this.checkLength(e.target.value, 50)
-  };
-
-  handleBackBtn = () => {
-    let { step2Arr, fileList, data, routeData } = this.state;
-    if (fileList.length !== 0 && step2Arr.length === 0) {
-      const uploadData = sessionStorage.getItem('uploadData');
-      if (uploadData) {
-        step2Arr = JSON.parse(uploadData);
-      }
-    } else {
-      // let zcArr = step2Arr;
-      // for (let i = 0; i < zcArr.length; i += 1) {
-      //   zcArr[i].key = i;
-      // }
-      // this.setState({
-      //   step2Arr: zcArr,
-      // });
-      // sessionStorage.setItem('itemData', JSON.stringify(zcArr));
-      // // const { tableData } = this.state
-      // const newTableData = JSON.parse(sessionStorage.getItem('itemData'));
-    }
-    this.setState({
-      data: {
-        ...data,
-        method: 2,
-      },
-      isAgain: true,
-      // disabled: false,
-      tableData: step2Arr,
-      routeData: {
-        ...routeData,
-        infoAddDtoList: step2Arr,
-      },
+  @Bind()
+  @Throttle(300)
+  handleSearch(queryData) {
+    const {
+      informationResource: { step2Data },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'informationResource/saveStep2Data',
+      payload: step2Data.filter(item => item.name.includes(queryData.infoSourceName)),
     });
-    // sessionStorage.setItem('isBack', true); // 区分是从导入页面返回到第二步还是在第二步进行了刷新
-  };
-
-  handleFileChange = info => {
-    let { fileList } = info;
-    fileList = fileList.slice(-1);
-    if (info.file.status === 'done') {
-      if (info.file.response) {
-        if (+info.file.response.code === 200) {
-          message.success(`${info.file.name} 导入成功`);
-          this.setState({
-            step2Arr: info.file.response.result.datas,
-          });
-          sessionStorage.setItem('uploadData', JSON.stringify(info.file.response.result.datas));
-        } else {
-          message.error(`${info.file.response.message}`);
-        }
-      }
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.response.message}`);
-    }
-    this.setState({ fileList });
-  };
-
-  handleRemoveChange = info => {
-    if (info.response) {
-      if (+info.response.code === 200) {
-        // this.setState({
-        //   step2Arr: step2Arr.concat(info.file.response.result.datas),
-        // });
-        // console.log(info.response.result.datas);
-        const { step2Arr } = this.state;
-        const deleteArr = info.response.result.datas;
-        const dataIndexs = [];
-        deleteArr.forEach(item => {
-          dataIndexs.push(step2Arr.indexOf(item));
-        });
-        dataIndexs.forEach(item => {
-          step2Arr.item = undefined;
-        });
-        this.setState({
-          step2Arr,
-        });
-      }
-    }
-  };
+  }
 
   render() {
     // const { form: { getFieldDecorator, validateFields }, dispatch } = this.props
     const {
       form: { getFieldDecorator, getFieldValue },
-      informationResource: { itemList },
+      informationResource: { step2Data },
+      loading,
     } = this.props;
     // rewriteItem = itemList;
     const {
@@ -521,36 +413,6 @@ export default class Step2 extends PureComponent {
       fileList,
       // step2Arr,
     } = this.state;
-    const columns = [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-        align: 'center',
-      },
-      {
-        title: '资源名称',
-        dataIndex: 'name',
-        align: 'center',
-      },
-      {
-        title: '数据类型',
-        dataIndex: 'type',
-        align: 'center',
-      },
-      {
-        title: '应用系统名称',
-        dataIndex: 'applicationName',
-        align: 'center',
-      },
-    ];
-    const rowSelection = {
-      selectKeys,
-      onChange: keys => {
-        this.setState({
-          selectKeys: keys,
-        });
-      },
-    };
 
     const formItemLayout = {
       labelCol: {
@@ -654,13 +516,11 @@ export default class Step2 extends PureComponent {
       { id: 11, label: '浮点型F', value: 'F' },
       { id: 12, label: '自定义' },
     ];
-    const dataTypeOption = dataType.map(item => {
-      return (
-        <Option value={item.label} key={item.id}>
-          {item.label}
-        </Option>
-      );
-    });
+    const dataTypeOption = dataType.map(item => (
+      <Option value={item.label} key={item.id}>
+        {item.label}
+      </Option>
+    ));
 
     const shareType = [
       { id: 1, label: '共享平台' },
@@ -670,15 +530,13 @@ export default class Step2 extends PureComponent {
       { id: 5, label: '介质交换（电子文档）' },
       { id: 6, label: '自定义' },
     ];
-    const shareTypeOption = shareType.map(item => {
-      return (
-        <Option value={item.label} key={item.id}>
-          {item.label}
-        </Option>
-      );
-    });
+    const shareTypeOption = shareType.map(item => (
+      <Option value={item.label} key={item.id}>
+        {item.label}
+      </Option>
+    ));
 
-    const props = {
+    const uploadProps = {
       name: 'file',
       action: '/api/api/v2/zhengwu/swap/resource/info/import',
       // headers: {
@@ -692,6 +550,8 @@ export default class Step2 extends PureComponent {
       fileList,
     };
 
+    const paginationProps = false;
+
     return (
       <PageHeaderLayout buttonList={this.buttonList}>
         <Card>
@@ -700,87 +560,52 @@ export default class Step2 extends PureComponent {
             <Step title="编辑信息项" />
             <Step title="完成" />
           </Steps>
-          <Form>
-            <Item label="添加方式" {...formItemLayout1}>
-              <Radio.Group value={data.method} onChange={this.methodChange}>
-                <Radio value={1}>手工添加</Radio>
-                <Radio value={2}>信息项模板导入</Radio>
-              </Radio.Group>
-              <Button
-                type="primary"
-                onClick={this.handleInputAgain}
-                style={{ display: isAgain ? 'inline-block' : 'none' }}
-              >
-                重新导入
-              </Button>
-            </Item>
-            <Item
-              label="信息项"
-              {...formItemLayout2}
-              style={{ display: +data.method === 2 ? (isAgain ? 'block' : 'none') : 'block' }}
-            >
-              <TableForm
-                value={tableData}
-                onChange={val => this.onChange(val)}
-                // disabled={disabled}
-                handleChange={this.handleDataChange}
-              />
-            </Item>
-          </Form>
-          <div
-            style={{
-              display: +data.method === 2 ? (isAgain ? 'none' : 'block') : 'none',
-              textAlign: 'center',
-            }}
-          >
-            <h3 style={{ textAlign: 'center' }}>
-              请{' '}
-              <a
-                className={styles.aBtn}
-                href="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
-                download="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
-              >
-                下载模板{' '}
-              </a>
-              按格式填写信息资源项内容后导入
-            </h3>
-            <Upload className={styles.infos} {...props}>
-              <span>导入信息项: </span>
-              <Button type="primary"> 选取文件</Button>
-            </Upload>
-            <Button type="primary" onClick={this.handleBackBtn} style={{ marginTop: 20 }}>
-              确定
+          {/* 这里写 按钮 */}
+          <div className="mb16">
+            <Button className="mr16" onClick={this.handleAddItem}>
+              添加
             </Button>
+            <Button className="mr16" onClick={this.handleReset}>
+              重置
+            </Button>
+            <Upload className={styles.infos} {...uploadProps}>
+              <Button>导入</Button>
+            </Upload>
+            <a
+              className={styles.aBtn}
+              href="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
+              download="/api/api/v2/zhengwu/swap/resource/downTemplate?template=info"
+            >
+              {' '}
+              下载模板{' '}
+            </a>
+            {/* <SearchForm formOptions={this.formOptions} /> */}
           </div>
+
+          <TableForm
+            loading={loading}
+            value={step2Data}
+            onChange={val => this.onChange(val)}
+            // disabled={disabled}
+            handleChange={this.handleDataChange}
+            pagination={paginationProps}
+            rowKey="index"
+            className="mb16"
+          />
+
           <div
             style={{
               textAlign: 'center',
               display: +data.method === 2 ? (isAgain ? 'block' : 'none') : 'block',
             }}
           >
-            <Popconfirm
-              title="返回填写信息资源内容页面，当前信息将不会被保存，是否返回？"
-              onConfirm={this.goBack}
-            >
-              <Button className="mr64" style={{ marginRight: 20 }}>
-                上一步
-              </Button>
-            </Popconfirm>
+            <Button className="mr64" onClick={this.goBack} style={{ marginRight: 20 }}>
+              上一步
+            </Button>
             <Button type="primary" onClick={this.goForward}>
               提交
             </Button>
           </div>
-          <Button
-            type="primary"
-            style={{
-              background: 'transparent',
-              color: '#1890FF',
-              display: +data.method === 1 ? 'block' : 'none',
-            }}
-            onClick={this.handleAddItem}
-          >
-            添加信息项
-          </Button>
           <Modal
             title="添加信息项"
             visible={addVisible}

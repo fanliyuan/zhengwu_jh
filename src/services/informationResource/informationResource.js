@@ -18,7 +18,7 @@ export async function addResource(params) {
 export async function updateResource(params) {
   return request(`/api/api/v2/zhengwu/swap/resource/${params.id}`, {
     method: 'PUT',
-    body: params.resourceEditDto,
+    body: params.body,
   });
 }
 
