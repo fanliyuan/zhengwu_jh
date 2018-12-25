@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
-import { routerRedux, Link } from 'dva/router';
+import { routerRedux } from 'dva/router';
 
 import styles from './SourceManagement.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
@@ -124,10 +124,8 @@ export default class SourceManagement extends Component {
     const timeArr = val.map(item => {
       if (isMoment(item)) {
         return item.format('YYYY-MM-DD');
-      } else {
-        // eslint-disable-line
-        return ''; // eslint-disable-line
       }
+      return '';
     });
     this.setState({
       queryData: {
@@ -445,6 +443,8 @@ export default class SourceManagement extends Component {
               return '已拒绝';
             case 1:
               return '已通过';
+            default:
+              return '未知';
           }
         },
       },
@@ -488,6 +488,9 @@ export default class SourceManagement extends Component {
                   查看
                 </span>
               )}
+              <span className={styles.clickBtn} onClick={this.handleCheckLog.bind(null, row.id)}>
+                审核日志
+              </span>
               {row.glsj && (
                 <span className={styles.clickBtn} onClick={() => that.handlerelatedData(row.id)}>
                   关联数据
