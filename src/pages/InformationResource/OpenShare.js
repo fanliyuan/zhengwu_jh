@@ -178,7 +178,7 @@ export default class OpenShare extends Component {
             </Button>
             <Divider />
           </div>
-          <Form onSubmit={this.handleSubmit} onChange={this.formChange}>
+          <Form onSubmit={this.handleSubmit} /* onChange={this.formChange} */>
             <FormItem label="是否开放" {...formItemLayout}>
               {getFieldDecorator('open', {
                 initialValue: openData && openData.open ? 1 : 0,
@@ -190,7 +190,7 @@ export default class OpenShare extends Component {
                 </RadioGroup>
               )}
             </FormItem>
-            {isOpen === 1 && (
+            {/* {isOpen === 1 && (
               <FormItem label="开放内容" {...formItemLayout}>
                 {getFieldDecorator('openContent', {
                   initialValue: [],
@@ -202,7 +202,7 @@ export default class OpenShare extends Component {
                   </CheckboxGroup>
                 )}
               </FormItem>
-            )}
+            )} */}
             <FormItem label="是否共享" {...formItemLayout}>
               {getFieldDecorator('share', {
                 initialValue: openData && openData.share ? 1 : 0,
@@ -214,7 +214,7 @@ export default class OpenShare extends Component {
                 </RadioGroup>
               )}
             </FormItem>
-            {isShare === 1 && (
+            {/* {isShare === 1 && (
               <FormItem label="共享内容" {...formItemLayout}>
                 {getFieldDecorator('shareContent', {
                   initialValue: [],
@@ -226,7 +226,7 @@ export default class OpenShare extends Component {
                   </CheckboxGroup>
                 )}
               </FormItem>
-            )}
+            )} */}
             <FormItem label="订阅授权" {...formItemLayout}>
               {getFieldDecorator('subscribeLicense', {
                 initialValue: openData && openData.subscribeLicense ? 1 : 0,
