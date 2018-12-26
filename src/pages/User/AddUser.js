@@ -170,38 +170,33 @@ class AddUser extends PureComponent {
             ],
           })(<Input />)}
         </FormItem>
-        {route.name === 'usersAdd' && (
-          <FormItem
-            {...formItemLayout}
-            label={<FormattedMessage id="form.addUser.password.label" />}
-          >
-            {getFieldDecorator('password', {
-              initialValue: params.password,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'validation.addUser.password.required' }),
-                },
-                {
-                  pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,24}$/,
-                  message: formatMessage({ id: 'validation.addUser.password.pattern' }),
-                },
-                {
-                  min: 6,
-                  message: formatMessage({ id: 'validation.addUser.password.min' }),
-                },
-                {
-                  max: 24,
-                  message: formatMessage({ id: 'validation.addUser.password.max' }),
-                },
-              ],
-            })(<Input type="password" autoComplete="new-password" maxLength="24" />)}
-            <a style={{ marginRight: 10 }} onClick={() => this.random()}>
-              随机生成
-            </a>
-            <a onClick={() => this.copy()}>复制</a>
-          </FormItem>
-        )}
+        <FormItem {...formItemLayout} label={<FormattedMessage id="form.addUser.password.label" />}>
+          {getFieldDecorator('password', {
+            initialValue: params.password,
+            rules: [
+              {
+                required: true,
+                message: formatMessage({ id: 'validation.addUser.password.required' }),
+              },
+              {
+                pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,24}$/,
+                message: formatMessage({ id: 'validation.addUser.password.pattern' }),
+              },
+              {
+                min: 6,
+                message: formatMessage({ id: 'validation.addUser.password.min' }),
+              },
+              {
+                max: 24,
+                message: formatMessage({ id: 'validation.addUser.password.max' }),
+              },
+            ],
+          })(<Input type="password" autoComplete="new-password" maxLength="24" />)}
+          <a style={{ marginRight: 10 }} onClick={() => this.random()}>
+            随机生成
+          </a>
+          <a onClick={() => this.copy()}>复制</a>
+        </FormItem>
         <FormItem {...formItemLayout} label={<FormattedMessage id="form.addUser.name.label" />}>
           {getFieldDecorator('name', {
             initialValue: params.name,
