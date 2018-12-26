@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
 import {
-  Input,
+  // Input,
   Card,
   Form,
   Button,
-  Cascader,
   Radio,
   Checkbox,
-  Select,
-  message,
+  // Select,
+  // message,
   Divider,
 } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { Bind, Debounce } from 'lodash-decorators';
 
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
 import styles from './OpenShare.less';
 
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
+// const InputGroup = Input.Group;
 const RadioGroup = Radio.Group;
-const { Option } = Select;
+// const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 @Form.create()
 @connect(({ informationResource }) => ({
@@ -30,28 +30,31 @@ export default class OpenShare extends Component {
   state = {
     id: -1,
     isExpandOrFolder: true,
+    isDisable: false,
   };
 
   componentDidMount() {
     // if(this.props.location.state){
 
     // }
-    const { dispatch } = this.props;
+    const { dispatch, location } = this.props;
     dispatch({
       type: 'informationResource/openShare',
-      payload: this.props.location.state && this.props.location.state.openId,
+      payload: location.state && location.state.openId,
     });
     this.setState({
-      id: this.props.location.state && +this.props.location.state.openId,
+      id: location.state && +location.state.openId,
     });
     dispatch({
       type: 'informationResource/getResourcesEdit',
-      payload: { id: this.props.location.state && +this.props.location.state.openId },
+      payload: { id: location.state && +location.state.openId },
     });
   }
 
   setInputs = () => {
-    const { setFieldValue } = this.props.form;
+    const {
+      form: { setFieldValue },
+    } = this.props;
     const { minutes, hours, day, month, week } = this.state;
     const timeInfo = [minutes, hours, day, month, week];
     setFieldValue('setTime', timeInfo);
@@ -68,6 +71,7 @@ export default class OpenShare extends Component {
     e.preventDefault();
     const {
       form: { validateFields },
+      dispatch,
     } = this.props;
     validateFields((errors, values) => {
       if (!errors) {
@@ -77,12 +81,17 @@ export default class OpenShare extends Component {
           publishRate: '',
           switchAreaId: [],
           timeSet: '',
-          open: +values.open === 1 ? true : false,
-          share: +values.share === 1 ? true : false,
+          open: +values.open === 1,
+          openContent: values.openContent || [],
+          share: +values.share === 1,
+          shareContent: values.shareContent || [],
           // opendoorType: values.openType === '开放门户分类' ? '' : values.openType,
-          subscribeLicense: +values.subscribeLicense === 1 ? true : false,
+          subscribeLicense: +values.subscribeLicense === 1,
         };
-        this.props.dispatch({
+        // TODO: 临时删除这两个字段,后端接口没有接收这两个字段
+        delete params.openContent;
+        delete params.shareContent;
+        dispatch({
           type: 'informationResource/submitOpenShare',
           payload: {
             id,
@@ -103,22 +112,35 @@ export default class OpenShare extends Component {
     dispatch(routerRedux.push('/informationResource/sourceManagement'));
   };
 
+  @Bind()
+  @Debounce(10)
+  formChange() {
+    const {
+      form: { validateFields },
+    } = this.props;
+    validateFields(error => {
+      this.setState({
+        isDisable: error,
+      });
+    });
+  }
+
   render() {
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
       informationResource: { openData, resourceDetail },
     } = this.props;
-    const { isExpandOrFolder } = this.state;
-    const plainOptions = ['交换域1', '交换域2', '交换域3'];
+    const { isExpandOrFolder, isDisable } = this.state;
+    const isOpen = getFieldValue('open');
+    const isShare = getFieldValue('share');
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 7 },
+        sm: { span: 12 },
       },
       wrapperCol: {
         xs: { span: 24 },
         sm: { span: 12 },
-        md: { span: 10 },
       },
     };
     const submitLayout = {
@@ -127,69 +149,6 @@ export default class OpenShare extends Component {
         sm: { span: 10, offset: 7 },
       },
     };
-    const optionData = [
-      { label: '定时', value: '0', id: 0 },
-      { label: '实时', value: '1', id: 1 },
-      { label: '手动', value: '2', id: 2 },
-    ];
-    const optionSelect = optionData.map(item => {
-      return (
-        <Option value={item.value} key={item.id} label={item.label}>
-          {item.label}
-        </Option>
-      );
-    });
-    const options = [
-      {
-        value: '0',
-        label: '增量',
-        children: [
-          {
-            value: '0-0',
-            label: '日志',
-          },
-          {
-            value: '0-1',
-            label: '标志位',
-          },
-          {
-            value: '0-2',
-            label: '时间戳',
-          },
-        ],
-      },
-      {
-        value: '1',
-        label: '全量',
-        children: [
-          {
-            value: '1-0',
-            label: '日志',
-          },
-          {
-            value: '1-1',
-            label: '标志位',
-          },
-          {
-            value: '1-2',
-            label: '时间戳',
-          },
-        ],
-      },
-    ];
-    const updateTime = [
-      { id: 1, label: '政务' },
-      { id: 2, label: '健康' },
-      { id: 3, label: '交通' },
-      { id: 4, label: '治安' },
-    ];
-    const updateTimeOption = updateTime.map(item => {
-      return (
-        <Option value={item.label} key={item.id}>
-          {item.label}
-        </Option>
-      );
-    });
     return (
       <PageHeaderLayout>
         <Card>
@@ -219,7 +178,7 @@ export default class OpenShare extends Component {
             </Button>
             <Divider />
           </div>
-          <Form onSubmit={this.handleSubmit}>
+          <Form onSubmit={this.handleSubmit} /* onChange={this.formChange} */>
             <FormItem label="是否开放" {...formItemLayout}>
               {getFieldDecorator('open', {
                 initialValue: openData && openData.open ? 1 : 0,
@@ -230,20 +189,20 @@ export default class OpenShare extends Component {
                   <Radio value={0}>否</Radio>
                 </RadioGroup>
               )}
-              {/* {
-                <span style={{marginRight:10,marginLeft:10}}>开放门户分类：</span>
-              } */}
             </FormItem>
-            {/* <FormItem label="开放门户分类" {...formItemLayout}>
-              {getFieldDecorator('openType', {
-                initialValue:
-                  openData && openData.opendoorType ? openData.opendoorType : '开放门户分类',
-              })(
-                <Select style={{ width: 150 }} placeholder="开放门户分类">
-                  {updateTimeOption}
-                </Select>
-              )}
-            </FormItem> */}
+            {/* {isOpen === 1 && (
+              <FormItem label="开放内容" {...formItemLayout}>
+                {getFieldDecorator('openContent', {
+                  initialValue: [],
+                  rules: [{ required: true, message: '至少选择一项!' }],
+                })(
+                  <CheckboxGroup>
+                    <Checkbox value="data">数据</Checkbox>
+                    <Checkbox value="api">api</Checkbox>
+                  </CheckboxGroup>
+                )}
+              </FormItem>
+            )} */}
             <FormItem label="是否共享" {...formItemLayout}>
               {getFieldDecorator('share', {
                 initialValue: openData && openData.share ? 1 : 0,
@@ -255,11 +214,19 @@ export default class OpenShare extends Component {
                 </RadioGroup>
               )}
             </FormItem>
-            {/* <FormItem label="交换域" {...formItemLayout}>
-              <InputGroup compact>
-                {getFieldDecorator('switchArea')(<CheckboxGroup options={plainOptions} />)}
-              </InputGroup>
-            </FormItem> */}
+            {/* {isShare === 1 && (
+              <FormItem label="共享内容" {...formItemLayout}>
+                {getFieldDecorator('shareContent', {
+                  initialValue: [],
+                  rules: [{ required: true, message: '至少选择一项!' }],
+                })(
+                  <CheckboxGroup>
+                    <Checkbox value="data">数据</Checkbox>
+                    <Checkbox value="api">api</Checkbox>
+                  </CheckboxGroup>
+                )}
+              </FormItem>
+            )} */}
             <FormItem label="订阅授权" {...formItemLayout}>
               {getFieldDecorator('subscribeLicense', {
                 initialValue: openData && openData.subscribeLicense ? 1 : 0,
@@ -271,30 +238,10 @@ export default class OpenShare extends Component {
                 </RadioGroup>
               )}
             </FormItem>
-            {/* <FormItem label="发布模式" {...formItemLayout}>
-              {getFieldDecorator('types')(<Cascader options={options} />)}
-            </FormItem>
-            <FormItem label="发布频率" {...formItemLayout}>
-              {getFieldDecorator('rate')(<Select>{optionSelect}</Select>)}
-            </FormItem>
-            <FormItem label="定时设置" {...formItemLayout}>
-              <InputGroup compact>
-                {getFieldDecorator('setTime')(
-                  <Input style={{ width: '20%' }} placeholder="分钟" />
-                )}
-                {getFieldDecorator('setTime1')(
-                  <Input style={{ width: '20%' }} placeholder="小时" />
-                )}
-                {getFieldDecorator('setTime2')(<Input style={{ width: '20%' }} placeholder="天" />)}
-                {getFieldDecorator('setTime3')(<Input style={{ width: '20%' }} placeholder="月" />)}
-                {getFieldDecorator('setTime4')(
-                  <Input style={{ width: '20%' }} placeholder="星期" />
-                )}
-              </InputGroup>
-            </FormItem> */}
             <FormItem {...submitLayout}>
-              <div className="btnclsb">
+              <div style={{ textAlign: 'center' }}>
                 <Button
+                  disabled={isDisable}
                   type="primary"
                   className="mr64"
                   htmlType="submit"

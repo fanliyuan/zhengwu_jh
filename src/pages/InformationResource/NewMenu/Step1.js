@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-07-06 17:49:30
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-24 14:12:28
+ * @Last Modified time: 2018-12-24 17:43:32
 */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
@@ -189,7 +189,7 @@ export default class Step1 extends PureComponent {
           itemCode = itemCode.split('/').pop() || '';
           values.code = `${code}/${itemCode}`;
         } else {
-          values.code = code;
+          values.code = `${code}/`;
         }
         code = '';
         dispatch({
