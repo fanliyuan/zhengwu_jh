@@ -785,33 +785,33 @@ export default class ResourceConnection extends Component {
             )}
           </div>
           <div>
-            {hasMounted && (
-              <Row>
-                <Col
-                  span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
-                >
-                  <Table
-                    columns={columnsLeft}
-                    dataSource={itemList}
-                    loading={loading}
-                    // pagination={
-                    //   connectFilePagination && {
-                    //     ...connectFilePagination,
-                    //     showQuickJumper: true,
-                    //     showTotal: total =>
-                    //       `共 ${Math.ceil(
-                    //         total / connectFilePagination.pageSize
-                    //       )}页 / ${total}条 数据`,
-                    //   }
-                    // }
-                    rowKey="id"
-                    bordered
-                    // onChange={this.handleFile1TableChange}
-                  />
-                </Col>
-                <Col
-                  span={!dataTypes ? (initialType !== 'db' ? 0 : 2) : dataTypes !== 'db' ? 0 : 2}
+            <Row>
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
+              >
+                <Table
+                  columns={columnsLeft}
+                  dataSource={itemList}
+                  loading={loading}
+                  // pagination={
+                  //   connectFilePagination && {
+                  //     ...connectFilePagination,
+                  //     showQuickJumper: true,
+                  //     showTotal: total =>
+                  //       `共 ${Math.ceil(
+                  //         total / connectFilePagination.pageSize
+                  //       )}页 / ${total}条 数据`,
+                  //   }
+                  // }
+                  rowKey="id"
+                  bordered
+                  // onChange={this.handleFile1TableChange}
                 />
+              </Col>
+              <Col
+                span={!dataTypes ? (initialType !== 'db' ? 0 : 2) : dataTypes !== 'db' ? 0 : 2}
+              />
+              {hasMounted && (
                 <Col
                   span={!dataTypes ? (initialType !== 'db' ? 0 : 11) : dataTypes !== 'db' ? 0 : 11}
                 >
@@ -834,6 +834,8 @@ export default class ResourceConnection extends Component {
                     // onChange={this.handleFile1TableChange}
                   />
                 </Col>
+              )}
+              {hasMounted && (
                 <Col
                   span={!dataTypes ? (initialType !== 'db' ? 24 : 0) : dataTypes !== 'db' ? 24 : 0}
                 >
@@ -856,8 +858,8 @@ export default class ResourceConnection extends Component {
                     onChange={this.handleFileTableChange}
                   />
                 </Col>
-              </Row>
-            )}
+              )}
+            </Row>
             <Button
               loading={loading}
               type="primary"

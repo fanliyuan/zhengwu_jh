@@ -239,6 +239,10 @@ export default {
             type: 'saveStep2Data',
             payload: response.result.datas,
           });
+          yield put({
+            type: 'getItemList',
+            payload: response.result.datas,
+          });
         } else {
           message.error(response.message);
         }
