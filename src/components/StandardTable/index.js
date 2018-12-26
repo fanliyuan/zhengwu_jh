@@ -2,7 +2,7 @@
  * @Author: ChouEric
  * @Date: 2018-12-07 11:09:17
  * @Last Modified by: ChouEric
- * @Last Modified time: 2018-12-07 11:17:35
+ * @Last Modified time: 2018-12-25 13:50:28
  * @Description: 此组件经过修改,可以适应 项目需求, 也可以再改造
  */
 import React, { PureComponent, Fragment } from 'react';
@@ -80,6 +80,8 @@ class StandardTable extends PureComponent {
       showSelect = null,
     } = this.props;
 
+    const columnsProp = columns.map(item => ({ ...item, align: item.align || 'center' }));
+
     const paginationProps = {
       // showSizeChanger: true, // 显示改变分页大小
       showQuickJumper: true,
@@ -129,7 +131,7 @@ class StandardTable extends PureComponent {
           rowKey={rowKey || 'key'}
           rowSelection={showSelect && rowSelection}
           dataSource={list}
-          columns={columns}
+          columns={columnsProp}
           pagination={paginationProps}
           onChange={this.handleTableChange}
         />

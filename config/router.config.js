@@ -90,12 +90,12 @@ export default [
           {
             path: '/audit/loginAudit',
             name: 'loginAudit',
-            component: './List/TableList',
+            component: './Audit/LoginAudit',
           },
           {
-            path: '/list/operationAudit',
+            path: '/audit/operationAudit',
             name: 'operationAudit',
-            component: './List/BasicList',
+            component: './Audit/OperationAudit',
           },
         ],
       },
