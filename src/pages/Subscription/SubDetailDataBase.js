@@ -15,9 +15,9 @@ const FormItem = Form.Item;
 
 @connect(({ subDetailDataBase, loading }) => ({
   subDetailDataBase,
-  loadingTable: loading.effects['dbView/getDbList'],
-  loadingData: loading.effects['dbView/getDbTableList'],
-  loadingStruct: loading.effects['dbView/getDBTableStruct'],
+  loadingTable: loading.effects['subDetailDataBase/getDbList'],
+  loadingData: loading.effects['subDetailDataBase/getDbTableList'],
+  loadingStruct: loading.effects['subDetailDataBase/getDBTableStruct'],
 }))
 @Form.create()
 class SubDetailDataBase extends Component {
