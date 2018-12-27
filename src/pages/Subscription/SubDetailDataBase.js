@@ -266,9 +266,6 @@ class SubDetailDataBase extends Component {
               <a className="mr16" disabled={modelName === '结构'} onClick={methods.viewTableStruct}>
                 结构
               </a>
-              <a className="mr16" onClick={methods.exportData}>
-                导出
-              </a>
             </Fragment>
           ) : (
             <Fragment>
