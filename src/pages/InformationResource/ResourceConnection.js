@@ -803,6 +803,7 @@ export default class ResourceConnection extends Component {
                   //       )}页 / ${total}条 数据`,
                   //   }
                   // }
+                  pagination={false}
                   rowKey="id"
                   bordered
                   // onChange={this.handleFile1TableChange}
@@ -819,13 +820,14 @@ export default class ResourceConnection extends Component {
                     columns={columnsr}
                     dataSource={fileListData}
                     loading={loading}
-                    pagination={
-                      connectFilePagination && {
-                        ...connectFilePagination,
-                        showQuickJumper: true,
-                        showTotal: total => `共 ${Math.ceil(+total / 10)}页 / ${total}条 数据`,
-                      }
-                    }
+                    // pagination={
+                    //   connectFilePagination && {
+                    //     ...connectFilePagination,
+                    //     showQuickJumper: true,
+                    //     showTotal: total => `共 ${Math.ceil(+total / 10)}页 / ${total}条 数据`,
+                    //   }
+                    // }
+                    pagination={false}
                     rowKey="id"
                     bordered
                     // onChange={this.handleFile1TableChange}
