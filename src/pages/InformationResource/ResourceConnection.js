@@ -823,10 +823,7 @@ export default class ResourceConnection extends Component {
                       connectFilePagination && {
                         ...connectFilePagination,
                         showQuickJumper: true,
-                        showTotal: total =>
-                          `共 ${Math.ceil(
-                            total / connectFilePagination.pageSize
-                          )}页 / ${total}条 数据`,
+                        showTotal: total => `共 ${Math.ceil(+total / 10)}页 / ${total}条 数据`,
                       }
                     }
                     rowKey="id"
