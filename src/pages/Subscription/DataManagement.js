@@ -52,7 +52,7 @@ class DataManagement extends Component {
     {
       title: '发布节点',
       align: 'center',
-      dataIndex: 'node',
+      dataIndex: 'publishNode',
     },
     {
       title: '最近更新时间',
@@ -291,7 +291,7 @@ class DataManagement extends Component {
           data: [
             {
               type: 'Select',
-              prop: 'node',
+              prop: 'publishNode',
               label: '发布节点',
               typeOptions: {
                 placeholder: '请选择发布节点',
