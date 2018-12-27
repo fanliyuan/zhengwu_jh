@@ -89,8 +89,8 @@ export default class OpenShare extends Component {
           subscribeLicense: +values.subscribeLicense === 1,
         };
         // TODO: 临时删除这两个字段,后端接口没有接收这两个字段
-        delete params.openContent;
-        delete params.shareContent;
+        // delete params.openContent;
+        // delete params.shareContent;
         dispatch({
           type: 'informationResource/submitOpenShare',
           payload: {
