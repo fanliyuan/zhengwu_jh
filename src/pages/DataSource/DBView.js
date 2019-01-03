@@ -404,6 +404,8 @@ class DBView extends Component {
                     <Option key="EXCEL/XLSX">EXCEL/XLSX</Option>
                     <Option key="EXCEL/CSV">EXCEL/CSV</Option>
                     <Option key="JSON">JSON</Option>
+                    <Option key="XML">XML</Option>
+                    <Option key="MySQL/SQL">MySQL/SQL</Option>
                   </Select>
                 )}
               </FormItem>
