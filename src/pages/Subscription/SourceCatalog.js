@@ -254,6 +254,7 @@ class SourceCatalog extends Component {
     const { dispatch } = this.props;
     paramsPage = { pageNum: 1, pageSize: 10 };
     const fields = fieldsForm;
+    formValues = { ...fieldsForm };
     Object.defineProperty(fields, 'date', {
       value: ``,
     });
@@ -269,7 +270,6 @@ class SourceCatalog extends Component {
         value: ``,
       });
     }
-    formValues = { ...fieldsForm };
     formTime = paramsTime;
     const values = {
       ...fields,
@@ -474,6 +474,31 @@ class SourceCatalog extends Component {
         <Card bordered={false}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="共享资源" key="1">
+              <div className={styles.tableList}>
+                <div className={styles.tableListForm}>{this.renderForm()}</div>
+                <Table
+                  rowKey="resourceId"
+                  bordered
+                  pagination={paginationProps}
+                  dataSource={dataList.rows}
+                  columns={this.columns}
+                  loading={loading}
+                  locale={locale}
+                />
+              </div>
+              <Modal
+                title="信息资源订阅"
+                visible={visible}
+                onOk={this.handleOk}
+                onCancel={this.handleCancel}
+                width={520}
+                maskClosable={false}
+                confirmLoading={confirmLoading}
+              >
+                {keyArr.length > 0 && this.renderOrderForm(record)}
+              </Modal>
+            </TabPane>
+            <TabPane tab="API资源" key="2">
               <div className={styles.tableList}>
                 <div className={styles.tableListForm}>{this.renderForm()}</div>
                 <Table
