@@ -6,8 +6,9 @@
  * @Description: 描述 操作审计
  */
 import React, { PureComponent } from 'react';
-import { Select, Table, Card } from 'antd';
+import { Table, Card } from 'antd';
 import { connect } from 'dva';
+import { formatMessage } from 'umi/locale';
 import { Bind, Throttle } from 'lodash-decorators';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -15,7 +16,6 @@ import FilterRowForm from '@/components/FilterRowForm';
 
 import styles from './Audit.less';
 
-const { Option } = Select;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
@@ -165,6 +165,12 @@ export default class OperationAudit extends PureComponent {
               typeOptions: {
                 placeholder: '请输入IP地址',
                 maxLength: 50,
+                rules: [
+                  {
+                    pattern: /(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}/g,
+                    message: formatMessage({ id: 'validation.ip.pattern' }),
+                  },
+                ],
               },
             },
             {

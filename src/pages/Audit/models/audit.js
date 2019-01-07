@@ -1,4 +1,4 @@
-import { operateAudit } from '@/services/audit/audit';
+import { operateAudit, loginAudit } from '@/services/audit/audit';
 import { message } from 'antd';
 
 export default {
@@ -14,15 +14,15 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       try {
-        const response = yield call(operateAudit, { payload });
+        const response = yield call(loginAudit, { ...payload });
         if (response.code < 300) {
           yield put({
             type: 'queryList',
-            payload: response,
+            payload: response.result,
           });
           yield put({
             type: 'setPage',
-            payload: response.page,
+            payload,
           });
         }
       } catch (error) {

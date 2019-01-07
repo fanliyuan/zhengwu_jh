@@ -3,6 +3,7 @@ export default {
   'layout.user.link.help': '帮助',
   'layout.user.link.privacy': '隐私',
   'layout.user.link.terms': '条款',
+  'validation.ip.pattern': 'ip地址格式不正确！',
   'validation.dataSource.name.required': '数据源名称不能为空！',
   'validation.dataSource.name.max': '数据源名称长度不能大于50个字符！',
   'validation.dataSource.desc.max': '数据源秒速长度不能大于50个字符！',

@@ -117,6 +117,12 @@ class FilterRowForm extends PureComponent {
                     <FormItem label={compent.label}>
                       {getFieldDecorator(compent.prop, {
                         initialValue: data[compent.prop],
+                        rules: (() => {
+                          if (compent.typeOptions.rules) {
+                            return compent.typeOptions.rules;
+                          }
+                          return [];
+                        })(),
                       })(<Input {...compent.typeOptions} />)}
                     </FormItem>
                   </Col>
