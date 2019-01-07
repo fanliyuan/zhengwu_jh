@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'dva/router';
-import { Card, Button, Upload, message } from 'antd';
+import router from 'umi/router';
+import { Card, Button, Upload, message, notification } from 'antd';
 
 import styles from './InputDirectory.less';
 import PageHeaderLayout from '@/components/PageHeaderWrapper';
@@ -21,9 +22,6 @@ export default class InputDirectory extends Component {
         method: 'post',
       },
       onChange: info => {
-        if (info.file.status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
         if (info.file.status === 'done') {
           if (info.file.response) {
             if (+info.file.response.code === 200) {
@@ -33,6 +31,14 @@ export default class InputDirectory extends Component {
               });
             } else if (+info.file.response.code === 201) {
               message.success(`${info.file.response.message}`);
+            } else if (+info.file.response.code === 401) {
+              notification.destroy();
+              notification.error({
+                message: `请求错误`,
+                description: `${info.file.response.message}`,
+              });
+              localStorage.setItem('antd-pro-authority', 'guest');
+              router.push(`/user/login`);
             } else {
               message.error(`${info.file.response.message}`);
             }
