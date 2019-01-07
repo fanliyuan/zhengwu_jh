@@ -34,7 +34,7 @@ export default class InputDirectory extends Component {
               });
             } else if (+info.file.response.code === 201) {
               message.success(`${info.file.response.message}`);
-            } else {
+            } else if (+info.file.response.code === 401) {
               notification.destroy();
               notification.error({
                 message: `请求错误`,
@@ -42,6 +42,8 @@ export default class InputDirectory extends Component {
               });
               localStorage.setItem('antd-pro-authority', 'guest');
               router.push(`/user/login`);
+            } else {
+              message.error(`${info.file.response.message}`);
             }
           }
         } else if (info.file.status === 'error') {
