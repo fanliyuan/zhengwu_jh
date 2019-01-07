@@ -6,15 +6,19 @@
  * @Description: 描述 操作审计
  */
 import React, { PureComponent } from 'react';
-import { Select } from 'antd';
+import { Table, Card } from 'antd';
 import { connect } from 'dva';
+import { formatMessage } from 'umi/locale';
 import { Bind, Throttle } from 'lodash-decorators';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import SearchForm from '@/components/SearchForm';
-import StandardTable from '@/components/StandardTable';
+import FilterRowForm from '@/components/FilterRowForm';
 
-const { Option } = Select;
+import styles from './Audit.less';
+
+let paramsPage = { pageNum: 1, pageSize: 10 };
+let formValues;
+let formTime;
 
 @connect(({ audit, loading }) => ({
   audit,
@@ -23,150 +27,204 @@ const { Option } = Select;
 export default class OperationAudit extends PureComponent {
   columns = [
     {
-      dataIndex: 'userName',
+      dataIndex: 'useraccount',
       title: '用户名',
     },
     {
-      dataIndex: 'realName',
+      dataIndex: 'username',
       title: '姓名',
     },
     {
-      dataIndex: 'module',
+      dataIndex: 'logtype',
       title: '所属模块',
     },
     {
-      dataIndex: 'operationType',
+      dataIndex: 'logname',
       title: '操作类型',
     },
     {
-      dataIndex: 'time',
+      dataIndex: 'createtime',
       title: '操作时间',
     },
     {
-      dataIndex: 'ipAddress',
+      dataIndex: 'logip',
       title: '操作IP',
     },
     {
-      dataIndex: 'detail',
+      dataIndex: 'message',
       title: '行为记录',
-      // TODO: 这里可能需要截取字符串,甚至拼接后端的操作详情, 可是 尝试是用 tag 标签 标记 不同操作类型
     },
   ];
 
-  state = {
-    queryData: {},
-    pagination: {},
-  };
-
   componentDidMount() {
-    // eslint-disable-next-line
-    this.props.dispatch({
+    let fields;
+    const routeName = sessionStorage.getItem('currentList');
+    const { dispatch, route } = this.props;
+    if (routeName && routeName !== route.name) {
+      paramsPage = { pageNum: 1, pageSize: 10 };
+      formValues = {};
+      formTime = {};
+      fields = { ...formValues };
+    } else {
+      fields = { ...formValues };
+      Object.defineProperty(fields, 'date', {
+        value: ``,
+      });
+    }
+    dispatch({
       type: 'audit/getOperationDataList',
+      payload: {
+        ...paramsPage,
+        ...fields,
+        ...formTime,
+      },
     });
   }
 
-  tableChange = ({ current: pageNum, pageSize }) => {
-    this.setState(
-      {
-        pagination: {
-          pageNum,
-          pageSize,
-        },
-      },
-      () => {
-        const { queryData } = this.state;
-        this.handleSearch(queryData);
-      }
-    );
-  };
+  componentWillUnmount() {
+    const { route } = this.props;
+    sessionStorage.setItem('currentList', route.name);
+  }
 
   @Bind()
   @Throttle(800, { trailing: true })
-  handleSearch(queryData = {}, resetPage = false) {
-    const pagination = resetPage ? { pageSize: 10, pageNum: 1 } : this.state.pagination; // eslint-disable-line
-    this.setState({
-      queryData,
+  handleSearch = (fieldsForm, paramsTime) => {
+    const { dispatch } = this.props;
+    paramsPage = { pageNum: 1, pageSize: 10 };
+    formValues = { ...fieldsForm };
+    const fields = fieldsForm;
+    Object.defineProperty(fields, 'date', {
+      value: ``,
     });
+    formTime = paramsTime;
+    const values = {
+      ...fields,
+      ...paramsPage,
+      ...paramsTime,
+    };
+    dispatch({
+      type: 'audit/getOperationDataList',
+      payload: values,
+    });
+  };
+
+  changePage = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    paramsPage = { pageNum, pageSize };
+    dispatch({
+      type: 'audit/getOperationDataList',
+      payload: {
+        ...paramsPage,
+        ...formValues,
+        ...formTime,
+      },
+    });
+  };
+
+  renderForm() {
+    const formData = {
+      md: 8,
+      lg: 24,
+      xl: 48,
+      data: [
+        {
+          key: 1,
+          data: [
+            {
+              prop: 'useraccount',
+              label: '用户名',
+              typeOptions: {
+                placeholder: '请输入用户名',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'logtype',
+              label: '所属模块',
+              typeOptions: {
+                placeholder: '请输入所属模块',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'logname',
+              label: '操作类型',
+              typeOptions: {
+                placeholder: '请输入操作类型',
+                maxLength: 50,
+              },
+            },
+          ],
+        },
+        {
+          key: 2,
+          data: [
+            {
+              prop: 'ip',
+              label: 'IP地址',
+              typeOptions: {
+                placeholder: '请输入IP地址',
+                maxLength: 50,
+                rules: [
+                  {
+                    pattern: /(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}/g,
+                    message: formatMessage({ id: 'validation.ip.pattern' }),
+                  },
+                ],
+              },
+            },
+            {
+              type: 'RangePicker',
+              prop: 'date',
+              label: '操作时间',
+            },
+          ],
+        },
+      ],
+    };
+    const actions = {
+      handleSearch: this.handleSearch,
+    };
+    const data = {
+      ...formValues,
+    };
+    return <FilterRowForm formData={formData} actions={actions} data={data} />;
   }
 
   render() {
     const {
-      audit: { moduleDataList = [], operationDataList = [], operationPagination },
+      audit: { operationDataList, pageOperation },
       loading,
-    } = this.props; // eslint-disable-line
-
-    const formOptions = {
-      formData: [
-        {
-          name: 'userName',
-          typeOptions: {
-            placeholder: '用户名',
-          },
-        },
-        {
-          name: 'module',
-          type: 'Select',
-          typeOptions: {
-            placeholder: '所属模块',
-          },
-          // TODO: 应该用后端返回的 moduleDataList 作为下拉选择
-          children: [
-            { value: 'user', label: '用户模块' },
-            { value: 'node', label: '节点管理' },
-          ].map(item => (
-            <Option value={item.value} key={item.value}>
-              {item.label}
-            </Option>
-          )),
-        },
-        {
-          name: 'operationType',
-          type: 'Select',
-          typeOptions: {
-            placeholder: '操作类型',
-          },
-          children: [
-            { value: 'add', label: '新增' },
-            { value: 'delete', label: '删除' },
-            { value: 'edit', label: '修改' },
-          ].map(item => (
-            <Option value={item.value} key={item.value}>
-              {item.label}
-            </Option>
-          )),
-        },
-        {
-          name: 'IpAddress',
-          typeOptions: {
-            placeholder: 'IP地址',
-            maxLength: 16,
-          },
-        },
-        {
-          name: 'time',
-          type: 'RangePicker',
-        },
-      ],
-      searchHandler: this.handleSearch,
-      resetHandler: this.handleSearch,
+    } = this.props;
+    const paginationProps = {
+      showQuickJumper: true,
+      total: operationDataList.totalCounts,
+      current: pageOperation,
+      onChange: this.changePage,
+      pageSize: 10,
+      showTotal(total) {
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
+      },
     };
-
-    const paginationProps = { ...operationPagination };
-
+    const locale = {
+      emptyText: '很遗憾，没有搜索到匹配的数据源',
+    };
     return (
       <PageHeaderWrapper>
-        <div className="content_layout">
-          <SearchForm formOptions={formOptions} />
-          <StandardTable
-            loading={loading}
-            columns={this.columns}
-            pagination={paginationProps}
-            dataSource={operationDataList}
-            onChange={this.tableChange}
-            bordered
-            rowKey="index"
-          />
-        </div>
+        <Card bordered={false}>
+          <div className={styles.tableList}>
+            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            <Table
+              rowKey="id"
+              bordered
+              columns={this.columns}
+              dataSource={operationDataList.datas}
+              pagination={paginationProps}
+              locale={locale}
+              loading={loading}
+            />
+          </div>
+        </Card>
       </PageHeaderWrapper>
     );
   }
