@@ -5,6 +5,8 @@ import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
 
+import { message } from 'antd';
+
 export default {
   namespace: 'login',
 
@@ -45,6 +47,8 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/dashboard/analysis'));
+      } else {
+        message.error(response.message);
       }
     },
 
