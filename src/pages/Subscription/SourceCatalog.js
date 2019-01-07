@@ -136,6 +136,134 @@ class SourceCatalog extends Component {
     },
   ];
 
+  columns1 = [
+    {
+      title: '信息资源代码',
+      align: 'center',
+      dataIndex: 'resourceCode',
+    },
+    {
+      title: '信息资源名称',
+      align: 'center',
+      dataIndex: 'resourceName',
+    },
+    {
+      title: '资源属性分类',
+      align: 'center',
+      dataIndex: 'resourceProjectCatalogType',
+    },
+    {
+      title: '发布节点',
+      align: 'center',
+      dataIndex: 'nodeName',
+    },
+    {
+      title: '关联数据名称',
+      align: 'center',
+      dataIndex: 'mountResourceName',
+    },
+    {
+      title: '关联数据类型',
+      align: 'center',
+      dataIndex: 'mountResourceId',
+      render: text => {
+        let dataType;
+        if (text.indexOf('db') !== -1) {
+          dataType = `数据库`;
+        } else if (text.indexOf('ftp') !== -1) {
+          dataType = `文件`;
+        } else if (text.indexOf('file') !== -1) {
+          dataType = `文件`;
+        } else {
+          dataType = `数据类型错误`;
+        }
+        return dataType;
+      },
+    },
+    {
+      title: '共享时间',
+      align: 'center',
+      dataIndex: 'shareTime',
+    },
+    {
+      title: '申请是否需发布方授权',
+      align: 'center',
+      dataIndex: 'subscriptionAuth',
+      render: text => {
+        switch (text) {
+          case '0':
+            return <span style={{ color: '#5cadff' }}>否</span>;
+          case '1':
+            return <span style={{ color: '#ed4014' }}>是</span>;
+          default:
+            return <span>授权码错误</span>;
+        }
+      },
+    },
+    {
+      title: '申请状态',
+      align: 'center',
+      dataIndex: 'orderStatus',
+      render: text => {
+        switch (text) {
+          case '待审核':
+            return <span style={{ color: '#5cadff' }}>待审核</span>;
+          case '未订阅':
+            return <span style={{ color: '#999999' }}>未订阅</span>;
+          case '已订阅':
+            return <span style={{ color: '#19be6b' }}>已订阅</span>;
+          case '已拒绝':
+            return <span style={{ color: '#ed4014' }}>已拒绝</span>;
+          default:
+            return <span>状态错误</span>;
+        }
+      },
+    },
+    {
+      title: '操作',
+      align: 'center',
+      render: (text, record) => (
+        <Fragment>
+          {/* {record.orderStatus === '未订阅' && (
+            <Fragment>
+              <a onClick={() => this.handleOrder(record)}>订阅</a>
+              <Divider type="vertical" />
+            </Fragment>
+          )}
+          {record.orderStatus === '已拒绝' && (
+            <Fragment>
+              <a onClick={() => this.handleOrder(record)}>重新订阅</a>
+              <Divider type="vertical" />
+            </Fragment>
+          )} */}
+          <a
+            // style={{display:'inline-block',marginRight:20}}
+            class="mr16"
+            onClick={() =>
+              router.push(
+                `/subscribe/portDetail/${record.resourceId}
+                }`
+              )
+            }
+          >
+            接口详情
+          </a>
+          <a
+            onClick={() =>
+              router.push(
+                `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
+                  record.mountResourceId
+                }`
+              )
+            }
+          >
+            信息资源
+          </a>
+        </Fragment>
+      ),
+    },
+  ];
+
   state = {
     visible: false,
     record: {},
@@ -448,6 +576,122 @@ class SourceCatalog extends Component {
     return <FilterRowForm formData={formData} actions={actions} data={data} />;
   }
 
+  renderForm1() {
+    const {
+      sourceCatalog: { sourceClassfiyList, pubNodes },
+    } = this.props;
+    const nodes = [
+      {
+        key: '全部',
+        value: '',
+      },
+    ];
+    pubNodes.map(item =>
+      nodes.push({
+        key: item.nodeName,
+        value: item.nodeName,
+      })
+    );
+    const formData = {
+      md: 8,
+      lg: 24,
+      xl: 48,
+      data: [
+        {
+          key: 1,
+          data: [
+            {
+              prop: 'resourceCode',
+              label: '信息资源代码',
+              typeOptions: {
+                placeholder: '请输入信息资源代码',
+                maxLength: 50,
+              },
+            },
+            {
+              prop: 'resourceName',
+              label: '信息资源名称',
+              typeOptions: {
+                placeholder: '请输入信息资源名称',
+                maxLength: 50,
+              },
+            },
+            {
+              type: 'Cascader',
+              prop: 'typeIds',
+              label: '资源属性分类',
+              typeOptions: {
+                options: sourceClassfiyList,
+                fieldNames: { label: 'name', value: 'id' },
+                placeholder: '请选择资源属性分类',
+              },
+            },
+          ],
+        },
+        {
+          key: 2,
+          data: [
+            {
+              type: 'Select',
+              prop: 'switchNodeName',
+              label: '发布节点',
+              typeOptions: {
+                placeholder: '请选择发布节点',
+              },
+              options: nodes,
+            },
+            {
+              type: 'Select',
+              prop: 'status',
+              label: '申请状态',
+              typeOptions: {
+                placeholder: '请选择申请状态',
+              },
+              options: [
+                {
+                  key: '全部',
+                  value: '',
+                },
+                {
+                  key: '已订阅',
+                  value: '已订阅',
+                },
+                {
+                  key: '未订阅',
+                  value: '未订阅',
+                },
+                {
+                  key: '未申请',
+                  value: '未申请',
+                },
+                {
+                  key: '待审核',
+                  value: '待审核',
+                },
+                {
+                  key: '已拒绝',
+                  value: '已拒绝',
+                },
+              ],
+            },
+            {
+              type: 'RangePicker',
+              prop: 'date',
+              label: '共享时间',
+            },
+          ],
+        },
+      ],
+    };
+    const actions = {
+      handleSearch: this.handleSearch,
+    };
+    const data = {
+      ...formValues,
+    };
+    return <FilterRowForm formData={formData} actions={actions} data={data} />;
+  }
+
   render() {
     const {
       sourceCatalog: { dataList, page },
@@ -500,13 +744,13 @@ class SourceCatalog extends Component {
             </TabPane>
             <TabPane tab="API资源" key="2">
               <div className={styles.tableList}>
-                <div className={styles.tableListForm}>{this.renderForm()}</div>
+                <div className={styles.tableListForm}>{this.renderForm1()}</div>
                 <Table
                   rowKey="resourceId"
                   bordered
                   pagination={paginationProps}
                   dataSource={dataList.rows}
-                  columns={this.columns}
+                  columns={this.columns1}
                   loading={loading}
                   locale={locale}
                 />

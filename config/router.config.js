@@ -389,6 +389,13 @@ export default [
             authority: ['user'],
           },
           {
+            path: '/subscribe/portDetail/:resourceId',
+            name: 'portDetail',
+            component: './Subscription/PortDetail',
+            authority: ['user'],
+            hideInMenu: true,
+          },
+          {
             path: '/subscribe/dataManagement/subDetailFile',
             name: 'subDetailFile',
             component: './Subscription/SubDetailFile',

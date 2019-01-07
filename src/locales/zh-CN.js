@@ -212,6 +212,7 @@ export default {
   'menu.subscribe': '数据订阅管理',
   'menu.subscribe.audit': '订阅审核',
   'menu.subscribe.sourceCatalog': '资源目录',
+  'menu.subscribe.portDetail': '接口详情',
   'menu.subscribe.management': '订阅管理',
   'menu.subscribe.dataManagement': '数据管理',
   'menu.subscribe.infoResource': '订阅查看',
