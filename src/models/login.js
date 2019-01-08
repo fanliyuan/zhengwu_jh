@@ -47,7 +47,8 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/dashboard/analysis'));
-      } else {
+      } else if (response && response.message) {
+        message.destroy();
         message.error(response.message);
       }
     },
