@@ -33,8 +33,7 @@ export default [
           {
             path: '/dashboard/loginLog',
             name: 'loginLog',
-            component: './Dashboard/Monitor',
-            hideInMenu: true,
+            component: './Dashboard/LoginLog',
           },
           {
             path: '/dashboard/systemNotice',
