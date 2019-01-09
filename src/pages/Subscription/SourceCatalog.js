@@ -125,11 +125,14 @@ class SourceCatalog extends Component {
           )}
           <a
             onClick={() =>
-              router.push(
-                `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
+              router.push({
+                pathname: `/subscribe/sourceCatalog/infoResource/${record.resourceId}/${
                   record.mountResourceId
-                }`
-              )
+                }`,
+                params: {
+                  record,
+                },
+              })
             }
           >
             信息资源

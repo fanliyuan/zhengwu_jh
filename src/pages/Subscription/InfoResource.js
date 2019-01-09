@@ -1,18 +1,37 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Divider } from 'antd';
+import { Button, Card, Divider, Modal, Input, Form } from 'antd';
 import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ViewCard from '@/components/ViewCard';
 
+const FormItem = Form.Item;
 @connect(({ infoResource, loading }) => ({
   infoResource,
   loading: loading.models.infoResource,
+  confirmLoading: loading.effects['infoResource/subscribe'],
 }))
+@Form.create()
 class InfoResource extends Component {
+  state = {
+    visible: false,
+    record: {},
+  };
+
   componentDidMount() {
-    const { dispatch, match } = this.props;
+    const { dispatch, match, location } = this.props;
+    if (location.params) {
+      this.setState({
+        record: location.params.record,
+      });
+      sessionStorage.setItem('subInfo', JSON.stringify(location.params.record));
+    } else {
+      const record = JSON.parse(sessionStorage.getItem('subInfo'));
+      this.setState({
+        record,
+      });
+    }
     dispatch({
       type: 'infoResource/getResourceDetail',
       payload: {
@@ -33,6 +52,77 @@ class InfoResource extends Component {
       type: 'infoResource/reset',
     });
   }
+
+  handleOrder = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleOk = e => {
+    e.preventDefault();
+    let dataType;
+    const { dispatch, form } = this.props;
+    const { record } = this.state;
+    if (record.mountResourceId.indexOf('db') !== -1) {
+      dataType = `db`;
+    } else if (record.mountResourceId.indexOf('ftp') !== -1) {
+      dataType = `ftp`;
+    } else if (record.mountResourceId.indexOf('file') !== -1) {
+      dataType = `file`;
+    } else {
+      dataType = '';
+    }
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const params = {
+        catalogId: record.typeId,
+        dataType,
+        directoryName: record.resourceProjectCatalogType,
+        dsID: record.resourceId,
+        dsName: record.resourceName,
+        kafkaTopic: record.kafkaTopic,
+        mountResourceId: record.mountResourceId,
+        mountResourceName: record.mountResourceName,
+        publishInstitution: record.nodeName,
+        publisherID: record.nodeId,
+        subscribeName: fieldsValue.subscribeName,
+        subscriptionAuth: record.subscriptionAuth,
+        synchronizationType: record.synchronizationType,
+      };
+      dispatch({
+        type: 'infoResource/subscribe',
+        payload: {
+          ...params,
+        },
+        callback: res => {
+          if (res.code < 300 && res.code >= 0) {
+            this.setState({
+              visible: false,
+              record: {
+                ...record,
+                orderStatus: '已订阅',
+              },
+            });
+            sessionStorage.setItem(
+              'subInfo',
+              JSON.stringify({
+                ...record,
+                orderStatus: '已订阅',
+              })
+            );
+          }
+        },
+      });
+    });
+  };
+
+  handleCancel = e => {
+    e.preventDefault();
+    this.setState({
+      visible: false,
+    });
+  };
 
   setTimeFormat = val => {
     let str = '';
@@ -187,13 +277,57 @@ class InfoResource extends Component {
     return <ViewCard data={viewData} />;
   }
 
+  renderOrderForm(record) {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+    return (
+      <Form onSubmit={this.handleOk} style={{ marginTop: 8 }}>
+        <FormItem {...formItemLayout} label="订阅名称">
+          {getFieldDecorator('subscribeName', {
+            initialValue: `${record.resourceProviderName}：${record.resourceName}`,
+            rules: [
+              {
+                max: 50,
+                message: '订阅名称不能超过50个字符！',
+              },
+              {
+                required: true,
+                message: '请填写订阅名称！',
+              },
+            ],
+          })(<Input />)}
+        </FormItem>
+        <FormItem {...formItemLayout} label="同步模式">
+          {getFieldDecorator('synchronizationType', {
+            initialValue: record.synchronizationType,
+          })(<span>{record.synchronizationType}</span>)}
+        </FormItem>
+      </Form>
+    );
+  }
+
   render() {
     const {
       infoResource: { dataDetail, resourceDetail },
       loading,
+      confirmLoading,
     } = this.props;
+    const { visible, record } = this.state;
     const keyArr = Object.keys(dataDetail);
     const keyArrR = Object.keys(resourceDetail);
+    const keyArrRecord = Object.keys(record);
     const buttonList = (
       <div style={{ position: 'absolute', top: 0, right: 0 }}>
         <Button type="primary" onClick={() => this.back()}>
@@ -204,9 +338,34 @@ class InfoResource extends Component {
     return (
       <PageHeaderWrapper action={buttonList}>
         <Card loading={loading} bordered={false}>
+          {keyArrRecord.length > 0 && (
+            <Fragment>
+              <span style={{ marginRight: 10 }}>
+                状态：
+                {record.orderStatus}
+              </span>
+              {record.orderStatus !== '已订阅' && (
+                <Button type="primary" onClick={() => this.handleOrder()}>
+                  立即订阅
+                </Button>
+              )}
+              <Divider style={{ marginBottom: 10, marginTop: 20 }} />
+            </Fragment>
+          )}
           {keyArrR.length > 0 && this.renderViewCard()}
           <Divider style={{ marginBottom: 10, marginTop: 0 }} />
           {keyArr.length > 0 && this.renderViewCardData()}
+          <Modal
+            title="信息资源订阅"
+            visible={visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+            width={520}
+            maskClosable={false}
+            confirmLoading={confirmLoading}
+          >
+            {this.renderOrderForm(record)}
+          </Modal>
         </Card>
       </PageHeaderWrapper>
     );

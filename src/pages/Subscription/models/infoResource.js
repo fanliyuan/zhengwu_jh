@@ -1,4 +1,8 @@
-import { getResourceDetails, resourceBeanEntityInfo } from '@/services/subscription/index';
+import {
+  getResourceDetails,
+  resourceBeanEntityInfo,
+  subscribe,
+} from '@/services/subscription/index';
 import { message } from 'antd';
 
 export default {
@@ -28,6 +32,15 @@ export default {
           type: 'saveResourceDetail',
           payload: response.result,
         });
+      } else {
+        message.error(response.message);
+      }
+    },
+    *subscribe({ payload, callback }, { call, put }) {
+      const response = yield call(subscribe, payload);
+      callback(response);
+      if (response && response.code < 300 && response.code >= 0) {
+        message.success(response.message);
       } else {
         message.error(response.message);
       }
