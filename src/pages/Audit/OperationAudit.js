@@ -140,7 +140,7 @@ export default class OperationAudit extends PureComponent {
       const typeArr = ['logtype', 'logname'];
       fields.logOps.map((item, index) =>
         Object.defineProperty(fields, typeArr[index], {
-          value: JSON.stringify(item),
+          value: item,
           enumerable: true,
         })
       );
