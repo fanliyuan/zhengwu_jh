@@ -12,6 +12,9 @@ const { TabPane } = Tabs;
 let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
+let paramsPageApi = { pageNum: 1, pageSize: 10 };
+let formValuesApi;
+let formTimeApi;
 
 @connect(({ sourceCatalog, loading }) => ({
   sourceCatalog,
@@ -249,21 +252,33 @@ class SourceCatalog extends Component {
 
   componentDidMount() {
     let fields;
+    let fieldsApi;
     const routeName = sessionStorage.getItem('currentList');
     const { dispatch, route } = this.props;
     if (routeName && routeName !== route.name) {
       paramsPage = { pageNum: 1, pageSize: 10 };
       formValues = {};
       formTime = {};
+      paramsPageApi = { pageNum: 1, pageSize: 10 };
+      formValuesApi = {};
+      formTimeApi = {};
       fields = { ...formValues };
+      fieldsApi = { ...formValuesApi };
     } else {
       fields = { ...formValues };
+      fieldsApi = { ...formValuesApi };
       Object.defineProperty(fields, 'date', {
+        value: ``,
+      });
+      Object.defineProperty(fieldsApi, 'date', {
         value: ``,
       });
     }
     dispatch({
       type: 'sourceCatalog/getNodes',
+    });
+    dispatch({
+      type: 'sourceCatalog/getSourceClassfiyList',
     });
     dispatch({
       type: 'sourceCatalog/fetch',
@@ -274,7 +289,12 @@ class SourceCatalog extends Component {
       },
     });
     dispatch({
-      type: 'sourceCatalog/getSourceClassfiyList',
+      type: 'sourceCatalog/fetchApi',
+      payload: {
+        ...paramsPageApi,
+        ...fieldsApi,
+        ...formTimeApi,
+      },
     });
   }
 
@@ -388,6 +408,38 @@ class SourceCatalog extends Component {
     });
   };
 
+  handleSearchApi = (fieldsForm, paramsTime) => {
+    const { dispatch } = this.props;
+    paramsPageApi = { pageNum: 1, pageSize: 10 };
+    const fields = fieldsForm;
+    Object.defineProperty(fields, 'date', {
+      value: ``,
+    });
+    if (fields.typeIds) {
+      const typeArr = ['classId', 'projectId', 'catalogId', 'typeId'];
+      fields.typeIds.map((item, index) =>
+        Object.defineProperty(fields, typeArr[index], {
+          value: JSON.stringify(item),
+          enumerable: true,
+        })
+      );
+      Object.defineProperty(fields, 'typeIds', {
+        value: ``,
+      });
+    }
+    formValuesApi = { ...fieldsForm };
+    formTimeApi = paramsTime;
+    const values = {
+      ...fields,
+      ...paramsPageApi,
+      ...paramsTime,
+    };
+    dispatch({
+      type: 'sourceCatalog/fetchApi',
+      payload: values,
+    });
+  };
+
   changePage = (pageNum, pageSize) => {
     const { dispatch } = this.props;
     paramsPage = { pageNum, pageSize };
@@ -397,6 +449,19 @@ class SourceCatalog extends Component {
         ...paramsPage,
         ...formValues,
         ...formTime,
+      },
+    });
+  };
+
+  changePageApi = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    paramsPageApi = { pageNum, pageSize };
+    dispatch({
+      type: 'sourceCatalog/fetchApi',
+      payload: {
+        ...paramsPageApi,
+        ...formValuesApi,
+        ...formTimeApi,
       },
     });
   };
@@ -444,6 +509,8 @@ class SourceCatalog extends Component {
 
   renderForm(type) {
     let name;
+    let actions;
+    let data;
     const {
       sourceCatalog: { sourceClassfiyList, pubNodes },
     } = this.props;
@@ -455,8 +522,20 @@ class SourceCatalog extends Component {
     ];
     if (type === 1) {
       name = '订阅';
+      actions = {
+        handleSearch: this.handleSearch,
+      };
+      data = {
+        ...formValues,
+      };
     } else {
       name = '申请';
+      actions = {
+        handleSearch: this.handleSearchApi,
+      };
+      data = {
+        ...formValuesApi,
+      };
     }
     pubNodes.map(item =>
       nodes.push({
@@ -551,12 +630,6 @@ class SourceCatalog extends Component {
         },
       ],
     };
-    const actions = {
-      handleSearch: this.handleSearch,
-    };
-    const data = {
-      ...formValues,
-    };
     return <FilterRowForm formData={formData} actions={actions} data={data} />;
   }
 
@@ -573,6 +646,16 @@ class SourceCatalog extends Component {
       total: dataList.total,
       current: page,
       onChange: this.changePage,
+      pageSize: 10,
+      showTotal(total) {
+        return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
+      },
+    };
+    const paginationPropsApi = {
+      showQuickJumper: true,
+      total: dataList.total,
+      current: page,
+      onChange: this.changePageApi,
       pageSize: 10,
       showTotal(total) {
         return `共${Math.ceil(total / 10)}页 / ${total}条数据`;
@@ -616,7 +699,7 @@ class SourceCatalog extends Component {
                 <Table
                   rowKey="resourceId"
                   bordered
-                  pagination={paginationProps}
+                  pagination={paginationPropsApi}
                   dataSource={dataList.rows}
                   columns={this.columns1}
                   loading={loading}
