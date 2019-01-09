@@ -224,30 +224,8 @@ class SourceCatalog extends Component {
       align: 'center',
       render: (text, record) => (
         <Fragment>
-          {/* {record.orderStatus === '未订阅' && (
-            <Fragment>
-              <a onClick={() => this.handleOrder(record)}>订阅</a>
-              <Divider type="vertical" />
-            </Fragment>
-          )}
-          {record.orderStatus === '已拒绝' && (
-            <Fragment>
-              <a onClick={() => this.handleOrder(record)}>重新订阅</a>
-              <Divider type="vertical" />
-            </Fragment>
-          )} */}
-          <a
-            // style={{display:'inline-block',marginRight:20}}
-            class="mr16"
-            onClick={() =>
-              router.push(
-                `/subscribe/portDetail/${record.resourceId}
-                }`
-              )
-            }
-          >
-            接口详情
-          </a>
+          <a onClick={() => router.push(`/subscribe/portDetail/${record.resourceId}`)}>接口详情</a>
+          <Divider type="vertical" />
           <a
             onClick={() =>
               router.push(
@@ -464,7 +442,8 @@ class SourceCatalog extends Component {
     );
   }
 
-  renderForm() {
+  renderForm(type) {
+    let name;
     const {
       sourceCatalog: { sourceClassfiyList, pubNodes },
     } = this.props;
@@ -474,6 +453,11 @@ class SourceCatalog extends Component {
         value: '',
       },
     ];
+    if (type === 1) {
+      name = '订阅';
+    } else {
+      name = '申请';
+    }
     pubNodes.map(item =>
       nodes.push({
         key: item.nodeName,
@@ -531,9 +515,9 @@ class SourceCatalog extends Component {
             {
               type: 'Select',
               prop: 'status',
-              label: '订阅状态',
+              label: `${name}状态`,
               typeOptions: {
-                placeholder: '请选择订阅状态',
+                placeholder: `请选择${name}状态`,
               },
               options: [
                 {
@@ -545,128 +529,12 @@ class SourceCatalog extends Component {
                   value: '待审核',
                 },
                 {
-                  key: '未订阅',
-                  value: '未订阅',
+                  key: `未${name}`,
+                  value: `未${name}`,
                 },
                 {
-                  key: '已订阅',
-                  value: '已订阅',
-                },
-                {
-                  key: '已拒绝',
-                  value: '已拒绝',
-                },
-              ],
-            },
-            {
-              type: 'RangePicker',
-              prop: 'date',
-              label: '共享时间',
-            },
-          ],
-        },
-      ],
-    };
-    const actions = {
-      handleSearch: this.handleSearch,
-    };
-    const data = {
-      ...formValues,
-    };
-    return <FilterRowForm formData={formData} actions={actions} data={data} />;
-  }
-
-  renderForm1() {
-    const {
-      sourceCatalog: { sourceClassfiyList, pubNodes },
-    } = this.props;
-    const nodes = [
-      {
-        key: '全部',
-        value: '',
-      },
-    ];
-    pubNodes.map(item =>
-      nodes.push({
-        key: item.nodeName,
-        value: item.nodeName,
-      })
-    );
-    const formData = {
-      md: 8,
-      lg: 24,
-      xl: 48,
-      data: [
-        {
-          key: 1,
-          data: [
-            {
-              prop: 'resourceCode',
-              label: '信息资源代码',
-              typeOptions: {
-                placeholder: '请输入信息资源代码',
-                maxLength: 50,
-              },
-            },
-            {
-              prop: 'resourceName',
-              label: '信息资源名称',
-              typeOptions: {
-                placeholder: '请输入信息资源名称',
-                maxLength: 50,
-              },
-            },
-            {
-              type: 'Cascader',
-              prop: 'typeIds',
-              label: '资源属性分类',
-              typeOptions: {
-                options: sourceClassfiyList,
-                fieldNames: { label: 'name', value: 'id' },
-                placeholder: '请选择资源属性分类',
-              },
-            },
-          ],
-        },
-        {
-          key: 2,
-          data: [
-            {
-              type: 'Select',
-              prop: 'switchNodeName',
-              label: '发布节点',
-              typeOptions: {
-                placeholder: '请选择发布节点',
-              },
-              options: nodes,
-            },
-            {
-              type: 'Select',
-              prop: 'status',
-              label: '申请状态',
-              typeOptions: {
-                placeholder: '请选择申请状态',
-              },
-              options: [
-                {
-                  key: '全部',
-                  value: '',
-                },
-                {
-                  key: '已订阅',
-                  value: '已订阅',
-                },
-                {
-                  key: '未订阅',
-                  value: '未订阅',
-                },
-                {
-                  key: '未申请',
-                  value: '未申请',
-                },
-                {
-                  key: '待审核',
-                  value: '待审核',
+                  key: `已${name}`,
+                  value: `已${name}`,
                 },
                 {
                   key: '已拒绝',
@@ -719,7 +587,7 @@ class SourceCatalog extends Component {
           <Tabs defaultActiveKey="1">
             <TabPane tab="共享资源" key="1">
               <div className={styles.tableList}>
-                <div className={styles.tableListForm}>{this.renderForm()}</div>
+                <div className={styles.tableListForm}>{this.renderForm(1)}</div>
                 <Table
                   rowKey="resourceId"
                   bordered
@@ -744,7 +612,7 @@ class SourceCatalog extends Component {
             </TabPane>
             <TabPane tab="API资源" key="2">
               <div className={styles.tableList}>
-                <div className={styles.tableListForm}>{this.renderForm1()}</div>
+                <div className={styles.tableListForm}>{this.renderForm(2)}</div>
                 <Table
                   rowKey="resourceId"
                   bordered
@@ -755,17 +623,6 @@ class SourceCatalog extends Component {
                   locale={locale}
                 />
               </div>
-              <Modal
-                title="信息资源订阅"
-                visible={visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
-                width={520}
-                maskClosable={false}
-                confirmLoading={confirmLoading}
-              >
-                {keyArr.length > 0 && this.renderOrderForm(record)}
-              </Modal>
             </TabPane>
           </Tabs>
         </Card>
