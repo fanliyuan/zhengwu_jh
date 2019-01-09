@@ -20,6 +20,46 @@ let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues;
 let formTime;
 
+const xj = {
+  label: '新建',
+  value: '新建',
+};
+const xg = {
+  label: '修改',
+  value: '修改',
+};
+const sc = {
+  label: '删除',
+  value: '删除',
+};
+const menus = [
+  {
+    label: '机构用户管理',
+    value: '机构用户管理',
+    children: [xj, xg, sc],
+  },
+  {
+    label: '政务信息资源目录',
+    value: '政务信息资源目录',
+    children: [xj, xg, sc],
+  },
+  {
+    label: '数据发布管理',
+    value: '数据发布管理',
+    children: [xj, xg, sc],
+  },
+  {
+    label: '数据订阅管理',
+    value: '数据订阅管理',
+    children: [xj, xg, sc],
+  },
+  {
+    label: '监控告警',
+    value: '监控告警',
+    children: [xg],
+  },
+];
+
 @connect(({ audit, loading }) => ({
   audit,
   loading: loading.effects['audit/getOperationDataList'],
@@ -96,6 +136,18 @@ export default class OperationAudit extends PureComponent {
     Object.defineProperty(fields, 'date', {
       value: ``,
     });
+    if (fields.logOps) {
+      const typeArr = ['logtype', 'logname'];
+      fields.logOps.map((item, index) =>
+        Object.defineProperty(fields, typeArr[index], {
+          value: JSON.stringify(item),
+          enumerable: true,
+        })
+      );
+      Object.defineProperty(fields, 'logOps', {
+        value: ``,
+      });
+    }
     formTime = paramsTime;
     const values = {
       ...fields,
@@ -123,7 +175,7 @@ export default class OperationAudit extends PureComponent {
 
   renderForm() {
     const formData = {
-      md: 8,
+      md: 6,
       lg: 24,
       xl: 48,
       data: [
@@ -139,26 +191,15 @@ export default class OperationAudit extends PureComponent {
               },
             },
             {
-              prop: 'logtype',
-              label: '所属模块',
+              type: 'Cascader',
+              prop: 'logOps',
+              label: '所属模块和操作类型',
               typeOptions: {
-                placeholder: '请输入所属模块',
-                maxLength: 50,
+                options: menus,
+                placeholder: '请输入所属模块和操作类型',
+                changeOnSelect: true,
               },
             },
-            {
-              prop: 'logname',
-              label: '操作类型',
-              typeOptions: {
-                placeholder: '请输入操作类型',
-                maxLength: 50,
-              },
-            },
-          ],
-        },
-        {
-          key: 2,
-          data: [
             {
               prop: 'ip',
               label: 'IP地址',
