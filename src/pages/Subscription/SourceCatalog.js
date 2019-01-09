@@ -635,7 +635,7 @@ class SourceCatalog extends Component {
 
   render() {
     const {
-      sourceCatalog: { dataList, page },
+      sourceCatalog: { dataList, dataListApi, page, pageApi },
       loading,
       confirmLoading,
     } = this.props;
@@ -653,8 +653,8 @@ class SourceCatalog extends Component {
     };
     const paginationPropsApi = {
       showQuickJumper: true,
-      total: dataList.total,
-      current: page,
+      total: dataListApi.total,
+      current: pageApi,
       onChange: this.changePageApi,
       pageSize: 10,
       showTotal(total) {
@@ -700,7 +700,7 @@ class SourceCatalog extends Component {
                   rowKey="resourceId"
                   bordered
                   pagination={paginationPropsApi}
-                  dataSource={dataList.rows}
+                  dataSource={dataListApi.rows}
                   columns={this.columns1}
                   loading={loading}
                   locale={locale}

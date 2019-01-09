@@ -8,9 +8,11 @@ export default {
 
   state: {
     dataList: {},
+    dataListApi: {},
     sourceClassfiyList: [],
     pubNodes: [],
     page: 1,
+    pageApi: 1,
   },
 
   effects: {
@@ -23,6 +25,19 @@ export default {
         });
         yield put({
           type: 'setPage',
+          payload,
+        });
+      }
+    },
+    *fetchApi({ payload }, { call, put }) {
+      const response = yield call(getResourceList, payload);
+      if (response.code === 0) {
+        yield put({
+          type: 'queryListApi',
+          payload: response.result,
+        });
+        yield put({
+          type: 'setPageApi',
           payload,
         });
       }
@@ -67,6 +82,12 @@ export default {
         dataList: payload,
       };
     },
+    queryListApi(state, { payload }) {
+      return {
+        ...state,
+        dataListApi: payload,
+      };
+    },
     saveSourceClassfiyList(state, { payload }) {
       return {
         ...state,
@@ -83,6 +104,12 @@ export default {
       return {
         ...state,
         page: payload.pageNum,
+      };
+    },
+    setPageApi(state, { payload }) {
+      return {
+        ...state,
+        pageApi: payload.pageNum,
       };
     },
   },
