@@ -232,7 +232,7 @@ export default [
             path: 'viewAuth/:resourceId/:mountId/:subId/:subscriberId',
             name: 'viewAuth',
             component: './InformationResource/ViewAuth',
-            authority: 'user',
+            authority: ['assessor'],
             hideInMenu: true,
           },
         ],

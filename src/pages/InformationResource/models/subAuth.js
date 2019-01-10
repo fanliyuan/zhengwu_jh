@@ -11,44 +11,37 @@ import {
   viewFtpDetail,
   getSyncBasic,
 } from '@/services/dataSource/dataSource';
+import { getResourceDetails } from '@/services/subscription';
 
 export default {
   namespace: 'subAuth',
   state: {
-    dataList: [],
-    queryData: {},
-    pagination: {},
+    dataList: {},
+    page: 1,
+    resourceDetail: {},
     refDetail: {},
     subAuthDetail: {},
   },
   effects: {
-    *getSubAuthList({ payload }, { call, put, select }) {
-      if (payload && payload.params) {
-        yield put({
-          type: 'saveQueryData',
-          payload: payload.params,
-        });
-      } else {
-        // eslint-disable-next-line
-        payload.params = yield select(state => state.subAuth.queryData);
-      }
-      let dataList = [];
-      const pagination = {};
+    *getSubAuthList({ payload }, { call, put }) {
       try {
-        const res = yield call(getSubAuthList, payload.params);
-        if (+res.code === 200) {
-          dataList = res.result.datas;
-          pagination.total = res.result.totalCounts;
+        const response = yield call(getSubAuthList, payload);
+        if (+response.code === 200) {
+          yield put({
+            type: 'queryList',
+            payload: response.result,
+          });
+          yield put({
+            type: 'setPage',
+            payload,
+          });
         }
       } catch (error) {
-        console.log(error); // eslint-disable-line
-        pagination.total = 0;
-      } finally {
+        console.log(error);
         yield put({
-          type: 'saveDataList',
+          type: 'queryList',
           payload: {
-            dataList,
-            pagination,
+            dataList: {},
           },
         });
       }
@@ -63,7 +56,7 @@ export default {
             payload: {},
           });
         }
-      } catch {
+      } catch (error) {
         message.error('操作失败');
       }
     },
@@ -136,24 +129,29 @@ export default {
         });
       }
     },
+    *getResourceDetail({ payload }, { call, put }) {
+      try {
+        const response = yield call(getResourceDetails, payload);
+        if (response.code === 0) {
+          yield put({
+            type: 'saveResourceDetail',
+            payload: response.result,
+          });
+        }
+      } catch (error) {
+        console.log(error); // eslint-disable-line
+        yield put({
+          type: 'saveResourceDetail',
+          payload: {},
+        });
+      }
+    },
   },
   reducers: {
-    saveQueryData(state, { payload }) {
+    queryList(state, { payload }) {
       return {
         ...state,
-        queryData: payload,
-      };
-    },
-    saveDataList(
-      state,
-      {
-        payload: { dataList, pagination },
-      }
-    ) {
-      return {
-        ...state,
-        dataList,
-        pagination,
+        dataList: payload,
       };
     },
     saveRefDetail(
@@ -171,6 +169,18 @@ export default {
       return {
         ...state,
         subAuthDetail,
+      };
+    },
+    saveResourceDetail(state, { payload }) {
+      return {
+        ...state,
+        resourceDetail: payload,
+      };
+    },
+    setPage(state, { payload }) {
+      return {
+        ...state,
+        page: payload.pageNum,
       };
     },
   },

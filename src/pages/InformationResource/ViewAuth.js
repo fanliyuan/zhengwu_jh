@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Divider } from 'antd';
+import { Row, Col, Divider, Card, Button } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import InfoResource from '@/components/InfoResource';
@@ -20,17 +20,11 @@ const statusArray = [
   { value: '1', label: '已通过' },
 ];
 
-@connect(({ informationResource, subAuth }) => ({ informationResource, subAuth }))
+@connect(({ subAuth, loading }) => ({
+  subAuth,
+  loading: loading.models.subAuth,
+}))
 export default class ViewAuth extends Component {
-  buttonList = [
-    {
-      text: '返回',
-      fn() {
-        window.history.back();
-      },
-    },
-  ];
-
   componentDidMount() {
     const {
       match: {
@@ -39,8 +33,8 @@ export default class ViewAuth extends Component {
       dispatch,
     } = this.props;
     dispatch({
-      type: 'informationResource/getResources',
-      payload: { id: resourceId || 51 },
+      type: 'subAuth/getResourceDetail',
+      payload: { resourceId },
     });
     // dispatch({
     //   type: 'subAuth/getRefDetail',
@@ -63,97 +57,111 @@ export default class ViewAuth extends Component {
     console.log(info); // eslint-disable-line
   };
 
+  back() {
+    const { history } = this.props;
+    history.goBack();
+  }
+
   render() {
     const {
-      informationResource: { resourceDetail },
-      subAuth: { subAuthDetail },
+      subAuth: { subAuthDetail, resourceDetail },
+      loading,
     } = this.props;
     const infoResource = {
-      infoSrcCode: resourceDetail.code,
-      infoSrcName: resourceDetail.name,
-      infoSrcProvider: resourceDetail.providerDept,
-      pubTime: resourceDetail.publishTime,
-      providerCode: resourceDetail.providerNo,
-      infoSrcClassify: resourceDetail.typeName,
-      infoSrcFormat: resourceDetail.format,
-      infoSrcSummary: resourceDetail.summary,
+      infoSrcCode: resourceDetail.resourceCode,
+      infoSrcName: resourceDetail.resourceName,
+      infoSrcProvider: resourceDetail.resourceProviderName,
+      pubTime: resourceDetail.resourcePublishTime,
+      providerCode: resourceDetail.resourceProviderCode,
+      infoSrcClassify: resourceDetail.resourceProjectCatalogType,
+      infoSrcFormat: resourceDetail.resourceFormatClassify,
+      infoSrcSummary: resourceDetail.resourceAbstract,
     };
+    const buttonList = (
+      <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Button type="primary" onClick={() => this.back()}>
+          返回
+        </Button>
+      </div>
+    );
     return (
-      <PageHeaderWrapper buttonList={this.buttonList}>
-        <div className="content_layout">
-          <InfoResource infoResource={infoResource} />
-          <Divider />
-          <Row gutter={64} className={styles.row}>
-            <Col span={11}>
-              <h3>关联数据</h3>
-              <ul>
-                <li>
-                  <label className="colon">数据名称</label>
-                  <span>{subAuthDetail.name}</span>
-                </li>
-                <li>
-                  <label className="colon">数据源类型</label>
-                  <span>{subAuthDetail.mountType}</span>
-                </li>
-                <li>
-                  <label className="colon">发布节点</label>
-                  <span>{subAuthDetail.node}</span>
-                </li>
-                <li>
-                  <label className="colon">建库单位</label>
-                  <span>{subAuthDetail.providerName}</span>
-                </li>
-                {/* <li>
-                  <label className="colon">应用系统名称</label>
-                  <span>{connectDataInfo.appSysNname}</span>
-                </li> */}
-                <li>
-                  <label className="colon">接入时间</label>
-                  <span>{subAuthDetail.registerTime}</span>
-                </li>
-                <li>
-                  <label className="colon">查看数据</label>
-                  <a className="disabled" onClick={this.goView.bind(this, 1)}>
-                    查看
-                  </a>
-                </li>
-              </ul>
-            </Col>
-            <Col span={11}>
-              <h3>订阅详情</h3>
-              <ul>
-                <li>
-                  <label className="colon">订阅节点</label>
-                  <span>{subAuthDetail.subscriberName}</span>
-                </li>
-                <li>
-                  <label className="colon">订阅机构</label>
-                  <span>{subAuthDetail.subscribeInstitution}</span>
-                </li>
-                <li>
-                  <label className="colon">订阅时间</label>
-                  <span>{subAuthDetail.subTime}</span>
-                </li>
-                <li>
-                  <label className="colon">授权状态</label>
-                  <span>
-                    {`${
-                      statusArray.find(item => +item.value === +subAuthDetail.status)
-                        ? statusArray.find(item => +item.value === +subAuthDetail.status).label
-                        : ' '
-                    } ${subAuthDetail.reviewer} ${subAuthDetail.reviewTime}`}
-                  </span>
-                </li>
-                {subAuthDetail.status % 10 === 0 && (
+      <PageHeaderWrapper action={buttonList}>
+        <Card bordered={false} loading={loading}>
+          <div className="content_layout">
+            <InfoResource infoResource={infoResource} />
+            <Divider />
+            <Row gutter={64} className={styles.row}>
+              <Col span={11}>
+                <h3>关联数据</h3>
+                <ul>
                   <li>
-                    <label className="colon">拒绝原因</label>
-                    <span>{subAuthDetail.reviewReason}</span>
+                    <label className="colon">数据名称</label>
+                    <span>{subAuthDetail.name}</span>
                   </li>
-                )}
-              </ul>
-            </Col>
-          </Row>
-        </div>
+                  <li>
+                    <label className="colon">数据源类型</label>
+                    <span>{subAuthDetail.mountType}</span>
+                  </li>
+                  <li>
+                    <label className="colon">发布节点</label>
+                    <span>{subAuthDetail.node}</span>
+                  </li>
+                  <li>
+                    <label className="colon">建库单位</label>
+                    <span>{subAuthDetail.providerName}</span>
+                  </li>
+                  {/* <li>
+                   <label className="colon">应用系统名称</label>
+                   <span>{connectDataInfo.appSysNname}</span>
+                   </li> */}
+                  <li>
+                    <label className="colon">接入时间</label>
+                    <span>{subAuthDetail.registerTime}</span>
+                  </li>
+                  <li>
+                    <label className="colon">查看数据</label>
+                    <a className="disabled" onClick={this.goView.bind(this, 1)}>
+                      查看
+                    </a>
+                  </li>
+                </ul>
+              </Col>
+              <Col span={11}>
+                <h3>订阅详情</h3>
+                <ul>
+                  <li>
+                    <label className="colon">订阅节点</label>
+                    <span>{subAuthDetail.subscriberName}</span>
+                  </li>
+                  <li>
+                    <label className="colon">订阅机构</label>
+                    <span>{subAuthDetail.subscribeInstitution}</span>
+                  </li>
+                  <li>
+                    <label className="colon">订阅时间</label>
+                    <span>{subAuthDetail.subTime}</span>
+                  </li>
+                  <li>
+                    <label className="colon">授权状态</label>
+                    <span>
+                      {`${
+                        statusArray.find(item => +item.value === +subAuthDetail.status)
+                          ? statusArray.find(item => +item.value === +subAuthDetail.status).label
+                          : ' '
+                      } ${subAuthDetail.reviewer} ${subAuthDetail.reviewTime}`}
+                    </span>
+                  </li>
+                  {subAuthDetail.status % 10 === 0 && (
+                    <li>
+                      <label className="colon">拒绝原因</label>
+                      <span>{subAuthDetail.reviewReason}</span>
+                    </li>
+                  )}
+                </ul>
+              </Col>
+            </Row>
+          </div>
+        </Card>
       </PageHeaderWrapper>
     );
   }
