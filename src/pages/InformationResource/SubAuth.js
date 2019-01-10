@@ -62,15 +62,15 @@ export default class SubAuth extends Component {
     {
       dataIndex: 'status',
       align: 'center',
-      title: '审核状态',
+      title: '授权状态',
       render: text => {
         switch (text) {
           case -1:
-            return <span style={{ color: '#5cadff' }}>待审核</span>;
+            return <span style={{ color: '#5cadff' }}>待授权</span>;
           case 0:
             return <span style={{ color: '#ed4014' }}>已拒绝</span>;
           case 1:
-            return <span style={{ color: '#19be6b' }}>已通过</span>;
+            return <span style={{ color: '#19be6b' }}>已授权</span>;
           default:
             return <span>无状态</span>;
         }
