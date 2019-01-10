@@ -46,15 +46,18 @@ export default {
         });
       }
     },
-    *setSubAuth({ payload: params }, { put, call }) {
+    *setSubAuth({ payload, callback }, { put, call }) {
       try {
-        const res = yield call(setSubAuth, params);
+        const res = yield call(setSubAuth, payload.item);
+        callback(res);
         if (+res.code === 200) {
-          message.success(res.msg || '操作成功');
           yield put({
             type: 'getSubAuthList',
-            payload: {},
+            payload: payload.values,
           });
+          message.success(res.message || '操作成功');
+        } else {
+          message.error(res.message || '操作失败');
         }
       } catch (error) {
         message.error('操作失败');

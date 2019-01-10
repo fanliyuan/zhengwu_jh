@@ -146,11 +146,21 @@ export default class SubAuth extends Component {
     });
   };
 
-  handleAuthModalHide = () => {
+  handleAuthModalHide = e => {
+    e.preventDefault();
+    const { form } = this.props;
     this.setState({
       modalVisible: false,
       row: {},
     });
+    setTimeout(() => {
+      this.setState({
+        status: 1,
+      });
+      form.setFieldsValue({
+        status: 1,
+      });
+    }, 20);
   };
 
   handleOk = e => {
@@ -158,16 +168,43 @@ export default class SubAuth extends Component {
     const {
       row: { dsId: dsID, subId: subID, subscriberId: subscriberID },
     } = this.state;
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'subAuth/setSubAuth',
-      payload: {
-        codeReply: value.name,
-        reason: value.reason,
-        dsID,
-        subID,
-        subscriberID,
-      },
+    const { dispatch, form } = this.props;
+    const values = {
+      ...paramsPage,
+      ...formValues,
+      ...formTime,
+    };
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'subAuth/setSubAuth',
+        payload: {
+          values,
+          item: {
+            codeReply: fieldsValue.status,
+            reason: fieldsValue.reason,
+            dsID,
+            subID,
+            subscriberID,
+          },
+        },
+        callback: res => {
+          if (res.code < 300) {
+            this.setState({
+              modalVisible: false,
+              row: {},
+            });
+            setTimeout(() => {
+              this.setState({
+                status: 1,
+              });
+              form.setFieldsValue({
+                status: 1,
+              });
+            }, 20);
+          }
+        },
+      });
     });
   };
 
