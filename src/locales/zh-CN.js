@@ -196,7 +196,7 @@ export default {
   'menu.informationResource.openShareFile': '共享开放文件',
   'menu.informationResource.openShare': '共享开放',
   'menu.informationResource.subAuth': '订阅授权',
-  'menu.informationResource.viewAuth': '查看订阅',
+  'menu.informationResource.viewAuth': '查看授权',
   'menu.data': '数据发布管理',
   'menu.data.assess': '数据审核',
   'menu.data.assessLog': '审核日志',
