@@ -47,9 +47,7 @@ class SubDetailDataBase extends Component {
     dispatch({
       type: 'subDetailDataBase/getDbList',
       payload: {
-        id: match.params.id,
-        pageNum: 1,
-        pageSize: 10,
+        tableName: match.params.tableName,
       },
     });
   }
@@ -71,7 +69,9 @@ class SubDetailDataBase extends Component {
     dispatch({
       type: 'subDetailDataBase/reset',
       payload: {
-        tableList: {},
+        tableList: {
+          datas: [],
+        },
         dataList: {},
         tableStruct: {},
         dbInfo: {},

@@ -82,7 +82,7 @@ class DataManagement extends Component {
                 router.push(
                   `/subscribe/dataManagement/subDetailDataBase/${record.id}/${
                     record.mountResourceId
-                  }`
+                  }/${record.tableName}`
                 )
               }
             >

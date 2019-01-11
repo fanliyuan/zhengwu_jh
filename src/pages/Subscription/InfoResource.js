@@ -344,7 +344,7 @@ class InfoResource extends Component {
                 状态：
                 {record.orderStatus}
               </span>
-              {record.orderStatus !== '已订阅' && (
+              {record.orderStatus === '未订阅' && (
                 <Button type="primary" onClick={() => this.handleOrder()}>
                   立即订阅
                 </Button>

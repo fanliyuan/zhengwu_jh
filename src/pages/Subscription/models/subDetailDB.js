@@ -9,7 +9,9 @@ export default {
   namespace: 'subDetailDataBase',
 
   state: {
-    tableList: {},
+    tableList: {
+      datas: [],
+    },
     dataList: {},
     tableStruct: {},
     dbInfo: {},
@@ -25,30 +27,27 @@ export default {
         });
       }
     },
-    *getDbList({ payload }, { call, put }) {
-      const response = yield call(tableList, payload);
-      if (response && response.code < 300) {
-        yield put({
-          type: 'saveTableList',
-          payload: response.result,
-        });
-        yield put({
-          type: 'getDBTableStruct',
-          payload: {
-            tableName: response.result.datas[0].name,
-            pageNum: 1,
-            pageSize: 10,
-          },
-        });
-        yield put({
-          type: 'getDbTableList',
-          payload: {
-            tableName: response.result.datas[0].name,
-            pageNum: 1,
-            pageSize: 10,
-          },
-        });
-      }
+    *getDbList({ payload }, { put }) {
+      yield put({
+        type: 'saveTableList',
+        payload: payload.tableName,
+      });
+      yield put({
+        type: 'getDBTableStruct',
+        payload: {
+          tableName: payload.tableName,
+          pageNum: 1,
+          pageSize: 10,
+        },
+      });
+      yield put({
+        type: 'getDbTableList',
+        payload: {
+          tableName: payload.tableName,
+          pageNum: 1,
+          pageSize: 10,
+        },
+      });
     },
     *getDBTableStruct({ payload }, { call, put }) {
       const response = yield call(tableStructureList, payload);
@@ -75,12 +74,27 @@ export default {
       return {
         ...state,
         dbInfo: payload,
+        tableList: {
+          datas: [
+            {
+              ...state.tableList.datas[0],
+              comment: payload.tableNote,
+            },
+          ],
+        },
       };
     },
     saveTableList(state, { payload }) {
       return {
         ...state,
-        tableList: payload,
+        tableList: {
+          datas: [
+            {
+              ...state.tableList.datas[0],
+              name: payload,
+            },
+          ],
+        },
       };
     },
     saveTabelStruct(state, { payload }) {

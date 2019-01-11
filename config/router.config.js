@@ -401,7 +401,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/subscribe/dataManagement/subDetailDataBase/:id/:mountResourceId',
+            path: '/subscribe/dataManagement/subDetailDataBase/:id/:mountResourceId/:tableName',
             name: 'subDetailDataBase',
             component: './Subscription/SubDetailDataBase',
             authority: ['user'],
