@@ -20,12 +20,10 @@ export default {
           type: 'saveDataList',
           payload: response.result,
         });
-        if (payload.page) {
-          yield put({
-            type: 'savePage',
-            payload: payload,
-          });
-        }
+        yield put({
+          type: 'savePage',
+          payload: payload.query,
+        });
       }
     },
     *getSourceDetail({ payload }, { call, put }) {

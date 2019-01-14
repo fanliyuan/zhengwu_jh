@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { stringify } from 'qs';
 import { Table, Icon, Modal, Form, Select, Input, Button, Card } from 'antd';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DataBaseInfo from '@/components/DataBaseInfo';
@@ -379,7 +380,7 @@ class SubDetailDataBase extends Component {
       dataBaseName: dbName,
       dataBaseType: dbType,
       dataName: name,
-      updateTime,
+      updateTime: moment(updateTime).format('YYYY-MM-DD HH:mm:ss'),
       createUnit,
       appsysName,
       dutyName,

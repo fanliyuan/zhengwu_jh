@@ -22,9 +22,9 @@ import PageHeaderLayout from '@/components/PageHeaderWrapper';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { isMoment } = moment;
-@connect(({ informationResource }) => ({
+@connect(({ informationResource, loading }) => ({
   informationResource,
-  // loading:loading.effects.
+  loading: loading.effects['informationResource/getResourceList'],
 }))
 export default class SourceManagement extends Component {
   state = {
@@ -297,6 +297,7 @@ export default class SourceManagement extends Component {
     // const { isNodeOperator } = this.state
     const {
       informationResource: { resourceList, pagination, classfiyList },
+      loading,
     } = this.props;
     // const parentNodeList = [];
     // const dataList = [];
@@ -665,6 +666,7 @@ export default class SourceManagement extends Component {
               // rowSelection={rowSelection}
               bordered
               onChange={this.tableChange}
+              loading={loading}
             />
           </div>
           {/* <div className={styles.allDeleteBtn}>
