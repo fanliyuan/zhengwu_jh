@@ -319,15 +319,19 @@ class InfoResource extends Component {
   }
 
   render() {
+    let keyArrRecord = [];
     const {
       infoResource: { dataDetail, resourceDetail },
       loading,
       confirmLoading,
+      route,
     } = this.props;
     const { visible, record } = this.state;
     const keyArr = Object.keys(dataDetail);
     const keyArrR = Object.keys(resourceDetail);
-    const keyArrRecord = Object.keys(record);
+    if (route.name === 'infoResource') {
+      keyArrRecord = Object.keys(record);
+    }
     const buttonList = (
       <div style={{ position: 'absolute', top: 0, right: 0 }}>
         <Button type="primary" onClick={() => this.back()}>
@@ -338,20 +342,21 @@ class InfoResource extends Component {
     return (
       <PageHeaderWrapper action={buttonList}>
         <Card loading={loading} bordered={false}>
-          {keyArrRecord.length > 0 && (
-            <Fragment>
-              <span style={{ marginRight: 10 }}>
-                状态：
-                {record.orderStatus}
-              </span>
-              {record.orderStatus === '未订阅' && (
-                <Button type="primary" onClick={() => this.handleOrder()}>
-                  立即订阅
-                </Button>
-              )}
-              <Divider style={{ marginBottom: 10, marginTop: 20 }} />
-            </Fragment>
-          )}
+          {route.name === 'infoResource' &&
+            keyArrRecord.length > 0 && (
+              <Fragment>
+                <span style={{ marginRight: 10 }}>
+                  状态：
+                  {record.orderStatus}
+                </span>
+                {record.orderStatus === '未订阅' && (
+                  <Button type="primary" onClick={() => this.handleOrder()}>
+                    立即订阅
+                  </Button>
+                )}
+                <Divider style={{ marginBottom: 10, marginTop: 20 }} />
+              </Fragment>
+            )}
           {keyArrR.length > 0 && this.renderViewCard()}
           <Divider style={{ marginBottom: 10, marginTop: 0 }} />
           {keyArr.length > 0 && this.renderViewCardData()}
