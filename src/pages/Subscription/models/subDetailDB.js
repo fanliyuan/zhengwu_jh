@@ -1,6 +1,5 @@
 import {
   tableDataList,
-  tableList,
   tableStructureList,
   resourceBeanEntityInfo,
 } from '@/services/subscription/index';
