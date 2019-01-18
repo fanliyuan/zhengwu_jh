@@ -16,9 +16,8 @@ let paramsPage = { pageNum: 1, pageSize: 10 };
 let formValues = { mount: false };
 let formTime;
 
-@connect(({ subAuth, sourceCatalog, loading }) => ({
+@connect(({ subAuth, loading }) => ({
   subAuth,
-  sourceCatalog,
   loading: loading.effects['subAuth/getSubAuthList'],
   confirmLoading: loading.effects['subAuth/setSubAuth'],
 }))
@@ -120,7 +119,7 @@ export default class SubAuth extends Component {
       });
     }
     dispatch({
-      type: 'sourceCatalog/getNodes',
+      type: 'subAuth/getNodes',
     });
     dispatch({
       type: 'subAuth/getSubAuthList',
@@ -320,7 +319,7 @@ export default class SubAuth extends Component {
 
   renderForm() {
     const {
-      sourceCatalog: { pubNodes },
+      subAuth: { pubNodes },
     } = this.props;
     const nodes = [
       {

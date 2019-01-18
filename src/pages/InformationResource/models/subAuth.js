@@ -1,5 +1,6 @@
 import { message } from 'antd';
 
+import { getAllNode } from '@/services/subscription/index';
 import {
   getSubAuthList,
   setSubAuth,
@@ -17,6 +18,7 @@ export default {
   namespace: 'subAuth',
   state: {
     dataList: {},
+    pubNodes: [],
     page: 1,
     resourceDetail: {},
     refDetail: {},
@@ -149,12 +151,27 @@ export default {
         });
       }
     },
+    *getNodes({ payload }, { call, put }) {
+      const response = yield call(getAllNode, payload);
+      if (response && response.code < 300) {
+        yield put({
+          type: 'saveNodes',
+          payload: response.result,
+        });
+      }
+    },
   },
   reducers: {
     queryList(state, { payload }) {
       return {
         ...state,
         dataList: payload,
+      };
+    },
+    saveNodes(state, { payload }) {
+      return {
+        ...state,
+        pubNodes: payload,
       };
     },
     saveRefDetail(
