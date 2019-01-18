@@ -248,7 +248,7 @@ export default class OperationAudit extends PureComponent {
       },
     };
     const locale = {
-      emptyText: '很遗憾，没有搜索到匹配的数据源',
+      emptyText: '很遗憾，没有搜索到匹配的操作日志',
     };
     return (
       <PageHeaderWrapper>
