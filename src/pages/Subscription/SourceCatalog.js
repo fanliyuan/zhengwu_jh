@@ -696,7 +696,7 @@ class SourceCatalog extends Component {
                 {keyArr.length > 0 && this.renderOrderForm(record)}
               </Modal>
             </TabPane>
-            <TabPane tab="" key="2" disabled>
+            <TabPane tab="API资源" key="2">
               <div className={styles.tableList}>
                 <div className={styles.tableListForm}>{this.renderForm(2)}</div>
                 <Table
