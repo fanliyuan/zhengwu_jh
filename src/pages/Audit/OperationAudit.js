@@ -41,12 +41,25 @@ const menus = [
   {
     label: '政务信息资源目录',
     value: '政务信息资源目录',
-    children: [xj, xg, sc],
+    children: [
+      xj,
+      xg,
+      sc,
+      { label: '关联数据', value: '关联数据' },
+      { label: '共享开放', value: '共享开放' },
+      { label: '资源审核', value: '资源审核' },
+    ],
   },
   {
     label: '数据发布管理',
     value: '数据发布管理',
-    children: [xj, xg, sc],
+    children: [
+      xj,
+      xg,
+      sc,
+      { label: '接入数据', value: '接入数据' },
+      { label: '数据审核', value: '数据审核' },
+    ],
   },
   {
     label: '数据订阅管理',
