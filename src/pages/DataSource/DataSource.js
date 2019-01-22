@@ -275,6 +275,7 @@ class TableList extends PureComponent {
                   <Option value="oracle">oracle</Option>
                   <Option value="dm">dm</Option>
                   <Option value="kingbase">kingbase</Option>
+                  <Option value="api">api</Option>
                   <Option value="ftp">ftp</Option>
                   <Option value="sftp">sftp</Option>
                   <Option value="file">文件</Option>

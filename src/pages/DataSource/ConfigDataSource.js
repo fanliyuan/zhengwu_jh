@@ -26,7 +26,7 @@ class ConfigDataSource extends PureComponent {
     const { form, dataType, connectTest, submit } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        if (dataType !== 'file') {
+        if (dataType !== 'file' && dataType !== 'api') {
           connectTest(values, sub);
         } else {
           submit(values, 'file');
@@ -388,7 +388,7 @@ class ConfigDataSource extends PureComponent {
     );
   }
 
-  renderFileForm() {
+  renderFileForm(type) {
     const { params } = this.props;
     const {
       form: { getFieldDecorator },
@@ -410,7 +410,7 @@ class ConfigDataSource extends PureComponent {
           {...formItemLayout}
           label={<FormattedMessage id="form.dataSource.dataType.label" />}
         >
-          <h4>本地文件上传</h4>
+          <h4>{type}</h4>
         </FormItem>
         <FormItem {...formItemLayout} label={<FormattedMessage id="form.dataSource.name.label" />}>
           {getFieldDecorator('name', {
@@ -454,7 +454,9 @@ class ConfigDataSource extends PureComponent {
             case 'ftp':
               return this.renderFtpForm();
             case 'file':
-              return this.renderFileForm();
+              return this.renderFileForm('本地文件上传');
+            case 'api':
+              return this.renderFileForm('api');
             default:
               return '';
           }

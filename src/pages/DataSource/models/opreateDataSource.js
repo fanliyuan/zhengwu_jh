@@ -41,6 +41,7 @@ export default {
           oracle: 'db',
           dm: 'db',
           kingbase: 'db',
+          api: 'api',
           ftp: 'ftp',
           sftp: 'ftp',
           file: 'file',

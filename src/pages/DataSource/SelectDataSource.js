@@ -29,6 +29,11 @@ const sqlData = [
     type: 'db',
     icon: 'icon-shuju',
   },
+  {
+    title: 'api',
+    type: 'api',
+    icon: 'icon-Api',
+  },
 ];
 const ftpData = [
   {
@@ -48,7 +53,7 @@ const ftpData = [
   },
 ];
 const IconFont = Icon.createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_896555_yoxxpbidxz.js',
+  scriptUrl: '//at.alicdn.com/t/font_896555_rrbkn90d7yg.js',
 });
 
 class SelectDataSource extends PureComponent {
