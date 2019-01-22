@@ -89,7 +89,11 @@ class DataManagement extends Component {
               数据
             </a>
           )}
-          {record.dataType === 1 && <a onClick={() => this.handleOrder(record)}>文件</a>}
+          {record.dataType === 1 && (
+            <a onClick={() => router.push(`/subscribe/dataManagement/subDetailFile/${record.id}`)}>
+              文件
+            </a>
+          )}
         </Fragment>
       ),
     },

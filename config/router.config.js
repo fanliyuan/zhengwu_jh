@@ -394,7 +394,7 @@ export default [
             hideInMenu: true,
           },
           {
-            path: '/subscribe/dataManagement/subDetailFile',
+            path: '/subscribe/dataManagement/subDetailFile/:id',
             name: 'subDetailFile',
             component: './Subscription/SubDetailFile',
             authority: ['user'],

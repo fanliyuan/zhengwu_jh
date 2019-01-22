@@ -83,3 +83,17 @@ export async function tableStructureList(params) {
 export async function tableDataList(params) {
   return request(`/api/api/v2/zhengwu/swap/resourceBazaar/tableDataList?${stringify(params)}`);
 }
+
+// 数据（ftp）文件列表
+export async function ftpFiles(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/resourceBazaar/ftp/${params.id}/ftpfile?${stringify(params.query)}`
+  );
+}
+
+// 批量下载数据（文件）文件项
+export async function downloadFtpFile(params) {
+  return request(
+    `/api/api/v2/zhengwu/swap/resourceBazaar/file/${params.id}/ftpfile?${stringify(params.query)}`
+  );
+}

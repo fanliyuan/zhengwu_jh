@@ -40,6 +40,14 @@ const stepsFile = [
     title: '完成',
   },
 ];
+const stepsApi = [
+  {
+    title: '填写api信息',
+  },
+  {
+    title: '完成',
+  },
+];
 let steps = [];
 
 @connect(({ accessData, loading }) => ({
@@ -509,6 +517,9 @@ class AccessStepForm extends PureComponent {
         break;
       case 'file':
         steps = stepsFile;
+        break;
+      case 'api':
+        steps = stepsApi;
         break;
       default:
         steps = [];
