@@ -16,6 +16,7 @@ let formTime;
   subDetailFile,
   loadingTable: loading.effects['subDetailDataBase/getDataList'],
 }))
+@Form.create()
 export default class SubDetailFile extends Component {
   state = {
     selectedIds: [],
